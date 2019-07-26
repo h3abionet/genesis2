@@ -1,16 +1,17 @@
 # Genesis 2
 PCA and Admixture Plot Viewer.
 
-Genesis can be used to display screen and publication quality pictures of population PCA and admixture charts
-+ [Genesis 1] (https://github.com/shaze/genesis)
+Genesis will be used to display screen and publication quality pictures of population PCA and admixture charts.
++ Genesis 1:  https://github.com/shaze/genesis
 
-#### Project Status: Active ...
+### Project Status
+Active ...
 
 ## Project Intro/Objective
 Genesis takes the output of popular programs such as Admixture and EIGENSTRAT and produces good quality pictures, which the user can interactively change.
 
 ### Partner
-* [Wits Bionformatics, Sydney Brenner Institute for Molecular Bioscience, University of the Witwatersrand, Johannesburg]
+* Wits Bionformatics, Sydney Brenner Institute for Molecular Bioscience, University of the Witwatersrand, Johannesburg
 
 ### Methods Used
 * Data Visualization
@@ -25,7 +26,7 @@ Genesis takes the output of popular programs such as Admixture and EIGENSTRAT an
 * etc. 
 
 ## Project Description
-(Provide more detailed overview of the project...)
+Provide more detailed overview of the project...
 
 ## Needs of this project
 - Software developers
@@ -38,7 +39,7 @@ Genesis takes the output of popular programs such as Admixture and EIGENSTRAT an
 
 1. Clone this repo (for help see this [tutorial](https://help.github.com/articles/cloning-a-repository/)).
 2. Raw Data is being kept [here](Repo folder containing raw data) within this repo.    
-3. Follow setup [instructions](Link to file)
+3. Follow setup (instructions: Link to file)
 4. Etc ...
 
 ## JavaFX simple project examples and online support
@@ -58,11 +59,11 @@ Find the tutorials for all the projects at [The CalliCoder Blog](https://www.cal
 
 #### Other Members:
 
-|Name     |  Slack Handle   | 
+|Name     |  Slack or Twitter Handle  | 
 |---------|-----------------|
-|[Henry Wandera](https://github.com/HENRY-JERRY)|
-|[Salmi Ayyoub](https://github.com/[github handle])|
-|[Please add your names](Github link here)|
+|[Henry Wandera](https://github.com/HENRY-JERRY)| |
+|[Salmi Ayyoub](https://github.com/[github handle])| |
+|[Please add your names](Github link here)| |
 
 ## Contact
 
