@@ -62,7 +62,7 @@ Find the tutorials for all the projects at [The CalliCoder Blog](https://www.cal
 |Name     |  Slack or Twitter Handle  | 
 |---------|-----------------|
 |[Henry Wandera](https://github.com/HENRY-JERRY)| |
-|[Salmi Ayyoub](https://github.com/[github handle])| |
+|[Salmi Ayyoub](https://github.com/herrsalmi)| |
 |[Please add your names](Github link here)| |
 
 ## Contact
