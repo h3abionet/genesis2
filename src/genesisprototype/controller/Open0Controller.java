@@ -120,7 +120,7 @@ public class Open0Controller implements Initializable {
     private void handleKeyInput(final InputEvent event) {
        if (event instanceof KeyEvent) {
         final KeyEvent keyEvent = (KeyEvent) event;
-        if (keyEvent.isControlDown() && (keyEvent.getKeyCode() == KeyCode.A.getCode()) ){
+        if (keyEvent.isControlDown() && (keyEvent.getKeyCode() == KeyEvent.VK_H)){
            provideAboutFunctionality();
         }
      }
@@ -128,7 +128,7 @@ public class Open0Controller implements Initializable {
   
     
     private void provideAboutFunctionality() {
-        
+        System.out.println("I need help!");
     }
   
     @Override

@@ -53,9 +53,9 @@ public class Project {
     }
     
    public void setPCA(File f) {
-       
-       
+        
    } 
+   
    void setFam (String fam_name) throws FileNotFoundException, IOException {
 
         BufferedReader r = openFile(fam_name);
@@ -121,6 +121,10 @@ public class Project {
     public void readPheno(String name) throws FileNotFoundException {
 	BufferedReader dinp = openFile(name);
 	
+    }
+
+    public void addPCA(File file) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     
