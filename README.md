@@ -50,8 +50,8 @@ Find the tutorials for all the projects at [The CalliCoder Blog](https://www.cal
 + [JavaFX FXML Tutorial](https://www.callicoder.com/javafx-fxml-form-gui-tutorial/)
 + [JavaFX Built-in Layout Panes Tutorial](https://www.callicoder.com/javafx-built-in-layout-panes-tutorial/)
 + [JavaFX CSS Tutorial](https://www.callicoder.com/javafx-css-tutorial/)
-+ [Online course] (https://www.udemy.com/complete-beginners-java-tutorial-java-javafx-maven/)
-+ [JavaFX libraries and frameworks] (https://github.com/mhrimaz/AwesomeJavaFX#libraries-tools-and-projects)
++ [Online course](https://www.udemy.com/complete-beginners-java-tutorial-java-javafx-maven/)
++ [JavaFX libraries and frameworks](https://github.com/mhrimaz/AwesomeJavaFX#libraries-tools-and-projects)
 
 ## Contributing Members
 
