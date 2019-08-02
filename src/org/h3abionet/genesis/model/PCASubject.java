@@ -1,8 +1,8 @@
-package genesisprototype.model;
+package org.h3abionet.genesis.model;
 
 /**
- * project genesis2
- * Created by ayyoub on 2019-07-23.
+ *
+ * @author A Salmi
  */
 public class PCASubject {
     // PC values

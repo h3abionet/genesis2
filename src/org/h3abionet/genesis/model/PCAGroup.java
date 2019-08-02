@@ -1,17 +1,17 @@
-package genesisprototype.model;
+package org.h3abionet.genesis.model;
 
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import org.h3abionet.genesis.pca.Icons;
 
 /**
- * project genesis2
- * Created by ayyoub on 2019-07-25.
+ *
+ * @author A Salmi
  */
 public class PCAGroup {
     // Group color
     private Color color;
     // Group icon
-    private Image icon;
+    private Icons icon;
 
     public PCAGroup() {
     }
@@ -24,11 +24,11 @@ public class PCAGroup {
         this.color = color;
     }
 
-    public Image getIcon() {
+    public Icons getIcon() {
         return icon;
     }
 
-    public void setIcon(Image icon) {
+    public void setIcon(Icons icon) {
         this.icon = icon;
     }
 }

@@ -1,4 +1,4 @@
-package genesisprototype.pca;
+package org.h3abionet.genesis.pca;
 
 /**
  * project genesis2

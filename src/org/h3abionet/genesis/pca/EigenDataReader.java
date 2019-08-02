@@ -1,6 +1,6 @@
-package genesisprototype.pca;
+package org.h3abionet.genesis.pca;
 
-import genesisprototype.model.PCASubject;
+import org.h3abionet.genesis.model.PCASubject;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -97,13 +97,11 @@ public class EigenDataReader {
      */
     private static String extractName(String[] input) {
         String[] nameArr = input[0].split(":");
-        String name;
         if (nameArr.length == 1) {//uniquely identified individual
-            name = nameArr[0] + " " + nameArr[0];
+            return String.format("%s %s", nameArr[0], nameArr[0]);
         } else {
-            name = nameArr[0] + " " + nameArr[1];
+            return String.format("%s %s", nameArr[0], nameArr[1]);
         }
-        return name;
     }
 
     /**
@@ -113,7 +111,7 @@ public class EigenDataReader {
      * @param line   the (split) input line
      * @param offset 1 for eigenstrat and 2 for plink
      * @return the array of doubles
-     * @throws NumberFormatException
+     * @throws NumberFormatException parsing number failed
      */
     private static double[] conv(String[] line, int offset) throws NumberFormatException {
         double[] result = new double[line.length - 2];
@@ -128,7 +126,7 @@ public class EigenDataReader {
      * Checks input file for errors
      * @param inputFile input file
      * @return true if file is OK, otherwise throws an exception
-     * @throws EigenDataException
+     * @throws EigenDataException in case of a wrong file format
      */
     private static boolean checkEigenFile(String inputFile) throws EigenDataException {
         // check if file exists
