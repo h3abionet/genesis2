@@ -8,9 +8,12 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+data/
 
 build.xml
 manifest.mf
+
+src/org/h3abionet/genesis/GenesisPrototype.java
 
 *.class
 
