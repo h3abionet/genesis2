@@ -1,7 +1,6 @@
 package org.h3abionet.genesis.model;
 
 import javafx.scene.paint.Color;
-import org.h3abionet.genesis.pca.Icons;
 
 /**
  *

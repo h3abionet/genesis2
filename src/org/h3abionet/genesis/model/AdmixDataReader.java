@@ -1,4 +1,4 @@
-package org.h3abionet.genesis.admix;
+package org.h3abionet.genesis.model;
 
 /**
  * @author A Salmi

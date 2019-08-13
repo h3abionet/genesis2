@@ -1,4 +1,4 @@
-package org.h3abionet.genesis.admix;
+package org.h3abionet.genesis.model;
 
 import java.util.List;
 

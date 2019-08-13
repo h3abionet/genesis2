@@ -1,13 +1,11 @@
-package org.h3abionet.genesis.pca;
-
-import org.h3abionet.genesis.model.PCASubject;
+package org.h3abionet.genesis.model;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class contains the methods needed to convert eigenstrat/Plink input into
@@ -27,7 +25,7 @@ public class EigenDataReader {
      * @return PCASubject list
      * @throws EigenDataException indicates a buggy file
      */
-    public static List<PCASubject> createDataFromEigenInput(String inputFile) throws EigenDataException {
+    public static Map<String, PCASubject> createDataFromEigenInput(String inputFile) throws EigenDataException {
         if (!EigenDataReader.checkEigenFile(inputFile))
             return null;
 
@@ -44,10 +42,10 @@ public class EigenDataReader {
      * Parse PCASubject objects from Eigenstrat file
      *
      * @param inputFile the eigenstrat input file
-     * @return PCASubject list
+     * @return PCASubject map using names as keys
      */
-    private static List<PCASubject> extractDataFromEigenstratFile(String inputFile) {
-        List<PCASubject> pcaList = new ArrayList<>(100);
+    private static Map<String, PCASubject> extractDataFromEigenstratFile(String inputFile) {
+        Map<String, PCASubject> pcaSubjectMap = new ConcurrentHashMap<>(500);
         try {
             Files.lines(Paths.get(inputFile))
                     .map(l -> l.trim().replaceAll(" +", " "))
@@ -57,35 +55,35 @@ public class EigenDataReader {
                         String[] split = l.split("\\s+");
                         //TODO check if lines have different numbers of components
                         PCASubject object = new PCASubject(extractName(split), conv(split, 1));
-                        pcaList.add(object);
+                        pcaSubjectMap.put(object.getName(), object);
                     });
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return pcaList;
+        return pcaSubjectMap;
     }
 
     /**
      * Parse PCASubject objects from Plink file
      *
      * @param inputFile the eigenstrat input file
-     * @return PCASubject list
+     * @return PCASubject map using names as keys
      */
-    private static List<PCASubject> extractDataFromPlinkFile(String inputFile) {
-        List<PCASubject> pcaList = new ArrayList<>(100);
+    private static Map<String, PCASubject> extractDataFromPlinkFile(String inputFile) {
+        Map<String, PCASubject> pcaSubjectMap = new ConcurrentHashMap<>(500);
         try {
             Files.lines(Paths.get(inputFile)).forEach(l -> {
                 String[] split = l.trim().split("\\s+");
                 //TODO check if lines have different numbers of components
                 PCASubject object = new PCASubject(extractName(split), conv(split, 2));
-                pcaList.add(object);
+                pcaSubjectMap.put(object.getName(), object);
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return pcaList;
+        return pcaSubjectMap;
     }
 
     /**
