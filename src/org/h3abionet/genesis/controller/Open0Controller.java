@@ -1,70 +1,102 @@
-/*
- * Copyright 2019 University of the Witwatersrand, Johannesburg on behalf of the Pan-African Bioinformatics Network for H3Africa.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-
 package org.h3abionet.genesis.controller;
 
 
-import org.h3abionet.genesis.Genesis;
+
 import org.h3abionet.genesis.model.Project;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.DialogPane;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-
+import javafx.scene.layout.AnchorPane;
+/*
+ * Copyright (C) 2018 scott
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 /**
  *
- * @author Scott Hazelhurst
+ * @author scott
  */
 public class Open0Controller implements Initializable {
     
+    @FXML private AdmixtureTabController admixtureTabController;
+
+    @FXML private ClustersTabController clustersTabController;
+
+    @FXML private HelpTabController helpTabController;
+
+    @FXML private PcaTabController pcaTabController;
+
+    @FXML private SearchTabController searchTabController;
+
+    @FXML private TableTabController tableTabController;
+
+    @FXML private PCADataInputController pCADataInputController;
+    
+    @FXML private AnchorPane anchorPane;
+    
+    @FXML
+    private Button admixtureButton;
+    @FXML
+    private Button newpca;
+    @FXML
+    private Button newproject;
+    @FXML
+    private Button threeDButton;
+    @FXML
+    private Button dataButton;
+    @FXML
+    private Button settingsButton;
+    @FXML
+    private Button downloadButton;
+    @FXML
+    private Button individualButton;
+    @FXML
+    private Button searchButton;
+    @FXML
+    private Button selectionButton;
+    @FXML
+    private Button cancelButton;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Button fileButton;
      
-    @FXML
-    MenuBar menuBar;
-    
-    @FXML
-    MenuItem newpca;
-    
-    @FXML 
-    AnchorPane  projectAnchor;
-    
     private Project project;
     
+    public AnchorPane getAnchorPane(){
+    return pcaTabController.getAnchorPane();
+    }
+    
+    public ListView getlistViewTableTab(){
+    return tableTabController.listViewTableTab();
+    }
+            
     private VBox projectVBox(ProjectDetailsController control) {
        String proj_name  =  control.getProjectName();
        String fam_name   =  control.getFam();
@@ -82,40 +114,21 @@ public class Open0Controller implements Initializable {
        h.setPadding(new Insets(10,10,10,10));
        v.getChildren().add(h);
        return v;
-    }
+    }   
     
     @FXML
-    private void newProject(ActionEvent event) throws IOException {
-        ProjectDetailsController controller;
-        Stage dialogStage = new Stage();
-        dialogStage.setTitle("New Project details");
-        dialogStage.initModality(Modality.WINDOW_MODAL);
-        Window primaryStage = menuBar.getScene().getWindow();
-        dialogStage.initOwner(primaryStage);
-        controller = new ProjectDetailsController("view/ProjDialogEntry.fxml");
-        Scene scene = new Scene(controller);
-        dialogStage.setScene(scene);
-        controller.setDialogStage(dialogStage);
-        dialogStage.showAndWait();  
-        newpca.setDisable(false);
-        projectAnchor.setVisible(true);
-        projectAnchor.getChildren().add(projectVBox(controller));
-        project = controller.getProject();
-        
+    private void newProject(ActionEvent event) throws IOException{
+    ProjectDetailsController controller = new ProjectDetailsController();
+    controller.setDialogStage();
     }
+    
+    
     @FXML
     private void newPCA(ActionEvent event) throws IOException {
-        Window primaryStage = menuBar.getScene().getWindow();
-        FileChooser fileChooser = new FileChooser();
-        File file = fileChooser.showOpenDialog(primaryStage);
-        project.addPCA(file);
-        
+    pCADataInputController = new PCADataInputController();
+    pCADataInputController.setPcaDialogStage();
     }
-    
-    
      
-
-    
     @FXML
     private void handleKeyInput(final InputEvent event) {
        if (event instanceof KeyEvent) {
@@ -130,11 +143,15 @@ public class Open0Controller implements Initializable {
     private void provideAboutFunctionality() {
         System.out.println("I need help!");
     }
+    
+    public void exit(ActionEvent event){
+    Platform.exit();
+    }
   
     @Override
     public void initialize(java.net.URL arg0, ResourceBundle arg1) {
-     menuBar.setFocusTraversable(true);
-   
-    }   
+        
+    }
+    
     
 }

@@ -1,0 +1,8 @@
+.button:hover{
+    -fx-background-color:white;
+    -fx-text-fill: red;
+}
+
+.button:hover .glyph-icon{
+    -fx-fill: red;
+}
