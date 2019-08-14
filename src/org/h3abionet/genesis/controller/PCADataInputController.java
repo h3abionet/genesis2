@@ -37,7 +37,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.PCAProject;
 
 /**

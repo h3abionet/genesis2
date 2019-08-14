@@ -38,6 +38,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.Fam;
 
 
@@ -98,7 +99,7 @@ public class ProjectDetailsController extends AnchorPane{
      */
     public void setDialogStage() throws IOException{
     System.out.println("genesisprototype.controller.Open0Controller.newProject()");
-    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view/InputData.fxml"));
+    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/InputData.fxml"));
     Parent root1 = (Parent) fxmlLoader.load();
     dialogStage.initModality(Modality.APPLICATION_MODAL);
     dialogStage.setTitle("Genesis 2.0");

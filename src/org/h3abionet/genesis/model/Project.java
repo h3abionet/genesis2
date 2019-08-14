@@ -17,10 +17,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -128,6 +126,7 @@ public class Project {
 //            ArrayList<String> p = pheno.get(Integer.toString(ph));
 //            if (p.size() != 4) { System.out.println(id+" "+p.size()); }
             line = r.readLine();
+     
         }
 
     }
@@ -203,6 +202,7 @@ public class Project {
     });
     return map;
 }
+    
     public Map<String, ArrayList<String>> mergeMapPCA(){ 
     Map<String, ArrayList<String>> mergedMap = mergePhenoFam();
     final_map = new HashMap<>();
