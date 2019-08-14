@@ -8,7 +8,6 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -26,7 +25,7 @@
             </Label>
          </top>
          <bottom>
-            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+            <TabPane prefHeight="100.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
               <tabs>
                 <Tab text="TABLE">
                      <graphic>
@@ -55,7 +54,7 @@
             </TabPane>
          </center>
          <right>
-            <AnchorPane BorderPane.alignment="CENTER">
+            <AnchorPane prefWidth="130.0" BorderPane.alignment="CENTER">
                <children>
                   <TabPane prefHeight="381.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
@@ -64,7 +63,7 @@
                               <fx:include fx:id="clustersTab" source="ClustersTab.fxml" />
                            </content>
                       </Tab>
-                        <Tab text="Search">
+                        <Tab>
                            <graphic>
                               <FontAwesomeIconView glyphName="SEARCH" size="17" />
                            </graphic>
@@ -86,9 +85,9 @@
             </AnchorPane>
          </right>
          <left>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #dedfe0;">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="70.0" style="-fx-background-color: #dedfe0;">
                <children>
-                  <VBox layoutX="5.0" layoutY="3.0" prefHeight="381.0" prefWidth="100.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
+                  <VBox layoutX="5.0" layoutY="3.0" prefHeight="381.0" prefWidth="100.0" spacing="6.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                      <children>
                         <Button fx:id="newproject" mnemonicParsing="false" onAction="#newProject" text="New">
                            <font>
@@ -105,94 +104,56 @@
                               <Font name="System Bold" size="13.0" />
                            </font>
                         </Button>
-                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
-                           <children>
-                              <Button fx:id="threeDButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
-                                 <graphic>
-                                    <FontAwesomeIconView glyphName="CODEPEN" size="17" />
-                                 </graphic>
-                              </Button>
-                              <Button fx:id="dataButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
-                                 <graphic>
-                                    <FontAwesomeIconView glyphName="DATABASE" size="17" />
-                                 </graphic>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                           <opaqueInsets>
-                              <Insets left="5.0" />
-                           </opaqueInsets>
-                        </HBox>
-                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
-                           <children>
-                              <Button fx:id="settingsButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
-                                 <graphic>
-                                    <FontAwesomeIconView glyphName="GEARS" size="17" />
-                                 </graphic>
-                              </Button>
-                              <Button fx:id="downloadButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
-                                 <graphic>
-                                    <FontAwesomeIconView glyphName="DOWNLOAD" size="17" />
-                                 </graphic>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
-                           <children>
-                              <Button fx:id="individualButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
-                                 <graphic>
-                                    <FontAwesomeIconView glyphName="CHILD" size="17" />
-                                 </graphic>
-                              </Button>
-                              <Button fx:id="searchButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
-                                 <graphic>
-                                    <FontAwesomeIconView glyphName="SEARCH" size="17" />
-                                 </graphic>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
-                           <children>
-                              <Button fx:id="selectionButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
-                                 <graphic>
-                                    <FontAwesomeIconView glyphName="OBJECT_GROUP" size="17" />
-                                 </graphic>
-                              </Button>
-                              <Button fx:id="cancelButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#exit" text="Button">
-                                 <graphic>
-                                    <FontAwesomeIconView glyphName="TIMES" size="17" />
-                                 </graphic>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
-                           <children>
-                              <Button fx:id="saveButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false">
-                                 <graphic>
-                                    <FontAwesomeIconView glyphName="SAVE" size="17" />
-                                 </graphic>
-                              </Button>
-                              <Button fx:id="fileButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
-                                 <graphic>
-                                    <FontAwesomeIconView glyphName="FOLDER_OPEN" size="17" />
-                                 </graphic>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
+                        <Button fx:id="threeDButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="CODEPEN" size="17" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="dataButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="DATABASE" size="17" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="settingsButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="GEARS" size="17" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="downloadButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="DOWNLOAD" size="17" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="individualButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="CHILD" size="17" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="searchButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="SEARCH" size="17" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="selectionButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="OBJECT_GROUP" size="17" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="cancelButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#exit" text="Button">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="TIMES" size="17" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="saveButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="SAVE" size="17" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="fileButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="FOLDER_OPEN" size="17" />
+                           </graphic>
+                        </Button>
                      </children>
                   </VBox>
                </children>

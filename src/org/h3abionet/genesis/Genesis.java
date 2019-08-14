@@ -35,14 +35,26 @@ import javafx.stage.Stage;
  */
 public class Genesis extends Application {
     
+    private static Stage pStage;
     
     @Override
     public void start(Stage stage) throws Exception {
+        setPrimaryStage(stage);
+//        pStage = stage;
+        
         Parent root = FXMLLoader.load(getClass().getResource("view/Main.fxml"));
         Scene scene = new Scene(root);
         
         stage.setScene(scene);
         stage.show();
+    }
+    
+    public static Stage getPrimaryStage() {
+        return pStage;
+    }
+
+    private void setPrimaryStage(Stage pStage) {
+        Genesis.pStage = pStage;
     }
 
     /**

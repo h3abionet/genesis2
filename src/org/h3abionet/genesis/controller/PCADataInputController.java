@@ -47,8 +47,10 @@ import org.h3abionet.genesis.model.PCAProject;
 public class PCADataInputController implements Initializable {
     
     
+//    @FXML private Open0Controller open0Controller;
     
-    private final Stage dialogStage= new Stage();
+    private Stage dialogStage;
+    
     private PCAProject project;
 
     private boolean okClicked = false;
@@ -78,8 +80,8 @@ public class PCADataInputController implements Initializable {
     
     public void setPcaDialogStage() throws IOException{
     FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCADataInput.fxml"));
-    System.out.println(Genesis.class.getResource("view/test.fxml"));
     Parent root1 = (Parent) fxmlLoader.load();
+    dialogStage = new Stage();
     dialogStage.initModality(Modality.APPLICATION_MODAL);
     dialogStage.setTitle("Genesis 2.0");
     dialogStage.setScene(new Scene(root1));
@@ -126,9 +128,10 @@ public class PCADataInputController implements Initializable {
 
     @FXML
     void handlePcaEntryOK(ActionEvent event) throws IOException {
- 
+        
         okClicked = true;
- 
+        Genesis.getPrimaryStage().close();
+        
         FXMLLoader  loader =  new FXMLLoader(Genesis.class.getResource("view/Main.fxml"));
         Parent root = (Parent)loader.load();
         Open0Controller open0Controller = loader.getController();
@@ -184,11 +187,13 @@ public class PCADataInputController implements Initializable {
         }
         });
    
-        Stage stage = new Stage();
+        dialogStage = new Stage();
+//        dialogStage.initOwner(Genesis.getPrimaryStage());
+//        System.out.println(Genesis.getPrimaryStage());
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Genesis.class.getResource("css/scatterchart.css").toExternalForm());
-        stage.setScene(scene);
-        stage.show();
+        dialogStage.setScene(scene);
+        dialogStage.show();
         
         closeStage(event);
     }
