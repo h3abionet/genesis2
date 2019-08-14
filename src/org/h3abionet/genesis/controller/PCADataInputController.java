@@ -36,6 +36,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.PCAProject;
 
@@ -77,7 +78,8 @@ public class PCADataInputController implements Initializable {
     private Button entryCancelButton;
     
     public void setPcaDialogStage() throws IOException{
-    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/PCADataInput.fxml"));
+    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCADataInput.fxml"));
+    System.out.println(Genesis.class.getResource("view/test.fxml"));
     Parent root1 = (Parent) fxmlLoader.load();
     dialogStage.initModality(Modality.APPLICATION_MODAL);
     dialogStage.setTitle("Genesis 2.0");
@@ -128,7 +130,7 @@ public class PCADataInputController implements Initializable {
  
         okClicked = true;
  
-        FXMLLoader  loader =  new FXMLLoader(getClass().getResource("/view/Main.fxml"));
+        FXMLLoader  loader =  new FXMLLoader(Genesis.class.getResource("view/Main.fxml"));
         Parent root = (Parent)loader.load();
         Open0Controller open0Controller = loader.getController();
         
@@ -182,15 +184,10 @@ public class PCADataInputController implements Initializable {
         zoomPane.setScaleY(zoomPane.getScaleY() * scaleFactor);
         }
         });
-//        
-//      zoomPane.layoutBoundsProperty().addListener((ObservableValue<? extends Bounds> observable, Bounds oldBounds, Bounds bounds) -> {
-//          zoomPane.setClip(new Rectangle(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight()));
-//        });
-        
-        
+   
         Stage stage = new Stage();
         Scene scene = new Scene(root);
-        scene.getStylesheets().add("/css/scatterchart.css");
+        scene.getStylesheets().add(Genesis.class.getResource("css/scatterchart.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
         
