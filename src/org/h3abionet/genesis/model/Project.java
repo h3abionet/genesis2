@@ -35,6 +35,8 @@ public class Project {
     private int num_inds;
     private String proj_name;
 
+     HashMap<> group[]; //  group[i] is a hashmap describing who belongs to each group found in column i
+	// e.g. group[3].get("YRI")  which individuals have a YRI in column 3
 
     
     public Project() {
@@ -74,7 +76,8 @@ public class Project {
     
   
     void setPheno(String pheno_name) throws FileNotFoundException, IOException {
-        pheno = new HashMap<>();
+        pheno = new HashMap<>();  // for each individual what their phenotypes are
+	
         BufferedReader r = openFile(pheno_name);
         String line = r.readLine();
         String fields [] = line.split("\\s+");
@@ -88,10 +91,18 @@ public class Project {
            else 
                pheno_cols[i]=Integer.toString(i);
         if (header) line = r.readLine();
+	group = new HashMap<>[num_phenos];    
         while (line !=null) {
             fields  = line.split("\\s+");
             String id = fields[0]+":"+fields[1];
-            pheno.put(id, Arrays.copyOfRange(fields,2,2+num_phenos));
+            curr_phenos = Arrays.copyOfRange(fields,2,2+num_phenos);
+	    for (column = 0; column< curr_phenos.lenth; column++) {
+		 p = curr_phenos[column];
+		 // if p is currently a key in group[column] then add 
+		 // id to group[column].get(p)
+		 // otherwise add a new entry to group[column]
+	    }
+            pheno.put(id, curr_phenos);
             String p[] = pheno.get(id);
             if (p.length != 4) { System.out.println(id+" "+p.length); }
             line = r.readLine();
