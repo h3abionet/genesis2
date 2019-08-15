@@ -16,12 +16,8 @@
 package org.h3abionet.genesis.model;
 
 /**
- *
  * @author Scott Hazelhurst
  */
-
-
-
 
 
 public class Fam {
@@ -30,16 +26,13 @@ public class Fam {
     int mat;
     int sex;
     String phe;
-    
-    /**
-     * 
+
+    /*
      * @param pat: ID of father
      * @param mat: ID of mother
      * @param sex: sex of individual
      * @param phe: phenotype
      */
-    
-
     public Fam(String s) {
        String fields [] = s.split("\\s");
        fid = fields[0];

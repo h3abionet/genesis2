@@ -8,10 +8,19 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+<<<<<<< HEAD
+=======
+data/
+>>>>>>> ayyoub-branch
 
 build.xml
 manifest.mf
 
+<<<<<<< HEAD
+=======
+src/org/h3abionet/genesis/GenesisPrototype.java
+
+>>>>>>> ayyoub-branch
 *.class
 
 # Mobile Tools for Java (J2ME)
@@ -72,4 +81,8 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 
+<<<<<<< HEAD
 # Created by .ignore support plugin (hsz.mobi)
+=======
+# Created by .ignore support plugin (hsz.mobi)
+>>>>>>> ayyoub-branch

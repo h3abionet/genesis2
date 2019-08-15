@@ -16,7 +16,6 @@
 package org.h3abionet.genesis.model;
 
 /**
- *
  * @author scott
  */
 public abstract class Graph {
@@ -26,11 +25,6 @@ public abstract class Graph {
     public String caption;
     protected int margin[];
     protected int size[];
-    
-    
-    
- 
-    
 }
     
     
