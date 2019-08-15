@@ -94,14 +94,14 @@
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="newpca" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newPCA" text="PCA">
+                        <Button fx:id="newpca" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newPCA" prefHeight="25.0" prefWidth="42.0" text="PCA">
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="System Bold" size="12.0" />
                            </font>
                         </Button>
                         <Button fx:id="admixtureButton" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" text="ADMIX">
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="System Bold" size="12.0" />
                            </font>
                         </Button>
                         <Button fx:id="threeDButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
