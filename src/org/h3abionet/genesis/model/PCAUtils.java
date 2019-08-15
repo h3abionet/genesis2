@@ -1,4 +1,6 @@
-package org.h3abionet.genesis.model;
+package org.h3abionet.genesis.pca;
+
+import org.h3abionet.genesis.model.PCASubject;
 
 import java.util.Map;
 import java.util.Optional;
