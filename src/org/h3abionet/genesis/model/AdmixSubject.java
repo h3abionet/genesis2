@@ -1,5 +1,6 @@
 package org.h3abionet.genesis.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,6 +10,13 @@ public class AdmixSubject {
     private String name;
     private List<Double> ratios;
     private String[] phenotypeData;
+
+    public AdmixSubject(String[] ratios) {
+        this.ratios = new ArrayList<>(ratios.length);
+        for (String s : ratios) {
+            this.ratios.add(Double.valueOf(s));
+        }
+    }
 
     public String getName() {
         return name;

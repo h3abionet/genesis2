@@ -27,14 +27,12 @@ public class Fam {
     int sex;
     String phe;
 
-    /**
+    /*
      * @param pat: ID of father
      * @param mat: ID of mother
      * @param sex: sex of individual
      * @param phe: phenotype
      */
-
-
     public Fam(String s) {
         String fields[] = s.split("\\s");
         fid = fields[0];
@@ -45,4 +43,3 @@ public class Fam {
         phe = fields[5];
     }
 }
-
