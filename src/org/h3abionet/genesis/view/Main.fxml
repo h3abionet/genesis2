@@ -6,6 +6,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
@@ -32,24 +34,26 @@
                         <FontAwesomeIconView glyphName="TABLE" size="17" />
                      </graphic>
                      <content>
-                        <fx:include fx:id="tableTab" source="TableTab.fxml" />
+                        <TableView fx:id="tableTab" prefHeight="200.0" prefWidth="200.0">
+                          <columns>
+                            <TableColumn prefWidth="75.0" text="C1" />
+                            <TableColumn prefWidth="75.0" text="C2" />
+                          </columns>
+                        </TableView>
                      </content>
                 </Tab>
               </tabs>
             </TabPane>
          </bottom>
          <center>
-            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+            <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
               <tabs>
-                <Tab text="PCA">
+                <Tab fx:id="pcaTab" text="PCA">
                      <content>
-                        <fx:include fx:id="pcaTab" source="PcaTab.fxml" />
+                        <AnchorPane fx:id="pcaAnchorPane" prefHeight="200.0" prefWidth="200.0" />
                      </content>
                   </Tab>
-                <Tab text="ADMIX">
-                     <content>
-                        <fx:include fx:id="admixtureTab" source="AdmixtureTab.fxml" />
-                     </content></Tab>
+                <Tab fx:id="admixtureTab" text="ADMIX" />
               </tabs>
             </TabPane>
          </center>
@@ -58,26 +62,16 @@
                <children>
                   <TabPane prefHeight="381.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
-                      <Tab text="Clusters">
-                           <content>
-                              <fx:include fx:id="clustersTab" source="ClustersTab.fxml" />
-                           </content>
-                      </Tab>
+                      <Tab text="Clusters" />
                         <Tab>
                            <graphic>
                               <FontAwesomeIconView glyphName="SEARCH" size="17" />
                            </graphic>
-                           <content>
-                              <fx:include fx:id="searchTab" source="SearchTab.fxml" />
-                           </content>
                         </Tab>
                       <Tab>
                            <graphic>
                               <FontAwesomeIconView glyphName="QUESTION_CIRCLE" size="17" text="" />
                            </graphic>
-                           <content>
-                              <fx:include fx:id="helpTab" source="HelpTab.fxml" />
-                           </content>
                       </Tab>
                     </tabs>
                   </TabPane>
@@ -99,7 +93,7 @@
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="admixtureButton" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" text="ADMIX">
+                        <Button fx:id="newadmixture" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" text="ADMIX">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
@@ -109,7 +103,7 @@
                               <FontAwesomeIconView glyphName="CODEPEN" size="17" />
                            </graphic>
                         </Button>
-                        <Button fx:id="dataButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
+                        <Button fx:id="dataButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#loadData" text="Button">
                            <graphic>
                               <FontAwesomeIconView glyphName="DATABASE" size="17" />
                            </graphic>

@@ -11,8 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="300.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.IndividualDetailsController">
    <children>
       <AnchorPane style="-fx-background-color: #ebedf0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -20,7 +19,7 @@
                <children>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ebedf0;">
                      <children>
-                        <Label text="Label" textAlignment="CENTER" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
+                        <Label fx:id="id" text="Individual Details" textAlignment="CENTER" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
                            <font>
                               <Font size="14.0" />
                            </font>
@@ -32,7 +31,7 @@
                         <Insets />
                      </VBox.margin>
                      <children>
-                        <Label prefHeight="87.0" prefWidth="220.0" text="ID" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0" />
+                        <Label fx:id="id" prefHeight="87.0" prefWidth="220.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0" />
                      </children>
                      <effect>
                         <DropShadow height="5.0" radius="6.0" />
@@ -48,7 +47,7 @@
                   </Label>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ebedf0;">
                      <children>
-                        <Label prefHeight="121.0" prefWidth="220.0" AnchorPane.leftAnchor="0.0">
+                        <Label fx:id="phenoDetails" prefHeight="121.0" prefWidth="220.0" AnchorPane.leftAnchor="0.0">
                            <effect>
                               <DropShadow />
                            </effect>
@@ -92,7 +91,7 @@
                      <children>
                         <HBox prefHeight="38.0" prefWidth="200.0" spacing="80.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0">
                            <children>
-                              <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="76.0" text="Done" />
+                              <Button fx:id="okButton" mnemonicParsing="false" onAction="#entryOkButton" prefHeight="25.0" prefWidth="76.0" text="OK" />
                               <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Cancel" />
                            </children>
                         </HBox>

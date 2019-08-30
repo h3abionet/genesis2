@@ -15,39 +15,78 @@
  */
 package org.h3abionet.genesis.model;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  *
  * @author Scott Hazelhurst
  */
 
-
-
-
-
 public class Fam {
+    Project project;
+    HashMap<String, String[]> famFile;
+    static List<String[]> listOfRows;
+    String famName;
     String fid, iid;
-    int pat;
-    int mat;
-    int sex;
+    String pat;
+    String mat;
+    String sex;
     String phe;
     
-    /**
-     * 
-     * @param pat: ID of father
-     * @param mat: ID of mother
-     * @param sex: sex of individual
-     * @param phe: phenotype
-     */
-    
 
-    public Fam(String s) {
-       String fields [] = s.split("\\s");
-       fid = fields[0];
-       iid = fields[1];
-       pat = Integer.parseInt(fields[2]);
-       mat = Integer.parseInt(fields[3]);
-       sex = Integer.parseInt(fields[4]);
-       phe = fields[5];
+    public Fam(String famName) throws IOException {
+        setFam(famName);
     }
+
+    Fam() {
+
+    }
+
+    public void setFam (String famName) throws FileNotFoundException, IOException {
+        BufferedReader r;
+        r = openFile(famName);
+        famFile = new HashMap<>();
+        listOfRows = new ArrayList<>();
+        String l = r.readLine();
+        String  fields [];
+        while (l != null) {
+            fields = l.split("\\s+");
+            fid = fields[0];
+            iid = fields[1];
+            pat = fields[2];
+            mat = fields[3];
+            sex = fields[4];
+            phe = fields[5];     
+            String ids = fid+":"+iid;
+            String rows[] = {ids,pat,mat,sex,phe};
+            listOfRows.add(rows); 
+            String other_cols[] = {pat,mat,sex,phe};
+            famFile.put(ids, other_cols);
+            l = r.readLine();      
+        }
+        
+    }
+    
+    public void getFam(){
+        for (int i = 0; i < listOfRows.size(); i++){
+            System.out.println(Arrays.asList(listOfRows.get(i)));
+        }
+    }
+    
+    public BufferedReader openFile(String name) throws FileNotFoundException  {
+
+	InputStreamReader is = new InputStreamReader(new FileInputStream(name));
+	BufferedReader       dinp  = new BufferedReader(is);
+	return dinp;
+   }
+
 }
 

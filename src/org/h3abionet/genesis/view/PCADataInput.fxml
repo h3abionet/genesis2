@@ -4,14 +4,13 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.PCADataInputController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.PCADataInputController">
    <children>
       <VBox layoutX="30.0" layoutY="30.0" prefHeight="400.0" prefWidth="600.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -23,48 +22,22 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <AnchorPane style="-fx-background-color: #e3e2de;">
+            <AnchorPane prefHeight="152.0" prefWidth="500.0" style="-fx-background-color: #e3e2de;">
                <children>
-                  <HBox prefHeight="100.0" prefWidth="150.0" spacing="60.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="100.0">
+                  <HBox layoutX="54.0" layoutY="14.0" prefHeight="42.0" prefWidth="385.0" spacing="60.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="60.0">
                      <children>
-                        <Label prefHeight="20.0" prefWidth="124.0" text="Project name">
+                        <Label prefHeight="20.0" prefWidth="97.0" text="pca file">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="pca_proj_name" onAction="#handlePcaProjectName" prefHeight="25.0" prefWidth="261.0" />
+                        <Button fx:id="pca_evec_fname" alignment="CENTER" layoutX="10.0" layoutY="30.0" mnemonicParsing="false" onAction="#handlePcaEvecFname" prefHeight="27.0" prefWidth="239.0" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" top="5.0" />
                      </padding>
                   </HBox>
-                  <HBox layoutY="64.0" prefHeight="100.0" prefWidth="150.0" spacing="100.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="100.0">
-                     <children>
-                        <Label prefHeight="20.0" prefWidth="88.0" text="Pheno  file">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                        <Button fx:id="pca_pheno_fname" alignment="CENTER" layoutX="10.0" layoutY="30.0" mnemonicParsing="false" onAction="#handlePcaPhenoFname" prefHeight="27.0" prefWidth="270.0" />
-                     </children>
-                     <padding>
-                        <Insets bottom="5.0" top="5.0" />
-                     </padding>
-                  </HBox>
-                  <HBox layoutY="128.0" prefHeight="100.0" prefWidth="150.0" spacing="100.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="100.0">
-                     <children>
-                        <Label prefHeight="20.0" prefWidth="97.0" text="Evec file">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                        <Button fx:id="pca_evec_fname" alignment="CENTER" layoutX="10.0" layoutY="30.0" mnemonicParsing="false" onAction="#handlePcaEvecFname" prefHeight="27.0" prefWidth="279.0" />
-                     </children>
-                     <padding>
-                        <Insets bottom="5.0" top="5.0" />
-                     </padding>
-                  </HBox>
-                  <HBox layoutY="192.0" prefHeight="100.0" prefWidth="400.0" spacing="130.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="100.0">
+                  <HBox layoutX="53.0" layoutY="49.0" prefHeight="42.0" prefWidth="390.0" spacing="120.0">
                      <children>
                         <Label prefHeight="17.0" prefWidth="53.0" text="PCA" />
                         <ComboBox fx:id="pcaComboButton1" prefHeight="25.0" prefWidth="82.0" />
@@ -79,17 +52,17 @@
                   <DropShadow height="5.0" radius="6.0" />
                </effect>
             </AnchorPane>
-            <HBox layoutX="10.0" layoutY="227.0" prefHeight="100.0" prefWidth="200.0" spacing="100.0">
+            <HBox prefHeight="39.0" prefWidth="251.0" spacing="100.0">
                <children>
                   <Button fx:id="entryOKButton" mnemonicParsing="false" onAction="#handlePcaEntryOK" prefHeight="25.0" prefWidth="62.0" text="OK" />
                   <Button fx:id="entryCancelButton" layoutX="62.0" layoutY="10.0" mnemonicParsing="false" onAction="#handlePcaEntryCancel" prefHeight="25.0" prefWidth="76.0" text="Cancel" />
                </children>
-               <VBox.margin>
-                  <Insets bottom="20.0" left="200.0" right="200.0" />
-               </VBox.margin>
                <padding>
-                  <Insets top="5.0" />
+                  <Insets bottom="10.0" top="5.0" />
                </padding>
+               <VBox.margin>
+                  <Insets left="205.0" right="60.0" />
+               </VBox.margin>
             </HBox>
          </children>
       </VBox>

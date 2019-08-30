@@ -62,14 +62,14 @@
                               </Separator>
                               <VBox prefHeight="115.0" prefWidth="431.0" spacing="5.0">
                                  <children>
-                                    <Button fx:id="headingFontButton" mnemonicParsing="false" onAction="#setFont" text="Select Heading Font">
+                                    <Button fx:id="headingFontButton" mnemonicParsing="false" text="Select Heading Font">
                                        <VBox.margin>
                                           <Insets />
                                        </VBox.margin>
                                     </Button>
-                                    <Button fx:id="keyFontButton" mnemonicParsing="false" onAction="#setFont" text="Select Key Font" />
-                                    <Button fx:id="scaleFontButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setFont" text="Select Scale Font" />
-                                    <Button fx:id="axisLabelFont" layoutX="10.0" layoutY="35.0" mnemonicParsing="false" onAction="#setFont" text="Select Axis Label Font" />
+                                    <Button fx:id="keyFontButton" mnemonicParsing="false" text="Select Key Font" />
+                                    <Button fx:id="scaleFontButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Select Scale Font" />
+                                    <Button fx:id="axisLabelFont" layoutX="10.0" layoutY="35.0" mnemonicParsing="false" text="Select Axis Label Font" />
                                     <ChoiceBox prefWidth="150.0" />
                                  </children>
                               </VBox>
@@ -84,10 +84,10 @@
                <children>
                   <HBox layoutX="316.0" layoutY="14.0" prefHeight="58.0" prefWidth="284.0" spacing="20.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="316.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                      <children>
-                        <Button fx:id="backButton2" mnemonicParsing="false" onAction="#backButton" text="&lt; Back" />
+                        <Button fx:id="backButton2" mnemonicParsing="false" text="&lt; Back" />
                         <Button fx:id="nextButton2" mnemonicParsing="false" text="Next &gt;" />
-                        <Button fx:id="cancelButton2" mnemonicParsing="false" onAction="#cancelButton" text="Cancel" />
-                        <Button fx:id="finishButton2" mnemonicParsing="false" onAction="#finishButton" text="Finish" />
+                        <Button fx:id="cancelButton2" mnemonicParsing="false" text="Cancel" />
+                        <Button fx:id="finishButton2" mnemonicParsing="false" text="Finish" />
                      </children>
                   </HBox>
                </children>
