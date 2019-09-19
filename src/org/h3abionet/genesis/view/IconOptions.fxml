@@ -11,8 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="250.0" prefWidth="200.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171">
+<AnchorPane id="AnchorPane" prefHeight="250.0" prefWidth="200.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="org.h3abionet.genesis.controller.IconOptionsController">
    <children>
       <VBox prefHeight="250.0" prefWidth="200.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -30,24 +29,24 @@
             </AnchorPane>
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Spinner prefHeight="32.0" prefWidth="150.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0" />
+                  <Spinner fx:id="iconSizeSpinner1" prefHeight="32.0" prefWidth="150.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Spinner prefHeight="32.0" prefWidth="150.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0" />
+                  <Spinner fx:id="iconSizeSpinner2" prefHeight="32.0" prefWidth="150.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
                   <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: #ffffff;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <ImageView fitHeight="26.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="iconDisplay" fitHeight="26.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" top="5.0" />
                            </HBox.margin>
                         </ImageView>
-                        <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="89.0" text="Select Colour">
+                        <Button fx:id="btnSelectColor" mnemonicParsing="false" prefHeight="30.0" prefWidth="89.0" text="Select Colour">
                            <HBox.margin>
                               <Insets bottom="5.0" top="5.0" />
                            </HBox.margin>
@@ -63,8 +62,8 @@
                <children>
                   <HBox prefHeight="100.0" prefWidth="200.0" spacing="40.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
                      <children>
-                        <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="56.0" text="Done" />
-                        <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="62.0" text="Cancel" />
+                        <Button fx:id="btnOK" mnemonicParsing="false" prefHeight="25.0" prefWidth="56.0" text="OK" />
+                        <Button fx:id="btnCancel" mnemonicParsing="false" prefHeight="25.0" prefWidth="62.0" text="Cancel" />
                      </children>
                   </HBox>
                </children>

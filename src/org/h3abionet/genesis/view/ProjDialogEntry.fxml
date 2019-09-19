@@ -31,7 +31,7 @@
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="proj_name" onAction="#handleProjectName" prefHeight="25.0" prefWidth="250.0" />
+                        <TextField fx:id="proj_name" prefHeight="25.0" prefWidth="250.0" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" top="5.0" />

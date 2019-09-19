@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-
 package org.h3abionet.genesis;
 
 import javafx.application.Application;
@@ -23,6 +20,9 @@ import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 /**
@@ -30,27 +30,35 @@ import javafx.stage.Stage;
  * @author scott
  */
 public class Genesis extends Application {
-    
-    private static Stage pStage;
-    
+
     @Override
     public void start(Stage stage) throws Exception {
-        setPrimaryStage(stage);
-//        pStage = stage;
+        
+        shutdownProgram(stage);
         
         Parent root = FXMLLoader.load(getClass().getResource("view/Main.fxml"));
         Scene scene = new Scene(root);
-        
+
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.H) {
+                System.out.println("Please help");
+            }
+        });
+
         stage.setScene(scene);
         stage.show();
     }
-    
-    public static Stage getPrimaryStage() {
-        return pStage;
-    }
 
-    private void setPrimaryStage(Stage pStage) {
-        Genesis.pStage = pStage;
+    private void shutdownProgram(Stage mainStage) {
+        Alert alert = new Alert(Alert.AlertType.NONE, "Do you want to close the program?", ButtonType.YES, ButtonType.NO);
+        mainStage.setOnCloseRequest(evt -> {
+            if (alert.showAndWait().get() == ButtonType.YES){
+            mainStage.close();
+            }else{
+            evt.consume();
+            }
+        });
+        
     }
 
     /**
@@ -59,6 +67,5 @@ public class Genesis extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
-    
+
 }

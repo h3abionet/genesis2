@@ -31,25 +31,43 @@ import java.util.List;
  */
 
 public class Fam {
+
+    /**
+     *
+     */
     Project project;
-    HashMap<String, String[]> famFile;
-    static List<String[]> listOfRows;
+    HashMap<String, String[]> famFile; //Hash map to store fam ids as keys and array of other fields as values 
+    static List<String[]> listOfRows; //ArrayList to store arrays of rows in the fam file. 
     String famName;
-    String fid, iid;
+    String fid;
+    String iid;
     String pat;
     String mat;
     String sex;
     String phe;
     
-
+    /**
+     *
+     * @param famName
+     * @throws IOException
+     */
     public Fam(String famName) throws IOException {
         setFam(famName);
     }
 
+    /**
+     *
+     */
     Fam() {
 
     }
 
+    /**
+     *
+     * @param famName
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public void setFam (String famName) throws FileNotFoundException, IOException {
         BufferedReader r;
         r = openFile(famName);
@@ -75,12 +93,21 @@ public class Fam {
         
     }
     
+    /**
+     *
+     */
     public void getFam(){
         for (int i = 0; i < listOfRows.size(); i++){
             System.out.println(Arrays.asList(listOfRows.get(i)));
         }
     }
     
+    /**
+     *
+     * @param name
+     * @return
+     * @throws FileNotFoundException
+     */
     public BufferedReader openFile(String name) throws FileNotFoundException  {
 
 	InputStreamReader is = new InputStreamReader(new FileInputStream(name));

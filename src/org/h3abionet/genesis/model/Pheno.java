@@ -20,22 +20,58 @@ import java.util.List;
  */
 public class Pheno {
     
+    /**
+     *
+     */
     Project project;
+
+    /**
+     *
+     */
     static HashMap<String, String[]> pheno;
+
+    /**
+     *
+     */
     static List<String[]> listOfows;
+
+    /**
+     *
+     */
     String pheno_cols[];
+
+    /**
+     *
+     */
     String phenoName;
+
+    /**
+     *
+     */
     static int num_phenos;
 
+    /**
+     *
+     * @param phenoName
+     * @throws IOException
+     */
     public Pheno(String phenoName) throws IOException {     
         setPheno(phenoName);
     }
 
+    /**
+     *
+     */
     Pheno() {
 
     }
 
-
+    /**
+     *
+     * @param phenoName
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     private void setPheno(String phenoName ) throws FileNotFoundException, IOException {
         pheno = new HashMap<>();
         listOfows = new ArrayList<>();
@@ -66,14 +102,28 @@ public class Pheno {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public int getNum_phenos() {
         return num_phenos;
     }
     
+    /**
+     *
+     * @return
+     */
     public HashMap<String, String[]> getPheno(){
         return pheno;
     }
     
+    /**
+     *
+     * @param a
+     * @param b
+     * @return
+     */
     public static String[] combine(String[] a, String[] b){
         int length = a.length + b.length;
         String[] result = new String[length];
@@ -82,6 +132,12 @@ public class Pheno {
         return result;
     }
     
+    /**
+     *
+     * @param name
+     * @return
+     * @throws FileNotFoundException
+     */
     public BufferedReader openFile(String name) throws FileNotFoundException  {
 
 	InputStreamReader is = new InputStreamReader(new FileInputStream(name));

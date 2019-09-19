@@ -2,8 +2,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -19,10 +20,13 @@
                <children>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ebedf0;">
                      <children>
-                        <Label fx:id="id" text="Individual Details" textAlignment="CENTER" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
+                        <Label contentDisplay="CENTER" text="Individual Details" textAlignment="CENTER" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
                            <font>
                               <Font size="14.0" />
                            </font>
+                           <padding>
+                              <Insets left="60.0" />
+                           </padding>
                         </Label>
                      </children>
                   </AnchorPane>
@@ -31,7 +35,7 @@
                         <Insets />
                      </VBox.margin>
                      <children>
-                        <Label fx:id="id" prefHeight="87.0" prefWidth="220.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0" />
+                        <Label fx:id="pcaLabel" contentDisplay="CENTER" prefHeight="87.0" prefWidth="220.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0" />
                      </children>
                      <effect>
                         <DropShadow height="5.0" radius="6.0" />
@@ -47,7 +51,7 @@
                   </Label>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ebedf0;">
                      <children>
-                        <Label fx:id="phenoDetails" prefHeight="121.0" prefWidth="220.0" AnchorPane.leftAnchor="0.0">
+                        <Label fx:id="phenoLabel" prefHeight="121.0" prefWidth="220.0" AnchorPane.leftAnchor="0.0">
                            <effect>
                               <DropShadow />
                            </effect>
@@ -64,9 +68,13 @@
                      <children>
                         <VBox prefHeight="200.0" prefWidth="300.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <CheckBox mnemonicParsing="false" text="Hide this individual" />
-                              <CheckBox mnemonicParsing="false" text="Place this individual on top" />
-                              <CheckBox mnemonicParsing="false" text="Clear all icon data specific to this individual" />
+                              <RadioButton fx:id="hideRadioBtn" mnemonicParsing="false" onAction="#getClickedRadioBtn" text="Hide this individual">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="individualGroup" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton fx:id="topRadioBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#getClickedRadioBtn" text="Place this individual on top" toggleGroup="$individualGroup" />
+                              <RadioButton fx:id="clearRadioBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#getClickedRadioBtn" text="Clear all icon data specific to this individual" toggleGroup="$individualGroup" />
                            </children>
                         </VBox>
                      </children>
@@ -78,8 +86,8 @@
                      <children>
                         <HBox prefHeight="60.0" prefWidth="200.0" spacing="80.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0">
                            <children>
-                              <ImageView fitHeight="22.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true" />
-                              <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="102.0" text="Change Icon" />
+                              <ImageView fx:id="iconDisplay" fitHeight="22.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true" />
+                              <Button fx:id="btnChangeIcon" mnemonicParsing="false" onAction="#changeIcon" prefHeight="25.0" prefWidth="102.0" text="Change Icon" />
                            </children>
                         </HBox>
                      </children>
@@ -91,8 +99,8 @@
                      <children>
                         <HBox prefHeight="38.0" prefWidth="200.0" spacing="80.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0">
                            <children>
-                              <Button fx:id="okButton" mnemonicParsing="false" onAction="#entryOkButton" prefHeight="25.0" prefWidth="76.0" text="OK" />
-                              <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Cancel" />
+                              <Button fx:id="btnOK" mnemonicParsing="false" onAction="#entryOkButton" prefHeight="25.0" prefWidth="76.0" text="OK" />
+                              <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#entryCancelButton" prefHeight="25.0" prefWidth="81.0" text="Cancel" />
                            </children>
                         </HBox>
                      </children>

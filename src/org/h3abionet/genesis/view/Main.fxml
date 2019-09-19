@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.Open0Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="700.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.Open0Controller">
    <children>
       <BorderPane layoutX="144.0" layoutY="53.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -46,44 +46,21 @@
             </TabPane>
          </bottom>
          <center>
-            <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-              <tabs>
-                <Tab fx:id="pcaTab" text="PCA">
-                     <content>
-                        <AnchorPane fx:id="pcaAnchorPane" prefHeight="200.0" prefWidth="200.0" />
-                     </content>
-                  </Tab>
-                <Tab fx:id="admixtureTab" text="ADMIX" />
-              </tabs>
-            </TabPane>
+            <TabPane fx:id="tabPane" prefHeight="481.0" prefWidth="716.0" style="-fx-border-color: #bdbbbb; -fx-border-width: 1px;" BorderPane.alignment="CENTER" />
          </center>
          <right>
-            <AnchorPane prefWidth="130.0" BorderPane.alignment="CENTER">
-               <children>
-                  <TabPane prefHeight="381.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <tabs>
-                      <Tab text="Clusters" />
-                        <Tab>
-                           <graphic>
-                              <FontAwesomeIconView glyphName="SEARCH" size="17" />
-                           </graphic>
-                        </Tab>
-                      <Tab>
-                           <graphic>
-                              <FontAwesomeIconView glyphName="QUESTION_CIRCLE" size="17" text="" />
-                           </graphic>
-                      </Tab>
-                    </tabs>
-                  </TabPane>
-               </children>
+            <AnchorPane prefHeight="481.0" prefWidth="8.0" style="-fx-background-color: #dedfe0; -fx-border-color: #bdbbbb; -fx-border-width: 0.5px;" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
             </AnchorPane>
          </right>
          <left>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="70.0" style="-fx-background-color: #dedfe0;">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="70.0" style="-fx-background-color: #dedfe0; -fx-border-color: #bdbbbb; -fx-border-width: 0.5px;">
                <children>
-                  <VBox layoutX="5.0" layoutY="3.0" prefHeight="381.0" prefWidth="100.0" spacing="6.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+                  <VBox layoutX="5.0" layoutY="3.0" prefHeight="381.0" prefWidth="100.0" spacing="6.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                      <children>
-                        <Button fx:id="newproject" mnemonicParsing="false" onAction="#newProject" text="New">
+                        <Button fx:id="newproject" mnemonicParsing="false" onAction="#newProject" style="-fx-border-width: 0.5px; -fx-border-color: #000000; -fx-border-radius: 5;" text="New">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
@@ -113,7 +90,7 @@
                               <FontAwesomeIconView glyphName="GEARS" size="17" />
                            </graphic>
                         </Button>
-                        <Button fx:id="downloadButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
+                        <Button fx:id="downloadButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#saveChart" text="Button">
                            <graphic>
                               <FontAwesomeIconView glyphName="DOWNLOAD" size="17" />
                            </graphic>
@@ -133,7 +110,7 @@
                               <FontAwesomeIconView glyphName="OBJECT_GROUP" size="17" />
                            </graphic>
                         </Button>
-                        <Button fx:id="cancelButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#exit" text="Button">
+                        <Button fx:id="cancelButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#closeProgram" text="Button">
                            <graphic>
                               <FontAwesomeIconView glyphName="TIMES" size="17" />
                            </graphic>
@@ -146,6 +123,11 @@
                         <Button fx:id="fileButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
                            <graphic>
                               <FontAwesomeIconView glyphName="FOLDER_OPEN" size="17" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="helpButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" layoutX="10.0" layoutY="415.0" mnemonicParsing="false" onAction="#help" text="Button">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="QUESTION_CIRCLE" size="17" />
                            </graphic>
                         </Button>
                      </children>
