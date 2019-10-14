@@ -33,6 +33,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -57,10 +58,10 @@ import org.h3abionet.genesis.Genesis;
  */
 /**
  *
- * @author scott
- * This is the main controller
+ * @author scott This is the main controller
  */
 public class Open0Controller implements Initializable {
+
     @FXML
     private PCADataInputController pCADataInputController;
     @FXML
@@ -99,7 +100,7 @@ public class Open0Controller implements Initializable {
     private Button fileButton;
     @FXML
     private Button helpButton;
-    
+
     private ProjectDetailsController projectDetailsController;
     private Project project;
     private Tab pcaTab;
@@ -109,7 +110,7 @@ public class Open0Controller implements Initializable {
     @FXML
     private void newProject(ActionEvent event) throws IOException {
         projectDetailsController.loadProjDialogEntry();
-        
+
     }
 
     @FXML
@@ -172,6 +173,8 @@ public class Open0Controller implements Initializable {
 
     private void addChart(PCADataInputController controller) {
         chart = controller.getChart();
+        chart.getStylesheets().add(Genesis.class.getResource("css/scatterchart.css").toExternalForm());
+        
         if (chart != null) {
             String xAxisLabel = chart.getXAxis().getLabel();
             String yAxisLabel = chart.getYAxis().getLabel();
@@ -234,7 +237,7 @@ public class Open0Controller implements Initializable {
             }
             tabPane.getSelectionModel().selectedIndexProperty().addListener((e, o, n) -> {
                 System.out.println("Changed to " + n);
-                
+
             });
 
         } else {

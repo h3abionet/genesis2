@@ -34,7 +34,39 @@ public class IndividualDetailsController implements Initializable {
 
     private ScatterChart<Number, Number> chart;
     private Open0Controller open0Controller;
+    
+    private static String iconSize;
+    private static String iconColor;
+    private static String iconType;
 
+    public void setIconSize(String iconSize) {
+        this.iconSize = iconSize;
+        System.out.println("Icon_size is "+iconSize);
+    }
+
+    public void setIconColor(String iconColor) {
+        this.iconColor = iconColor;
+        System.out.println("Icon Color is "+iconColor);
+    }
+
+    public void setIconType(String iconType) {
+        this.iconType = iconType;
+        System.out.println("Icon type is"+ iconType);
+    }
+
+    public String getIconSize() {
+        return iconSize;
+    }
+
+    public String getIconColor() {
+        return iconColor;
+    }
+
+    public String getIconType() {
+        return iconType;
+    }
+    
+    
     @FXML
     private Label pcaLabel;
 
@@ -111,6 +143,8 @@ public class IndividualDetailsController implements Initializable {
 
     @FXML
     private void entryOkButton(ActionEvent event) {
+        System.out.println(iconColor);
+        System.out.println(iconSize);
         for (XYChart.Series<Number, Number> series : chart.getData()) {
             for (XYChart.Data<Number, Number> data : series.getData()) {
                 if (hideRadioBtnClicked) {
@@ -119,7 +153,9 @@ public class IndividualDetailsController implements Initializable {
                     });
                 } else if (topRadioBtnClicked) {
                     data.getNode().setOnMouseClicked(e -> {
-                        data.getNode().setStyle("-fx-background-color:Red;-fx-border-color:black; -fx-padding:3px;");
+                        data.getNode().lookup(".chart-symbol").setStyle("-fx-shape: \"M5,0 L10,9 L5,18 L0,9 Z\";"
+                                + "-fx-background-color: #"+iconColor+";"
+                                + "-fx-padding: "+iconSize+"px;");
                         data.getNode().toFront();
                     });
                 } else if (clearRadioBtnClicked) {

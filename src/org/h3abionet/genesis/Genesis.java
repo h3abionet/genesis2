@@ -38,6 +38,7 @@ public class Genesis extends Application {
         
         Parent root = FXMLLoader.load(getClass().getResource("view/Main.fxml"));
         Scene scene = new Scene(root);
+        scene.getStylesheets().add(Genesis.class.getResource("css/scatterchart.css").toExternalForm());
 
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.H) {
