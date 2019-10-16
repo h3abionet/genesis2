@@ -49,6 +49,7 @@ public class PCADataInputController implements Initializable {
     private static String pca_fname_s = "";
     private static String pca_file = "";
     
+    private Open0Controller open0Controller;
     private static String pcaComboButton1Value = "";
     private static String pcaComboButton2Value = "";
     private ScatterChart<Number, Number> chart;
@@ -86,9 +87,7 @@ public class PCADataInputController implements Initializable {
     public void setChart(ScatterChart<Number, Number> chart) {
         this.chart = chart;
     }
-
-    private Open0Controller open0Controller;
-
+   
     public void setOpen0Controller(Open0Controller open0Controller) {
         this.open0Controller = open0Controller;
     }
@@ -107,6 +106,7 @@ public class PCADataInputController implements Initializable {
         controller = (PCADataInputController)fxmlLoader.getController();
         dialogStage = new Stage();
         dialogStage.setScene(new Scene(root));
+        dialogStage.setResizable(false);
         
         controller.pca_evec_fname.setText(pca_file);
         controller.pca_evec_fname.setStyle("-fx-text-fill: green");

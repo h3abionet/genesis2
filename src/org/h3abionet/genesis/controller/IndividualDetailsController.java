@@ -8,6 +8,7 @@ package org.h3abionet.genesis.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -31,41 +32,6 @@ import org.h3abionet.genesis.Genesis;
  * @author Henry
  */
 public class IndividualDetailsController implements Initializable {
-
-    private ScatterChart<Number, Number> chart;
-    private Open0Controller open0Controller;
-    
-    private static String iconSize;
-    private static String iconColor;
-    private static String iconType;
-
-    public void setIconSize(String iconSize) {
-        this.iconSize = iconSize;
-        System.out.println("Icon_size is "+iconSize);
-    }
-
-    public void setIconColor(String iconColor) {
-        this.iconColor = iconColor;
-        System.out.println("Icon Color is "+iconColor);
-    }
-
-    public void setIconType(String iconType) {
-        this.iconType = iconType;
-        System.out.println("Icon type is"+ iconType);
-    }
-
-    public String getIconSize() {
-        return iconSize;
-    }
-
-    public String getIconColor() {
-        return iconColor;
-    }
-
-    public String getIconType() {
-        return iconType;
-    }
-    
     
     @FXML
     private Label pcaLabel;
@@ -86,7 +52,7 @@ public class IndividualDetailsController implements Initializable {
     private RadioButton clearRadioBtn;
 
     @FXML
-    private ImageView iconDisplay;
+    private Button iconDisplay;
 
     @FXML
     private Button btnChangeIcon;
@@ -96,10 +62,44 @@ public class IndividualDetailsController implements Initializable {
 
     @FXML
     private Button btnCancel;
+    
+    private ScatterChart<Number, Number> chart;
+    private Open0Controller open0Controller;
+    
+    private static String iconSize;
+    private static String iconColor;
+    private static String iconType;
 
-    private boolean hideRadioBtnClicked;
-    private boolean topRadioBtnClicked;
-    private boolean clearRadioBtnClicked;
+    private boolean hideRadioBtnClicked = false;
+    private boolean topRadioBtnClicked = false;
+    private boolean clearRadioBtnClicked = false;
+    
+    public void setIconSize(String iconSize) {
+        IndividualDetailsController.iconSize = iconSize;
+        System.out.println("Icon_size is "+iconSize);
+    }
+
+    public void setIconColor(String iconColor) {
+        IndividualDetailsController.iconColor = iconColor;
+        System.out.println("Icon Color is "+iconColor);
+    }
+
+    public void setIconType(String iconType) {
+        IndividualDetailsController.iconType = iconType;
+        System.out.println("Icon type is"+ iconType);
+    }
+
+    public String getIconSize() {
+        return iconSize;
+    }
+
+    public String getIconColor() {
+        return iconColor;
+    }
+
+    public String getIconType() {
+        return iconType;
+    }
 
     public void setPcaLabel(String coordinates) {
         pcaLabel.setText(coordinates);
@@ -109,8 +109,9 @@ public class IndividualDetailsController implements Initializable {
         phenoLabel.setText(phenotype);
     }
 
-    public void setIconDisplay(Image icon) {
-        iconDisplay.setImage(icon);
+    public void setIconDisplay(Node shape) {
+        Node css = shape.lookup(".chart-symbol");
+        iconDisplay.setGraphic(shape);
     }
 
     @FXML
@@ -119,6 +120,7 @@ public class IndividualDetailsController implements Initializable {
         Parent parent = (Parent) fxmlLoader.load();
         Stage iconStage = new Stage();
         iconStage.setScene(new Scene(parent));
+        iconStage.setResizable(false);
         iconStage.showAndWait();
     }
 
@@ -126,39 +128,37 @@ public class IndividualDetailsController implements Initializable {
     private void getClickedRadioBtn(ActionEvent event) {
         if (hideRadioBtn.isSelected()) {
             hideRadioBtnClicked = true;
-            topRadioBtnClicked = false;
-            clearRadioBtnClicked = false;
+            
         }
         if (topRadioBtn.isSelected()) {
             topRadioBtnClicked = true;
-            hideRadioBtnClicked = false;
-            clearRadioBtnClicked = false;
+        
         }
         if (clearRadioBtn.isSelected()) {
             clearRadioBtnClicked = true;
-            topRadioBtnClicked = false;
-            hideRadioBtnClicked = false;
+            
         }
     }
 
     @FXML
     private void entryOkButton(ActionEvent event) {
-        System.out.println(iconColor);
-        System.out.println(iconSize);
+
         for (XYChart.Series<Number, Number> series : chart.getData()) {
             for (XYChart.Data<Number, Number> data : series.getData()) {
                 if (hideRadioBtnClicked) {
                     data.getNode().setOnMouseClicked(e -> {
                         data.getNode().setVisible(!data.getNode().isVisible());
                     });
-                } else if (topRadioBtnClicked) {
+                }
+                if (topRadioBtnClicked) {
                     data.getNode().setOnMouseClicked(e -> {
                         data.getNode().lookup(".chart-symbol").setStyle("-fx-shape: \"M5,0 L10,9 L5,18 L0,9 Z\";"
                                 + "-fx-background-color: #"+iconColor+";"
                                 + "-fx-padding: "+iconSize+"px;");
                         data.getNode().toFront();
                     });
-                } else if (clearRadioBtnClicked) {
+                }
+                if (clearRadioBtnClicked) {
                     data.getNode().setOnMouseClicked(e -> {
                         data.getNode().setStyle(null);
                     });
@@ -186,7 +186,10 @@ public class IndividualDetailsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         open0Controller = new Open0Controller();
-        chart = open0Controller.getChart();
+        chart = Open0Controller.getChart();
+        hideRadioBtnClicked = false;
+        topRadioBtnClicked = false;
+        clearRadioBtnClicked = false;
 
     }
 

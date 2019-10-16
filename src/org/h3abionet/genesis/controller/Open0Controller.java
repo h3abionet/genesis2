@@ -9,6 +9,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -33,7 +35,6 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -103,7 +104,7 @@ public class Open0Controller implements Initializable {
 
     private ProjectDetailsController projectDetailsController;
     private Project project;
-    private Tab pcaTab;
+    private static Tab pcaTab;
     private static int tabCount = 0;
     private static ScatterChart<Number, Number> chart;
 
@@ -119,11 +120,16 @@ public class Open0Controller implements Initializable {
         Stage stage = new Stage();
         stage.initOwner(newpca.getScene().getWindow());
         stage.setScene(new Scene((Parent) loader.load()));
-
+        stage.setResizable(false);
         stage.showAndWait();
 
         PCADataInputController controller = loader.getController();
-        addChart(controller);
+
+        try {
+            addChart(controller);
+        } catch (NullPointerException e) {
+            ; //do nothing if the controller is null
+        }
 
     }
 
@@ -174,7 +180,7 @@ public class Open0Controller implements Initializable {
     private void addChart(PCADataInputController controller) {
         chart = controller.getChart();
         chart.getStylesheets().add(Genesis.class.getResource("css/scatterchart.css").toExternalForm());
-        
+
         if (chart != null) {
             String xAxisLabel = chart.getXAxis().getLabel();
             String yAxisLabel = chart.getYAxis().getLabel();
@@ -186,8 +192,6 @@ public class Open0Controller implements Initializable {
             pcaTab.setText("PCA " + x + " & " + y);
             pcaTab.setClosable(true);
             pcaTab.setId("tab" + tabCount);
-            pcaTab.setContent(chart);
-            tabPane.getTabs().add(pcaTab);
 
             for (XYChart.Series<Number, Number> series : chart.getData()) {
                 for (XYChart.Data<Number, Number> data : series.getData()) {
@@ -202,6 +206,7 @@ public class Open0Controller implements Initializable {
 
                                 IndividualDetailsController individualDetailsController = fxmlLoader.getController();
                                 individualDetailsController.setPcaLabel(xAxisLabel + ": " + data.getXValue() + "\n" + yAxisLabel + ": " + data.getYValue());
+                                individualDetailsController.setIconDisplay(data.getNode());
                                 dialogStage.showAndWait();
 
                             } catch (IOException ex) {
@@ -235,9 +240,12 @@ public class Open0Controller implements Initializable {
                     }
                 }
             }
-            tabPane.getSelectionModel().selectedIndexProperty().addListener((e, o, n) -> {
-                System.out.println("Changed to " + n);
+            
+            pcaTab.setContent(chart);
+            tabPane.getTabs().add(pcaTab);
 
+            tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
+                System.out.println("clear all previous data events");
             });
 
         } else {

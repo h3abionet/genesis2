@@ -178,6 +178,7 @@ public class ProjectDetailsController {
     
     /**
      * return project name or Tile to display on the chart
+     * @return 
      */
     public String getProjectName() {
         return proj_name_s;
@@ -194,6 +195,7 @@ public class ProjectDetailsController {
     
     /**
      * Close the open stage
+     * @param event
      */
     public void closeStage(ActionEvent event) {
         Node source = (Node) event.getSource();

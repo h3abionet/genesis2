@@ -60,12 +60,12 @@
                <children>
                   <VBox layoutX="5.0" layoutY="3.0" prefHeight="381.0" prefWidth="100.0" spacing="6.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                      <children>
-                        <Button fx:id="newproject" mnemonicParsing="false" onAction="#newProject" style="-fx-border-width: 0.5px; -fx-border-color: #000000; -fx-border-radius: 5;" text="New">
+                        <Button fx:id="newproject" mnemonicParsing="false" onAction="#newProject" prefHeight="25.0" prefWidth="57.0" style="-fx-border-width: 0.5px; -fx-border-color: #000000; -fx-border-radius: 5;" text="New">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="newpca" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newPCA" prefHeight="25.0" prefWidth="42.0" text="PCA">
+                        <Button fx:id="newpca" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newPCA" prefHeight="25.0" prefWidth="57.0" text="PCA">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
@@ -75,12 +75,12 @@
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="threeDButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
+                        <Button fx:id="threeDButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="28.0" prefWidth="40.0" text="Button">
                            <graphic>
                               <FontAwesomeIconView glyphName="CODEPEN" size="17" />
                            </graphic>
                         </Button>
-                        <Button fx:id="dataButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#loadData" text="Button">
+                        <Button fx:id="dataButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#loadData" prefHeight="28.0" prefWidth="39.0" text="Button">
                            <graphic>
                               <FontAwesomeIconView glyphName="DATABASE" size="17" />
                            </graphic>
@@ -90,17 +90,17 @@
                               <FontAwesomeIconView glyphName="GEARS" size="17" />
                            </graphic>
                         </Button>
-                        <Button fx:id="downloadButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#saveChart" text="Button">
+                        <Button fx:id="downloadButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#saveChart" prefHeight="28.0" prefWidth="40.0" text="Button">
                            <graphic>
                               <FontAwesomeIconView glyphName="DOWNLOAD" size="17" />
                            </graphic>
                         </Button>
-                        <Button fx:id="individualButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
+                        <Button fx:id="individualButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="28.0" prefWidth="40.0" text="Button">
                            <graphic>
                               <FontAwesomeIconView glyphName="CHILD" size="17" />
                            </graphic>
                         </Button>
-                        <Button fx:id="searchButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
+                        <Button fx:id="searchButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="40.0" text="Button">
                            <graphic>
                               <FontAwesomeIconView glyphName="SEARCH" size="17" />
                            </graphic>
@@ -110,12 +110,12 @@
                               <FontAwesomeIconView glyphName="OBJECT_GROUP" size="17" />
                            </graphic>
                         </Button>
-                        <Button fx:id="cancelButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#closeProgram" text="Button">
+                        <Button fx:id="cancelButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#closeProgram" prefHeight="28.0" prefWidth="39.0" text="Button">
                            <graphic>
                               <FontAwesomeIconView glyphName="TIMES" size="17" />
                            </graphic>
                         </Button>
-                        <Button fx:id="saveButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false">
+                        <Button fx:id="saveButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="28.0" prefWidth="40.0">
                            <graphic>
                               <FontAwesomeIconView glyphName="SAVE" size="17" />
                            </graphic>
@@ -125,7 +125,7 @@
                               <FontAwesomeIconView glyphName="FOLDER_OPEN" size="17" />
                            </graphic>
                         </Button>
-                        <Button fx:id="helpButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" layoutX="10.0" layoutY="415.0" mnemonicParsing="false" onAction="#help" text="Button">
+                        <Button fx:id="helpButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" layoutX="10.0" layoutY="415.0" mnemonicParsing="false" onAction="#help" prefHeight="28.0" prefWidth="40.0" text="Button">
                            <graphic>
                               <FontAwesomeIconView glyphName="QUESTION_CIRCLE" size="17" />
                            </graphic>

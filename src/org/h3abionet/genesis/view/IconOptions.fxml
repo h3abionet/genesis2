@@ -6,7 +6,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.effect.DropShadow?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -30,26 +29,26 @@
             </AnchorPane>
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Spinner fx:id="iconType" prefHeight="32.0" prefWidth="150.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0" />
+                  <Spinner fx:id="iconType" prefHeight="32.0" prefWidth="150.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Spinner fx:id="iconSize" prefHeight="32.0" prefWidth="150.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0" />
+                  <Spinner fx:id="iconSize" prefHeight="32.0" prefWidth="150.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: #ffffff;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0">
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="2.0" style="-fx-background-color: #ffffff;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <ImageView fx:id="iconDisplay" fitHeight="26.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                        <Button fx:id="iconDisplay" mnemonicParsing="false" prefHeight="31.0" prefWidth="57.0">
                            <HBox.margin>
-                              <Insets bottom="5.0" left="5.0" top="5.0" />
+                              <Insets bottom="5.0" left="2.0" right="5.0" top="6.0" />
                            </HBox.margin>
-                        </ImageView>
+                        </Button>
                         <ColorPicker fx:id="colorPicker" prefHeight="32.0" prefWidth="116.0">
                            <HBox.margin>
-                              <Insets bottom="5.0" left="5.0" top="5.0" />
+                              <Insets bottom="5.0" left="5.0" right="2.0" top="5.0" />
                            </HBox.margin>
                         </ColorPicker>
                      </children>
@@ -61,10 +60,10 @@
             </AnchorPane>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ebedf0;">
                <children>
-                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="40.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="40.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
                      <children>
                         <Button fx:id="btnOK" mnemonicParsing="false" onAction="#entryOKBtn" prefHeight="25.0" prefWidth="56.0" text="OK" />
-                        <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#entryCancelBtn" prefHeight="25.0" prefWidth="62.0" text="Cancel" />
+                        <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#entryCancelBtn" prefHeight="27.0" prefWidth="84.0" text="Cancel" />
                      </children>
                   </HBox>
                </children>
