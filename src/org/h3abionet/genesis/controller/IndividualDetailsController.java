@@ -8,7 +8,6 @@ package org.h3abionet.genesis.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,8 +21,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 
@@ -66,7 +64,7 @@ public class IndividualDetailsController implements Initializable {
     private ScatterChart<Number, Number> chart;
     private Open0Controller open0Controller;
     
-    private static String iconSize;
+    private static int iconSize;
     private static String iconColor;
     private static String iconType;
 
@@ -74,7 +72,8 @@ public class IndividualDetailsController implements Initializable {
     private boolean topRadioBtnClicked = false;
     private boolean clearRadioBtnClicked = false;
     
-    public void setIconSize(String iconSize) {
+    // set icon properties from the iconOptionsController
+    public void setIconSize(int iconSize) {
         IndividualDetailsController.iconSize = iconSize;
         System.out.println("Icon_size is "+iconSize);
     }
@@ -88,8 +87,9 @@ public class IndividualDetailsController implements Initializable {
         IndividualDetailsController.iconType = iconType;
         System.out.println("Icon type is"+ iconType);
     }
-
-    public String getIconSize() {
+    
+    // return requested icon properties
+    public int getIconSize() {
         return iconSize;
     }
 
@@ -100,7 +100,8 @@ public class IndividualDetailsController implements Initializable {
     public String getIconType() {
         return iconType;
     }
-
+    
+    // display pc/pheno values on labels  
     public void setPcaLabel(String coordinates) {
         pcaLabel.setText(coordinates);
     }
@@ -108,22 +109,40 @@ public class IndividualDetailsController implements Initializable {
     public void setPhenoLabel(String phenotype) {
         phenoLabel.setText(phenotype);
     }
-
+    
+    // display icon 
     public void setIconDisplay(Node shape) {
-        Node css = shape.lookup(".chart-symbol");
         iconDisplay.setGraphic(shape);
     }
-
+    
+    public void removeGraphic(Node btn) {
+        System.out.println(btn);
+        System.out.println(this.iconDisplay);
+//        iconDisplay.setStyle(null);
+//         System.out.println(btn);
+//        iconDisplay.getStyleClass().clear();
+//        String chosenIcon, int chosenSize, String chosenColor
+//        iconDisplay.setStyle("-fx-shape: \"" + chosenIcon + "\";"
+//                    + "-fx-background-color: #" + chosenColor + ";"
+//                    + "-fx-background-radius: " + chosenSize + "px;"
+//                    + "-fx-padding: "+ chosenSize +"px;"
+//                    + "-fx-pref-width: "+ chosenSize +"px;"
+//                    + "fx-pref-height: "+ chosenSize +"px;");
+        
+    }
+    
+    // load iconOptionsController upon request
     @FXML
     private void changeIcon(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IconOptions.fxml"));
-        Parent parent = (Parent) fxmlLoader.load();
         Stage iconStage = new Stage();
-        iconStage.setScene(new Scene(parent));
+        iconStage.initOwner(iconDisplay.getScene().getWindow());
+        iconStage.setScene(new Scene((Parent) fxmlLoader.load()));
         iconStage.setResizable(false);
         iconStage.showAndWait();
     }
-
+    
+    // get radio selections (only one selection at a time)
     @FXML
     private void getClickedRadioBtn(ActionEvent event) {
         if (hideRadioBtn.isSelected()) {
@@ -152,7 +171,7 @@ public class IndividualDetailsController implements Initializable {
                 }
                 if (topRadioBtnClicked) {
                     data.getNode().setOnMouseClicked(e -> {
-                        data.getNode().lookup(".chart-symbol").setStyle("-fx-shape: \"M5,0 L10,9 L5,18 L0,9 Z\";"
+                        data.getNode().lookup(".chart-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
                                 + "-fx-background-color: #"+iconColor+";"
                                 + "-fx-padding: "+iconSize+"px;");
                         data.getNode().toFront();
