@@ -9,8 +9,6 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -192,6 +190,8 @@ public class Open0Controller implements Initializable {
             pcaTab.setText("PCA " + x + " & " + y);
             pcaTab.setClosable(true);
             pcaTab.setId("tab" + tabCount);
+            pcaTab.setContent(chart);
+            tabPane.getTabs().add(pcaTab);
 
             for (XYChart.Series<Number, Number> series : chart.getData()) {
                 for (XYChart.Data<Number, Number> data : series.getData()) {
@@ -206,7 +206,7 @@ public class Open0Controller implements Initializable {
 
                                 IndividualDetailsController individualDetailsController = fxmlLoader.getController();
                                 individualDetailsController.setPcaLabel(xAxisLabel + ": " + data.getXValue() + "\n" + yAxisLabel + ": " + data.getYValue());
-                                individualDetailsController.setIconDisplay(data.getNode());
+                                individualDetailsController.setIconDisplay(data.getNode().lookup(".chart-symbol"));
                                 dialogStage.showAndWait();
 
                             } catch (IOException ex) {
@@ -240,13 +240,6 @@ public class Open0Controller implements Initializable {
                     }
                 }
             }
-            
-            pcaTab.setContent(chart);
-            tabPane.getTabs().add(pcaTab);
-
-            tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
-                System.out.println("clear all previous data events");
-            });
 
         } else {
             //            return to the main window if no pcas were selected

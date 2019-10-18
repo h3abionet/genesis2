@@ -67,8 +67,8 @@ public class IconOptionsController implements Initializable {
         individualDetailsController.setIconSize(this.iconSizeValue);
         individualDetailsController.setIconType(iconsHashmap.get(this.iconTypeValue));
         individualDetailsController.setIconColor(this.colorPickerValue);
-//        individualDetailsController.setIconDisplay(iconsHashmap.get(this.iconTypeValue), this.iconSizeValue, this.colorPickerValue );
-        individualDetailsController.removeGraphic(this.iconDisplay);
+        
+               
         closeStage(event);
     }
 

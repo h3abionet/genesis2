@@ -8,6 +8,7 @@ package org.h3abionet.genesis.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,7 +22,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 
@@ -51,6 +51,9 @@ public class IndividualDetailsController implements Initializable {
 
     @FXML
     private Button iconDisplay;
+    
+    @FXML
+    private Button chosenIconDisplay;
 
     @FXML
     private Button btnChangeIcon;
@@ -68,9 +71,9 @@ public class IndividualDetailsController implements Initializable {
     private static String iconColor;
     private static String iconType;
 
-    private boolean hideRadioBtnClicked = false;
-    private boolean topRadioBtnClicked = false;
-    private boolean clearRadioBtnClicked = false;
+    private boolean hideRadioBtnClicked;
+    private boolean topRadioBtnClicked;
+    private boolean clearRadioBtnClicked;
     
     // set icon properties from the iconOptionsController
     public void setIconSize(int iconSize) {
@@ -112,24 +115,32 @@ public class IndividualDetailsController implements Initializable {
     
     // display icon 
     public void setIconDisplay(Node shape) {
-        iconDisplay.setGraphic(shape);
+//        Node css = (Node)shape.lookup(".chart-symbol");
+//        iconDisplay.setGraphic(shape);
+    }
+
+    public void callChosenIconDisplay(String i) {
+        setChosenIconDisplay(i);
     }
     
-    public void removeGraphic(Node btn) {
-        System.out.println(btn);
-        System.out.println(this.iconDisplay);
-//        iconDisplay.setStyle(null);
-//         System.out.println(btn);
-//        iconDisplay.getStyleClass().clear();
+    private void setChosenIconDisplay(String h){
+        chosenIconDisplay.setText(h);
+    }
+    
+//    
+//    public void removeGraphic(Node btn) {
+//        System.out.println(btn);
+//        System.out.println(this.chosenIconDisplay);
+
 //        String chosenIcon, int chosenSize, String chosenColor
-//        iconDisplay.setStyle("-fx-shape: \"" + chosenIcon + "\";"
+//        chosenIconDisplay.setStyle("-fx-shape: \"" + chosenIcon + "\";"
 //                    + "-fx-background-color: #" + chosenColor + ";"
 //                    + "-fx-background-radius: " + chosenSize + "px;"
 //                    + "-fx-padding: "+ chosenSize +"px;"
 //                    + "-fx-pref-width: "+ chosenSize +"px;"
 //                    + "fx-pref-height: "+ chosenSize +"px;");
         
-    }
+//    }
     
     // load iconOptionsController upon request
     @FXML
@@ -140,6 +151,9 @@ public class IndividualDetailsController implements Initializable {
         iconStage.setScene(new Scene((Parent) fxmlLoader.load()));
         iconStage.setResizable(false);
         iconStage.showAndWait();
+        
+        IconOptionsController inconOptionsController = fxmlLoader.getController();
+//        inconOptionsController.
     }
     
     // get radio selections (only one selection at a time)
@@ -147,21 +161,26 @@ public class IndividualDetailsController implements Initializable {
     private void getClickedRadioBtn(ActionEvent event) {
         if (hideRadioBtn.isSelected()) {
             hideRadioBtnClicked = true;
-            
+//            topRadioBtnClicked = false;
+//            clearRadioBtnClicked = false;
         }
         if (topRadioBtn.isSelected()) {
             topRadioBtnClicked = true;
+//            hideRadioBtnClicked = false;
+//            clearRadioBtnClicked = false;
         
         }
         if (clearRadioBtn.isSelected()) {
             clearRadioBtnClicked = true;
+//            topRadioBtnClicked = false;
+//            hideRadioBtnClicked = false;
             
         }
     }
 
     @FXML
     private void entryOkButton(ActionEvent event) {
-
+        
         for (XYChart.Series<Number, Number> series : chart.getData()) {
             for (XYChart.Data<Number, Number> data : series.getData()) {
                 if (hideRadioBtnClicked) {
@@ -173,7 +192,10 @@ public class IndividualDetailsController implements Initializable {
                     data.getNode().setOnMouseClicked(e -> {
                         data.getNode().lookup(".chart-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
                                 + "-fx-background-color: #"+iconColor+";"
-                                + "-fx-padding: "+iconSize+"px;");
+                                + "-fx-background-radius: " + iconSize + "px;"
+                                + "-fx-padding: "+iconSize+"px;"
+                                + "-fx-pref-width: "+ iconSize +"px;"
+                                + "fx-pref-height: "+ iconSize +"px;");
                         data.getNode().toFront();
                     });
                 }
