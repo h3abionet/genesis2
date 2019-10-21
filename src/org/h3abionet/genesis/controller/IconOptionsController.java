@@ -58,6 +58,9 @@ public class IconOptionsController implements Initializable {
     @FXML
     private Button btnOK;
     
+    @FXML
+    private Button btnCancel;
+    
     private String iconTypeValue;
     private Integer iconSizeValue;
     private String colorPickerValue;
@@ -67,13 +70,9 @@ public class IconOptionsController implements Initializable {
         individualDetailsController.setIconSize(this.iconSizeValue);
         individualDetailsController.setIconType(iconsHashmap.get(this.iconTypeValue));
         individualDetailsController.setIconColor(this.colorPickerValue);
-        
-               
+    
         closeStage(event);
     }
-
-    @FXML
-    private Button btnCancel;
 
     @FXML
     private void entryCancelBtn(ActionEvent event) {
@@ -90,6 +89,7 @@ public class IconOptionsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.iconSizeValue = 5;
+        iconDisplay.setVisible(false);
         
         SpinnerValueFactory<Integer> iconSizes = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 20, 5);
         iconSize.setValueFactory(iconSizes);
@@ -100,6 +100,7 @@ public class IconOptionsController implements Initializable {
         
 
         iconType.valueProperty().addListener((obs, oldValue, newValue) -> {
+            iconDisplay.setVisible(true);
             this.iconTypeValue = (String) newValue;
             this.colorPickerValue = Integer.toHexString(colorPicker.getValue().hashCode());
             setStyle(this.iconTypeValue, this.iconSizeValue, this.colorPickerValue);
@@ -107,6 +108,7 @@ public class IconOptionsController implements Initializable {
         });
 
         iconSize.valueProperty().addListener((obs, oldValue, newValue) -> {
+            iconDisplay.setVisible(true);
             this.iconSizeValue = (Integer) newValue;
             this.colorPickerValue = Integer.toHexString(colorPicker.getValue().hashCode());
             setStyle(this.iconTypeValue, this.iconSizeValue, this.colorPickerValue);

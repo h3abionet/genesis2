@@ -85,7 +85,7 @@
                               <FontAwesomeIconView glyphName="DATABASE" size="17" />
                            </graphic>
                         </Button>
-                        <Button fx:id="settingsButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
+                        <Button fx:id="settingsButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#fontSelector" text="Button">
                            <graphic>
                               <FontAwesomeIconView glyphName="GEARS" size="17" />
                            </graphic>

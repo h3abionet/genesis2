@@ -115,33 +115,10 @@ public class IndividualDetailsController implements Initializable {
     
     // display icon 
     public void setIconDisplay(Node shape) {
-//        Node css = (Node)shape.lookup(".chart-symbol");
 //        iconDisplay.setGraphic(shape);
+
     }
 
-    public void callChosenIconDisplay(String i) {
-        setChosenIconDisplay(i);
-    }
-    
-    private void setChosenIconDisplay(String h){
-        chosenIconDisplay.setText(h);
-    }
-    
-//    
-//    public void removeGraphic(Node btn) {
-//        System.out.println(btn);
-//        System.out.println(this.chosenIconDisplay);
-
-//        String chosenIcon, int chosenSize, String chosenColor
-//        chosenIconDisplay.setStyle("-fx-shape: \"" + chosenIcon + "\";"
-//                    + "-fx-background-color: #" + chosenColor + ";"
-//                    + "-fx-background-radius: " + chosenSize + "px;"
-//                    + "-fx-padding: "+ chosenSize +"px;"
-//                    + "-fx-pref-width: "+ chosenSize +"px;"
-//                    + "fx-pref-height: "+ chosenSize +"px;");
-        
-//    }
-    
     // load iconOptionsController upon request
     @FXML
     private void changeIcon(ActionEvent event) throws IOException {
@@ -152,8 +129,13 @@ public class IndividualDetailsController implements Initializable {
         iconStage.setResizable(false);
         iconStage.showAndWait();
         
-        IconOptionsController inconOptionsController = fxmlLoader.getController();
-//        inconOptionsController.
+        chosenIconDisplay.setVisible(true);
+        chosenIconDisplay.setStyle("-fx-shape: \"" + iconType + "\";"
+                    + "-fx-background-color: #" + iconColor + ";"
+                    + "-fx-background-radius: " + iconSize + "px;"
+                    + "-fx-padding: "+ iconSize +"px;"
+                    + "-fx-pref-width: "+ iconSize +"px;"
+                    + "fx-pref-height: "+ iconSize +"px;");
     }
     
     // get radio selections (only one selection at a time)
@@ -161,20 +143,12 @@ public class IndividualDetailsController implements Initializable {
     private void getClickedRadioBtn(ActionEvent event) {
         if (hideRadioBtn.isSelected()) {
             hideRadioBtnClicked = true;
-//            topRadioBtnClicked = false;
-//            clearRadioBtnClicked = false;
         }
         if (topRadioBtn.isSelected()) {
-            topRadioBtnClicked = true;
-//            hideRadioBtnClicked = false;
-//            clearRadioBtnClicked = false;
-        
+            topRadioBtnClicked = true;        
         }
         if (clearRadioBtn.isSelected()) {
-            clearRadioBtnClicked = true;
-//            topRadioBtnClicked = false;
-//            hideRadioBtnClicked = false;
-            
+            clearRadioBtnClicked = true;         
         }
     }
 
@@ -227,6 +201,7 @@ public class IndividualDetailsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         open0Controller = new Open0Controller();
+        chosenIconDisplay.setVisible(false);
         chart = Open0Controller.getChart();
         hideRadioBtnClicked = false;
         topRadioBtnClicked = false;

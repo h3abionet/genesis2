@@ -26,6 +26,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
@@ -37,6 +38,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
+import org.controlsfx.dialog.FontSelectorDialog;
 import org.h3abionet.genesis.Genesis;
 
 /*
@@ -138,6 +140,18 @@ public class Open0Controller implements Initializable {
         addChart(controller);
 
     }
+    
+    @FXML
+    private void fontSelector(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/FontSelector.fxml"));
+        Stage iconStage = new Stage();
+        iconStage.initOwner(settingsButton.getScene().getWindow());
+        iconStage.setScene(new Scene((Parent) fxmlLoader.load()));
+        iconStage.setResizable(false);
+        iconStage.showAndWait();
+           
+    }
+    
 
     @FXML
     public void saveChart() {
@@ -203,10 +217,11 @@ public class Open0Controller implements Initializable {
                                 Parent parent = (Parent) fxmlLoader.load();
                                 Stage dialogStage = new Stage();
                                 dialogStage.setScene(new Scene(parent));
+                                dialogStage.setResizable(false);
 
                                 IndividualDetailsController individualDetailsController = fxmlLoader.getController();
                                 individualDetailsController.setPcaLabel(xAxisLabel + ": " + data.getXValue() + "\n" + yAxisLabel + ": " + data.getYValue());
-                                individualDetailsController.setIconDisplay(data.getNode().lookup(".chart-symbol"));
+                                individualDetailsController.setIconDisplay(data.getNode());
                                 dialogStage.showAndWait();
 
                             } catch (IOException ex) {
