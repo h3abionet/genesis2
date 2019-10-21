@@ -38,7 +38,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
-import org.controlsfx.dialog.FontSelectorDialog;
 import org.h3abionet.genesis.Genesis;
 
 /*
