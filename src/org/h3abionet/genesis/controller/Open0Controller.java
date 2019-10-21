@@ -30,12 +30,14 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javax.imageio.ImageIO;
 import org.h3abionet.genesis.Genesis;
 
@@ -60,7 +62,8 @@ import org.h3abionet.genesis.Genesis;
  * @author scott This is the main controller
  */
 public class Open0Controller implements Initializable {
-
+    @FXML
+    private FontSelectorController fontSelectorController;
     @FXML
     private PCADataInputController pCADataInputController;
     @FXML
@@ -99,7 +102,7 @@ public class Open0Controller implements Initializable {
     private Button fileButton;
     @FXML
     private Button helpButton;
-
+    
     private ProjectDetailsController projectDetailsController;
     private Project project;
     private static Tab pcaTab;
@@ -147,7 +150,7 @@ public class Open0Controller implements Initializable {
         iconStage.setScene(new Scene((Parent) fxmlLoader.load()));
         iconStage.setResizable(false);
         iconStage.showAndWait();
-           
+        
     }
     
 
@@ -228,7 +231,8 @@ public class Open0Controller implements Initializable {
                         }
 
                     });
-
+                    // manage tooltip delay
+                    Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
                 }
             }
 

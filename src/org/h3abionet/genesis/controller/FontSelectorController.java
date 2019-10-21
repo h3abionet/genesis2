@@ -11,28 +11,41 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.chart.ScatterChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.FontPosture;
 /**
  *
  * @author Henry
  */
 public class FontSelectorController implements Initializable{
-     @FXML
+    @FXML
+    private TextField xLabel;
+
+    @FXML
+    private CheckBox xFormat;
+
+    @FXML
+    private TextField yLabel;
+
+    @FXML
+    private CheckBox yFormat;
+    
+    @FXML
     private ListView<String> fontList;
 
     @FXML
@@ -40,6 +53,9 @@ public class FontSelectorController implements Initializable{
 
     @FXML
     private ListView<Integer> sizeList;
+    
+    @FXML
+    private ListView<String> postureList;
 
     @FXML
     private Label sample;
@@ -53,29 +69,52 @@ public class FontSelectorController implements Initializable{
     @FXML
     private Button btnCancel;
     
+    private ScatterChart<Number, Number> chart;
+    private Open0Controller open0Controller;
+    
+    // default chosen values -- changed by event handlers 
     private String chosenFont = "System";
     private String chosenFontStyle = "NORMAL";
-    private String chosenFontColor = "BLACK";
+    private String chosenFontColor = "ffffff";
+    private String chosenPosture = "REGULAR";
     private int chosenFontSize = 12;
-    
+    private String chosenAxis;
+
     // font weight names 
-    String weights[] = {"BLACK", "BOLD",  
-                        "EXTRA_BOLD",  
-                        "EXTRA_LIGHT",  
-                        "LIGHT",  
-                        "MEDIUM",  
-                        "NORMAL",  
-                        "SEMI_BOLD", 
-                        "THIN"};
+    String weights[] = {"BOLD", "NORMAL"};
     
-    // list of font sizes
-    List<Integer> list = IntStream.range(8, 72).boxed().collect(Collectors.toList());
+    // font posture
+    String posture[] = {"REGULAR", "ITALIC"};
+    
+    // list of font sizes from 8 to 72
+    List<Integer> list = IntStream.range(8, 73).boxed().collect(Collectors.toList());
     
     @FXML
-    private void entryOkButton(ActionEvent event) {     
-        System.out.println(chosenFontStyle+" "+chosenFont+" "+chosenFontSize+" "+chosenFontColor);
+    private void entryOkButton(ActionEvent event) {
+         
+        // only format selected axis
+        if(xFormat.isSelected()){
+          chart.getXAxis().setLabel(xLabel.getText());
+          formatAxisLabels();
+          
+        }
+        
+        if(yFormat.isSelected()){
+          chart.getYAxis().setLabel(yLabel.getText());
+          formatAxisLabels();
+          
+        }
         
         closeStage(event);
+    }
+    
+    // change axis labels
+    private void formatAxisLabels(){
+        chart.getYAxis().lookup(".axis-label").setStyle("-fx-fill: #"+chosenFontColor+";"+
+                                  "-fx-font-size: "+chosenFontSize+"pt;"+
+                                  "-fx-font-weight: "+chosenFontStyle+";"+
+                                  "-fx-font-family: \"" + chosenFont + "\";"+
+                                  "-fx-text-fill: #"+chosenFontColor+";" );
     }
     
     @FXML
@@ -91,34 +130,54 @@ public class FontSelectorController implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        open0Controller = new Open0Controller();
+        chart = Open0Controller.getChart();
+        
+        // set default values
+        xLabel.setText(chart.getXAxis().getLabel());
+        yLabel.setText(chart.getYAxis().getLabel());
         colorPicker.setValue(Color.BLACK);
         styleList.setItems(FXCollections.observableArrayList(weights));
         fontList.setItems(FXCollections.observableArrayList(Font.getFamilies()));
+        postureList.setItems(FXCollections.observableArrayList(posture));
         sizeList.setItems(FXCollections.observableList(list));
         
         styleList.setOnMouseClicked((MouseEvent event) -> {
             chosenFontStyle = styleList.getSelectionModel().getSelectedItem();
-            sample.setFont(Font.font(chosenFont, FontWeight.valueOf(chosenFontStyle), chosenFontSize));
-            chosenFontColor = Integer.toHexString(colorPicker.getValue().hashCode());
-            sample.setTextFill(colorPicker.getValue());
+            updateSampleLabel();
+        });
+        
+        postureList.setOnMouseClicked((MouseEvent event) -> {
+            chosenPosture = postureList.getSelectionModel().getSelectedItem();
+            updateSampleLabel();
         });
         
         fontList.setOnMouseClicked((MouseEvent event) -> {
             chosenFont = fontList.getSelectionModel().getSelectedItem();
-            sample.setFont(Font.font(chosenFont, FontWeight.valueOf(chosenFontStyle), chosenFontSize));
-            chosenFontColor = Integer.toHexString(colorPicker.getValue().hashCode());
-            sample.setTextFill(colorPicker.getValue());
+            updateSampleLabel();
 
         });
         
         sizeList.setOnMouseClicked((MouseEvent event) -> {
             chosenFontSize = sizeList.getSelectionModel().getSelectedItem();
-            sample.setFont(Font.font(chosenFont, FontWeight.valueOf(chosenFontStyle), chosenFontSize));
-            chosenFontColor = Integer.toHexString(colorPicker.getValue().hashCode());
-            sample.setTextFill(colorPicker.getValue());
+            updateSampleLabel();
 
         });
         
+        colorPicker.setOnAction((ActionEvent event) -> {
+        updateSampleLabel();
+        
+        });
+        
+        
+        
+    }
+    
+    // get chosen properties and update the label
+    private void updateSampleLabel(){
+        chosenFontColor = Integer.toHexString(colorPicker.getValue().hashCode());
+        sample.setFont(Font.font(chosenFont, FontWeight.valueOf(chosenFontStyle), FontPosture.valueOf(chosenPosture), chosenFontSize));
+        sample.setTextFill(colorPicker.getValue());
     }
 
 }
