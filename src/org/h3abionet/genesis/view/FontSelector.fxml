@@ -36,11 +36,21 @@
                <children>
                   <VBox prefHeight="200.0" prefWidth="500.0" spacing="2.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
+                        <HBox layoutX="40.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                           <children>
+                              <Label prefHeight="17.0" prefWidth="31.0" text="Title" />
+                              <TextField fx:id="titleLabel" prefHeight="25.0" prefWidth="272.0" />
+                              <CheckBox fx:id="titleFormat" mnemonicParsing="false" text="apply changes" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="30.0" right="30.0" />
+                           </VBox.margin>
+                        </HBox>
                         <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                            <children>
                               <Label text="X-axis" />
-                              <TextField prefHeight="27.0" prefWidth="273.0" fx:id="xLabel" />
-                              <CheckBox mnemonicParsing="false" text="change format" fx:id="xFormat" />
+                              <TextField prefHeight="25.0" prefWidth="272.0" fx:id="xLabel" />
+                              <CheckBox mnemonicParsing="false" text="apply changes" fx:id="xFormat" />
                            </children>
                            <VBox.margin>
                               <Insets left="30.0" right="30.0" />
@@ -50,7 +60,7 @@
                            <children>
                               <Label text="Y-axis" />
                               <TextField fx:id="yLabel" prefHeight="27.0" prefWidth="273.0" />
-                              <CheckBox fx:id="yFormat" mnemonicParsing="false" text="change format" />
+                              <CheckBox fx:id="yFormat" mnemonicParsing="false" text="apply changes" />
                            </children>
                            <VBox.margin>
                               <Insets left="30.0" right="30.0" />
@@ -62,7 +72,7 @@
             </AnchorPane>
             <AnchorPane prefHeight="59.0" prefWidth="500.0">
                <children>
-                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="165.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="160.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
                      <children>
                         <Label prefHeight="17.0" prefWidth="37.0" text="Font" />
                         <Label layoutX="10.0" layoutY="10.0" text="Style">
@@ -70,7 +80,7 @@
                               <Insets />
                            </HBox.margin>
                         </Label>
-                        <Label layoutX="38.0" layoutY="10.0" text="Size" />
+                        <Label layoutX="38.0" layoutY="10.0" prefHeight="17.0" prefWidth="40.0" text="Size" />
                      </children>
                   </HBox>
                </children>
@@ -85,10 +95,10 @@
                <children>
                   <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
                      <children>
-                        <ListView fx:id="fontList" prefHeight="114.0" prefWidth="181.0" />
+                        <ListView fx:id="fontList" prefHeight="100.0" prefWidth="189.0" />
                         <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
                            <children>
-                              <ListView fx:id="styleList" prefHeight="100.0" prefWidth="142.0" />
+                              <ListView fx:id="styleList" prefHeight="100.0" prefWidth="96.0" />
                               <ListView fx:id="postureList" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="142.0" />
                            </children>
                         </VBox>
@@ -101,10 +111,10 @@
                <children>
                   <HBox layoutX="-1.0" prefHeight="23.0" prefWidth="411.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
                      <children>
-                        <Label fx:id="sample" prefHeight="72.0" prefWidth="339.0" text="Sample" />
-                        <ColorPicker fx:id="colorPicker" prefHeight="32.0" prefWidth="103.0">
+                        <Label fx:id="sample" prefHeight="39.0" prefWidth="338.0" text="Sample" />
+                        <ColorPicker fx:id="colorPicker" prefHeight="40.0" prefWidth="103.0">
                            <HBox.margin>
-                              <Insets top="20.0" />
+                              <Insets bottom="5.0" top="10.0" />
                            </HBox.margin>
                         </ColorPicker>
                      </children>

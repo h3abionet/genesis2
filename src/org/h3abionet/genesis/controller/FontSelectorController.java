@@ -34,6 +34,12 @@ import javafx.scene.text.FontPosture;
  */
 public class FontSelectorController implements Initializable{
     @FXML
+    private TextField titleLabel;
+
+    @FXML
+    private CheckBox titleFormat;
+    
+    @FXML
     private TextField xLabel;
 
     @FXML
@@ -95,26 +101,31 @@ public class FontSelectorController implements Initializable{
         // only format selected axis
         if(xFormat.isSelected()){
           chart.getXAxis().setLabel(xLabel.getText());
-          formatAxisLabels();
+          chart.getXAxis().lookup(".axis-label").setStyle("-fx-fill: #"+chosenFontColor+";"+
+                                  "-fx-font-size: "+chosenFontSize+"pt;"+
+                                  "-fx-font-weight: "+chosenFontStyle+";"+
+                                  "-fx-font-family: \"" + chosenFont + "\";"+
+                                  "-fx-text-fill: #"+chosenFontColor+";" );
           
         }
         
         if(yFormat.isSelected()){
           chart.getYAxis().setLabel(yLabel.getText());
-          formatAxisLabels();
-          
-        }
-        
-        closeStage(event);
-    }
-    
-    // change axis labels
-    private void formatAxisLabels(){
-        chart.getYAxis().lookup(".axis-label").setStyle("-fx-fill: #"+chosenFontColor+";"+
+          chart.getYAxis().lookup(".axis-label").setStyle("-fx-fill: #"+chosenFontColor+";"+
                                   "-fx-font-size: "+chosenFontSize+"pt;"+
                                   "-fx-font-weight: "+chosenFontStyle+";"+
                                   "-fx-font-family: \"" + chosenFont + "\";"+
                                   "-fx-text-fill: #"+chosenFontColor+";" );
+          
+        }
+        
+        if(titleFormat.isSelected()){
+            chart.setTitle(titleLabel.getText());
+            
+            
+        }
+        
+        closeStage(event);
     }
     
     @FXML
@@ -134,6 +145,7 @@ public class FontSelectorController implements Initializable{
         chart = Open0Controller.getChart();
         
         // set default values
+        titleLabel.setText(chart.getTitle());
         xLabel.setText(chart.getXAxis().getLabel());
         yLabel.setText(chart.getYAxis().getLabel());
         colorPicker.setValue(Color.BLACK);

@@ -62,6 +62,7 @@ import org.h3abionet.genesis.Genesis;
  * @author scott This is the main controller
  */
 public class Open0Controller implements Initializable {
+
     @FXML
     private FontSelectorController fontSelectorController;
     @FXML
@@ -102,7 +103,7 @@ public class Open0Controller implements Initializable {
     private Button fileButton;
     @FXML
     private Button helpButton;
-    
+
     private ProjectDetailsController projectDetailsController;
     private Project project;
     private static Tab pcaTab;
@@ -141,18 +142,26 @@ public class Open0Controller implements Initializable {
         addChart(controller);
 
     }
-    
+
     @FXML
     private void fontSelector(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/FontSelector.fxml"));
-        Stage iconStage = new Stage();
-        iconStage.initOwner(settingsButton.getScene().getWindow());
-        iconStage.setScene(new Scene((Parent) fxmlLoader.load()));
-        iconStage.setResizable(false);
-        iconStage.showAndWait();
-        
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/FontSelector.fxml"));
+            Stage iconStage = new Stage();
+            iconStage.initOwner(settingsButton.getScene().getWindow());
+            iconStage.setScene(new Scene((Parent) fxmlLoader.load()));
+            iconStage.setResizable(false);
+            iconStage.showAndWait();
+        } catch (Exception e) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Sorry, there is no chart to format");
+
+            alert.showAndWait();
+        }
+
     }
-    
 
     @FXML
     public void saveChart() {
