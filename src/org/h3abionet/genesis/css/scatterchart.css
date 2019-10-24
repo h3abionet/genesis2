@@ -43,11 +43,11 @@ and open the template in the editor.
 }
 
 .chart-vertical-grid-lines {
-    -fx-stroke: #3278fa;
+    -fx-stroke: #c6c8cc;
 }
 
 .chart-horizontal-grid-lines {
-    -fx-stroke: #3278fa;
+    -fx-stroke: #c6c8cc;
 }
 
 .chart-alternative-row-fill {

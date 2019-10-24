@@ -52,6 +52,18 @@ public class FontSelectorController implements Initializable{
     private CheckBox yFormat;
     
     @FXML
+    private CheckBox hideAxes;
+
+    @FXML
+    private CheckBox hideAxisLabels;
+
+    @FXML
+    private CheckBox showBorder;
+
+    @FXML
+    private CheckBox hideGrid;
+    
+    @FXML
     private ListView<String> fontList;
 
     @FXML
@@ -121,9 +133,56 @@ public class FontSelectorController implements Initializable{
         
         if(titleFormat.isSelected()){
             chart.setTitle(titleLabel.getText());
+            chart.lookup(".chart-title").setStyle("-fx-fill: #"+chosenFontColor+";"+
+                                  "-fx-font-size: "+chosenFontSize+"pt;"+
+                                  "-fx-font-weight: "+chosenFontStyle+";"+
+                                  "-fx-font-family: \"" + chosenFont + "\";"+
+                                  "-fx-text-fill: #"+chosenFontColor+";" );
             
             
         }
+        if(hideAxes.isSelected()){
+            chart.getXAxis().lookup(".axis-label").setVisible(false);
+            chart.getYAxis().lookup(".axis-label").setVisible(false);
+        
+        }else{
+            chart.getXAxis().lookup(".axis-label").setVisible(true);
+            chart.getYAxis().lookup(".axis-label").setVisible(true);
+        
+        }
+        
+         if(hideAxisLabels.isSelected()){
+             chart.getXAxis().setTickLabelsVisible(false);
+             chart.getYAxis().setTickLabelsVisible(false);
+         }else{
+             chart.getXAxis().setTickLabelsVisible(true);
+             chart.getYAxis().setTickLabelsVisible(true);
+         }
+         
+//         these are hard coded values -- should be changed
+         if(showBorder.isSelected()){
+             chart.lookup(".chart-plot-background").setStyle("-fx-border-color: #918f8e;"+ 
+                                                                "-fx-border-style: solid;"+ 
+                                                                "-fx-border-width: 2px;"+
+                                                                "-fx-border-insets: -2px;");
+         }else{
+             chart.lookup(".chart-plot-background").setStyle(null);
+         }
+         
+         if(hideGrid.isSelected()){
+             chart.lookup(".chart-vertical-grid-lines").setStyle(
+             "-fx-stroke: transparent;"
+             );
+             
+             chart.lookup(".chart-horizontal-grid-lines").setStyle(
+             "-fx-stroke: transparent;"
+             );
+
+         }else{
+             chart.lookup(".chart-vertical-grid-lines").setStyle(null);     
+             chart.lookup(".chart-horizontal-grid-lines").setStyle(null);
+         
+         }
         
         closeStage(event);
     }
