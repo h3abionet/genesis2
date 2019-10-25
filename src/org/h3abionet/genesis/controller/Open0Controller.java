@@ -4,6 +4,8 @@ import com.sun.javafx.charts.Legend;
 import java.io.File;
 import org.h3abionet.genesis.model.Project;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -26,6 +28,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
@@ -37,10 +40,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javax.imageio.ImageIO;
 import org.h3abionet.genesis.Genesis;
-
+import org.h3abionet.genesis.model.Zoom;
+import javafx.scene.chart.Chart;
+import javafx.scene.transform.Transform;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 /*
  * Copyright (C) 2018 scott
  *
@@ -139,7 +149,11 @@ public class Open0Controller implements Initializable {
     private void loadData(ActionEvent event) throws IOException {
         pCADataInputController.setPcaDialogStage();
         PCADataInputController controller = PCADataInputController.getController();
-        addChart(controller);
+        try {
+            addChart(controller);            
+        } catch (Exception e) {
+           ;
+        }
 
     }
 
@@ -163,31 +177,53 @@ public class Open0Controller implements Initializable {
 
     }
 
+    /**
+     * Saves the chart in the right format
+     */
     @FXML
-    public void saveChart() {
+    public void saveChart() throws IOException {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save file");
-        fileChooser.setInitialFileName("chart.png");
-        File file = fileChooser.showSaveDialog(null);
 
         if (chart == null) {
             alert.setContentText("There is no chart to save");
             alert.showAndWait();
         } else {
-            WritableImage image = chart.snapshot(new SnapshotParameters(), null);
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save file");
+            fileChooser.setInitialFileName("chart.pdf");
+            File file = fileChooser.showSaveDialog(null);
+            SnapshotParameters sp = new SnapshotParameters();
+            Transform transform = Transform.scale(5, 5);
+            sp.setTransform(transform);
+            WritableImage image = chart.snapshot(sp, null);
 
             if (file != null) {
 
-                try {
-                    ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-                } catch (IOException e) {
-                    alert.setContentText("An ERROR occurred while saving the file.");
-                    alert.showAndWait();
-                }
+//                try {
+                    // save as png
+                    System.out.println(file);
+//                    ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+                    
+                    //save as pdf
+                    float POINTS_PER_INCH = 72;
+                    float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
+                    
+                    PDDocument newPDF=new PDDocument();
+                    PDPage chartPage = new PDPage(new PDRectangle(297 * POINTS_PER_MM, 210 * POINTS_PER_MM));
+                    newPDF.addPage(chartPage);
+                    
+                    PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newPDF, SwingFXUtils.fromFXImage(image, null));
+                    PDPageContentStream contentStream = new PDPageContentStream(newPDF, chartPage);
+                    contentStream.drawImage(pdImageXObject, pdImageXObject.getWidth(), pdImageXObject.getHeight());
+                    contentStream.close();               
+                    newPDF.save(file);
+                    newPDF.close();
+//                } catch (IOException e) {
+//                    alert.setContentText("An ERROR occurred while saving the file.");
+//                    alert.showAndWait();
+//                }
             } else {
                 alert.setContentText("File selection cancelled.");
                 alert.showAndWait();
@@ -195,6 +231,11 @@ public class Open0Controller implements Initializable {
         }
     }
 
+    /**
+     * This function returns the chart
+     * when called by the individual details controller
+     * @return
+     */
     public static ScatterChart<Number, Number> getChart() {
         return chart;
     }
@@ -202,7 +243,7 @@ public class Open0Controller implements Initializable {
     private void addChart(PCADataInputController controller) {
         chart = controller.getChart();
         chart.getStylesheets().add(Genesis.class.getResource("css/scatterchart.css").toExternalForm());
-
+        
         if (chart != null) {
             String xAxisLabel = chart.getXAxis().getLabel();
             String yAxisLabel = chart.getYAxis().getLabel();
@@ -214,9 +255,23 @@ public class Open0Controller implements Initializable {
             pcaTab.setText("PCA " + x + " & " + y);
             pcaTab.setClosable(true);
             pcaTab.setId("tab" + tabCount);
-            pcaTab.setContent(chart);
+            
+            // Set chart container and its anchors to 0 to make the parent 
+            // AnchorPane resize the child to fill it's whole area:
+            final AnchorPane chartContainer = new AnchorPane();
+            AnchorPane.setBottomAnchor(chart, 0.0);
+            AnchorPane.setTopAnchor(chart, 0.0);
+            AnchorPane.setLeftAnchor(chart, 0.0);
+            AnchorPane.setRightAnchor(chart, 0.0);
+            chartContainer.getChildren().add(chart);
+            
+            // add the chart and the container to the Zoom class              
+            Zoom zoom = new Zoom(chart, chartContainer);
+            
+            // add the container to the tab
+            pcaTab.setContent(chartContainer);
             tabPane.getTabs().add(pcaTab);
-
+    
             for (XYChart.Series<Number, Number> series : chart.getData()) {
                 for (XYChart.Data<Number, Number> data : series.getData()) {
                     data.getNode().addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
@@ -244,14 +299,19 @@ public class Open0Controller implements Initializable {
                     Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
                 }
             }
-
+            
+            // Legend section
             for (Node n : chart.getChildrenUnmodifiable()) {
                 if (n instanceof Legend) {
                     Legend l = (Legend) n;
+                    l.setOnMouseClicked(event -> {
+                        setLegendPosition(chart);
+                    });
+                    
                     for (Legend.LegendItem li : l.getItems()) {
                         for (XYChart.Series<Number, Number> s : chart.getData()) {
                             if (s.getName().equals(li.getText())) {
-                                li.getSymbol().setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
+                               li.getSymbol().setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
                                 li.getSymbol().setOnMouseClicked(me -> {
                                     if (me.getButton() == MouseButton.PRIMARY) {
                                         for (XYChart.Data<Number, Number> d : s.getData()) {
@@ -307,6 +367,25 @@ public class Open0Controller implements Initializable {
         pCADataInputController = new PCADataInputController();
         pCADataInputController.setOpen0Controller(this);
         projectDetailsController = new ProjectDetailsController();
+    }
+    
+    /**
+     * This method takes a node parameter (the chart)
+     * and loads a legend position selection window
+     * It is called by the addChart method under the legend section 
+     */
+    private void setLegendPosition(Node ch){
+        List<String> choices = new ArrayList<>();
+        choices.add("bottom");
+        choices.add("right");
+
+        ChoiceDialog<String> dialog = new ChoiceDialog<>("right", choices);
+        dialog.setTitle("Legend");
+        dialog.setHeaderText("Select legend position");
+        dialog.setContentText("Position:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(letter -> ch.lookup(".chart").setStyle("-fx-legend-side: "+letter+";"));
     }
 
 }

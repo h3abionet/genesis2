@@ -202,7 +202,7 @@ public class FontSelectorController implements Initializable{
     public void initialize(URL location, ResourceBundle resources) {
         open0Controller = new Open0Controller();
         chart = Open0Controller.getChart();
-        
+
         // set default values
         titleLabel.setText(chart.getTitle());
         xLabel.setText(chart.getXAxis().getLabel());
