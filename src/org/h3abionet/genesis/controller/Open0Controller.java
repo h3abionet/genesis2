@@ -182,6 +182,7 @@ public class Open0Controller implements Initializable {
      */
     @FXML
     public void saveChart() throws IOException {
+        
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);
@@ -195,7 +196,7 @@ public class Open0Controller implements Initializable {
             fileChooser.setInitialFileName("chart.pdf");
             File file = fileChooser.showSaveDialog(null);
             SnapshotParameters sp = new SnapshotParameters();
-            Transform transform = Transform.scale(5, 5);
+            Transform transform = Transform.scale(15, 15);
             sp.setTransform(transform);
             WritableImage image = chart.snapshot(sp, null);
 
@@ -216,7 +217,9 @@ public class Open0Controller implements Initializable {
                     
                     PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newPDF, SwingFXUtils.fromFXImage(image, null));
                     PDPageContentStream contentStream = new PDPageContentStream(newPDF, chartPage);
-                    contentStream.drawImage(pdImageXObject, pdImageXObject.getWidth(), pdImageXObject.getHeight());
+                    System.out.println(pdImageXObject.getWidth());
+                    System.out.println(pdImageXObject.getHeight());
+                    contentStream.drawImage(pdImageXObject,5, 5, 830, 570);
                     contentStream.close();               
                     newPDF.save(file);
                     newPDF.close();
