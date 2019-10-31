@@ -43,7 +43,6 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.Zoom;
-import javafx.scene.chart.Chart;
 import javafx.scene.transform.Transform;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -104,7 +103,7 @@ public class Open0Controller implements Initializable {
     @FXML
     private Button searchButton;
     @FXML
-    private Button selectionButton;
+    private Button drawingButton;
     @FXML
     private Button cancelButton;
     @FXML
@@ -127,6 +126,7 @@ public class Open0Controller implements Initializable {
     }
 
     @FXML
+    @SuppressWarnings("empty-statement")
     private void newPCA(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/PCADataInput.fxml"));
         Stage stage = new Stage();
@@ -146,6 +146,7 @@ public class Open0Controller implements Initializable {
     }
 
     @FXML
+    @SuppressWarnings("empty-statement")
     private void loadData(ActionEvent event) throws IOException {
         pCADataInputController.setPcaDialogStage();
         PCADataInputController controller = PCADataInputController.getController();
@@ -158,7 +159,7 @@ public class Open0Controller implements Initializable {
     }
 
     @FXML
-    private void fontSelector(ActionEvent event) throws IOException {
+    private void fontSelector(ActionEvent event){
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/FontSelector.fxml"));
             Stage iconStage = new Stage();
@@ -166,7 +167,7 @@ public class Open0Controller implements Initializable {
             iconStage.setScene(new Scene((Parent) fxmlLoader.load()));
             iconStage.setResizable(false);
             iconStage.showAndWait();
-        } catch (Exception e) {
+        } catch (IOException e) {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
             alert.setHeaderText(null);
@@ -181,7 +182,8 @@ public class Open0Controller implements Initializable {
      * Saves the chart in the right format
      */
     @FXML
-    public void saveChart() throws IOException {
+    @SuppressWarnings("empty-statement")
+    public void saveChart(){
         
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
@@ -192,44 +194,57 @@ public class Open0Controller implements Initializable {
             alert.showAndWait();
         } else {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save file");
-            fileChooser.setInitialFileName("chart.pdf");
+            fileChooser.setTitle("Save as");
+            FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("png","*.png");
+            FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("pdf", "*.pdf");
+            fileChooser.getExtensionFilters().addAll(pngFilter, pdfFilter);
             File file = fileChooser.showSaveDialog(null);
+            
+            // tranform scale can be reduced for lower resolutions (10, 10 or 5, 5)
             SnapshotParameters sp = new SnapshotParameters();
             Transform transform = Transform.scale(15, 15);
             sp.setTransform(transform);
             WritableImage image = chart.snapshot(sp, null);
 
             if (file != null) {
+                
+                try {
+                String fileName = file.getName();           
+                String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1, file.getName().length());
+                
+                    // save as png or pdf (as A4 landscape)
+                    switch (fileExtension) {
+                        case "png":
+                            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+                            break;
+                        case "pdf":
+                            float POINTS_PER_INCH = 72;
+                            float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
+                            
+                            PDDocument newPDF=new PDDocument();
+                            PDPage chartPage = new PDPage(new PDRectangle(297 * POINTS_PER_MM, 210 * POINTS_PER_MM));
+                            newPDF.addPage(chartPage);
+                            
+                            PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newPDF, SwingFXUtils.fromFXImage(image, null));
+                            PDPageContentStream contentStream = new PDPageContentStream(newPDF, chartPage);
+                            
+                            // draw image sizes can be adjusted for smaller images
+                            contentStream.drawImage(pdImageXObject, 5, 5, 830, 570);
+                            contentStream.close();
+                            
+                            newPDF.save(file);
+                            newPDF.close();
+                            break;
+                        // No default because extension filters have been applied.
+                    }
 
-//                try {
-                    // save as png
-                    System.out.println(file);
-//                    ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-                    
-                    //save as pdf
-                    float POINTS_PER_INCH = 72;
-                    float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
-                    
-                    PDDocument newPDF=new PDDocument();
-                    PDPage chartPage = new PDPage(new PDRectangle(297 * POINTS_PER_MM, 210 * POINTS_PER_MM));
-                    newPDF.addPage(chartPage);
-                    
-                    PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newPDF, SwingFXUtils.fromFXImage(image, null));
-                    PDPageContentStream contentStream = new PDPageContentStream(newPDF, chartPage);
-                    System.out.println(pdImageXObject.getWidth());
-                    System.out.println(pdImageXObject.getHeight());
-                    contentStream.drawImage(pdImageXObject,5, 5, 830, 570);
-                    contentStream.close();               
-                    newPDF.save(file);
-                    newPDF.close();
-//                } catch (IOException e) {
-//                    alert.setContentText("An ERROR occurred while saving the file.");
-//                    alert.showAndWait();
-//                }
+                } catch (IOException e) {
+                    alert.setContentText("An ERROR occurred while saving the file.");
+                    alert.showAndWait();
+                }
             } else {
-                alert.setContentText("File selection cancelled.");
-                alert.showAndWait();
+                // do nothing if file selector is closed
+                ;
             }
         }
     }
@@ -341,12 +356,13 @@ public class Open0Controller implements Initializable {
         TextInputDialog dialog = new TextInputDialog("Help");
         dialog.setTitle("Help");
         dialog.setHeaderText("Hi, let's help you");
-        dialog.setContentText("Please enter your keywords:");
+        dialog.setContentText("What are looking for?");
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(name -> System.out.println("Your keywords: " + name));
     }
 
     @FXML
+    @SuppressWarnings("empty-statement")
     private void closeProgram(ActionEvent event) {
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
