@@ -18,10 +18,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
@@ -29,6 +32,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
@@ -38,6 +43,11 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
@@ -77,8 +87,6 @@ public class Open0Controller implements Initializable {
     @FXML
     private PCADataInputController pCADataInputController;
     @FXML
-    private TableView<?> tableTab;
-    @FXML
     private TabPane tabPane;
     @FXML
     private Tab admixtureTab;
@@ -112,7 +120,32 @@ public class Open0Controller implements Initializable {
     private Button fileButton;
     @FXML
     private Button helpButton;
+    
+    // drawiwing tools
+    @FXML
+    private AnchorPane drawingAnchorPane;
+    
+    private boolean drawingAnchorPaneVisibility;
+    
+    GraphicsContext gc;
+    Canvas canvas;
 
+    @FXML
+    private Button penTool;
+
+    @FXML
+    private Button circleTool;
+
+    @FXML
+    private Button arrowTool;
+
+    @FXML
+    private Slider sliderTool;
+
+    @FXML
+    private ColorPicker colorPickerTool;
+    
+    // other variables
     private ProjectDetailsController projectDetailsController;
     private Project project;
     private static Tab pcaTab;
@@ -258,6 +291,7 @@ public class Open0Controller implements Initializable {
         return chart;
     }
 
+    @SuppressWarnings("empty-statement")
     private void addChart(PCADataInputController controller) {
         chart = controller.getChart();
         chart.getStylesheets().add(Genesis.class.getResource("css/scatterchart.css").toExternalForm());
@@ -350,6 +384,29 @@ public class Open0Controller implements Initializable {
             ;
         }
     }
+    
+    @FXML
+    private void drawingTool(ActionEvent event){
+        drawingAnchorPaneVisibility = !drawingAnchorPaneVisibility;
+        drawingAnchorPane.setVisible(drawingAnchorPaneVisibility);
+
+    }
+    
+    @FXML
+    private void handDrawingButton(ActionEvent event){
+        Pane p = (Pane) chart.getChildrenUnmodifiable().get(1);
+        Region r = (Region) p.getChildren().get(0);
+
+       Group gr = new Group();    
+       Text text = new Text("1st Street");  
+       text.setFill(Color.web("fabbff"));
+       Line line = new Line(0, 150, 200,150);   
+       line.setStrokeWidth(20); 
+       line.setStroke(Color.web("000000")); 
+       gr.getChildren().addAll(line, text);
+       p.getChildren().addAll(gr);
+    
+    }
 
     @FXML
     private void help(ActionEvent event) {
@@ -386,6 +443,12 @@ public class Open0Controller implements Initializable {
         pCADataInputController = new PCADataInputController();
         pCADataInputController.setOpen0Controller(this);
         projectDetailsController = new ProjectDetailsController();
+        
+        canvas = new Canvas(tabPane.getWidth(), tabPane.getHeight());
+        drawingAnchorPaneVisibility = false;
+        drawingAnchorPane.setVisible(drawingAnchorPaneVisibility);
+        
+        
     }
     
     /**
