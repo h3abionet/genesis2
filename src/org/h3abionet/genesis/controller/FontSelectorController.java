@@ -159,7 +159,7 @@ public class FontSelectorController implements Initializable{
              chart.getYAxis().setTickLabelsVisible(true);
          }
          
-//         these are hard coded values -- should be changed
+         // these are hard coded values -- should be changed
          if(showBorder.isSelected()){
              chart.lookup(".chart-plot-background").setStyle("-fx-border-color: #918f8e;"+ 
                                                                 "-fx-border-style: solid;"+ 
