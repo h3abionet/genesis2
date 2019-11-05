@@ -32,6 +32,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
@@ -105,9 +106,6 @@ public class Open0Controller implements Initializable {
     private AnchorPane drawingAnchorPane;
     
     private boolean drawingAnchorPaneVisibility;
-    
-    GraphicsContext gc;
-    Canvas canvas;
 
     @FXML
     private Button penTool;
@@ -153,7 +151,6 @@ public class Open0Controller implements Initializable {
         stage.showAndWait();
 
         PCADataInputController controller = loader.getController();
-//        chart = controller.getChart();
 
         try {
             setChart(controller);
@@ -267,21 +264,55 @@ public class Open0Controller implements Initializable {
        
        Pane p = (Pane) chart.getChildrenUnmodifiable().get(1);
        Region r = (Region) p.getChildren().get(0);
-
-       Group gr = new Group();    
-       Text text = new Text("1st Street");  
-       text.setFill(Color.web("fabbff"));
+       Group gr = new Group();
+       
        Line line = new Line(0, 150, 200,150);   
        line.setStrokeWidth(2); 
        line.setStroke(Color.web("000000"));
-       
        MouseControlUtil.makeDraggable(line);
-       MouseControlUtil.makeDraggable(text);
 
-       gr.getChildren().addAll(line, text);
-       p.getChildren().addAll(gr);
+       gr.getChildren().addAll(line);
+       p.getChildren().add(gr);
     
     }
+    
+    @FXML
+    private void drawArrow(ActionEvent event){}
+    
+    @FXML
+    private void drawCircle(ActionEvent event){
+        Pane p = (Pane) chart.getChildrenUnmodifiable().get(1);
+        Region r = (Region) p.getChildren().get(0);
+        Group gr = new Group();
+       
+        Circle circle = new Circle();  
+        circle.setCenterX(200);  
+        circle.setCenterY(200);  
+        circle.setRadius(100);  
+        circle.setFill(Color.TRANSPARENT);
+        circle.setStroke(Color.BLACK);
+        MouseControlUtil.makeDraggable(circle);
+        
+        gr.getChildren().addAll(circle);
+        p.getChildren().add(gr);
+    
+    }
+    
+    @FXML
+    private void addText(ActionEvent event){
+        Pane p = (Pane) chart.getChildrenUnmodifiable().get(1);
+        Region r = (Region) p.getChildren().get(0);
+        Group gr = new Group();
+        
+        Text text = new Text("Point");  
+        text.setFill(Color.web("fabbff"));
+        MouseControlUtil.makeDraggable(text);
+        
+        gr.getChildren().addAll(text);
+        p.getChildren().add(gr);
+    
+    }
+
 
     @FXML
     private void help(ActionEvent event) {
@@ -318,8 +349,7 @@ public class Open0Controller implements Initializable {
         pCADataInputController = new PCADataInputController();
         pCADataInputController.setOpen0Controller(this);
         projectDetailsController = new ProjectDetailsController();
-        
-        canvas = new Canvas(tabPane.getWidth(), tabPane.getHeight());
+
         drawingAnchorPaneVisibility = false;
         drawingAnchorPane.setVisible(drawingAnchorPaneVisibility);
         

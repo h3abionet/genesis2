@@ -175,7 +175,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="circleTool" mnemonicParsing="false" prefHeight="22.0" prefWidth="29.0">
+                        <Button fx:id="circleTool" mnemonicParsing="false" onAction="#drawCircle" prefHeight="22.0" prefWidth="29.0">
                            <graphic>
                               <ImageView fitHeight="23.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -184,7 +184,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="arrowTool" mnemonicParsing="false">
+                        <Button fx:id="arrowTool" mnemonicParsing="false" onAction="#drawArrow">
                            <graphic>
                               <ImageView fitHeight="19.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -193,7 +193,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="textTool" layoutX="98.0" layoutY="10.0" mnemonicParsing="false">
+                        <Button fx:id="textTool" layoutX="98.0" layoutY="10.0" mnemonicParsing="false" onAction="#addText">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
