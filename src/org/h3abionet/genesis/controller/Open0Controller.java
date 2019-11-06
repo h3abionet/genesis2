@@ -6,16 +6,17 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -26,7 +27,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.input.MouseButton;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -34,8 +35,12 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Scale;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCGraph;
@@ -106,6 +111,11 @@ public class Open0Controller implements Initializable {
     private AnchorPane drawingAnchorPane;
     
     private boolean drawingAnchorPaneVisibility;
+    boolean lineAdded;
+    boolean circleAdded;
+    boolean textAdded;
+    Circle pivot;
+    Line line;
 
     @FXML
     private Button penTool;
@@ -254,36 +264,83 @@ public class Open0Controller implements Initializable {
     
     @FXML
     private void drawingTool(ActionEvent event){
+        
+        lineAdded = false;
+        circleAdded = false;
+        textAdded = false;
+        
+        sliderTool.setMin(1);
+        sliderTool.setMax(300);
+        sliderTool.setShowTickLabels(true);
+        sliderTool.setShowTickMarks(true);
+        
+        pivot = new Circle(0, 0, 8);
+        pivot.setTranslateX(50);
+        pivot.setTranslateY(50);
+    
         drawingAnchorPaneVisibility = !drawingAnchorPaneVisibility;
         drawingAnchorPane.setVisible(drawingAnchorPaneVisibility);
+        
+        colorPickerTool.setValue(Color.BLACK);
 
     }
     
     @FXML
     private void handDrawingButton(ActionEvent event){
-       
-       Pane p = (Pane) chart.getChildrenUnmodifiable().get(1);
-       Region r = (Region) p.getChildren().get(0);
-       Group gr = new Group();
-       
-       Line line = new Line(0, 150, 200,150);   
+       Rotate rotate = new Rotate();
+
+       line = new Line(0, 150, 200,150);   
        line.setStrokeWidth(2); 
        line.setStroke(Color.web("000000"));
+       
        MouseControlUtil.makeDraggable(line);
+       addShapeToChart(line);
+       
+       // set on mouse drag
+        line.setOnMouseClicked((MouseEvent evnt) -> {
+            double mouseDeltaX = evnt.getSceneX() - pivot.getTranslateX();
+            double mouseDeltaY = evnt.getSceneY() - pivot.getTranslateY();
+            double radAngle = Math.atan2(mouseDeltaY, mouseDeltaX);
+            double[] res = rotateLine(pivot, radAngle - Math.toRadians(lineCurrentAngle()), line.getEndX(), line.getEndY());
 
-       gr.getChildren().addAll(line);
-       p.getChildren().add(gr);
-    
+            line.setEndX(res[0]);
+            line.setEndY(res[1]);
+
+        });
+       
+//       line.setOnMouseClicked(e -> {
+//            textAdded = false;
+//            circleAdded = true;
+//            lineAdded = false;
+//
+//            sliderTool.valueProperty().addListener((ObservableValue <? extends Number >  
+//                    observable, Number oldValue, Number newValue) -> {
+//                if(circleAdded){
+////                line.setStrokeWidth((double) newValue);
+//                rotate.setAngle((double) newValue); 
+//                line.getTransforms().add(rotate);
+//                }
+//            });
+//            
+//            colorPickerTool.setOnAction(ev -> {
+//            if(circleAdded){
+//            line.setStroke(colorPickerTool.getValue());
+//            }
+//            });
+//            
+//
+//        });
+       
+       
+              
+
     }
-    
+
     @FXML
     private void drawArrow(ActionEvent event){}
     
     @FXML
     private void drawCircle(ActionEvent event){
-        Pane p = (Pane) chart.getChildrenUnmodifiable().get(1);
-        Region r = (Region) p.getChildren().get(0);
-        Group gr = new Group();
        
         Circle circle = new Circle();  
         circle.setCenterX(200);  
@@ -293,24 +350,100 @@ public class Open0Controller implements Initializable {
         circle.setStroke(Color.BLACK);
         MouseControlUtil.makeDraggable(circle);
         
-        gr.getChildren().addAll(circle);
-        p.getChildren().add(gr);
-    
+        addShapeToChart(circle);
+        
+        circle.setOnMouseClicked(e -> {
+            textAdded = false;
+            circleAdded = true;
+            lineAdded = false;
+
+            sliderTool.valueProperty().addListener((ObservableValue <? extends Number >  
+                    observable, Number oldValue, Number newValue) -> {
+                if(circleAdded){
+                circle.setRadius((double) newValue);
+                }
+            });
+            
+            colorPickerTool.setOnAction(ev -> {
+            if(circleAdded){
+            circle.setStroke(colorPickerTool.getValue());
+            }
+            });
+            
+
+        });
+
     }
     
     @FXML
     private void addText(ActionEvent event){
+
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Text");
+        dialog.setHeaderText(null);
+        dialog.setGraphic(null);
+        dialog.setContentText("Text:");
+
+        Optional<String> result = dialog.showAndWait();
+        String txt = result.get();
+        
+        Text text = new Text(txt);  
+        text.setFill(Color.web("000000"));
+        MouseControlUtil.makeDraggable(text);
+        
+        addShapeToChart(text);
+        
+        text.setOnMouseClicked(e -> {
+            textAdded = true;
+            circleAdded = false;
+            lineAdded = false;
+
+            colorPickerTool.setOnAction(ev -> {
+            if(textAdded){
+                text.setFill(colorPickerTool.getValue());
+            }
+            
+            sliderTool.valueProperty().addListener(evt ->{
+            if(textAdded){
+                double value = sliderTool.getValue();
+                text.setFont(Font.font(null, value));
+            }
+
+        });
+        });
+        });
+
+    }
+    
+    private void addShapeToChart(Shape shape){
         Pane p = (Pane) chart.getChildrenUnmodifiable().get(1);
         Region r = (Region) p.getChildren().get(0);
         Group gr = new Group();
-        
-        Text text = new Text("Point");  
-        text.setFill(Color.web("fabbff"));
-        MouseControlUtil.makeDraggable(text);
-        
-        gr.getChildren().addAll(text);
+
+        shape.setOnMouseEntered(e -> {
+               shape.getScene().setCursor(Cursor.HAND);
+               shape.setEffect(new DropShadow(20, Color.BLUE));
+           });
+
+        shape.setOnMouseExited(e ->{
+               shape.getScene().setCursor(Cursor.DEFAULT);
+               shape.setEffect(null);
+           });
+
+        gr.getChildren().addAll(shape);
         p.getChildren().add(gr);
     
+    }
+    
+    private double lineCurrentAngle(){
+        return  Math.toDegrees(Math.atan2(line.getEndY() - pivot.getTranslateY(), line.getEndX() - pivot.getTranslateX()));
+    }
+    
+    private double[] rotateLine(Shape pivot, double radAngle, double endX, double endY) {
+        double x, y;
+        x = Math.cos(radAngle) * (endX - pivot.getTranslateX()) - Math.sin(radAngle) * (endY - pivot.getTranslateY()) + pivot.getTranslateX();
+        y = Math.sin(radAngle) * (endX - pivot.getTranslateX()) + Math.cos(radAngle) * (endY - pivot.getTranslateY()) + pivot.getTranslateY();
+        return new double[]{x, y};
     }
 
 
