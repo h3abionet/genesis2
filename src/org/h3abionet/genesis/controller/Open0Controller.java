@@ -22,6 +22,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
@@ -134,6 +135,11 @@ public class Open0Controller implements Initializable {
 
     @FXML
     private ColorPicker colorPickerTool;
+    
+    @FXML
+    private CheckBox rotateBox;
+    
+    boolean isRotateSelected;
     
     // other variables
     private ProjectDetailsController projectDetailsController;
@@ -263,8 +269,15 @@ public class Open0Controller implements Initializable {
     }
     
     @FXML
+    private void rotateShape(ActionEvent event){
+        if(rotateBox.isSelected()){
+            isRotateSelected = true;
+        }
+    }
+    
+    @FXML
     private void drawingTool(ActionEvent event){
-        
+        isRotateSelected = false;
         lineAdded = false;
         circleAdded = false;
         textAdded = false;
@@ -285,6 +298,7 @@ public class Open0Controller implements Initializable {
 
     }
     
+    
     @FXML
     private void handDrawingButton(ActionEvent event){
        Rotate rotate = new Rotate();
@@ -293,11 +307,12 @@ public class Open0Controller implements Initializable {
        line.setStrokeWidth(2); 
        line.setStroke(Color.web("000000"));
        
-       MouseControlUtil.makeDraggable(line);
        addShapeToChart(line);
        
+        MouseControlUtil.makeDraggable(line);
+
        // set on mouse drag
-        line.setOnMouseClicked((MouseEvent evnt) -> {
+        line.setOnMouseMoved((MouseEvent evnt) -> {
             double mouseDeltaX = evnt.getSceneX() - pivot.getTranslateX();
             double mouseDeltaY = evnt.getSceneY() - pivot.getTranslateY();
             double radAngle = Math.atan2(mouseDeltaY, mouseDeltaX);
@@ -307,6 +322,7 @@ public class Open0Controller implements Initializable {
             line.setEndY(res[1]);
 
         });
+
        
 //       line.setOnMouseClicked(e -> {
 //            textAdded = false;
@@ -406,7 +422,8 @@ public class Open0Controller implements Initializable {
             sliderTool.valueProperty().addListener(evt ->{
             if(textAdded){
                 double value = sliderTool.getValue();
-                text.setFont(Font.font(null, value));
+                text.setFont(new Font(value));
+                text.getTransforms().add(new Rotate(30, 50, 30));
             }
 
         });
