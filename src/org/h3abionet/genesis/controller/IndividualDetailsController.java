@@ -20,6 +20,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
@@ -44,15 +45,21 @@ public class IndividualDetailsController implements Initializable {
 
     @FXML
     private RadioButton topRadioBtn;
-
+    
     @FXML
     private RadioButton clearRadioBtn;
-
+    
+    @FXML
+    private RadioButton seriesRadioBtn;
+    
     @FXML
     private Button iconDisplay;
     
     @FXML
     private Button chosenIconDisplay;
+    
+    @FXML
+    private TextField groupName;
 
     @FXML
     private Button btnChangeIcon;
@@ -73,6 +80,7 @@ public class IndividualDetailsController implements Initializable {
     private boolean hideRadioBtnClicked;
     private boolean topRadioBtnClicked;
     private boolean clearRadioBtnClicked;
+    private boolean seriesRadioBtnClicked;
     
     // set icon properties from the iconOptionsController
     public void setIconSize(int iconSize) {
@@ -149,12 +157,33 @@ public class IndividualDetailsController implements Initializable {
         if (clearRadioBtn.isSelected()) {
             clearRadioBtnClicked = true;         
         }
+        if (seriesRadioBtn.isSelected()) {
+            seriesRadioBtnClicked = true;         
+        }
     }
 
     @FXML
     private void entryOkButton(ActionEvent event) {
         
         for (XYChart.Series<Number, Number> series : chart.getData()) {
+            if(seriesRadioBtnClicked){
+                if(series.getName().equals(groupName.getText()))
+            {
+                try {
+                for(XYChart.Data<Number, Number> dt : series.getData())
+                {
+                    dt.getNode().lookup(".chart-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
+                                + "-fx-background-color: #"+iconColor+";");
+                    chart.lookup(".chart-legend-item-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
+                                + "-fx-background-color: #"+iconColor+";");
+                    
+                }
+                }catch (Exception e) {
+                    
+                }
+            }    
+            }
+            
             for (XYChart.Data<Number, Number> data : series.getData()) {
                 if (hideRadioBtnClicked) {
                     data.getNode().setOnMouseClicked(e -> {
@@ -176,7 +205,8 @@ public class IndividualDetailsController implements Initializable {
                     data.getNode().setOnMouseClicked(e -> {
                         data.getNode().setStyle(null);
                     });
-                } else {
+                }
+                else {
                     ; // do nothing     
                 }
 
@@ -202,9 +232,12 @@ public class IndividualDetailsController implements Initializable {
         open0Controller = new Open0Controller();
         chosenIconDisplay.setVisible(false);
         chart = Open0Controller.getChart();
+        
+        
         hideRadioBtnClicked = false;
         topRadioBtnClicked = false;
         clearRadioBtnClicked = false;
+        seriesRadioBtnClicked = false;
 
     }
 

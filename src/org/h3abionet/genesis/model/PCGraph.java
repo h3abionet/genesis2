@@ -133,6 +133,7 @@ public class PCGraph {
                                         }
                                     }
                                 });
+                                break;
                             }
                         }
                     }

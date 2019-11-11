@@ -321,34 +321,7 @@ public class Open0Controller implements Initializable {
             line.setEndX(res[0]);
             line.setEndY(res[1]);
 
-        });
-
-       
-//       line.setOnMouseClicked(e -> {
-//            textAdded = false;
-//            circleAdded = true;
-//            lineAdded = false;
-//
-//            sliderTool.valueProperty().addListener((ObservableValue <? extends Number >  
-//                    observable, Number oldValue, Number newValue) -> {
-//                if(circleAdded){
-////                line.setStrokeWidth((double) newValue);
-//                rotate.setAngle((double) newValue); 
-//                line.getTransforms().add(rotate);
-//                }
-//            });
-//            
-//            colorPickerTool.setOnAction(ev -> {
-//            if(circleAdded){
-//            line.setStroke(colorPickerTool.getValue());
-//            }
-//            });
-//            
-//
-//        });
-       
-       
-              
+        }); 
 
     }
 
