@@ -58,7 +58,7 @@ public class PCAProject {
     /**
      *
      */
-    List<String[]> listOfows;
+    List<String[]> listOfrows;
 
     /**
      *
@@ -144,7 +144,7 @@ public class PCAProject {
      */
     public List<String[]> mergePhenoPCA() {
         map = new HashMap<>();
-        listOfows = new ArrayList<>();
+        listOfrows = new ArrayList<>();
         map.putAll(pcaValues);
 
         pheno.getPheno().forEach((key, value) -> {
@@ -164,9 +164,9 @@ public class PCAProject {
             ArrayList<String> entries = new ArrayList<>(Arrays.asList(entry.getValue()));
             entries.add(entry.getKey());
             String[] individualRows = entries.toArray(new String[entries.size()]);
-            listOfows.add(individualRows);
+            listOfrows.add(individualRows);
         });
-        return listOfows;
+        return listOfrows;
     }
 
     /**
@@ -197,16 +197,18 @@ public class PCAProject {
         xAxis.setSide(Side.BOTTOM);
         NumberAxis yAxis = new NumberAxis();
         yAxis.setSide(Side.LEFT);
-        ScatterChart<Number, Number> sc = new ScatterChart<Number, Number>(xAxis, yAxis);
+        ScatterChart<Number, Number> sc = new ScatterChart<>(xAxis, yAxis);
+        
         // setup chart
         xAxis.setLabel(xAxisPca);
         yAxis.setLabel(yAxisPca);
         sc.setTitle(projectDetailsController.getProjectName());
 
         getGroups().forEach((k, v) -> {
-            series = new XYChart.Series<Number, Number>();
+            series = new XYChart.Series<>();
             series.setName(k);
-            for (String[] v1 : v) {
+            
+            for(String[] v1 : v) {
                 series.getData().add(new XYChart.Data(Float.parseFloat(v1[xPcaNumber]), Float.parseFloat(v1[yPcaNumber])));
             }
             sc.getData().add(series);

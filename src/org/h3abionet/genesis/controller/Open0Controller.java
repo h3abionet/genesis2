@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -386,21 +388,37 @@ public class Open0Controller implements Initializable {
             textAdded = true;
             circleAdded = false;
             lineAdded = false;
+             
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/LabelOptions.fxml"));
+                Parent parent = (Parent) fxmlLoader.load();
+                Stage dialogStage = new Stage();
+                dialogStage.setScene(new Scene(parent));
+                dialogStage.setResizable(false);
+                
+                LabelOptionsController labelOptionsController = fxmlLoader.getController();
+                labelOptionsController.setLabel(txt);
+                dialogStage.showAndWait();
+                
+                 text.setFill(colorPickerTool.getValue());
 
-            colorPickerTool.setOnAction(ev -> {
-            if(textAdded){
-                text.setFill(colorPickerTool.getValue());
+            } catch (IOException ex) {
+                Logger.getLogger(Open0Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            sliderTool.valueProperty().addListener(evt ->{
-            if(textAdded){
-                double value = sliderTool.getValue();
-                text.setFont(new Font(value));
-                text.getTransforms().add(new Rotate(30, 50, 30));
-            }
-
-        });
-        });
+//            colorPickerTool.setOnAction(ev -> {
+//            if(textAdded){
+//                text.setFill(colorPickerTool.getValue());
+//            }
+//            
+//            sliderTool.valueProperty().addListener(evt ->{
+//            if(textAdded){
+//                double value = sliderTool.getValue();
+//                text.setFont(new Font(value));
+//                text.getTransforms().add(new Rotate(30, 50, 30));
+//            }
+//
+//        });
+//        });
         });
 
     }
