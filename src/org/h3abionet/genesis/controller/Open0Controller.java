@@ -1,14 +1,10 @@
 package org.h3abionet.genesis.controller;
 
-import org.h3abionet.genesis.model.Project;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,7 +12,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.ScatterChart;
@@ -31,6 +26,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -39,15 +35,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeLineCap;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCGraph;
+import org.h3abionet.genesis.model.LabelOptions;
+import org.h3abionet.genesis.model.CircleOptions;
 import jfxtras.labs.util.event.MouseControlUtil;
+
 /*
  * Copyright (C) 2018 scott
  *
@@ -108,11 +104,11 @@ public class Open0Controller implements Initializable {
     private Button fileButton;
     @FXML
     private Button helpButton;
-    
+
     // drawiwing tools
     @FXML
     private AnchorPane drawingAnchorPane;
-    
+
     private boolean drawingAnchorPaneVisibility;
     boolean lineAdded;
     boolean circleAdded;
@@ -128,7 +124,7 @@ public class Open0Controller implements Initializable {
 
     @FXML
     private Button arrowTool;
-    
+
     @FXML
     private Button textTool;
 
@@ -137,15 +133,14 @@ public class Open0Controller implements Initializable {
 
     @FXML
     private ColorPicker colorPickerTool;
-    
+
     @FXML
     private CheckBox rotateBox;
-    
+
     boolean isRotateSelected;
-    
+
     // other variables
     private ProjectDetailsController projectDetailsController;
-    private Project project;
     private static Tab pcaTab;
     private static int tabCount = 0;
     private int chartIndex;
@@ -187,51 +182,50 @@ public class Open0Controller implements Initializable {
     private void loadData(ActionEvent event) throws IOException {
         pCADataInputController.setPcaDialogStage();
         PCADataInputController controller = PCADataInputController.getController();
-        
+
         try {
             setChart(controller);
-            
         } catch (Exception e) {
-           ;
+            ;
         }
 
     }
-    
-    public void setChart(PCADataInputController controller){
+
+    public void setChart(PCADataInputController controller) {
         chart = controller.getChart();
         try {
             PCGraph pc = new PCGraph(chart);
-            
+
             String xAxisLabel = chart.getXAxis().getLabel();
             String yAxisLabel = chart.getYAxis().getLabel();
             String x = xAxisLabel.substring(4, xAxisLabel.length());
             String y = yAxisLabel.substring(4, yAxisLabel.length());
-            
+
             tabCount++;
             pcaTab = new Tab();
             pcaTab.setText("PCA " + x + " & " + y);
             pcaTab.setClosable(true);
             pcaTab.setId("tab" + tabCount);
-            
+
             // add the container to the tab
             pcaTab.setContent(pc.addGraph());
             tabPane.getTabs().add(pcaTab);
-            
+
             // set chart index to selected tab number 
             tabPane.getSelectionModel().selectedIndexProperty().addListener((ObservableValue<? extends Number> ov, Number oldValue, Number newValue) -> {
                 chartIndex = (int) newValue;
                 System.out.println(chartIndex);
 
-            }); 
+            });
             chartList.add(chart);
-            
+
         } catch (Exception e) {
-           ;
+            ;
         }
     }
 
     @FXML
-    private void fontSelector(ActionEvent event){
+    private void fontSelector(ActionEvent event) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/FontSelector.fxml"));
             Stage iconStage = new Stage();
@@ -255,65 +249,65 @@ public class Open0Controller implements Initializable {
      */
     @FXML
     @SuppressWarnings("empty-statement")
-    public void saveChart(){
+    public void saveChart() {
         PCGraph pc = new PCGraph(chartList.get(chartIndex));
         pc.saveChart();
-        
+
     }
 
     /**
-     * This function returns the chart
-     * when called by the individual details controller
+     * This function returns the chart when called by the individual details
+     * controller
+     *
      * @return
      */
     public static ScatterChart<Number, Number> getChart() {
         return chart;
     }
-    
+
     @FXML
-    private void rotateShape(ActionEvent event){
-        if(rotateBox.isSelected()){
+    private void rotateShape(ActionEvent event) {
+        if (rotateBox.isSelected()) {
             isRotateSelected = true;
         }
     }
-    
+
     @FXML
-    private void drawingTool(ActionEvent event){
+    private void drawingTool(ActionEvent event) {
         isRotateSelected = false;
         lineAdded = false;
         circleAdded = false;
         textAdded = false;
-        
+
         sliderTool.setMin(1);
         sliderTool.setMax(300);
         sliderTool.setShowTickLabels(true);
         sliderTool.setShowTickMarks(true);
-        
+
         pivot = new Circle(0, 0, 8);
         pivot.setTranslateX(50);
         pivot.setTranslateY(50);
-    
+
         drawingAnchorPaneVisibility = !drawingAnchorPaneVisibility;
         drawingAnchorPane.setVisible(drawingAnchorPaneVisibility);
-        
+
         colorPickerTool.setValue(Color.BLACK);
 
     }
-    
-    
-    @FXML
-    private void handDrawingButton(ActionEvent event){
-       Rotate rotate = new Rotate();
 
-       line = new Line(0, 150, 200,150);   
-       line.setStrokeWidth(2); 
-       line.setStroke(Color.web("000000"));
-       
-       addShapeToChart(line);
-       
+    @FXML
+    private void handDrawingButton(ActionEvent event) {
+        Rotate rotate = new Rotate();
+
+        line = new Line(0, 150, 200, 150);
+        line.setStrokeWidth(2);
+        line.setStroke(Color.web("000000"));
+
+        addShapeToChart(line);
+
         MouseControlUtil.makeDraggable(line);
 
-       // set on mouse drag
+        // set on mouse drag
         line.setOnMouseMoved((MouseEvent evnt) -> {
             double mouseDeltaX = evnt.getSceneX() - pivot.getTranslateX();
             double mouseDeltaY = evnt.getSceneY() - pivot.getTranslateY();
@@ -323,52 +317,43 @@ public class Open0Controller implements Initializable {
             line.setEndX(res[0]);
             line.setEndY(res[1]);
 
-        }); 
-
-    }
-
-    @FXML
-    private void drawArrow(ActionEvent event){}
-    
-    @FXML
-    private void drawCircle(ActionEvent event){
-       
-        Circle circle = new Circle();  
-        circle.setCenterX(200);  
-        circle.setCenterY(200);  
-        circle.setRadius(100);  
-        circle.setFill(Color.TRANSPARENT);
-        circle.setStroke(Color.BLACK);
-        MouseControlUtil.makeDraggable(circle);
-        
-        addShapeToChart(circle);
-        
-        circle.setOnMouseClicked(e -> {
-            textAdded = false;
-            circleAdded = true;
-            lineAdded = false;
-
-            sliderTool.valueProperty().addListener((ObservableValue <? extends Number >  
-                    observable, Number oldValue, Number newValue) -> {
-                if(circleAdded){
-                circle.setRadius((double) newValue);
-                }
-            });
-            
-            colorPickerTool.setOnAction(ev -> {
-            if(circleAdded){
-            circle.setStroke(colorPickerTool.getValue());
-            }
-            });
-            
-
         });
 
     }
-    
-    @FXML
-    private void addText(ActionEvent event){
 
+    @FXML
+    private void drawArrow(ActionEvent event) {
+    }
+
+    @FXML
+    private void drawCircle(ActionEvent event) {
+
+        Circle circle = new Circle();
+        circle.setCenterX(200);
+        circle.setCenterY(200);
+        circle.setRadius(100);
+        circle.setFill(Color.TRANSPARENT);
+        circle.setStroke(Color.BLACK);
+        
+        MouseControlUtil.makeDraggable(circle);
+        addShapeToChart(circle);
+        
+        circle.setOnMouseClicked((MouseEvent e) -> {
+            if (e.getButton() == MouseButton.SECONDARY)
+            {
+                // use class circle options -- accepts chosen circle as a paremeter
+                CircleOptions circleOptions = new CircleOptions(circle);
+                // modify the chosen circle
+                circleOptions.modifyCircle();
+            }
+        });
+
+        
+
+    }
+
+    @FXML
+    private void addText(ActionEvent event) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Text");
         dialog.setHeaderText(null);
@@ -376,84 +361,59 @@ public class Open0Controller implements Initializable {
         dialog.setContentText("Text:");
 
         Optional<String> result = dialog.showAndWait();
-        String txt = result.get();
+        Text text = new Text(result.get());
+        // set text default color and position on the chart
+        text.setX(300); 
+        text.setY(50);
+        text.setFill(Color.BLACK);
         
-        Text text = new Text(txt);  
-        text.setFill(Color.web("000000"));
+        // can drag text
         MouseControlUtil.makeDraggable(text);
-        
+        // add text to chart
         addShapeToChart(text);
-        
-        text.setOnMouseClicked(e -> {
-            textAdded = true;
-            circleAdded = false;
-            lineAdded = false;
-             
-            try {
-                FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/LabelOptions.fxml"));
-                Parent parent = (Parent) fxmlLoader.load();
-                Stage dialogStage = new Stage();
-                dialogStage.setScene(new Scene(parent));
-                dialogStage.setResizable(false);
-                
-                LabelOptionsController labelOptionsController = fxmlLoader.getController();
-                labelOptionsController.setLabel(txt);
-                dialogStage.showAndWait();
-                
-                 text.setFill(colorPickerTool.getValue());
-
-            } catch (IOException ex) {
-                Logger.getLogger(Open0Controller.class.getName()).log(Level.SEVERE, null, ex);
+        // add mouse event to text for editing options
+        text.setOnMouseClicked((MouseEvent e) -> {
+            if (e.getButton() == MouseButton.SECONDARY)
+            {
+                // use class label options -- accepts chosen label as a paremeter
+                LabelOptions labelOptions = new LabelOptions(text);
+                // modify the chosen label
+                labelOptions.modifyLabel();
             }
-//            colorPickerTool.setOnAction(ev -> {
-//            if(textAdded){
-//                text.setFill(colorPickerTool.getValue());
-//            }
-//            
-//            sliderTool.valueProperty().addListener(evt ->{
-//            if(textAdded){
-//                double value = sliderTool.getValue();
-//                text.setFont(new Font(value));
-//                text.getTransforms().add(new Rotate(30, 50, 30));
-//            }
-//
-//        });
-//        });
         });
 
     }
-    
-    private void addShapeToChart(Shape shape){
+
+    private void addShapeToChart(Shape shape) {
         Pane p = (Pane) chart.getChildrenUnmodifiable().get(1);
         Region r = (Region) p.getChildren().get(0);
         Group gr = new Group();
 
         shape.setOnMouseEntered(e -> {
-               shape.getScene().setCursor(Cursor.HAND);
-               shape.setEffect(new DropShadow(20, Color.BLUE));
-           });
+            shape.getScene().setCursor(Cursor.HAND);
+            shape.setEffect(new DropShadow(20, Color.BLUE));
+        });
 
-        shape.setOnMouseExited(e ->{
-               shape.getScene().setCursor(Cursor.DEFAULT);
-               shape.setEffect(null);
-           });
+        shape.setOnMouseExited(e -> {
+            shape.getScene().setCursor(Cursor.DEFAULT);
+            shape.setEffect(null);
+        });
 
         gr.getChildren().addAll(shape);
         p.getChildren().add(gr);
-    
+
     }
-    
-    private double lineCurrentAngle(){
-        return  Math.toDegrees(Math.atan2(line.getEndY() - pivot.getTranslateY(), line.getEndX() - pivot.getTranslateX()));
+
+    private double lineCurrentAngle() {
+        return Math.toDegrees(Math.atan2(line.getEndY() - pivot.getTranslateY(), line.getEndX() - pivot.getTranslateX()));
     }
-    
+
     private double[] rotateLine(Shape pivot, double radAngle, double endX, double endY) {
         double x, y;
         x = Math.cos(radAngle) * (endX - pivot.getTranslateX()) - Math.sin(radAngle) * (endY - pivot.getTranslateY()) + pivot.getTranslateX();
         y = Math.sin(radAngle) * (endX - pivot.getTranslateX()) + Math.cos(radAngle) * (endY - pivot.getTranslateY()) + pivot.getTranslateY();
         return new double[]{x, y};
     }
-
 
     @FXML
     private void help(ActionEvent event) {
@@ -493,8 +453,7 @@ public class Open0Controller implements Initializable {
 
         drawingAnchorPaneVisibility = false;
         drawingAnchorPane.setVisible(drawingAnchorPaneVisibility);
-        
-        
+
     }
-    
+
 }

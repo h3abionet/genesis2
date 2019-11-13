@@ -168,25 +168,6 @@ public class PCGraph {
     
     }
     
-    /**
-     * This method takes a node parameter (the chart)
-     * and loads a legend position selection window
-     * It is called by the addChart method under the legend section 
-     */
-    private void setLegendPosition(Node ch){
-        List<String> choices = new ArrayList<>();
-        choices.add("bottom");
-        choices.add("right");
-
-        ChoiceDialog<String> dialog = new ChoiceDialog<>("right", choices);
-        dialog.setTitle("Legend");
-        dialog.setHeaderText("Select legend position");
-        dialog.setContentText("Position:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(letter -> ch.lookup(".chart").setStyle("-fx-legend-side: "+letter+";"));
-    }
-    
     public void saveChart(){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
