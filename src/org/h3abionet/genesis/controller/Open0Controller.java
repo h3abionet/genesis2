@@ -19,9 +19,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
@@ -34,6 +31,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
@@ -43,6 +41,8 @@ import org.h3abionet.genesis.model.PCGraph;
 import org.h3abionet.genesis.model.LabelOptions;
 import org.h3abionet.genesis.model.CircleOptions;
 import jfxtras.labs.util.event.MouseControlUtil;
+import org.h3abionet.genesis.model.Arrow;
+import org.h3abionet.genesis.model.RectangleOptions;
 
 /*
  * Copyright (C) 2018 scott
@@ -117,7 +117,7 @@ public class Open0Controller implements Initializable {
     Line line;
 
     @FXML
-    private Button penTool;
+    private Button lineTool;
 
     @FXML
     private Button circleTool;
@@ -127,18 +127,7 @@ public class Open0Controller implements Initializable {
 
     @FXML
     private Button textTool;
-
-    @FXML
-    private Slider sliderTool;
-
-    @FXML
-    private ColorPicker colorPickerTool;
-
-    @FXML
-    private CheckBox rotateBox;
-
-    boolean isRotateSelected;
-
+    
     // other variables
     private ProjectDetailsController projectDetailsController;
     private static Tab pcaTab;
@@ -266,37 +255,17 @@ public class Open0Controller implements Initializable {
     }
 
     @FXML
-    private void rotateShape(ActionEvent event) {
-        if (rotateBox.isSelected()) {
-            isRotateSelected = true;
-        }
-    }
-
-    @FXML
     private void drawingTool(ActionEvent event) {
-        isRotateSelected = false;
-        lineAdded = false;
-        circleAdded = false;
-        textAdded = false;
-
-        sliderTool.setMin(1);
-        sliderTool.setMax(300);
-        sliderTool.setShowTickLabels(true);
-        sliderTool.setShowTickMarks(true);
-
         pivot = new Circle(0, 0, 8);
         pivot.setTranslateX(50);
         pivot.setTranslateY(50);
 
         drawingAnchorPaneVisibility = !drawingAnchorPaneVisibility;
         drawingAnchorPane.setVisible(drawingAnchorPaneVisibility);
-
-        colorPickerTool.setValue(Color.BLACK);
-
     }
 
     @FXML
-    private void handDrawingButton(ActionEvent event) {
+    private void addLine(ActionEvent event) {
         Rotate rotate = new Rotate();
 
         line = new Line(0, 150, 200, 150);
@@ -322,12 +291,51 @@ public class Open0Controller implements Initializable {
     }
 
     @FXML
-    private void drawArrow(ActionEvent event) {
+    private void addArrow(ActionEvent event) {
+        Arrow arrow = new Arrow();
+        arrow.setStartX(200); 
+        arrow.setStartY(200); 
+        arrow.setEndX(400); 
+        arrow.setEndY(200);
+        
+        MouseControlUtil.makeDraggable(arrow);
+
+        Pane p = (Pane) chart.getChildrenUnmodifiable().get(1);
+        Region r = (Region) p.getChildren().get(0);
+        Group gr = new Group();
+
+        arrow.setOnMouseEntered(e -> {
+            arrow.getScene().setCursor(Cursor.HAND);
+            arrow.setEffect(new DropShadow(20, Color.BLUE));
+        });
+
+        arrow.setOnMouseExited(e -> {
+            arrow.getScene().setCursor(Cursor.DEFAULT);
+            arrow.setEffect(null);
+        });
+
+        gr.getChildren().addAll(arrow);
+        p.getChildren().add(gr);
+        
+        p.setOnMouseClicked(evt -> {
+        switch (evt.getButton()) {
+            case PRIMARY:
+                // set pos of end with arrow head
+                arrow.setEndX(evt.getX());
+                arrow.setEndY(evt.getY());
+                break;
+            case SECONDARY:
+                // set pos of end without arrow head
+                arrow.setStartX(evt.getX());
+                arrow.setStartY(evt.getY());
+                break;
+        }
+    });
+
     }
 
     @FXML
-    private void drawCircle(ActionEvent event) {
-
+    private void addCircle(ActionEvent event) {
         Circle circle = new Circle();
         circle.setCenterX(200);
         circle.setCenterY(200);
@@ -347,9 +355,6 @@ public class Open0Controller implements Initializable {
                 circleOptions.modifyCircle();
             }
         });
-
-        
-
     }
 
     @FXML
@@ -361,10 +366,8 @@ public class Open0Controller implements Initializable {
         dialog.setContentText("Text:");
 
         Optional<String> result = dialog.showAndWait();
-        Text text = new Text(result.get());
         // set text default color and position on the chart
-        text.setX(300); 
-        text.setY(50);
+        Text text = new Text(300, 50, result.get());
         text.setFill(Color.BLACK);
         
         // can drag text
@@ -382,6 +385,25 @@ public class Open0Controller implements Initializable {
             }
         });
 
+    }
+    @FXML
+    private void addRectangle(ActionEvent event) {
+        Rectangle rec = new Rectangle(100, 100, 200, 100);
+        rec.setFill(Color.TRANSPARENT);
+        rec.setStroke(Color.BLACK);
+        
+        MouseControlUtil.makeDraggable(rec);
+        addShapeToChart(rec);
+        
+        rec.setOnMouseClicked((MouseEvent e) -> {
+            if (e.getButton() == MouseButton.SECONDARY)
+            {
+                // use class rectangle options -- accepts chosen rectangle as a paremeter
+                RectangleOptions rectangleOptions = new RectangleOptions(rec);
+                // modify the chosen rectangle
+                rectangleOptions.modifyRectangle();
+            }
+        });
     }
 
     private void addShapeToChart(Shape shape) {
@@ -401,9 +423,10 @@ public class Open0Controller implements Initializable {
 
         gr.getChildren().addAll(shape);
         p.getChildren().add(gr);
+        
 
     }
-
+    
     private double lineCurrentAngle() {
         return Math.toDegrees(Math.atan2(line.getEndY() - pivot.getTranslateY(), line.getEndX() - pivot.getTranslateX()));
     }

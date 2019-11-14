@@ -23,51 +23,66 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 
 /**
  *
  * @author Henry
  */
-public class CircleOptions {
+public class RectangleOptions {
     
-    Circle circle;
+    Rectangle rectangle;
     GridPane grid;
     
     // grid components or controllers
     Label StrokeWidthLabel;
-    Label radiusSizeLabel;
+    Label widthSizeLabel;
+    Label heightSizeLabel;
     Label cpStrokeLabel;
     Label cpFillLabel;
+    Label archSizeLabel;
     ColorPicker cpStroke;
     ColorPicker cpFill;
-    Slider slider;
+    Slider widthSlider;
+    Slider heightSlider;
     ComboBox stkWidth;
+    ComboBox archSizeCombo;
 
-    public CircleOptions(Circle circle) {
-        this.circle = circle;
+    public RectangleOptions(Rectangle rectangle) {
+        this.rectangle = rectangle;
         setControllers();
     }
     
     private void setControllers(){
         StrokeWidthLabel = new Label("Stroke Width");
-        radiusSizeLabel = new Label("Radius size: ");
+        widthSizeLabel = new Label("Width: ");
+        heightSizeLabel = new Label("Height: ");
         cpStrokeLabel = new Label("Stroke color: ");
         cpFillLabel = new Label("Fill color: ");
-
-        cpStroke = new ColorPicker((Color) circle.getStroke());
+        archSizeLabel = new Label("Arch size: ");
+        
+        cpStroke = new ColorPicker((Color) rectangle.getStroke());
         cpStroke.getStyleClass().add("split-button");
 
-        cpFill = new ColorPicker((Color) circle.getFill());
+        cpFill = new ColorPicker((Color) rectangle.getFill());
         cpFill.getStyleClass().add("split-button");
         
-        slider = new Slider(5, 200, (int)circle.getRadius());
-        slider.setShowTickLabels(true);
-        slider.setShowTickMarks(true);
+        widthSlider = new Slider(5, 300, (int)rectangle.getWidth());
+        widthSlider.setShowTickLabels(true);
+        widthSlider.setShowTickMarks(true);
+        
+        heightSlider = new Slider(5, 300, (int)rectangle.getHeight());
+        heightSlider.setShowTickLabels(true);
+        heightSlider.setShowTickMarks(true);
         
         stkWidth = new ComboBox(FXCollections.
                         observableArrayList(IntStream.range(1, 11).boxed().collect(Collectors.toList())));
-                stkWidth.setValue((int)circle.getStrokeWidth());
+                stkWidth.setValue((int)rectangle.getStrokeWidth());
+        
+        archSizeCombo = new ComboBox(FXCollections.
+                observableArrayList(IntStream.range(1, 11).boxed().collect(Collectors.toList())));
+        archSizeCombo.setValue((int)rectangle.getArcWidth());
         
         // set the grid
         grid = new GridPane();
@@ -79,36 +94,50 @@ public class CircleOptions {
         // add controllers to the grid
         grid.add(StrokeWidthLabel, 1, 1);
         grid.add(stkWidth, 2, 1);
-        grid.add(radiusSizeLabel, 1, 2);
-        grid.add(slider, 2, 2);
-        grid.add(cpStrokeLabel, 1, 3);
-        grid.add(cpStroke, 2, 3);
+        grid.add(widthSizeLabel, 1, 2);
+        grid.add(widthSlider, 2, 2);
+        grid.add(heightSizeLabel, 1, 3);
+        grid.add(heightSlider, 2, 3);
         grid.add(cpFillLabel, 1, 4);
         grid.add(cpFill, 2, 4);
+        grid.add(cpStrokeLabel, 1, 5);
+        grid.add(cpStroke, 2, 5);
+        grid.add(archSizeLabel, 1, 6);
+        grid.add(archSizeCombo, 2, 6);
         
         //add event handlers to the controllers
-        slider.valueProperty().addListener((ObservableValue <? extends Number >  
+        widthSlider.valueProperty().addListener((ObservableValue <? extends Number >  
                 observable, Number oldValue, Number newValue) -> {
-                circle.setRadius((double) newValue); 
+                rectangle.setWidth((double) newValue); 
+        });
+        
+        heightSlider.valueProperty().addListener((ObservableValue <? extends Number >  
+                observable, Number oldValue, Number newValue) -> {
+                rectangle.setHeight((double) newValue); 
         });
         
         cpStroke.setOnAction((ActionEvent e) -> {
-            circle.setStroke(cpStroke.getValue());
+            rectangle.setStroke(cpStroke.getValue());
         });
         
         cpFill.setOnAction((ActionEvent e) -> {
-            circle.setFill(cpFill.getValue());
+            rectangle.setFill(cpFill.getValue());
 
         });
         
         stkWidth.setOnAction(e -> {
-            circle.setStrokeWidth((int) stkWidth.getValue());
+            rectangle.setStrokeWidth((int) stkWidth.getValue());
+        });
+        
+        archSizeCombo.setOnAction(e ->{
+            rectangle.setArcHeight((int)archSizeCombo.getValue());
+            rectangle.setArcWidth((int)archSizeCombo.getValue());
         });
     }
 
-    public void modifyCircle(){
+    public void modifyRectangle(){
         Dialog<Options> dialog = new Dialog<>();
-        dialog.setTitle("Circle options");
+        dialog.setTitle("Rectangle options");
         dialog.setHeaderText(null);
         dialog.setResizable(false);
 
@@ -122,9 +151,11 @@ public class CircleOptions {
             @Override
             public Options call(ButtonType b) {                      
                 if (b == doneBtn) {        
-                    return new Options((int)slider.getValue(), (int) stkWidth.getValue(), cpStroke.getValue(), cpFill.getValue());
+                    return new Options((int)widthSlider.getValue(), (int)heightSlider.getValue(),
+                            (int)archSizeCombo.getValue(), (int)archSizeCombo.getValue(),
+                            (int)stkWidth.getValue(), cpStroke.getValue(), cpFill.getValue());
                 }else{
-                    circle.setVisible(false);
+                    rectangle.setVisible(false);
                 }
 
                 return null;
@@ -133,26 +164,37 @@ public class CircleOptions {
         
         Optional<Options> results = dialog.showAndWait();
             results.ifPresent((Options options) -> {
-            circle.setRadius(options.radius);
-            circle.setStrokeWidth(options.strokeWidth);
-            circle.setStroke(options.strokeColor);
-            circle.setFill(options.fillColor);
+            rectangle.setWidth(options.width);
+            rectangle.setHeight(options.height);
+            rectangle.setArcHeight(options.archHeight);
+            rectangle.setArcWidth(options.archWidth);
+            rectangle.setStrokeWidth(options.strokeWidth);
+            rectangle.setStroke(options.strokeColor);
+            rectangle.setFill(options.fillColor);
 
         });
 
     }
 
     private static class Options {
-        int radius;
+        int width;
+        int height;
+        int archWidth;
+        int archHeight;
         int strokeWidth;
         Color strokeColor;
         Color fillColor;
 
-        public Options(int radius, int strokeWidth, Color strokeColor, Color fillColor) {
-            this.radius = radius;
+        public Options(int width, int height, int archWidth, int archHeight, int strokeWidth, Color strokeColor, Color fillColor) {
+            this.width = width;
+            this.height = height;
+            this.archWidth = archWidth;
+            this.archHeight = archHeight;
             this.strokeWidth = strokeWidth;
             this.strokeColor = strokeColor;
             this.fillColor = fillColor;
         }
+
+        
     }
 }
