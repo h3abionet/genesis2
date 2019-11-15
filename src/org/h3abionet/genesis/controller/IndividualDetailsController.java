@@ -8,6 +8,9 @@ package org.h3abionet.genesis.controller;
 import com.sun.javafx.charts.Legend;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,6 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -75,6 +79,7 @@ public class IndividualDetailsController implements Initializable {
 
     private ScatterChart<Number, Number> chart;
     private Open0Controller open0Controller;
+    private HiddenIndividualsController hiddenIndividualsController;
 
     private static int iconSize;
     private static String iconColor;
@@ -197,6 +202,23 @@ public class IndividualDetailsController implements Initializable {
                     data.getNode().setOnMouseClicked(e -> {
                         data.getNode().setVisible(!data.getNode().isVisible());
                         
+                        data.getNode().setOnMouseClicked(ev -> {
+                            List<String> choices = new ArrayList<>();
+                            choices.add("unhide");
+                            ChoiceDialog<String> dialog = new ChoiceDialog<>("unhide", choices);
+                            dialog.setTitle(null);
+                            dialog.setHeaderText(null);
+                            dialog.setGraphic(null);
+                            dialog.setContentText("Choose: ");
+                            Optional<String> result = dialog.showAndWait();
+                            result.ifPresent(letter -> {
+                                if(letter.equals("unhide"))
+                                     data.getNode().setVisible(true);
+                                     System.out.println("Hello");
+                                    
+                                    });
+                        });
+                        hiddenIndividualsController.setInd(data.getNode());
                     });
                 }
                 if (topRadioBtnClicked) {
@@ -237,6 +259,7 @@ public class IndividualDetailsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        hiddenIndividualsController = new HiddenIndividualsController();
         open0Controller = new Open0Controller();
         chosenIconDisplay.setVisible(false);
         chart = Open0Controller.getChart();

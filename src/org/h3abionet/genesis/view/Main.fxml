@@ -91,7 +91,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="individualButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="28.0" prefWidth="40.0" text="Button">
+                        <Button fx:id="individualButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#hidenIndividuals" prefHeight="28.0" prefWidth="40.0" text="Button">
                            <graphic>
                               <ImageView fitHeight="58.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
                                  <image>

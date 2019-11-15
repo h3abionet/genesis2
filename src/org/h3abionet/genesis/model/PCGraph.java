@@ -58,18 +58,18 @@ import org.h3abionet.genesis.controller.Open0Controller;
  * @author scott
  */
 public class PCGraph {
-    
+
     private final XYChart<Number, Number> chart;
     private AnchorPane chartContainer;
 
     public PCGraph(XYChart<Number, Number> chart) {
         this.chart = chart;
     }
-    
+
     @SuppressWarnings("empty-statement")
-    public AnchorPane addGraph(){
+    public AnchorPane addGraph() {
         chart.getStylesheets().add(Genesis.class.getResource("css/scatterchart.css").toExternalForm());
-        
+
         if (chart != null) {
             String xAxisLabel = chart.getXAxis().getLabel();
             String yAxisLabel = chart.getYAxis().getLabel();
@@ -84,7 +84,7 @@ public class PCGraph {
             AnchorPane.setLeftAnchor(chart, 0.0);
             AnchorPane.setRightAnchor(chart, 0.0);
             chartContainer.getChildren().add(chart);
-            
+
             // add the chart and the container to the Zoom class              
             Zoom zoom = new Zoom(chart, chartContainer);
 
@@ -115,7 +115,7 @@ public class PCGraph {
                     Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
                 }
             }
-            
+
             // Legend section
             for (Node n : chart.getChildrenUnmodifiable()) {
                 if (n instanceof Legend) {
@@ -123,15 +123,30 @@ public class PCGraph {
                     for (Legend.LegendItem li : l.getItems()) {
                         for (XYChart.Series<Number, Number> s : chart.getData()) {
                             if (s.getName().equals(li.getText())) {
-                               li.getSymbol().setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
+                                li.getSymbol().setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
                                 li.getSymbol().setOnMouseClicked(me -> {
+                                    // Toggle group (phenotype) visibility on left click
                                     if (me.getButton() == MouseButton.PRIMARY) {
                                         for (XYChart.Data<Number, Number> d : s.getData()) {
                                             if (d.getNode() != null) {
                                                 d.getNode().setVisible(!d.getNode().isVisible()); // Toggle visibility of every node in the series
                                             }
                                         }
+                                    }else{
+                                        // show dialog for legend position and hiding phenotype 
+                                        List<String> choices = new ArrayList<>();
+                                        choices.add("bottom");
+                                        choices.add("right");
+
+                                        ChoiceDialog<String> dialog = new ChoiceDialog<>("right", choices);
+                                        dialog.setTitle("Legend");
+                                        dialog.setHeaderText("Select legend position");
+                                        dialog.setContentText("Position:");
+
+                                        Optional<String> result = dialog.showAndWait();
+                                        result.ifPresent(position -> chart.lookup(".chart").setStyle("-fx-legend-side: " + position + ";"));
                                     }
+                                    
                                 });
                                 break;
                             }
@@ -139,36 +154,17 @@ public class PCGraph {
                     }
                 }
             }
-            
-            // legend position
-            chart.setOnMouseClicked(e ->{
-                if (e.getButton() == MouseButton.SECONDARY)
-                    {
-                        List<String> choices = new ArrayList<>();
-                        choices.add("bottom");
-                        choices.add("right");
-
-                        ChoiceDialog<String> dialog = new ChoiceDialog<>("right", choices);
-                        dialog.setTitle("Legend");
-                        dialog.setHeaderText("Select legend position");
-                        dialog.setContentText("Position:");
-
-                        Optional<String> result = dialog.showAndWait();
-                        result.ifPresent(position -> chart.lookup(".chart").setStyle("-fx-legend-side: "+position+";"));
-                    }
-            });
-
 
         } else {
             //            return to the main window if no pcas were selected
             ;
         }
-        
+
         return chartContainer;
-    
+
     }
-    
-    public void saveChart(){
+
+    public void saveChart() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);
@@ -179,11 +175,11 @@ public class PCGraph {
         } else {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save as");
-            FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("png","*.png");
+            FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("png", "*.png");
             FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("pdf", "*.pdf");
             fileChooser.getExtensionFilters().addAll(pngFilter, pdfFilter);
             File file = fileChooser.showSaveDialog(null);
-            
+
             // tranform scale can be reduced for lower resolutions (10, 10 or 5, 5)
             SnapshotParameters sp = new SnapshotParameters();
             Transform transform = Transform.scale(15, 15);
@@ -191,11 +187,11 @@ public class PCGraph {
             WritableImage image = chart.snapshot(sp, null);
 
             if (file != null) {
-                
+
                 try {
-                String fileName = file.getName();           
-                String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1, file.getName().length());
-                
+                    String fileName = file.getName();
+                    String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1, file.getName().length());
+
                     // save as png or pdf (as A4 landscape)
                     switch (fileExtension) {
                         case "png":
@@ -204,18 +200,18 @@ public class PCGraph {
                         case "pdf":
                             float POINTS_PER_INCH = 72;
                             float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
-                            
-                            PDDocument newPDF=new PDDocument();
+
+                            PDDocument newPDF = new PDDocument();
                             PDPage chartPage = new PDPage(new PDRectangle(297 * POINTS_PER_MM, 210 * POINTS_PER_MM));
                             newPDF.addPage(chartPage);
-                            
+
                             PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newPDF, SwingFXUtils.fromFXImage(image, null));
                             PDPageContentStream contentStream = new PDPageContentStream(newPDF, chartPage);
-                            
+
                             // draw image sizes can be adjusted for smaller images
                             contentStream.drawImage(pdImageXObject, 5, 5, 830, 570);
                             contentStream.close();
-                            
+
                             newPDF.save(file);
                             newPDF.close();
                             break;
@@ -231,7 +227,7 @@ public class PCGraph {
                 ;
             }
         }
-    
+
     }
 
 }

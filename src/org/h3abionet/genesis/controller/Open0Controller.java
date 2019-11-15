@@ -6,12 +6,15 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.ScatterChart;
@@ -19,6 +22,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
@@ -110,9 +114,6 @@ public class Open0Controller implements Initializable {
     private AnchorPane drawingAnchorPane;
 
     private boolean drawingAnchorPaneVisibility;
-    boolean lineAdded;
-    boolean circleAdded;
-    boolean textAdded;
     Circle pivot;
     Line line;
 
@@ -128,6 +129,9 @@ public class Open0Controller implements Initializable {
     @FXML
     private Button textTool;
     
+    @FXML
+    private Button rectangleTool;
+    
     // other variables
     private ProjectDetailsController projectDetailsController;
     private static Tab pcaTab;
@@ -135,7 +139,7 @@ public class Open0Controller implements Initializable {
     private int chartIndex;
     private static ScatterChart<Number, Number> chart;
     ArrayList<ScatterChart> chartList = new ArrayList<>();
-
+    
     @FXML
     private void newProject(ActionEvent event) throws IOException {
         projectDetailsController.loadProjDialogEntry();
@@ -242,6 +246,25 @@ public class Open0Controller implements Initializable {
         PCGraph pc = new PCGraph(chartList.get(chartIndex));
         pc.saveChart();
 
+    }
+    
+    @FXML
+    public void hidenIndividuals() throws IOException{
+        FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/HiddenIndividuals.fxml"));
+        Parent parent = (Parent) fxmlLoader.load();
+        Stage dialogStage = new Stage();
+        dialogStage.setScene(new Scene(parent));
+        dialogStage.setResizable(false);
+
+        HiddenIndividualsController hidden = fxmlLoader.getController();
+        for(Node n: hidden.getItems()){
+            n.setOnMouseClicked(e ->{
+                n.setVisible(true);
+            });
+        }
+        
+        dialogStage.showAndWait();
+    
     }
 
     /**
@@ -386,6 +409,7 @@ public class Open0Controller implements Initializable {
         });
 
     }
+    
     @FXML
     private void addRectangle(ActionEvent event) {
         Rectangle rec = new Rectangle(100, 100, 200, 100);
