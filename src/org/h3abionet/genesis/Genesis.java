@@ -26,7 +26,7 @@ import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 /**
- *
+ * This is the main class of the program
  * @author scott
  */
 public class Genesis extends Application {
@@ -49,7 +49,11 @@ public class Genesis extends Application {
         stage.setScene(scene);
         stage.show();
     }
-
+    
+    /**
+     * This displays a dialog for closing the program
+     * @param mainStage The stage to be closed
+     */
     private void shutdownProgram(Stage mainStage) {
         Alert alert = new Alert(Alert.AlertType.NONE, "Do you want to close the program?", ButtonType.YES, ButtonType.NO);
         mainStage.setOnCloseRequest(evt -> {

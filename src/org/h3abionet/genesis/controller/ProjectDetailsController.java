@@ -40,12 +40,12 @@ import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.Fam;
 import org.h3abionet.genesis.model.Pheno;
 
+/**
+ * This class loads a data entry window for the project name, fam file and phenotype file
+ * @author henry
+ */
 public class ProjectDetailsController {
 
-    private boolean okClicked = false;
-    private static String fam_fname_s = "";
-    private static String pheno_fname_s = "";
-    private static String proj_name_s = "";
     /**
      * Initializes the controller class. This method is automatically called
      * after the fxml file has been loaded.
@@ -62,20 +62,27 @@ public class ProjectDetailsController {
     private Button pheno_fname;
     @FXML
     private TextField proj_name;
-
+    
+    
     private final Stage dialogStage = new Stage();
-
     Project project;
-    Fam fam;
-    Pheno pheno;
-
+    Fam fam; // use its object to read the fam file
+    Pheno pheno; // use its object to read the phenotype file
+    private boolean okClicked = false;
+    private static String fam_fname_s = ""; // fam file absolute path
+    private static String pheno_fname_s = ""; // phenotype file absolute path
+    private static String proj_name_s = ""; // project name
+    
+    /**
+     * Default constructor
+     */
     public ProjectDetailsController() {
 
     }
 
     /**
-     * Sets the stage of this dialog. This function is called in the
-     *
+     * Sets the stage of the initial data entry dialog.
+     * This method is called by the newProject method in Open0Controller.
      * @throws java.io.IOException
      */
     public void loadProjDialogEntry() throws IOException {
@@ -107,11 +114,11 @@ public class ProjectDetailsController {
             entryOKButton.setDisable(true);
         } else {
             if(famFile != null){
-            fam_fname_s = famFile.getAbsolutePath();
-            fam_fname.setText(famFile.getName());
-            fam_fname.setStyle("-fx-text-fill: green");
+                fam_fname_s = famFile.getAbsolutePath();
+                fam_fname.setText(famFile.getName());
+                fam_fname.setStyle("-fx-text-fill: green");
             }else{
-            ;
+                ;
             }
         }
     }
@@ -125,9 +132,9 @@ public class ProjectDetailsController {
             entryOKButton.setDisable(true);
         } else {
             if(phen != null){
-            pheno_fname_s = phen.getAbsolutePath();
-            pheno_fname.setText(phen.getName());
-            pheno_fname.setStyle("-fx-text-fill: green");
+                pheno_fname_s = phen.getAbsolutePath();
+                pheno_fname.setText(phen.getName());
+                pheno_fname.setStyle("-fx-text-fill: green");
             }else{
                 ;
             }
@@ -135,8 +142,9 @@ public class ProjectDetailsController {
     }
 
     /**
-     * Called when the user clicks ok.
-     *
+     * Called when the user clicks OK.
+     * Reads the fam file and phenotype file using the Fam and Pheno model classes
+     * Displays a dialog box if no file was provided
      * @param event
      * @throws java.io.IOException
      */
@@ -183,7 +191,12 @@ public class ProjectDetailsController {
     public String getProjectName() {
         return proj_name_s;
     }
-
+    
+    /**
+     * 
+     * @param which This is the title of the dialog box
+     * @return File object
+     */
     private File getFile(String which) {
         File wanted;
         FileChooser fileChooser = new FileChooser();

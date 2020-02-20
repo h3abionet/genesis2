@@ -6,8 +6,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +20,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
@@ -64,9 +61,10 @@ import org.h3abionet.genesis.model.RectangleOptions;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /**
- *
- * @author scott This is the main controller
+ * This is the main controller
+ * @author scott 
  */
 public class Open0Controller implements Initializable {
 
@@ -108,31 +106,25 @@ public class Open0Controller implements Initializable {
     private Button fileButton;
     @FXML
     private Button helpButton;
-
+    
     // drawiwing tools
     @FXML
     private AnchorPane drawingAnchorPane;
-
-    private boolean drawingAnchorPaneVisibility;
-    Circle pivot;
-    Line line;
-
     @FXML
     private Button lineTool;
-
     @FXML
     private Button circleTool;
-
     @FXML
     private Button arrowTool;
-
     @FXML
     private Button textTool;
-    
     @FXML
     private Button rectangleTool;
     
     // other variables
+    private boolean drawingAnchorPaneVisibility;
+    Circle pivot;
+    Line line;
     private ProjectDetailsController projectDetailsController;
     private static Tab pcaTab;
     private static int tabCount = 0;
@@ -169,7 +161,13 @@ public class Open0Controller implements Initializable {
         }
 
     }
-
+    
+    /**
+     * loads the stored data when the data button is pressed
+     * It uses the setPcaDialogStage method in PCADataInputController to show the stage
+     * @param event
+     * @throws IOException 
+     */
     @FXML
     @SuppressWarnings("empty-statement")
     private void loadData(ActionEvent event) throws IOException {

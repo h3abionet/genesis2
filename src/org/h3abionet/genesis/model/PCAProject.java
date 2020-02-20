@@ -82,7 +82,7 @@ public class PCAProject {
 
     /**
      *
-     * @param pcaName
+     * @param pcaName This is the pca file absolute path
      * @throws FileNotFoundException
      * @throws IOException
      */
@@ -94,7 +94,7 @@ public class PCAProject {
 
     /**
      *
-     * @param pcaName
+     * @param pcaName This is the pca file absolute path
      * @throws FileNotFoundException
      * @throws IOException
      */
@@ -105,13 +105,13 @@ public class PCAProject {
         String line = r.readLine();
         String fields[] = line.split("\\s+");
         int num_pcas = fields.length - 2;
-        System.out.println("We have " + num_pcas + " PCAs");
+        // System.out.println("We have " + num_pcas + " PCAs");
         pca_cols = new String[num_pcas];
         for (int i = 0; i < num_pcas; i++) {
             pca_cols[i] = "PCA " + Integer.toString(i + 1);
         }
         eigvals.addAll(Arrays.asList(Arrays.copyOfRange(fields, 2, fields.length)));
-        System.out.println(eigvals);
+        // System.out.println(eigvals);
         line = r.readLine();
         while (line != null) {
             fields = line.split("\\s+");

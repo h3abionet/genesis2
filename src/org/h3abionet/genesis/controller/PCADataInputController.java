@@ -45,7 +45,6 @@ public class PCADataInputController implements Initializable {
     Fam fam;
     Pheno pheno;
 
-    private boolean okClicked = false;
     private static String pca_fname_s = "";
     private static String pca_file = "";
     
@@ -83,23 +82,35 @@ public class PCADataInputController implements Initializable {
     public ComboBox<String> getPcaComboButton2() {
         return pcaComboButton2;
     }
-
+    
+    /**
+     * set chart
+     * @param chart 
+     */
     public void setChart(ScatterChart<Number, Number> chart) {
         this.chart = chart;
+    }
+    
+    /**
+     * get chart
+     * @return 
+     */
+    public ScatterChart<Number, Number> getChart() {
+        return chart;
     }
    
     public void setOpen0Controller(Open0Controller open0Controller) {
         this.open0Controller = open0Controller;
     }
 
-    public ScatterChart<Number, Number> getChart() {
-        return chart;
-    }
-
     public static PCADataInputController getController() {
         return controller;
     }
-
+    
+    /**
+     * presents a dialog box with a stored pca file
+     * @throws IOException 
+     */
     public void setPcaDialogStage() throws IOException{
         FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCADataInput.fxml"));
         Parent root = (Parent) fxmlLoader.load();
@@ -118,11 +129,8 @@ public class PCADataInputController implements Initializable {
         
 
     }
-
-    public boolean isOkClicked() {
-        return okClicked;
-    }
-
+    
+    
     private File getFile(String which) {
         File wanted;
         FileChooser fileChooser = new FileChooser();
@@ -131,7 +139,12 @@ public class PCADataInputController implements Initializable {
         return wanted;
 
     }
-
+    
+    /**
+     * Read the pca file using the PCA
+     * @param event
+     * @throws IOException 
+     */
     @FXML
     private void handlePcaEvecFname(ActionEvent event) throws IOException {
         File pca = getFile("Choose PCA file");
@@ -144,7 +157,7 @@ public class PCADataInputController implements Initializable {
         pcaComboButton2.setItems(pCAproject.getPca_cols());
 
     }
-
+    
     @FXML
     private void pcaComboButtonOneChanged(ActionEvent event) {
         pcaComboButton1Value = pcaComboButton1.getValue();
@@ -154,10 +167,14 @@ public class PCADataInputController implements Initializable {
     private void pcaComboButtonTwoChanged(ActionEvent event) {
         pcaComboButton2Value = pcaComboButton2.getValue();
     }
-
+    
+    /**
+     * gets selected pcas and sets the chart to be rendered
+     * @param event
+     * @throws IOException 
+     */
     @FXML
     private void handlePcaEntryOK(ActionEvent event) throws IOException {
-        okClicked = true;
 
         if(!pcaComboButton1Value.equals("") && !pcaComboButton2Value.equals("")){
             if(pCAproject != null){
@@ -174,13 +191,20 @@ public class PCADataInputController implements Initializable {
             alert.showAndWait();
         }
     }
-
+    
+    /**
+     * Uses the closeStage method to close the stage when Cancel button is pressed.
+     * @param event 
+     */
     @FXML
     void handlePcaEntryCancel(ActionEvent event) {
-        System.out.println("Cancel");
         closeStage(event);
     }
-
+    
+    /**
+     * Close the current stage
+     * @param event 
+     */
     public void closeStage(ActionEvent event) {
         Node source = (Node) event.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
