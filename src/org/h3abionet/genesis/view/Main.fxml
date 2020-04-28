@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="700.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.Open0Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1500.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.Open0Controller">
    <children>
       <BorderPane layoutX="144.0" layoutY="53.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -50,7 +50,7 @@
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="newadmixture" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" text="ADMIX">
+                        <Button fx:id="newadmixture" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newAdmixture" text="ADMIX">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
@@ -73,7 +73,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="settingsButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#fontSelector" text="Button">
+                        <Button fx:id="settingsButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#settingsSelector" text="Button">
                            <graphic>
                               <ImageView fitHeight="53.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                  <image>

@@ -21,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,14 +30,13 @@ import java.util.List;
  */
 
 public class Fam {
-
-    /**
-     *
-     */
-    Project project;
-    HashMap<String, String[]> famFile; //Hash map to store fam ids as keys and array of other fields as values 
-    static List<String[]> listOfRows; //ArrayList to store arrays of rows in the fam file. 
-    String famName;
+    // Hash map to store fam ids as keys and array of other fields as values
+    // Can be used to join the fam file with the phenotype file
+    static HashMap<String, String[]> famFileMap; // [iid, [...]]
+    
+    // Arraylist of array to store row values in the fam file
+    // Used to merge the fam file with the Q file
+    static List<String[]> listOfRows;
     String fid;
     String iid;
     String pat;
@@ -46,17 +44,18 @@ public class Fam {
     String sex;
     String phe;
     
-    /**
-     *
-     * @param famName
-     * @throws IOException
-     */
-    public Fam(String famName) throws IOException {
-        setFam(famName);
-    }
 
     /**
      *
+     * @param  famFilePath // absolute file path
+     * @throws IOException
+     */
+    public Fam(String famFilePath) throws IOException {
+        setFam(famFilePath);
+    }
+
+    /**
+     * Default constructor
      */
     Fam() {
 
@@ -64,14 +63,14 @@ public class Fam {
 
     /**
      *
-     * @param famName
+     * @param famFilePath
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public void setFam (String famName) throws FileNotFoundException, IOException {
+    public void setFam (String famFilePath) throws FileNotFoundException, IOException {
         BufferedReader r;
-        r = openFile(famName);
-        famFile = new HashMap<>();
+        r = openFile(famFilePath);
+        famFileMap = new HashMap<>();
         listOfRows = new ArrayList<>();
         String l = r.readLine();
         String  fields [];
@@ -83,23 +82,36 @@ public class Fam {
             mat = fields[3];
             sex = fields[4];
             phe = fields[5];     
-            String ids = fid+":"+iid;
-            String rows[] = {ids,pat,mat,sex,phe};
-            listOfRows.add(rows); 
-            String other_cols[] = {pat,mat,sex,phe};
-            famFile.put(ids, other_cols);
+            String ids = fid+" "+iid;
+            String [] idsList = {fid, iid};
+            listOfRows.add(idsList); // store ids of the farm file to map with the admixture values
+            String other_cols[] = {pat, mat, sex, phe};
+            famFileMap.put(ids, other_cols);
             l = r.readLine();      
         }
+        
+        // test if the fam file is imported -- comment this section otherwise it prints in the results in the terminal
+//        for (int i = 0; i < listOfRows.size(); i++){
+//            System.out.println(Arrays.asList(listOfRows.get(i)));
+//        }
         
     }
     
     /**
-     *
+     * return a hash map of fam file 
+     * @return 
      */
-    public void getFam(){
-        for (int i = 0; i < listOfRows.size(); i++){
-            System.out.println(Arrays.asList(listOfRows.get(i)));
-        }
+     public HashMap<String, String[]> getFamFileMap() {
+        return famFileMap;
+    }
+
+    
+     /**
+      * return an arraylist of array of rows in the fam file
+      * @return 
+      */
+    public List<String[]> getListOfRows() {
+        return listOfRows;
     }
     
     /**

@@ -30,6 +30,7 @@
 .tab{
     -fx-background-insets: 0 1 0 1,0,0;
 }
+
 .tab-pane .tab
 {
     -fx-background-color: #e6e6e6;
@@ -51,4 +52,12 @@
 .tab:selected .tab-label { 
     -fx-alignment: CENTER;
     -fx-text-fill: #96b946;
+}
+
+/*
+* Add padding such that charts donot reach the borders of the main window.
+*/
+.tab-content-area {
+    -fx-padding: 10px;
+
 }

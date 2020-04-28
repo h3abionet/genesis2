@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.AdmixtureIndividualDetailsController">
+   <children>
+      <AnchorPane style="-fx-background-color: #ebedf0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <VBox prefHeight="400.0" prefWidth="300.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <AnchorPane prefHeight="36.0" prefWidth="300.0" style="-fx-background-color: #ebedf0;">
+                     <children>
+                        <Label contentDisplay="CENTER" prefHeight="27.0" prefWidth="240.0" text="Individual Details" textAlignment="CENTER" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets left="60.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="100.0" prefWidth="300.0" style="-fx-background-color: #ebedf0;">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <children>
+                        <Label fx:id="valuesLabel" contentDisplay="CENTER" prefHeight="79.0" prefWidth="220.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0" />
+                     </children>
+                     <effect>
+                        <DropShadow height="5.0" radius="6.0" />
+                     </effect>
+                  </AnchorPane>
+                  <Label prefHeight="17.0" prefWidth="123.0" text="Phenotype Data:">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets left="90.0" right="90.0" />
+                     </VBox.margin>
+                  </Label>
+                  <AnchorPane prefHeight="152.0" prefWidth="220.0" style="-fx-background-color: #ebedf0;">
+                     <VBox.margin>
+                        <Insets left="30.0" right="50.0" />
+                     </VBox.margin>
+                     <effect>
+                        <DropShadow height="5.0" radius="2.0" width="5.0" />
+                     </effect>
+                     <children>
+                        <ListView fx:id="phenoList" prefHeight="127.0" prefWidth="220.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+                  <CheckBox fx:id="hideCheckBox" mnemonicParsing="false" prefHeight="92.0" prefWidth="223.0" text="Hide individual">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="30.0" right="20.0" top="5.0" />
+                     </VBox.margin>
+                  </CheckBox>
+                  <AnchorPane prefHeight="16.0" prefWidth="300.0" style="-fx-background-color: #ebedf0;">
+                     <children>
+                        <HBox prefHeight="36.0" prefWidth="200.0" spacing="80.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0">
+                           <children>
+                              <Button fx:id="btnOK" mnemonicParsing="false" onAction="#entryBtnOK" prefHeight="25.0" prefWidth="76.0" text="OK" />
+                              <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#entryBtnCancel" prefHeight="25.0" prefWidth="81.0" text="Cancel" />
+                           </children>
+                        </HBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <effect>
+                        <DropShadow height="5.0" radius="6.0" />
+                     </effect>
+                  </AnchorPane>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

@@ -1,4 +1,4 @@
-/*
+    /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -28,7 +28,6 @@ import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.Fam;
 import org.h3abionet.genesis.model.PCAProject;
 import org.h3abionet.genesis.model.Pheno;
-import org.h3abionet.genesis.model.Project;
 
 /**
  * FXML Controller class
@@ -41,7 +40,6 @@ public class PCADataInputController implements Initializable {
     private static PCADataInputController controller;
     PCAProject pCAproject;
     private static PCAProject pCAproject2;
-    Project project;
     Fam fam;
     Pheno pheno;
 
@@ -129,16 +127,7 @@ public class PCADataInputController implements Initializable {
         
 
     }
-    
-    
-    private File getFile(String which) {
-        File wanted;
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(which);
-        wanted = fileChooser.showOpenDialog(dialogStage);
-        return wanted;
-
-    }
+   
     
     /**
      * Read the pca file using the PCA
@@ -190,6 +179,20 @@ public class PCADataInputController implements Initializable {
             alert.setContentText("Please select the PCAs to plot");
             alert.showAndWait();
         }
+    }
+    
+    /**
+     * read evec file with pcas
+     * @param which
+     * @return 
+     */
+    private File getFile(String which) {
+        File wanted;
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(which);
+        wanted = fileChooser.showOpenDialog(dialogStage);
+        return wanted;
+
     }
     
     /**

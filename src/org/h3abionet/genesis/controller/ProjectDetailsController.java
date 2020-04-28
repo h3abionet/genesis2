@@ -23,15 +23,22 @@ package org.h3abionet.genesis.controller;
 import org.h3abionet.genesis.model.Project;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
@@ -44,7 +51,7 @@ import org.h3abionet.genesis.model.Pheno;
  * This class loads a data entry window for the project name, fam file and phenotype file
  * @author henry
  */
-public class ProjectDetailsController {
+public class ProjectDetailsController implements Initializable{
 
     /**
      * Initializes the controller class. This method is automatically called
@@ -62,13 +69,14 @@ public class ProjectDetailsController {
     private Button pheno_fname;
     @FXML
     private TextField proj_name;
+    @FXML
+    private ComboBox<String> colWithPhenoComboBox;
     
     
     private final Stage dialogStage = new Stage();
     Project project;
     Fam fam; // use its object to read the fam file
     Pheno pheno; // use its object to read the phenotype file
-    private boolean okClicked = false;
     private static String fam_fname_s = ""; // fam file absolute path
     private static String pheno_fname_s = ""; // phenotype file absolute path
     private static String proj_name_s = ""; // project name
@@ -95,14 +103,6 @@ public class ProjectDetailsController {
 
     }
 
-    /**
-     * Returns true if the user clicked OK, false otherwise.
-     *
-     * @return
-     */
-    public boolean isOkClicked() {
-        return okClicked;
-    }
 
     @FXML
     private void handleFamFname() {
@@ -110,13 +110,14 @@ public class ProjectDetailsController {
         File famFile = getFile("Choose FAM file");
         //if no famFile provided and pheno file, disable OK button, else get file names
         if (famFile == null && pheno_fname_s == "") { 
-            System.out.println("no fam");
             entryOKButton.setDisable(true);
         } else {
             if(famFile != null){
                 fam_fname_s = famFile.getAbsolutePath();
                 fam_fname.setText(famFile.getName());
                 fam_fname.setStyle("-fx-text-fill: green");
+                entryOKButton.setDisable(true);
+
             }else{
                 ;
             }
@@ -124,20 +125,26 @@ public class ProjectDetailsController {
     }
 
     @FXML
-    private void handlePhenoFname() {
-        entryOKButton.setDisable(false);
-        File phen = getFile("Choose FAM file");
-        if ((phen == null && fam_fname_s == "")) {
-            System.out.println("no pheno");
+    private void handlePhenoFname() throws IOException {
+        File phen = getFile("Choose Pheno file");
+        if ((phen == null)) {
             entryOKButton.setDisable(true);
+            
         } else {
-            if(phen != null){
                 pheno_fname_s = phen.getAbsolutePath();
                 pheno_fname.setText(phen.getName());
                 pheno_fname.setStyle("-fx-text-fill: green");
-            }else{
-                ;
-            }
+                
+                // display seletion for a column with phenotype
+                pheno = new Pheno(pheno_fname_s); //read the pheno using the Pheno class
+                int num = pheno.getNumOfColumnsInPheno(); // get number of columns in pheno file
+                ArrayList<String> phenoCols = new ArrayList<>();
+                for(int i=1; i<=num;i++){
+                    phenoCols.add("Column "+i);
+                }
+                colWithPhenoComboBox.setItems(FXCollections.observableArrayList(phenoCols));
+                entryOKButton.setDisable(false);
+            
         }
     }
 
@@ -150,20 +157,22 @@ public class ProjectDetailsController {
      */
     @FXML
     private void handlePcaEntryOK(ActionEvent event) throws IOException {
-        okClicked = true;
         proj_name_s = proj_name.getText();
+        String colWithPhenoValue = colWithPhenoComboBox.getValue(); // get combox string value e.g. Column 1
+        int colNumWithPheno = Integer.parseInt(colWithPhenoValue.substring(7, colWithPhenoValue.length()));
 
         if (!proj_name_s.matches(".*\\w.*")) { //check alphanumerics in the title
-            proj_name_s = "PCA chart"; //set project name/Title to default(PCA chart) if not provided.
+            proj_name_s = "Chart"; //set project name/Title to default(PCA chart) if not provided.
         }
+        
         //check if files have been provided (can be only one or both), else display an alert message.
         if (fam_fname_s.length() != 0 && pheno_fname_s.length() != 0) {
             fam = new Fam(fam_fname_s); //read the fam using Fam class
             pheno = new Pheno(pheno_fname_s); //read the pheno using the Pheno class
+            pheno.setColWithPheno(colNumWithPheno);
         } else if (pheno_fname_s.length() != 0) {
             pheno = new Pheno(pheno_fname_s);
-        } else if (fam_fname_s.length() != 0) {
-            fam = new Fam(fam_fname_s);
+            pheno.setColWithPheno(colNumWithPheno);
         } else {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
@@ -214,6 +223,12 @@ public class ProjectDetailsController {
         Node source = (Node) event.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+       entryOKButton.setDisable(true); // disable OK button 
+        
     }
 
 }

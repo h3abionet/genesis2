@@ -23,6 +23,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 /**
@@ -38,14 +40,24 @@ public class Genesis extends Application {
         
         Parent root = FXMLLoader.load(getClass().getResource("view/Main.fxml"));
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(Genesis.class.getResource("css/scatterchart.css").toExternalForm());
+        scene.getStylesheets().add(Genesis.class.getResource("css/pca.css").toExternalForm());
 
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.H) {
                 System.out.println("Please help");
             }
         });
-
+        
+        // Press F to enter full screen mode or E to exit full screen mode
+        stage.addEventFilter(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
+            if (event.getCode() == KeyCode.F) {
+                boolean newValue = !stage.isFullScreen();
+                stage.setAlwaysOnTop(newValue);
+                stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.E));
+                stage.setFullScreen(newValue);
+            }
+        });
+        
         stage.setScene(scene);
         stage.show();
     }

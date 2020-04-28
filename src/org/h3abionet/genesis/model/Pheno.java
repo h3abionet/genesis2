@@ -20,47 +20,26 @@ import java.util.List;
  */
 public class Pheno {
     
+    static HashMap<String, String[]> pcaPhenoHashMap; // hashmap to store fam records. key = id; value = list of phenos.
+    static List<String[]> listOfRows; // store list of rows in the pheno file
+    static int numOfColumnsInPheno; // store the number of phenos
+    
+    static HashMap<String, String[]> admixturePhenoHashMap; // used to map pheno details to fam details
+    static HashMap<String, String[]> individualPhenoDetails; // Hashmap to store individual details for searching
+    
+    static int colWithPheno; // store selected column with phenotype
+   
     /**
      *
-     */
-    Project project;
-
-    /**
-     *
-     */
-    static HashMap<String, String[]> pheno;
-
-    /**
-     *
-     */
-    static List<String[]> listOfows;
-
-    /**
-     *
-     */
-    String pheno_cols[];
-
-    /**
-     *
-     */
-    String phenoName;
-
-    /**
-     *
-     */
-    static int num_phenos;
-
-    /**
-     *
-     * @param phenoName
+     * @param phenoFilePath
      * @throws IOException
      */
-    public Pheno(String phenoName) throws IOException {     
-        setPheno(phenoName);
+    public Pheno(String phenoFilePath) throws IOException {     
+        setPheno(phenoFilePath);
     }
 
     /**
-     *
+     * Default constructor
      */
     Pheno() {
 
@@ -68,73 +47,107 @@ public class Pheno {
 
     /**
      *
-     * @param phenoName
+     * @param phenoFilePath
      * @throws FileNotFoundException
      * @throws IOException
      */
-    private void setPheno(String phenoName ) throws FileNotFoundException, IOException {
-        pheno = new HashMap<>();
-        listOfows = new ArrayList<>();
-        BufferedReader r = openFile(phenoName);
+    private void setPheno(String phenoFilePath ) throws FileNotFoundException, IOException {
+        pcaPhenoHashMap = new HashMap<>(); // key is FID:IID
+        listOfRows = new ArrayList<>();
+        individualPhenoDetails = new HashMap<>(); // key is IID
+        admixturePhenoHashMap =  new HashMap<>(); // key is "FID IID"
+                
+        BufferedReader r = openFile(phenoFilePath);
         String line = r.readLine();
         String fields [] = line.split("\\s+");
-        num_phenos = fields.length-2;
-        System.out.println("We have "+num_phenos+" phenotypes");
-        pheno_cols = new String[num_phenos];
-        boolean header = fields[0].equals("FID") && fields[1].equals("IID");
-        for (int i=0; i<num_phenos; i++ )
-           if (header)
-               pheno_cols[i]=fields[i+2];
-           else 
-               pheno_cols[i]=Integer.toString(i);
-        if (header) line = r.readLine();
+        numOfColumnsInPheno = fields.length;
+//        boolean header = fields[0].equals("FID") && fields[1].equals("IID");
+//        if (header) line = r.readLine();
         while (line !=null) {
             fields  = line.split("\\s+");
             String ids = fields[0]+":"+fields[1];
-            String[] curr_phenos = Arrays.copyOfRange(fields,2,2+num_phenos);
-            String keys[] = {ids};
-            String [] rows = combine(keys, curr_phenos);
-            listOfows.add(rows);
-            pheno.put(ids, curr_phenos);
+            String[] curr_phenos = Arrays.copyOfRange(fields, 2, fields.length);
+            listOfRows.add(fields);
+            // used to map with evec file individual pcs
+            pcaPhenoHashMap.put(ids, curr_phenos); 
+            
+            // provide details when individual is clicked or searched
+            individualPhenoDetails.put(fields[1], fields);
+            
+            // used to map with the fam file
+            admixturePhenoHashMap.put(fields[0]+" "+fields[1], curr_phenos);
             line = r.readLine();
      
         }
+        
+        // print phenotype rows -- testing
+//        for (int i = 0; i < listOfRows.size(); i++){
+//            System.out.println(Arrays.asList(listOfRows.get(i)));
+//        }
 
     }
-
+    
     /**
-     *
-     * @return
+     * set column with phenotype
+     * @param colWithPheno 
      */
-    public int getNum_phenos() {
-        return num_phenos;
+    public void setColWithPheno(int colWithPheno) {
+        Pheno.colWithPheno = colWithPheno;
     }
     
     /**
-     *
-     * @return
+     * get column number with phenotype
+     * @return 
      */
-    public HashMap<String, String[]> getPheno(){
-        return pheno;
+    public int getColWithPheno() {
+        return colWithPheno;
     }
     
     /**
-     *
-     * @param a
-     * @param b
+     * return a hashmap with ids and phenotypes in pheno file
      * @return
      */
-    public static String[] combine(String[] a, String[] b){
-        int length = a.length + b.length;
-        String[] result = new String[length];
-        System.arraycopy(a, 0, result, 0, a.length);
-        System.arraycopy(b, 0, result, a.length, b.length);
-        return result;
+    public HashMap<String, String[]> getPcaPhenoHashMap(){
+        return pcaPhenoHashMap;
     }
     
     /**
+     * get hashMap top map to fam details
+     * @return 
+     */
+    public HashMap<String, String[]> getAdmixturePhenoHashMap() {
+        return admixturePhenoHashMap;
+    }
+    
+    
+    /**
+     *  return an arraylist of rows in pheno file
+     * @return 
+     */
+    public static List<String[]> getListOfRows() {
+        return listOfRows;
+    }
+    
+    /**
+     * return the number of columns in pheno file
+     * @return 
+     */
+    public int getNumOfColumnsInPheno() {
+        return numOfColumnsInPheno;
+    }
+    
+    /**
+     * get individual details
+     * @return 
+     */
+    public HashMap<String, String[]> getIndividualPhenoDetails() {
+        return individualPhenoDetails;
+    }
+    
+    
+    /**
      *
-     * @param name
+     * @param name Absolute path of the pheno file
      * @return
      * @throws FileNotFoundException
      */

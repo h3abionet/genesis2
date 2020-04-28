@@ -57,18 +57,18 @@ import org.h3abionet.genesis.controller.Open0Controller;
  *
  * @author scott
  */
-public class PCGraph {
+public class PCAGraph {
 
     private final XYChart<Number, Number> chart;
     private AnchorPane chartContainer;
 
-    public PCGraph(XYChart<Number, Number> chart) {
+    public PCAGraph(XYChart<Number, Number> chart) {
         this.chart = chart;
     }
 
     @SuppressWarnings("empty-statement")
     public AnchorPane addGraph() {
-        chart.getStylesheets().add(Genesis.class.getResource("css/scatterchart.css").toExternalForm());
+        chart.getStylesheets().add(Genesis.class.getResource("css/pca.css").toExternalForm());
 
         if (chart != null) {
             String xAxisLabel = chart.getXAxis().getLabel();

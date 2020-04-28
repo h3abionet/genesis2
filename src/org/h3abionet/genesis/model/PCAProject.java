@@ -30,143 +30,113 @@ import org.h3abionet.genesis.controller.ProjectDetailsController;
  */
 public class PCAProject {
 
-    /**
-     *
-     */
     Fam fam;
-
-    /**
-     *
-     */
     Pheno pheno;
-
-    /**
-     *
-     */
     ProjectDetailsController projectDetailsController;
-
-    /**
-     *
-     */
-    HashMap<String, String[]> pcaValues;
-
-    /**
-     *
-     */
-    HashMap<String, String[]> map;
-
-    /**
-     *
-     */
-    List<String[]> listOfrows;
-
-    /**
-     *
-     */
-    String pca_cols[];
-
-    /**
-     *
-     */
-    List<String> eigvals;
-
-    /**
-     *
-     */
-    String pcaName;
-
-    /**
-     *
-     */
+    HashMap<String, String[]> pcaValues; // store pca values with associated ids
+    HashMap<String, String[]> map; // used to merge pcaValues with phenoFileMap values
+    List<String[]> listOfRows; // rows in pca (evec) file
+    String pca_cols[]; // store pca column name: PCA 1, PCA 2, ...
+    List<String> eigvals; // store eigen values
     private XYChart.Series<Number, Number> series;
 
     /**
      *
-     * @param pcaName This is the pca file absolute path
+     * @param pcaFilePath This is the pca file absolute path
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public PCAProject(String pcaName) throws FileNotFoundException, IOException {
+    public PCAProject(String pcaFilePath) throws FileNotFoundException, IOException {
+        fam = new Fam();
+        pheno = new Pheno();
         projectDetailsController = new ProjectDetailsController();
-        setPCA(pcaName);
+        map = new HashMap<>();
+        listOfRows = new ArrayList<>();
+        pcaValues = new HashMap<>();
+        eigvals = new ArrayList<>();
+        
+        setPCA(pcaFilePath);
 
     }
 
     /**
      *
-     * @param pcaName This is the pca file absolute path
+     * @param pcaFilePath This is the pca file absolute path
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public void setPCA(String pcaName) throws FileNotFoundException, IOException {
-        pcaValues = new HashMap<>();
-        eigvals = new ArrayList<>();
-        BufferedReader r = openFile(pcaName);
+    public void setPCA(String pcaFilePath) throws FileNotFoundException, IOException {
+        BufferedReader r = openFile(pcaFilePath);
         String line = r.readLine();
         String fields[] = line.split("\\s+");
-        int num_pcas = fields.length - 2;
-        // System.out.println("We have " + num_pcas + " PCAs");
+        
+        int num_pcas = fields.length - 2; // get number of pcas
         pca_cols = new String[num_pcas];
         for (int i = 0; i < num_pcas; i++) {
-            pca_cols[i] = "PCA " + Integer.toString(i + 1);
+            pca_cols[i] = "PCA " + Integer.toString(i + 1); // store every pca: [PCA 1, PCA 2, ...]
         }
-        eigvals.addAll(Arrays.asList(Arrays.copyOfRange(fields, 2, fields.length)));
-        // System.out.println(eigvals);
-        line = r.readLine();
+        
+        // store eigen values
+        eigvals.addAll(Arrays.asList(Arrays.copyOfRange(fields, 2, fields.length))); 
+        
+        line = r.readLine(); // read next line
         while (line != null) {
             fields = line.split("\\s+");
             String key = fields[1];
-            pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length - 1));
+            pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length - 1)); // store keys and values in a hashmap
             line = r.readLine();
         }
 
     }
 
     /**
-     *
+     * Group ArrayList of pcas according to pheno
      * @return
      */
     public Map<String, List<String[]>> getGroups() {
-        fam = new Fam();
-        pheno = new Pheno();
-        List<String[]> combinedValues = mergePhenoPCA();
+        List<String[]> combinedValues = mergePhenoPCA(); // ArrayList of array from mergePhenoPCA method
 
         Map<String, List<String[]>> resultSet = combinedValues.stream()
-                .collect(Collectors.groupingBy(array -> array[0],
+                .collect(Collectors.groupingBy(array -> array[0], // groupby [YRI, EXM, LWK, ...] - third col in pheno file
                         Collectors.mapping(e -> Arrays.copyOfRange(e, 1, e.length),
                                 Collectors.toList())));
         return resultSet;
     }
 
     /**
-     *
-     * @return
+     * merge 2 hash maps using keys: 1- pheno  hashmap; 2- pca hashmap
+     * @return An arraylist of array: [YRI, AFR, -0.0266, 0.0318, ..., NA19178:NA19178]
      */
     public List<String[]> mergePhenoPCA() {
-        map = new HashMap<>();
-        listOfrows = new ArrayList<>();
         map.putAll(pcaValues);
 
-        pheno.getPheno().forEach((key, value) -> {
-            //Get the value for key in map.
-            String[] list = map.get(key);
-            if (list != null) {
-                //Merge two list together
-                String[] rows = combine(value, list);
-                map.put(key, rows);
+        pheno.getPcaPhenoHashMap().forEach((key, value_of_pheno) -> {
+            // Get the value for key in map of pcaValues --- returns a list of pcas.
+            String[] list_of_pcas = map.get(key);
+            if (list_of_pcas != null) {
+                // Merge two list together: 
+                String[] rows = combine(value_of_pheno, list_of_pcas);
+                map.put(key, rows); // new map [key1 -> [pheno and pca values], key2 -> [pheno and pca values], ...]
             } else {
-                //Do nothing to remove nulls
+                // Do nothing to remove nulls
                 ;
             }
         });
 
         map.entrySet().forEach(entry -> {
-            ArrayList<String> entries = new ArrayList<>(Arrays.asList(entry.getValue()));
-            entries.add(entry.getKey());
+            ArrayList<String> entries = new ArrayList<>(Arrays.asList(entry.getValue())); // [YRI, AFR, -0.0266, 0.0318, ...]
+            entries.add(entry.getKey());  // [YRI, AFR, -0.0266, 0.0318, ..., id]
+            
             String[] individualRows = entries.toArray(new String[entries.size()]);
-            listOfrows.add(individualRows);
+            listOfRows.add(individualRows);
         });
-        return listOfrows;
+        
+        // checked merged results
+        for (int i = 0; i < listOfRows.size(); i++){
+            System.out.println(Arrays.asList(listOfRows.get(i)));
+        }
+
+        return listOfRows; // [YRI, AFR, -0.0266, 0.0318, ..., NA19178:NA19178]
     }
 
     /**
@@ -204,7 +174,7 @@ public class PCAProject {
         yAxis.setLabel(yAxisPca);
         sc.setTitle(projectDetailsController.getProjectName());
 
-        getGroups().forEach((k, v) -> {
+        getGroups().forEach((k, v) -> { // get groups
             series = new XYChart.Series<>();
             series.setName(k);
             
