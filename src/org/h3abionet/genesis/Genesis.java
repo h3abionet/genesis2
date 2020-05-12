@@ -15,9 +15,16 @@
  */
 package org.h3abionet.genesis;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -25,6 +32,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -77,7 +85,62 @@ public class Genesis extends Application {
         });
         
     }
+    
+    /**
+     * Close the open stage
+     * @param event
+     */
+    public static void closeOpenStage(ActionEvent event) {
+        Node source = (Node) event.getSource();
+        Stage stage = (Stage) source.getScene().getWindow();
+        stage.close();
+    }
+    
+     /**
+     *
+     * @param name
+     * @return
+     * @throws FileNotFoundException
+     */
+    public static BufferedReader openFile(String name) throws FileNotFoundException {
 
+        InputStreamReader is = new InputStreamReader(new FileInputStream(name));
+        BufferedReader dinp = new BufferedReader(is);
+        return dinp;
+    }
+    
+    /* load view
+     * @param fxmlLink -  link for the window to be loaded
+     * @throws FileNotFoundException
+     */
+    public static void loadFxmlView(String fxmlLink) throws IOException{
+        FXMLLoader loader = new FXMLLoader(Genesis.class.getResource(fxmlLink));
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(new Scene((Parent) loader.load()));
+        stage.setResizable(false);
+        stage.showAndWait();
+    }
+    
+    // throw error exception dialog box
+    public static void throwErrorException(String message){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error Dialog");
+        alert.setContentText(message);
+        alert.showAndWait();
+    
+    }
+    
+    // throw information dialog box
+    public static void throwInformationException(String message){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText("No files provided");
+        alert.showAndWait();
+    
+    }
+  
     /**
      * @param args the command line arguments
      */

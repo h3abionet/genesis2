@@ -7,36 +7,29 @@ package org.h3abionet.genesis.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.h3abionet.genesis.model.AdmixtureProject;
-import org.h3abionet.genesis.model.Fam;
-import org.h3abionet.genesis.model.Pheno;
+import org.h3abionet.genesis.model.AdmixtureGraph;
+import org.h3abionet.genesis.Genesis;
 
 /**
  * FXML Controller class
  *
  * @author henry
  */
-public class AdmixtureDataInputController implements Initializable {
+public class AdmixtureDataInputController {
+    
     private Stage dialogStage;
-    AdmixtureProject admixtureProject;
-    Fam fam;
-    Pheno pheno;
-    private ArrayList<StackedBarChart<String, Number>> listOfCharts;
+    private AdmixtureGraph admixtureGraph;
+    public static ArrayList<StackedBarChart<String, Number>> listOfStackedBarCharts;
 
-    private static  String admixFilePath = "";
-    private static  String admix_file = "";
-    private StackedBarChart<String, Number> admixChart; // chart from the AdmixtureProject
+    private String admixtureFilePath = "";
+    private String admixtureFileName = "";
     
     @FXML
     private Button btnAdmixtureData;
@@ -49,61 +42,28 @@ public class AdmixtureDataInputController implements Initializable {
 
     @FXML
     private void handleAdmixEntryCancel(ActionEvent event) {
-        closeStage(event);
+        Genesis.closeOpenStage(event);
     }
 
     @FXML
     private void handleAdmixEntryOK(ActionEvent event) {
-        setAdmixChart(admixtureProject.getAdmixtureGraph()); // one chart
-        setListOfCharts(admixtureProject.createAdmixturePlots()); // list of charts
-        closeStage(event);
+        // set list of stackedBarCharts
+        listOfStackedBarCharts = admixtureGraph.createGraph();
+        Genesis.closeOpenStage(event);
     }
-
+    
+    
     @FXML
     private void handleEntryBtnAdmixtureData(ActionEvent event) throws IOException {
         File admixture = getFile("Choose admixture file");
-        admixFilePath = admixture.getAbsolutePath();
-        admix_file = admixture.getName();
-        btnAdmixtureData.setText(admix_file);
+        admixtureFilePath = admixture.getAbsolutePath();
+        admixtureFileName = admixture.getName();
+        btnAdmixtureData.setText(admixtureFileName);
         btnAdmixtureData.setStyle("-fx-text-fill: green");
-        admixtureProject = new AdmixtureProject(admixFilePath); // read the file using module class
-        
+        admixtureGraph = new AdmixtureGraph(admixtureFilePath); // read the file using module class
+
     }
-    
-    /**
-     * 
-     * get admixture chart
-     * @return 
-     */
-    public StackedBarChart<String, Number> getAdmixChart() {
-        return admixChart;
-    }
-    
-    /**
-     * set admixture chart
-     * @param chartsList 
-     */
-    public void setAdmixChart(StackedBarChart<String, Number> chart) {
-        this.admixChart = chart;
-    }
-    
-    /**
-     * get a list of admixture charts
-     * @return 
-     */
-    public ArrayList<StackedBarChart<String, Number>> getListOfCharts() {
-        return listOfCharts;
-    }
-    
-    /**
-     * set listOfCharts
-     * @param listOfCharts 
-     */
-    public void setListOfCharts(ArrayList<StackedBarChart<String, Number>> listOfCharts) {
-        this.listOfCharts = listOfCharts;
-    }
-    
-    
+
     /**
      * read Q files
      * @param which
@@ -117,23 +77,5 @@ public class AdmixtureDataInputController implements Initializable {
         return wanted;
 
     }
-    
-    /**
-     * Close the current stage
-     * @param event 
-     */
-    private void closeStage(ActionEvent event) {
-        Node source = (Node) event.getSource();
-        Stage stage = (Stage) source.getScene().getWindow();
-        stage.close();
-    }
-
-    /**
-     * Initializes the controller class.
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
     
 }

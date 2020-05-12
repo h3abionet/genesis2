@@ -19,6 +19,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.stage.Stage;
+import org.h3abionet.genesis.Genesis;
 
 /**
  *
@@ -71,19 +72,13 @@ public class IconOptionsController implements Initializable {
         individualDetailsController.setIconType(iconsHashmap.get(this.iconTypeValue));
         individualDetailsController.setIconColor(this.colorPickerValue);
     
-        closeStage(event);
+        Genesis.closeOpenStage(event);
     }
 
     @FXML
     private void entryCancelBtn(ActionEvent event) {
-        closeStage(event);
+        Genesis.closeOpenStage(event);
 
-    }
-
-    public void closeStage(ActionEvent event) {
-        Node source = (Node) event.getSource();
-        Stage stage = (Stage) source.getScene().getWindow();
-        stage.close();
     }
 
     @Override

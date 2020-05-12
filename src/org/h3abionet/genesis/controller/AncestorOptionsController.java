@@ -19,7 +19,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import org.h3abionet.genesis.model.AdmixtureGraph;
+import org.h3abionet.genesis.model.AdmixtureGraphEventsHandler;
+import org.h3abionet.genesis.Genesis;
 
 /**
  * FXML Controller class
@@ -49,7 +50,7 @@ public class AncestorOptionsController implements Initializable {
     @FXML
     private Button cancelBtn;
     
-    private AdmixtureGraph admixtureGraph;
+    private AdmixtureGraphEventsHandler admixtureGraph;
     private static Color chosenColor;
 
     /**
@@ -81,14 +82,13 @@ public class AncestorOptionsController implements Initializable {
 
     @FXML
     private void cancelHandler(ActionEvent event) {
-        closeStage(event);
+        Genesis.closeOpenStage(event);
     }
 
     @FXML
     private void doneHandler(ActionEvent event) {
-        
-        closeStage(event);
-
+        Genesis.closeOpenStage(event);
+   
     }
 
     @FXML
@@ -104,16 +104,6 @@ public class AncestorOptionsController implements Initializable {
     @FXML
     private void shiftUpHandler(ActionEvent event) {
 
-    }
-    
-    /**
-     * close stage
-     * @param event 
-     */
-    public void closeStage(ActionEvent event) {
-        Node source = (Node) event.getSource();
-        Stage stage = (Stage) source.getScene().getWindow();
-        stage.close();
     }
     
     /**
