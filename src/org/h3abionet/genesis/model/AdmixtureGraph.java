@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
  import java.util.HashMap;
 import java.util.List;
 import javafx.scene.chart.CategoryAxis;
@@ -31,6 +32,11 @@ public class AdmixtureGraph extends Graph{
     private final HashMap<String, String[]> famData; // store fam details
     
     public static int currentNumOfAncestries = 0; // number of series
+    
+    // admixture plot colors -- add more depending on the number of ancestries
+    static String[] hexCodes = {"#FF8C00", "#32CD32","#fffb00","#055ff0", "#ff0d00"};
+    public static ArrayList<String> admixColors = new ArrayList<>(Arrays.asList(hexCodes));
+    
             
     public AdmixtureGraph(String admixtureFilePath) throws IOException {
         this.admixturePhenoData = Project.admixturePhenoData;
@@ -131,7 +137,10 @@ public class AdmixtureGraph extends Graph{
                     ancestryValues.getData().add(new XYChart.Data<>(qValues[1], Float.parseFloat(qValues[2+i]))); //[fid, iid, v1, v2]
 
                 }
-                populationGroupChart.getData().add(ancestryValues);
+                
+                populationGroupChart.getData().add(ancestryValues); // add values to chart
+                setAncestryColors(populationGroupChart, admixColors); // set ancestry colors
+                
               
             }
             
@@ -182,6 +191,21 @@ public class AdmixtureGraph extends Graph{
         System.arraycopy(a, 0, result, 0, a.length);
         System.arraycopy(b, 0, result, a.length, b.length);
         return result;
+    }
+    
+    /**
+     *
+     * Set colors
+     */
+    private void setAncestryColors(StackedBarChart<String, Number> stackedBarChart, ArrayList<String> admixColors) {
+        for (int i=0; i<stackedBarChart.getData().size(); i++) {
+            int ancestryIndex = i;
+            String ancestryColor = admixColors.get(i);
+            stackedBarChart.getData().get(i).getData().forEach((bar) -> {
+                bar.getNode().lookupAll(".default-color"+ancestryIndex+".chart-bar")
+                        .forEach(n -> n.setStyle("-fx-bar-fill: "+ancestryColor+";"));
+            });
+        }
     }
     
     // not necessary

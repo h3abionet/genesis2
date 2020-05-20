@@ -49,7 +49,8 @@ import org.h3abionet.genesis.controller.AncestorOptionsController;
 public class AdmixtureGraphEventsHandler {
 
     AncestorOptionsController ancestorOptionsController;
-    private ArrayList<StackedBarChart<String, Number>> listOfCharts;
+    public static ArrayList<StackedBarChart<String, Number>> listOfCharts;
+
     private GridPane gridPane;
     private String[] iidDetails;
     private int numOfAncestries = AdmixtureGraph.currentNumOfAncestries; // number of series;
@@ -63,20 +64,15 @@ public class AdmixtureGraphEventsHandler {
         this.gridPane = gridPane;
         this.rowIndex = rowIndex;
         optionsStage = new Stage();
-//        setNumberOfRows(gridPane);
-
     }
-
-//    private void setNumberOfRows(GridPane gridPane) {
-//        maxRowIndex = gridPane.getChildren().stream().mapToInt(n -> {
-//            Integer row = GridPane.getRowIndex(n);
-//            Integer rowSpan = GridPane.getRowSpan(n);
-//
-//            // default values are 0 / 1 respecively
-//            return (row == null ? 0 : row) + (rowSpan == null ? 0 : rowSpan - 1);
-//        }).max().orElse(-1);
-//
-//    }
+    
+    /*
+     * @return listOfCharts - accessed by the ancestorOptionsController
+     */
+    public static ArrayList<StackedBarChart<String, Number>> getListOfCharts() {
+        return listOfCharts;
+    }
+    
 
     /**
      *
@@ -84,7 +80,6 @@ public class AdmixtureGraphEventsHandler {
     @SuppressWarnings("empty-statement")
     public GridPane getGridPane() {
         try {
-
             gridPane.add(new Label("K = " + numOfAncestries), 0, rowIndex); // add K value.
 
             int colIndex = 1;
@@ -123,7 +118,8 @@ public class AdmixtureGraphEventsHandler {
                 gridPane.add(s, colIndex, rowIndex);
 
                 // add listeners to chart
-                // get the nodes of every individual.
+                
+                // on left click mouse event handler
                 s.getData().forEach((serie) -> {
                     serie.getData().forEach((item) -> {
                         item.getNode().setOnMousePressed((MouseEvent event) -> {
@@ -273,7 +269,7 @@ public class AdmixtureGraphEventsHandler {
                                             dialogStage.showAndWait();
 
                                             // change the color of the color display
-                                            ancestorColorDisplay.setFill(ancestorOptionsController.getColor());
+                                            ancestorColorDisplay.setFill(ancestorOptionsController.getChosenPaint());
 
                                             // change the color of series
                                             for (StackedBarChart<String, Number> stackedbarChart : listOfCharts) {
@@ -351,6 +347,7 @@ public class AdmixtureGraphEventsHandler {
         return gridPane;
 
     }
+  
 
     private void addShapeToChart(Shape shape, StackedBarChart<String, Number> chart) {
         Pane p = (Pane) chart.getChildrenUnmodifiable().get(1);

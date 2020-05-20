@@ -27,7 +27,7 @@ import org.h3abionet.genesis.Genesis;
  */
 public class IconOptionsController implements Initializable {
 
-    private IndividualDetailsController individualDetailsController;
+    private PCAIndividualDetailsController individualDetailsController;
 
     private final ObservableList<String> shapesList = FXCollections.observableArrayList("kite", "cross",
             "triangle", "tick", "rectangle");
@@ -111,7 +111,7 @@ public class IconOptionsController implements Initializable {
         }
         );
 
-        individualDetailsController = new IndividualDetailsController();
+        individualDetailsController = new PCAIndividualDetailsController();
         
         
     }

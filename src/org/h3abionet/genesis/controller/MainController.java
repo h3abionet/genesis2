@@ -124,19 +124,19 @@ public class MainController implements Initializable {
     
     // drawing tool variables
     private boolean drawingAnchorPaneVisibility;
-    Circle pivot;
+    Shape pivot;
     
     // pca variables
     private static Tab pcaChartTab;
     private static int tabCount = 0;
-    private static int pcaChartIndex;
+    private static int pcaChartIndex; // changed by clicking on tabs
     private static ScatterChart<Number, Number> pcaChart;
     private static ArrayList<ScatterChart> pcaChartsList = new ArrayList<>();
     
     // admixture variables
-    private ArrayList<StackedBarChart<String, Number>> listOfAdmixtureCharts;
+    private static ArrayList<StackedBarChart<String, Number>> listOfAdmixtureCharts;
     private Tab admixtureTab;
-    private GridPane gridPane; // gridpane for keeping list of admixture charts
+    private static GridPane gridPane; // gridpane for keeping list of admixture charts
     private int rowIndex = 0; // gridpane rowIndex index
 
     @FXML
@@ -282,24 +282,8 @@ public class MainController implements Initializable {
     @FXML
     private void settingsSelector(ActionEvent event) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/FontSelector.fxml"));
-            FXMLLoader fxmlLoaderAdmixture = new FXMLLoader(Genesis.class.getResource("view/AdmixtureSettings.fxml"));
-            Stage iconStage = new Stage();
-            iconStage.initOwner(settingsButton.getScene().getWindow());
-            
-            
-            if(tabPane.getChildrenUnmodifiable().contains(pcaChart)){
-                iconStage.setScene(new Scene((Parent) fxmlLoader.load()));
-                iconStage.setResizable(false);
-                iconStage.showAndWait();
-            
-            }else{
-                iconStage.setScene(new Scene((Parent) fxmlLoaderAdmixture.load()));
-                iconStage.setResizable(false);
-                iconStage.showAndWait();
-            
-            }
-            
+            Genesis.loadFxmlView("view/FontSelector.fxml");
+
         } catch (IOException e) {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
@@ -340,13 +324,24 @@ public class MainController implements Initializable {
     }
 
     /**
-     * 
      * return PCA based on their index in the list
      * @return PCA pcaChart
      */
     public static ScatterChart<Number, Number> getPcaChart() {
         return pcaChartsList.get(pcaChartIndex);
     }
+    
+    /*
+     * @return list of admix charts
+     */
+    public static ArrayList<StackedBarChart<String, Number>> getListOfAdmixtureCharts() {
+        return listOfAdmixtureCharts;
+    }
+
+    public static GridPane getGridPane() {
+        return gridPane;
+    }
+    
 
     @FXML
     private void drawingTool(ActionEvent event) {

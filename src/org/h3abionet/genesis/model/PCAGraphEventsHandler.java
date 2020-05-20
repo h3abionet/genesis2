@@ -50,7 +50,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.controller.IndividualDetailsController;
+import org.h3abionet.genesis.controller.PCAIndividualDetailsController;
 import org.h3abionet.genesis.controller.MainController;
 
 /**
@@ -100,7 +100,7 @@ public class PCAGraphEventsHandler {
                                 dialogStage.setScene(new Scene(parent));
                                 dialogStage.setResizable(false);
 
-                                IndividualDetailsController individualDetailsController = fxmlLoader.getController();
+                                PCAIndividualDetailsController individualDetailsController = fxmlLoader.getController();
                                 individualDetailsController.setPcaLabel(xAxisLabel + ": " + data.getXValue() + "\n" + yAxisLabel + ": " + data.getYValue());
                                 individualDetailsController.setIconDisplay(data.getNode());
                                 dialogStage.showAndWait();
@@ -174,17 +174,20 @@ public class PCAGraphEventsHandler {
             alert.showAndWait();
         } else {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save as");
+            fileChooser.setTitle("Save chart");
             FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("png", "*.png");
             FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("pdf", "*.pdf");
             fileChooser.getExtensionFilters().addAll(pngFilter, pdfFilter);
             File file = fileChooser.showSaveDialog(null);
 
             // tranform scale can be reduced for lower resolutions (10, 10 or 5, 5)
+            int pixelScale = 5;
+            WritableImage writableImage = new WritableImage((int)Math.rint(pixelScale*chart.getWidth()),
+                    (int)Math.rint(pixelScale*chart.getHeight()));
+            
             SnapshotParameters sp = new SnapshotParameters();
-            Transform transform = Transform.scale(15, 15);
-            sp.setTransform(transform);
-            WritableImage image = chart.snapshot(sp, null);
+            sp.setTransform(Transform.scale(pixelScale, pixelScale));
+            WritableImage image = chart.snapshot(sp, writableImage);
 
             if (file != null) {
 
@@ -215,7 +218,6 @@ public class PCAGraphEventsHandler {
                             newPDF.save(file);
                             newPDF.close();
                             break;
-                        // No default because extension filters have been applied.
                     }
 
                 } catch (IOException e) {
