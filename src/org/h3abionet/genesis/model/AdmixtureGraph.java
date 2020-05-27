@@ -26,7 +26,7 @@ import org.h3abionet.genesis.Genesis;
 public class AdmixtureGraph extends Graph{
 
     private List<String[]> admixValues; // arraylist of array to store row values
-    private String[] ancestries; // k - value
+    public static String[] ancestries; // Labels_order represents @K or column
     
     private final HashMap<String, String[]> admixturePhenoData; // store pheno details
     private final HashMap<String, String[]> famData; // store fam details
@@ -37,11 +37,12 @@ public class AdmixtureGraph extends Graph{
     static String[] hexCodes = {"#FF8C00", "#32CD32","#fffb00","#055ff0", "#ff0d00"};
     public static ArrayList<String> admixColors = new ArrayList<>(Arrays.asList(hexCodes));
     
-            
+
     public AdmixtureGraph(String admixtureFilePath) throws IOException {
         this.admixturePhenoData = Project.admixturePhenoData;
         this.famData = Project.famData;
         readGraphData(admixtureFilePath);
+
     }
     
     @Override

@@ -2,6 +2,7 @@ package org.h3abionet.genesis.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -131,13 +132,25 @@ public class MainController implements Initializable {
     private static int tabCount = 0;
     private static int pcaChartIndex; // changed by clicking on tabs
     private static ScatterChart<Number, Number> pcaChart;
-    private static ArrayList<ScatterChart> pcaChartsList = new ArrayList<>();
+    private static ArrayList<ScatterChart> pcaChartsList;
     
     // admixture variables
+    /**
+     * this stores incoming list of admixture charts to be rendered in a row
+     * e.g. [chart1, chart2, chart3, chart4, ... ]
+     * every chart represents a population group e.g. MKK, ASW, etc.
+     */
     private static ArrayList<StackedBarChart<String, Number>> listOfAdmixtureCharts;
+    
+    /**
+     * this stores all the listOfAdmixtureCharts - displayed on multiple rows
+     * e.g. [[chart1, chart2,... ], [chart1, chart2,... ], [chart1, chart2,... ], ...]
+     * every [chart1, chart2,... ] represents charts in a particular row
+     */
+    private static List<ArrayList<StackedBarChart<String, Number>>> allAdmixtureChartsList;
     private Tab admixtureTab;
     private static GridPane gridPane; // gridpane for keeping list of admixture charts
-    private int rowIndex = 0; // gridpane rowIndex index
+    private static int rowPointer = 0; // points to a new row for every new admix charts or K value
 
     @FXML
     private void newProject(ActionEvent event) throws IOException {
@@ -234,10 +247,11 @@ public class MainController implements Initializable {
     @SuppressWarnings("empty-statement")
     private void setAdmixtureChart(ArrayList<StackedBarChart<String, Number>> admixCharts){
         listOfAdmixtureCharts = admixCharts; // get multiple charts
+        allAdmixtureChartsList.add(listOfAdmixtureCharts);
         
         int sumOfIndividuals = Project.numOfIndividuals;
             
-        // check if the first rowIndex has nodes. If not, define column constraints.
+        // check if the first rowPointer has nodes. If not, define column constraints.
         if(gridPane.contains(1,0)){
             ;
         }else{
@@ -260,7 +274,7 @@ public class MainController implements Initializable {
         try {
             // use this class for additional pcaChart features: event handlers
             AdmixtureGraphEventsHandler admixtureChart;
-            admixtureChart = new AdmixtureGraphEventsHandler(listOfAdmixtureCharts, gridPane, rowIndex);
+            admixtureChart = new AdmixtureGraphEventsHandler(listOfAdmixtureCharts, gridPane, rowPointer);
 
             ScrollPane scrollPane = new ScrollPane(admixtureChart.getGridPane());
             scrollPane.setFitToWidth(true);
@@ -269,8 +283,8 @@ public class MainController implements Initializable {
             admixtureTab.getContent().autosize();
             tabPane.getTabs().add(admixtureTab);
             
-            // create another rowIndex index
-            rowIndex++;
+            // create another rowPointer index
+            rowPointer++;
             
         } catch (Exception e) {
             ; // do nothing
@@ -337,7 +351,11 @@ public class MainController implements Initializable {
     public static ArrayList<StackedBarChart<String, Number>> getListOfAdmixtureCharts() {
         return listOfAdmixtureCharts;
     }
-
+    
+    /**
+     * provide access to the grid pane being displayed
+     * @return 
+     */
     public static GridPane getGridPane() {
         return gridPane;
     }
@@ -525,6 +543,16 @@ public class MainController implements Initializable {
         y = Math.sin(radAngle) * (endX - pivot.getTranslateX()) + Math.cos(radAngle) * (endY - pivot.getTranslateY()) + pivot.getTranslateY();
         return new double[]{x, y};
     }
+    
+    /**
+     * used to point to a particular row under modification
+     * also used as charts index
+     * @return 
+     */
+    public static int getRowPointer() {
+        return rowPointer;
+    }
+    
 
     @FXML
     private void help(ActionEvent event) {
@@ -558,6 +586,10 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(java.net.URL arg0, ResourceBundle arg1) {
+        // intialize buckets to store multiple charts
+        allAdmixtureChartsList = new ArrayList<>();
+        pcaChartsList = new ArrayList<>();
+        
         // set the admixture tab
         admixtureTab = new Tab();
         admixtureTab.setText("Admixture Plot");
