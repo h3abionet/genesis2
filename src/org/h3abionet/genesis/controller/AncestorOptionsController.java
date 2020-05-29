@@ -5,9 +5,11 @@
  */
 package org.h3abionet.genesis.controller;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -68,27 +70,31 @@ public class AncestorOptionsController implements Initializable {
     private static ArrayList<HBox> listOfAncenstorHBox; // list of hboxes with ancestry btns
     private int rowIndexOfClickedAdmixChart;
     private boolean isShiftUpOrDownBtnClicked = false;
-
+    private static int counter = 0;
     /**
      * set ancestry position
+     *
      * @param serieIndex - position of the selectedSerie
      */
     public void setAncestryPosition(int serieIndex) {
+        int numOfSeries = listOfAdmixtureCharts.get(0).getData().size() - 1;
+        System.out.println(numOfSeries);
         this.ancestryPosition = serieIndex;
-        
-        // if position is 0, the serie is at the bottom - disable the down btn
-        if(ancestryPosition==0){
-            shiftDownBtn.setDisable(true);
-        }
-        
-        // if position is = to the index of last serie, disable the shiftup button
-        if(ancestryPosition==listOfAdmixtureCharts.get(0).getData().size()-1){
+
+        if (ancestryPosition == 0) { // first position
             shiftUpBtn.setDisable(true);
+        } else if (ancestryPosition == numOfSeries) { // last position
+            shiftDownBtn.setDisable(true);
+        } else {
+            // disable btns if ancestry is in middle position
+            shiftDownBtn.setDisable(false);
+            shiftUpBtn.setDisable(false);
         }
     }
 
     /**
      * set name of ancestor when loading this interface
+     *
      * @param ancestorName
      */
     public void setAncestorNumberLabel(String ancestorName) {
@@ -98,12 +104,13 @@ public class AncestorOptionsController implements Initializable {
 
     /**
      * display the default ancestor color when loading this interface
+     *
      * @param paint
      */
     public void setDefaultAncestorColor(Paint paint) {
         // display default ancestor color
         selectedColorDisplay.setFill(paint);
-        
+
         // display chosen color when the color picker value is clicked
         colorPicker.setOnAction((ActionEvent t) -> {
             selectedColorDisplay.setFill(colorPicker.getValue());
@@ -121,93 +128,132 @@ public class AncestorOptionsController implements Initializable {
     private void doneHandler(ActionEvent event) {
         // change the order of the hboxes (ancestry buttons) in the previous window
         // check if any of the shift buttons was clicked otherwise listOfAncenstorHBox will be null
-        if(isShiftUpOrDownBtnClicked){
+        if (isShiftUpOrDownBtnClicked) {
             AdmixtureGraphEventsHandler.getLeftVBox().getChildren().clear();
             AdmixtureGraphEventsHandler.getLeftVBox().getChildren().addAll(listOfAncenstorHBox);
-        }else{
+        } else {
             ;
         }
-        
-        Genesis.closeOpenStage(event);
-        
-    }
 
+        Genesis.closeOpenStage(event);
+
+    }
+    
     @FXML
     private void shiftDownHandler(ActionEvent event) {
-        // swap selected serie @ancestryPosition by 1 step down at every btn press
-        moveSeries(ancestryPosition - SWAP_STEP);
-        
-        // reduce the position by one
-        ancestryPosition--;
-        
-        // if position is 0, disable the shift down button
-        if(ancestryPosition==0){
-            shiftDownBtn.setDisable(true);
+        isShiftUpOrDownBtnClicked = true;
+        listOfAncenstorHBox = AdmixtureGraphEventsHandler.getListOfAncenstorHBox();
+        counter++;
+        if(counter==1){
+            Collections.reverse(listOfAncenstorHBox); // reverse elements in the list
+        }else{
+            HBox hbox; // change the order of hboxes
+            hbox = listOfAncenstorHBox.remove(0);
+            listOfAncenstorHBox.add(hbox);       
         }
         
+        Comparator<XYChart.Series<String, Number>> mycomp
+                = (s1, s2)
+                -> AdmixtureGraph.ancestryOrder.indexOf(s2.getName()) - AdmixtureGraph.ancestryOrder.indexOf(s1.getName());
+        
+        for (Node node : gridPane.getChildren()) {
+
+            // from the second column to the last column. The 1st col stores K values
+            for (int col = 1; col < listOfAdmixtureCharts.size(); col++) {
+
+                // change the row index. 
+                if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == rowIndexOfClickedAdmixChart) {
+                    newChart = (StackedBarChart<String, Number>) node;
+                    newChart.setData(newChart.getData().sorted(mycomp));
+                }
+            }
+        }
+        
+        // now we make arbitrary chaneg to order of colours for next time round
+        String first;
+        first = AdmixtureGraph.ancestryOrder.remove(0);
+        AdmixtureGraph.ancestryOrder.add(first);  // and the first shall be last
+
     }
 
     @FXML
     private void shiftUpHandler(ActionEvent event) {
-        // swap selected serie @ancestryPosition by 1 step up at every btn press
-        moveSeries(ancestryPosition + SWAP_STEP);
+                                    
+        Comparator<XYChart.Data<String, Number>> sortComp
+                = (o1, o2)
+                -> { 
+                    Number xValue1 = (Number) o1.getYValue();
+                    Number xValue2 = (Number) o2.getYValue();
+                    return new BigDecimal(xValue1.toString()).compareTo(new BigDecimal(xValue2.toString()));
+                };
         
-        // reduce the position by one
-        ancestryPosition++;
-        
-        // if position is = to the index of last serie, disable the shiftup button
-        if(ancestryPosition==listOfAdmixtureCharts.get(0).getData().size()-1){
-            shiftUpBtn.setDisable(true);
+        for (Node node : gridPane.getChildren()) {
+
+            // from the second column to the last column. The 1st col stores K values
+            for (int col = 1; col < listOfAdmixtureCharts.size(); col++) {
+
+                // change the row index. 
+                if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == rowIndexOfClickedAdmixChart) {
+                    newChart = (StackedBarChart<String, Number>) node;
+                    newChart.getData().get(0).getData().sorted(sortComp);
+                    System.out.println(newChart.getData().get(0).getData().toString());
+                }
+            }
         }
 
     }
-    
+
     /**
      * check if the color was selected before replacing the old colors
-     * @return 
+     *
+     * @return
      */
     public boolean isIsColorSelected() {
         return isColorSelected;
     }
-    
+
     /**
-     * return chosen color to change the color of the series - replaces old color
-     * @return 
+     * return chosen color to change the color of the series - replaces old
+     * color
+     *
+     * @return
      */
     public String getChosenColor() {
         String selectedColor = Integer.toHexString(chosenColor.hashCode());
         return selectedColor;
     }
-    
+
     /**
      * return the paint to fill the ancestor color display - replaces old color
-     * @return 
+     *
+     * @return
      */
     public Paint getChosenPaint() {
         return chosenColor;
     }
-    
+
     /**
      * This method sets the new listOfAncenstorHBox which added to the leftVBox
      * It also performs the job of swapping of series
+     *
      * @param newPosition
      */
-    public void moveSeries(int newPosition){
+    public void moveSeries(int newPosition) {
         // set this boolean to true
         isShiftUpOrDownBtnClicked = true;
-        
+
         // swap colors
         Collections.swap(AdmixtureGraph.admixColors, ancestryPosition, newPosition);
-        
+
         // set the  listOfAncenstorHBox and swap the position of HBoxes
         listOfAncenstorHBox = AdmixtureGraphEventsHandler.getListOfAncenstorHBox();
         Collections.swap(listOfAncenstorHBox, ancestryPosition, newPosition);
-        
+
         for (Node node : gridPane.getChildren()) {
-            
+
             // from the second column to the last column. The 1st col stores K values
             for (int col = 1; col < listOfAdmixtureCharts.size(); col++) {
-                
+
                 // change the row index. 
                 if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == rowIndexOfClickedAdmixChart) {
                     newChart = (StackedBarChart<String, Number>) node;
@@ -223,10 +269,10 @@ public class AncestorOptionsController implements Initializable {
                                 .forEach(newSerie.getData()::add);
                         newSeries.add(newSerie);
                     });
-                    
+
                     // swap order order of series
                     Collections.swap(newSeries, ancestryPosition, newPosition);
-                    
+
                     newChart.getData().clear();
                     newChart.getData().addAll(newSeries);
 
@@ -240,19 +286,20 @@ public class AncestorOptionsController implements Initializable {
             }
 
         }
-        
+
     }
-    
+
     /**
      * set the color of the series in a stacked bar chart
+     *
      * @param stackedBarChart
-     * @param admixColors 
+     * @param admixColors
      */
     private void setAncestryColors(StackedBarChart<String, Number> stackedBarChart, ArrayList<String> admixColors) {
         for (int i = 0; i < stackedBarChart.getData().size(); i++) {
             int serieIndex = i; // serie position or index
             String serieColor = admixColors.get(i); // get color in this serie position
-            
+
             // change the default serie color with the new color
             stackedBarChart.getData().get(i).getData().forEach((bar) -> {
                 bar.getNode().lookupAll(".default-color" + serieIndex + ".chart-bar")
@@ -271,14 +318,15 @@ public class AncestorOptionsController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // intialise new list to store new list of swapped charts
         newListOfCharts = new ArrayList<>();
-        
+
         // get the list of the current staked bar charts being displayed
         listOfAdmixtureCharts = MainController.getListOfAdmixtureCharts();
-        
+
         // set the current gridpane - to get the row index of any clicked chart
         gridPane = MainController.getGridPane();
-        
+
         // set row index
         rowIndexOfClickedAdmixChart = AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart();
+
     }
 }

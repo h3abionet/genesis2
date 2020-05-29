@@ -9,9 +9,11 @@ import com.sun.javafx.charts.Legend;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,6 +21,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.StackedBarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
@@ -134,7 +137,7 @@ public class AdmixtureGraphEventsHandler {
 
                 // add chart to a specific cell
                 gridPane.add(admixChart, colIndex, rowPointer);
-
+                
                 // add listeners to chart
                 // on left click mouse event handler
                 admixChart.getData().forEach((serie) -> {
@@ -227,10 +230,11 @@ public class AdmixtureGraphEventsHandler {
                                 leftVBox.setStyle(cssLayout);
 
                                 // for every ancestor, get its color, create a button with its name and create a sort button
-                                for (int i = 0; i < numOfAncestries; i++) {
+                                for (int i = numOfAncestries-1; i >=0; i--) {
 
                                     // HBox of ancestor buttons in the leftVBox
                                     HBox ancenstorHBox = new HBox(10);
+                                    ancenstorHBox.setId("Ancestry"+i);
 
                                     // rectangle to display ancestor colors
                                     Rectangle ancestorColorDisplay = new Rectangle();
