@@ -20,6 +20,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
@@ -77,6 +78,7 @@ public class AdmixtureGraphEventsHandler {
     private static int labelClickCounter = 0;
     private Label firstGroupLabel, secondGroupLabel;
     private Node firstChart, secondChart;
+    String start_name;
 
     /**
      *
@@ -104,7 +106,7 @@ public class AdmixtureGraphEventsHandler {
             for (StackedBarChart<String, Number> admixChart : listOfCharts) {
                 // define chart properties
                 admixChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
-                admixChart.setCategoryGap(0); // remove gaps in categories
+                admixChart.setCategoryGap(0); // remove gaps in iids
                 admixChart.setLegendVisible(false);
 
                 // set the chart size
@@ -137,7 +139,7 @@ public class AdmixtureGraphEventsHandler {
 
                 // add chart to a specific cell
                 gridPane.add(admixChart, colIndex, rowPointer);
-                
+
                 // add listeners to chart
                 // on left click mouse event handler
                 admixChart.getData().forEach((serie) -> {
@@ -165,7 +167,6 @@ public class AdmixtureGraphEventsHandler {
                         });
                     });
                 });
-
                 // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
                     MouseButton button = event.getButton();
@@ -218,9 +219,31 @@ public class AdmixtureGraphEventsHandler {
                                 });
 
                                 Button dominantColourBtn = new Button("Dominant colour");
-                                dominantColourBtn.setOnMouseClicked((MouseEvent dominantEvent) -> {
-                                    System.out.println("add dominant color sort code ");
-                                });
+                                dominantColourBtn.setOnMouseClicked((MouseEvent devt) -> {
+                                        for (StackedBarChart<String, Number> stackedBarChart : listOfCharts) {
+                                            // store totals of yvalue elements in every serie                                            
+                                            ArrayList<Double> sumList = new ArrayList<>();
+                                            
+                                            // get sum of all yvalues in every serie / ancestry
+                                            for(int s=0; s<stackedBarChart.getData().size(); s++){
+                                                double sum = 0;
+                                                for(int n=0; n<stackedBarChart.getData().get(s).getData().size(); n++){
+                                                    sum += stackedBarChart.getData().get(s).getData().get(n).getYValue().doubleValue();
+                                       
+                                                }
+                                                sumList.add(sum);                                           
+                                            }
+                                            
+                                            // get index of the max value in sumList = serie index in the chart
+                                            int ancestryIndex = sumList.indexOf(Collections.max(sumList));
+
+                                            // sort chart by serie with max yvalues (dominant)
+                                            sortChartByColor(stackedBarChart, ancestryIndex);
+                                            
+                                        }
+
+                                    });
+                                
                                 rightVBox.getChildren().addAll(famOrderBtn, dominantColourBtn);
 
                                 // create the left vbox to keep all ancestor elements added to hbox
@@ -230,11 +253,11 @@ public class AdmixtureGraphEventsHandler {
                                 leftVBox.setStyle(cssLayout);
 
                                 // for every ancestor, get its color, create a button with its name and create a sort button
-                                for (int i = numOfAncestries-1; i >=0; i--) {
+                                for (int i = numOfAncestries - 1; i >= 0; i--) {
 
                                     // HBox of ancestor buttons in the leftVBox
                                     HBox ancenstorHBox = new HBox(10);
-                                    ancenstorHBox.setId("Ancestry"+i);
+                                    ancenstorHBox.setId("Ancestry" + i);
 
                                     // rectangle to display ancestor colors
                                     Rectangle ancestorColorDisplay = new Rectangle();
@@ -301,9 +324,15 @@ public class AdmixtureGraphEventsHandler {
                                     });
 
                                     // create a sort individuals button
-                                    Button colorSortBtn = new Button("Sort indivs by colour");
-                                    colorSortBtn.setOnMouseClicked((MouseEvent dominantEvent) -> {
-                                        System.out.println("Add sorting by colour code here");
+                                    int serieNum = i+1;
+                                    Button colorSortBtn = new Button("Sort Ancestry "+serieNum);
+                                    colorSortBtn.setOnMouseClicked((MouseEvent devt) -> {
+                                        for (StackedBarChart<String, Number> stackedBarChart : listOfCharts) {
+                                            // get last character on a btn and use it use it as the index of the ancestry
+                                            String ancestryNumber = colorSortBtn.getText().substring(colorSortBtn.getText().length() - 1);
+                                            // sort
+                                            sortChartByColor(stackedBarChart, Integer.valueOf(ancestryNumber));
+                                        }
                                     });
 
                                     // for every serie, store its default color, change color btn, and sort btn in HBox
@@ -415,6 +444,7 @@ public class AdmixtureGraphEventsHandler {
             swap();
         }
         labelClickCounter = ++labelClickCounter % 2;  // changes values between 0 1
+
     }
 
     private void swap() {
@@ -425,14 +455,14 @@ public class AdmixtureGraphEventsHandler {
 
         // swap their column constraints
         Collections.swap(gridPane.getColumnConstraints(), firstCol, secondCol);
-        
+
         // remove group existing labels
         gridPane.getChildren().removeAll(firstGroupLabel, secondGroupLabel);
 
         // swap population group nodes
         gridPane.add(firstGroupLabel, secondCol, secondRow);
         gridPane.add(secondGroupLabel, firstCol, firstRow);
-        
+
         int r = 0;
         ObservableList<Node> children = gridPane.getChildren();
         while (r < firstRow) {
@@ -444,27 +474,53 @@ public class AdmixtureGraphEventsHandler {
                     secondChart = node;
                 }
             }
-            
-            if(firstChart!=null && secondChart!=null){
+
+            if (firstChart != null && secondChart != null) {
                 // remove nodes
                 gridPane.getChildren().removeAll(firstChart, secondChart);
 
                 // swap nodes
                 gridPane.add(firstChart, secondCol, r);
                 gridPane.add(secondChart, firstCol, r);
-            
-            }else{
+
+            } else {
                 ;
             }
-            
+
             // reset nodes
             firstChart = null;
             secondChart = null;
-            
+
             r++;
         }
-            
+
+    }
+
+    private void sortChartByColor(StackedBarChart<String, Number> stackedBarChart, int ancestryNumber){
         
+        CategoryAxis xAxis = (CategoryAxis) stackedBarChart.getXAxis();
+        
+        XYChart.Series<String, Number>  chosenAncestry = stackedBarChart.getData().get(ancestryNumber);
+        int numOfIndividuals = chosenAncestry.getData().size();
+
+        ObservableList<String> iids = xAxis.getCategories();
+
+        // sort the chosen ancestry
+        chosenAncestry.getData().sort(Comparator.comparingDouble(d -> d.getYValue().doubleValue()));
+
+        // get positions of iids from the sorted ancestry
+        String[] sorted_iids = new String[numOfIndividuals];
+        for (int p = 0; p < numOfIndividuals; p++) {
+            sorted_iids[p] = chosenAncestry.getData().get(p).getXValue();
+        }
+
+        // swap positions
+        for (int j = 0; j < numOfIndividuals; j++) {
+            String temp = iids.remove(iids.indexOf(sorted_iids[j]));
+            iids.add(j, temp);
+            xAxis.setCategories(iids);
+        }
+
     }
 
 }
