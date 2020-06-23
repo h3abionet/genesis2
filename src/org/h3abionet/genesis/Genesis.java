@@ -43,13 +43,13 @@ public class Genesis extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        
+                
         shutdownProgram(stage);
         
         Parent root = FXMLLoader.load(getClass().getResource("view/Main.fxml"));
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Genesis.class.getResource("css/pca.css").toExternalForm());
-
+        
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.H) {
                 System.out.println("Please help");
@@ -78,9 +78,9 @@ public class Genesis extends Application {
         Alert alert = new Alert(Alert.AlertType.NONE, "Do you want to close the program?", ButtonType.YES, ButtonType.NO);
         mainStage.setOnCloseRequest(evt -> {
             if (alert.showAndWait().get() == ButtonType.YES){
-            mainStage.close();
+                mainStage.close();
             }else{
-            evt.consume();
+                evt.consume();
             }
         });
         
@@ -103,7 +103,6 @@ public class Genesis extends Application {
      * @throws FileNotFoundException
      */
     public static BufferedReader openFile(String name) throws FileNotFoundException {
-
         InputStreamReader is = new InputStreamReader(new FileInputStream(name));
         BufferedReader dinp = new BufferedReader(is);
         return dinp;
