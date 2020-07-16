@@ -32,6 +32,8 @@ public class AdmixtureGraph extends Graph{
     private final HashMap<String, String[]> famData; // store fam details
     
     public static int currentNumOfAncestries = 0; // number of series
+    private static final double CHART_HEIGHT = 100; // default height for every chart
+    private static String defaultHeading = "Admixture plot";
     
     // admixture plot colors -- add more depending on the number of ancestries
     static String[] hexCodes = {"#FF8C00", "#32CD32","#fffb00","#055ff0", "#ff0d00"};
@@ -156,9 +158,8 @@ public class AdmixtureGraph extends Graph{
             // define populationGroupChart size
             populationGroupChart.getXAxis().setLabel(k);
             populationGroupChart.getXAxis().setVisible(false);
-            populationGroupChart.setPrefHeight(100);
-            populationGroupChart.setMinHeight(100);
-            populationGroupChart.setMaxHeight(200);
+            populationGroupChart.setPrefHeight(CHART_HEIGHT);
+            populationGroupChart.setMinHeight(CHART_HEIGHT);
             charts.add(populationGroupChart);
 
         }
@@ -212,6 +213,14 @@ public class AdmixtureGraph extends Graph{
                         .forEach(n -> n.setStyle("-fx-bar-fill: "+ancestryColor+";"));
             });
         }
+    }
+
+    public static double getCHART_HEIGHT() {
+        return CHART_HEIGHT;
+    }
+
+    public static String getDefaultHeading() {
+        return defaultHeading;
     }
     
     // not necessary

@@ -99,13 +99,13 @@ public class PCAGraphEventsHandler {
                                 Stage dialogStage = new Stage();
                                 dialogStage.setScene(new Scene(parent));
                                 dialogStage.setResizable(false);
-
+                                
                                 PCAIndividualDetailsController individualDetailsController = fxmlLoader.getController();
                                 individualDetailsController.setPcaLabel(xAxisLabel + ": " + data.getXValue() + "\n" + yAxisLabel + ": " + data.getYValue());
                                 individualDetailsController.setIconDisplay(data.getNode());
                                 dialogStage.showAndWait();
 
-                            } catch (IOException ex) {
+                            } catch (Exception ex) {
                                 Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }

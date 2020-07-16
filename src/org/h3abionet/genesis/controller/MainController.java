@@ -2,7 +2,6 @@ package org.h3abionet.genesis.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -11,7 +10,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -46,7 +44,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCAGraphEventsHandler;
@@ -58,6 +55,7 @@ import org.h3abionet.genesis.model.Arrow;
 import org.h3abionet.genesis.model.Project;
 import org.h3abionet.genesis.model.RectangleOptions;
 import org.h3abionet.genesis.controller.AdmixtureSettingsController;
+import org.h3abionet.genesis.model.AdmixtureGraph;
 
 /*
  * Copyright (C) 2018 scott
@@ -132,7 +130,7 @@ public class MainController implements Initializable {
 
     // drawing tool variables
     private boolean drawingAnchorPaneVisibility;
-    Shape pivot;    
+    Shape pivot;
 
     // pca variables
     private static Tab pcaChartTab;
@@ -151,12 +149,14 @@ public class MainController implements Initializable {
     private Tab admixtureTab;
     private static GridPane gridPane; // gridpane for keeping list of admixture charts
     private static int rowPointer = 0; // points to a new row for every new admix charts or K value
-    private VBox admixVbox; // has only 2 nodes : chart title & gridPane
-    private ScrollPane scrollPane; // its content = admixVbox 
-    private AnchorPane admixPane  = new AnchorPane();
-    
-    
-    
+    private static VBox admixVbox; // has only 2 nodes : chart title & gridPane
+    private static ScrollPane scrollPane; // its content = admixVbox 
+    private static AnchorPane admixPane;
+    private double VBOX_MARGIN = 50;
+    private static double defaultAdmixPlotWidth = 1200; // default width
+    private static Text chartHeading; // default heading;
+    private AdmixtureGraphEventsHandler admixtureChart;
+
     @FXML
     private void newProject(ActionEvent event) throws IOException {
         Genesis.loadFxmlView("view/ProjDialogEntry.fxml");
@@ -178,33 +178,27 @@ public class MainController implements Initializable {
     @FXML
     @SuppressWarnings("empty-statement")
     private void newAdmixture(ActionEvent event) throws IOException {
-        Genesis.loadFxmlView("view/AdmixtureDataInput.fxml");
-        
-        double angle = 90;
-        double w1 = gridPane.getBoundsInParent().getMinY() + gridPane.getBoundsInLocal().getWidth()/2;
-        
-        // if it is already vertical, first make it horizontal be4 adding charts then rotate to vertical
-        if(AdmixtureSettingsController.isIsAdmixVertical()){
-            Rotate rotate = new Rotate();
-            rotate.setPivotX(w1);
-            rotate.setPivotY(w1);
-            rotate.setAngle(angle);
-            gridPane.getTransforms().addAll(rotate);
-            setAdmixtureChart(AdmixtureDataInputController.listOfStackedBarCharts);
-            
-            Rotate rotate2 = new Rotate();
-            rotate2.setPivotX(w1);
-            rotate2.setPivotY(w1);
-            rotate2.setAngle(-angle);
-            gridPane.getTransforms().addAll(rotate2);
-        }else{
-            try {
-                setAdmixtureChart(AdmixtureDataInputController.listOfStackedBarCharts);
 
-            } catch (NullPointerException e) {
-                Genesis.throwErrorException("Oops, there was an error!");
+        if (AdmixtureSettingsController.isAdmixVertical()) {
+            Genesis.throwInformationException("First change the graph to a horizontal linear layout");
+        } else {
+
+            Genesis.loadFxmlView("view/AdmixtureDataInput.fxml");
+
+            if (AdmixtureDataInputController.isImportOk()) { // was data imported correctly
+                
+                if (AdmixtureSettingsController.isAdmixRotated()) {
+                    setAdmixtureChart(AdmixtureDataInputController.listOfStackedBarCharts);
+                    admixVbox.setMaxHeight(Double.MAX_VALUE); // restore vGrow property
+
+                } else {
+                    setAdmixtureChart(AdmixtureDataInputController.listOfStackedBarCharts);
+                }
+            } else {
+                ; // if import was wrong, do nothing
             }
         }
+
     }
 
     /**
@@ -298,35 +292,29 @@ public class MainController implements Initializable {
         }
 
         try {
-            // use this class for additional pcaChart features: event handlers
-            AdmixtureGraphEventsHandler admixtureChart;
-            admixtureChart = new AdmixtureGraphEventsHandler(listOfAdmixtureCharts, gridPane, rowPointer);
+            // use this class for additional Chart features: add event handlers and group labels
             
+            admixtureChart = new AdmixtureGraphEventsHandler(listOfAdmixtureCharts, gridPane, rowPointer);
+
             // if first chart, add gridpane to index 1 of vbox else reset index 1 with new gridpane
-            if(rowPointer==0){
-                admixVbox.getChildren().add(admixtureChart.getGridPane());
+            if (rowPointer == 0) {
+                admixPane.getChildren().add(admixtureChart.getGridPane());
+                AnchorPane name = (AnchorPane) admixVbox.getChildren().get(1);
+                name.getChildren().add(admixPane);
                 scrollPane.setContent(admixVbox);
-                scrollPane.getContent().autosize();
-                admixPane.getChildren().add(scrollPane);
-            }else{
-                admixVbox.getChildren().set(1, admixtureChart.getGridPane());
+            } else {
+                admixPane.getChildren().set(0, admixtureChart.getGridPane());
+                AnchorPane name = (AnchorPane) admixVbox.getChildren().get(1);
+                name.getChildren().set(0, admixPane);
                 scrollPane.setContent(admixVbox);
-                scrollPane.getContent().autosize();
-                admixPane.getChildren().set(0, scrollPane);
             }
 
-            AnchorPane.setTopAnchor(scrollPane, 0.0); 
-            AnchorPane.setLeftAnchor(scrollPane, 0.0); 
-            AnchorPane.setRightAnchor(scrollPane, 0.0); 
-            AnchorPane.setBottomAnchor(scrollPane, 0.0); 
-            
-            admixtureTab.setContent(admixPane);
+            admixtureTab.setContent(scrollPane);
             admixtureTab.getContent().autosize();
-            tabPane.getTabs().add(admixtureTab);           
-            
+            tabPane.getTabs().add(admixtureTab);
+
             // create another rowPointer index
             rowPointer++;
-            
 
         } catch (Exception e) {
             ; // do nothing
@@ -336,23 +324,21 @@ public class MainController implements Initializable {
 
     @FXML
     private void settingsSelector(ActionEvent event) throws IOException {
-        // get selected tab
-        Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
         
-        try{
-            // load pca setting
-            if (selectedTab.getId().contains("tab")) {
+            // get selected tab
+            Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
+            try{
+                if (selectedTab.getId().contains("tab")) {
+                    // show pca settings
                     Genesis.loadFxmlView("view/FontSelector.fxml");
-            }
-            
-            // load admixture setting
-            if(selectedTab.getId() == "admix"){
+                }else if(selectedTab.getId().contains("admix")){
+                    // show admixture settings
                     Genesis.loadFxmlView("view/AdmixtureSettings.fxml");
+                }
+            }catch(Exception e){
+                //TODO disable setting button if no chart
+                Genesis.throwInformationException("No chart to format");
             }
-            
-        }catch(Exception e){
-            Genesis.throwInformationException("No chart to format");
-        }
     }
 
     /**
@@ -361,8 +347,24 @@ public class MainController implements Initializable {
     @FXML
     @SuppressWarnings("empty-statement")
     public void saveChart() {
-        PCAGraphEventsHandler pc = new PCAGraphEventsHandler(pcaChartsList.get(pcaChartIndex));
-        pc.saveChart();
+        Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
+
+        try {
+            // load pca setting
+            if (selectedTab.getId().contains("tab")) {
+                PCAGraphEventsHandler pc = new PCAGraphEventsHandler(pcaChartsList.get(pcaChartIndex));
+                pc.saveChart();
+            }
+
+            // load admixture setting
+            if (selectedTab.getId().contains("admix")){
+                admixtureChart.saveChart(admixVbox);
+            }
+
+        } catch (Exception e) {
+            Genesis.throwInformationException("No chart to save");
+        }
+        
 
     }
 
@@ -439,7 +441,6 @@ public class MainController implements Initializable {
             line.setEndY(res[1]);
 
         });
-
     }
 
     @FXML
@@ -597,6 +598,27 @@ public class MainController implements Initializable {
         return rowPointer;
     }
 
+    // get pane for rotation
+    public static AnchorPane getAdmixPane() {
+        return admixPane;
+    }
+
+    public static VBox getAdmixVbox() {
+        return admixVbox;
+    }
+    /**
+     * access this heading for text formatting
+     * @return 
+     */
+    public static Text getChartHeading() {
+        return chartHeading;
+    }
+
+    public static double getDefaultAdmixPlotWidth() {
+        return defaultAdmixPlotWidth;
+    }
+    
+    
     @FXML
     private void help(ActionEvent event) {
         TextInputDialog dialog = new TextInputDialog("Help");
@@ -640,26 +662,41 @@ public class MainController implements Initializable {
         drawingAnchorPaneVisibility = false;
         drawingAnchorPane.setVisible(drawingAnchorPaneVisibility);
 
+        //VBox to keep the admix plot and heading
+        admixVbox = new VBox(10);
+        admixVbox.setPrefWidth(defaultAdmixPlotWidth + VBOX_MARGIN); // TODO - change these hard coded values
+//        admixVbox.setMaxWidth(defaultAdmixPlotWidth + VBOX_MARGIN); // increase this value to increase the thickness of subjects
+        
+        // add pane for the title
+        chartHeading = new Text(AdmixtureGraph.getDefaultHeading());
+        StackPane titlePane = new StackPane(chartHeading);
+        titlePane.setAlignment(Pos.CENTER);
+        titlePane.setPrefWidth(Double.MAX_VALUE);
+        
+        AnchorPane pane = new AnchorPane();
+        pane.setStyle("-fx-border-color: red; -fx-border-width: 1;");
+        
+        admixVbox.getChildren().addAll(titlePane, pane);
+        admixVbox.setStyle("-fx-border-color: white; -fx-background-color: white; -fx-border-width: 5px");
+
         // gridpane section for admixture plots
         gridPane = new GridPane();
         gridPane.setHgap(0); //horizontal gap
         gridPane.setVgap(0); //vertical gap
         gridPane.setGridLinesVisible(false);
-        gridPane.setMinWidth(1200); // TODO - change these hard coded values
-        gridPane.setMaxWidth(1200); // increase this value to increase the thickness of subjects
+        gridPane.setMinWidth(defaultAdmixPlotWidth); // TODO - change these hard coded values
+        gridPane.setMaxWidth(defaultAdmixPlotWidth); // increase this value to increase the thickness of subjects
+        AnchorPane.setRightAnchor(gridPane, 30.0);
+        
+        admixPane = new AnchorPane();
+        admixPane.setStyle("-fx-border-color: green; -fx-border-width: 3px 3px 3px 3px");
 
         // set scrollpane that keeps admix charts
         scrollPane = new ScrollPane();
         scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setPannable(true);
-        scrollPane.setFitToWidth(true);
-        
-        //VBox to keep the admix plot and heading
-        admixVbox = new VBox(2.0);
-        admixVbox.setAlignment(Pos.CENTER);
-        admixVbox.getChildren().add(AdmixtureSettingsController.getChartTitle());
-        
+        scrollPane.setStyle("-fx-border-color: purple; -fx-border-width: 2px");
+
     }
 
 }

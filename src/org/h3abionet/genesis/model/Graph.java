@@ -40,5 +40,10 @@ public abstract class Graph {
     protected abstract void setPopulationGroups();
     abstract ArrayList<StackedBarChart<String, Number>> createGraph(); // used by admixture
     abstract ScatterChart<Number, Number> createGraph(String PCA1, String PCA2) throws IOException; // used by pca
+    
+    public void saveChart(){
+        
+        System.out.println("Saving the chart");
+    }
 
 }

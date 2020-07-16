@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Spinner?>
@@ -12,11 +13,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.AdmixtureSettingsController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.AdmixtureSettingsController">
    <children>
       <VBox prefHeight="737.0" prefWidth="600.0" spacing="10.0" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+            <AnchorPane prefHeight="30.0" prefWidth="458.0">
                <children>
                   <Label prefHeight="17.0" prefWidth="600.0" text="Options" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <font>
@@ -24,9 +25,9 @@
                      </font></Label>
                </children>
             </AnchorPane>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5;">
+            <AnchorPane prefHeight="164.0" prefWidth="458.0" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5;">
                <children>
-                  <VBox prefHeight="200.0" prefWidth="600.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <VBox layoutX="22.0" layoutY="15.0" prefHeight="130.0" prefWidth="436.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Label text="Heading">
                            <font>
@@ -36,16 +37,17 @@
                         <HBox prefHeight="100.0" prefWidth="200.0" spacing="40.0">
                            <children>
                               <Label prefHeight="17.0" prefWidth="83.0" text="Font" />
-                              <Spinner fx:id="headingFontSpinner" prefHeight="27.0" prefWidth="145.0" />
+                              <ComboBox fx:id="headingFontCombo" prefWidth="150.0" />
                               <Label layoutX="10.0" layoutY="10.0" prefHeight="17.0" prefWidth="83.0" text="Size" />
-                              <Spinner fx:id="headingFontSizeSpinner" layoutX="115.0" layoutY="10.0" prefHeight="27.0" prefWidth="80.0" />
+                              <Spinner fx:id="headingFontSizeSpinner" editable="true" layoutX="115.0" layoutY="10.0" prefHeight="29.0" prefWidth="93.0" />
                            </children>
                         </HBox>
-                        <HBox layoutX="10.0" layoutY="44.0" prefHeight="100.0" prefWidth="200.0" spacing="28.0">
+                        <HBox layoutX="10.0" layoutY="44.0" prefHeight="28.0" prefWidth="404.0" spacing="50.0">
                            <children>
                               <CheckBox fx:id="boldHeadingCheckbox" mnemonicParsing="false" text="Bold" />
                               <CheckBox fx:id="italicHeadingCheckbox" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Italic" />
                               <CheckBox fx:id="underlineHeadingCheckbox" layoutX="60.0" layoutY="10.0" mnemonicParsing="false" text="Underline" />
+                              <ColorPicker fx:id="headingColorPicker" minHeight="-Infinity" prefHeight="27.0" prefWidth="101.0" />
                            </children>
                         </HBox>
                      </children>
@@ -66,22 +68,27 @@
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font></Label>
-                        <CheckBox fx:id="showLabelCheckbox" mnemonicParsing="false" text="Show Population Group Labels" />
+                        <HBox spacing="135.0">
+                           <children>
+                              <CheckBox fx:id="hideLabelsCheckbox" mnemonicParsing="false" text="Hide Population Group Labels" />
+                              <ColorPicker fx:id="labelColorPicker" minHeight="-Infinity" prefHeight="27.0" prefWidth="104.0" />
+                           </children>
+                        </HBox>
                         <HBox layoutX="10.0" layoutY="44.0" prefHeight="100.0" prefWidth="200.0" spacing="28.0">
                            <children>
                               <CheckBox fx:id="boldLabelCheckbox" mnemonicParsing="false" text="Bold" />
                               <CheckBox fx:id="italicLabelCheckbox" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Italic" />
                               <CheckBox fx:id="underlineLabelCheckbox" layoutX="60.0" layoutY="10.0" mnemonicParsing="false" text="Underline" />
                               <Label text="Rotate Labels" />
-                              <Spinner fx:id="rotateLabelSpinner" prefHeight="27.0" prefWidth="64.0" />
+                              <Spinner fx:id="rotateLabelSpinner" editable="true" prefHeight="27.0" prefWidth="64.0" />
                            </children>
                         </HBox>
                         <HBox prefHeight="100.0" prefWidth="200.0" spacing="40.0">
                            <children>
                               <Label prefHeight="17.0" prefWidth="68.0" text="Font" />
-                              <Spinner fx:id="labelFontSpinner" prefHeight="27.0" prefWidth="125.0" />
+                              <ComboBox fx:id="labelFontCombo" prefWidth="150.0" />
                               <Label layoutX="10.0" layoutY="10.0" prefHeight="17.0" prefWidth="68.0" text="Size" />
-                              <Spinner fx:id="labelFontSizeSpinner" layoutX="112.0" layoutY="10.0" prefHeight="27.0" prefWidth="70.0" />
+                              <Spinner fx:id="labelFontSizeSpinner" editable="true" layoutX="112.0" layoutY="10.0" prefHeight="29.0" prefWidth="77.0" />
                            </children>
                         </HBox>
                      </children>
@@ -109,8 +116,8 @@
                               </VBox>
                               <VBox spacing="3.0">
                                  <children>
-                                    <Spinner fx:id="leftMarginSpinner" prefHeight="27.0" prefWidth="64.0" />
-                                    <Spinner fx:id="rightMarginSpinner" layoutX="10.0" layoutY="10.0" prefHeight="27.0" prefWidth="64.0" />
+                                    <Spinner fx:id="leftMarginSpinner" editable="true" prefHeight="27.0" prefWidth="64.0" />
+                                    <Spinner fx:id="rightMarginSpinner" editable="true" layoutX="10.0" layoutY="10.0" prefHeight="27.0" prefWidth="64.0" />
                                  </children>
                               </VBox>
                               <VBox layoutX="10.0" layoutY="10.0" spacing="20.0">
@@ -121,8 +128,8 @@
                               </VBox>
                               <VBox layoutX="54.0" layoutY="10.0" spacing="3.0">
                                  <children>
-                                    <Spinner fx:id="topMarginSpinner" prefHeight="27.0" prefWidth="64.0" />
-                                    <Spinner fx:id="bottomMarginSpinner" layoutX="10.0" layoutY="10.0" prefHeight="27.0" prefWidth="64.0" />
+                                    <Spinner fx:id="topMarginSpinner" editable="true" prefHeight="27.0" prefWidth="64.0" />
+                                    <Spinner fx:id="bottomMarginSpinner" editable="true" layoutX="10.0" layoutY="10.0" prefHeight="27.0" prefWidth="64.0" />
                                  </children>
                               </VBox>
                            </children>
@@ -137,11 +144,30 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
             </AnchorPane>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5;">
+               <children>
+                  <VBox prefHeight="56.0" prefWidth="458.0" spacing="2.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label text="Borders" />
+                        <HBox spacing="30.0">
+                           <children>
+                              <CheckBox fx:id="showBordersCheckbox" mnemonicParsing="false" text="Show borders" />
+                              <Label text="border size" />
+                              <Spinner fx:id="borderSizeSpinner" editable="true" prefHeight="29.0" prefWidth="67.0" />
+                              <ColorPicker fx:id="borderColorPicker" minHeight="-Infinity" prefHeight="27.0" prefWidth="108.0" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="20.0" right="10.0" top="5.0" />
+               </padding>
+            </AnchorPane>
             <AnchorPane layoutX="41.0" layoutY="317.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5;">
                <children>
-                  <VBox prefHeight="200.0" prefWidth="600.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <VBox prefHeight="200.0" prefWidth="600.0" spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <CheckBox fx:id="showBordersCheckbox" mnemonicParsing="false" text="Show borders" />
                         <HBox layoutX="10.0" layoutY="44.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                            <children>
                               <VBox spacing="20.0">
@@ -152,8 +178,8 @@
                               </VBox>
                               <VBox spacing="3.0">
                                  <children>
-                                    <Spinner fx:id="spaceSpinner" prefHeight="27.0" prefWidth="64.0" />
-                                    <Spinner fx:id="thicknessSpinner" layoutX="10.0" layoutY="10.0" prefHeight="27.0" prefWidth="64.0" />
+                                    <Spinner fx:id="spaceSpinner" editable="true" prefHeight="27.0" prefWidth="64.0" />
+                                    <Spinner fx:id="thicknessSpinner" editable="true" layoutX="10.0" layoutY="10.0" prefHeight="27.0" prefWidth="64.0" />
                                  </children>
                               </VBox>
                               <VBox layoutX="10.0" layoutY="10.0" spacing="20.0">
@@ -164,7 +190,7 @@
                               </VBox>
                               <VBox layoutX="54.0" layoutY="10.0" spacing="3.0">
                                  <children>
-                                    <Spinner fx:id="heightSpinner" prefHeight="27.0" prefWidth="64.0" />
+                                    <Spinner fx:id="heightSpinner" editable="true" prefHeight="27.0" prefWidth="64.0" />
                                     <ComboBox fx:id="linearLayoutBox" prefWidth="150.0" />
                                  </children>
                               </VBox>
@@ -180,12 +206,12 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
             </AnchorPane>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+            <AnchorPane prefHeight="22.0" prefWidth="458.0">
                <children>
-                  <HBox prefHeight="27.0" prefWidth="287.0" spacing="95.0" AnchorPane.leftAnchor="75.0" AnchorPane.rightAnchor="75.0">
+                  <HBox prefHeight="27.0" prefWidth="287.0" spacing="80.0" AnchorPane.leftAnchor="75.0" AnchorPane.rightAnchor="75.0">
                      <children>
-                        <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#entryCancelButton" text="Cancel" />
-                        <Button fx:id="doneBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#entryDoneButton" text="Done" />
+                        <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#entryCancelButton" prefWidth="101.0" text="Cancel" />
+                        <Button fx:id="doneBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#entryDoneButton" prefHeight="27.0" prefWidth="93.0" text="Done" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="60.0" right="20.0" top="5.0" />

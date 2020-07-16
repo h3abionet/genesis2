@@ -6,27 +6,35 @@
 package org.h3abionet.genesis.model;
 
 import com.sun.javafx.charts.Legend;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -34,7 +42,17 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.transform.Transform;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javax.imageio.ImageIO;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.controller.AdmixtureIndividualDetailsController;
 import org.h3abionet.genesis.controller.AncestorOptionsController;
@@ -76,10 +94,8 @@ public class AdmixtureGraphEventsHandler {
     private static int rowIndexOfClickedAdmixChart;
 
     private static int labelClickCounter = 0;
-    private Label firstGroupLabel, secondGroupLabel;
+    private StackPane firstGroupLabel, secondGroupLabel;
     private Node firstChart, secondChart;
-    String start_name;
-
     /**
      *
      * @param listOfCharts
@@ -100,7 +116,10 @@ public class AdmixtureGraphEventsHandler {
     @SuppressWarnings("empty-statement")
     public GridPane getGridPane() {
         try {
-            gridPane.add(new Label("K = " + numOfAncestries), 0, rowPointer); // add K value.
+            Label groupLbl = new Label("K = " + numOfAncestries);
+            GridPane.setMargin(groupLbl, new Insets(0, 5, 0 ,5)); // add a margin of 5 to right and left
+            
+            gridPane.add(groupLbl, 0, rowPointer); // add K value.
 
             int colIndex = 1;
             for (StackedBarChart<String, Number> admixChart : listOfCharts) {
@@ -118,21 +137,35 @@ public class AdmixtureGraphEventsHandler {
                 legend.getItems().clear();
 
                 // set the margins of the chart
-                GridPane.setMargin(admixChart, new Insets(0, 0, -3, -3)); //  top right bottom left
+                GridPane.setMargin(admixChart, new Insets(0, 0, -3, -3)); // TODO remove the chart content margins on axes
 
                 // remove last rowPointer - population group labels
                 gridPane.getChildren().removeIf(node -> GridPane.getRowIndex(node) == rowPointer + 1);
 
                 // define Group names for individuals
-                Label chartGroupName = new Label(admixChart.getXAxis().getLabel());
-                chartGroupName.setStyle("-fx-border-color: black;");
-                chartGroupName.setAlignment(Pos.CENTER);
-                chartGroupName.setMinWidth(Double.MIN_VALUE); // set its width to that of the column
-                chartGroupName.setMaxWidth(Double.MAX_VALUE);
-                gridPane.add(chartGroupName, colIndex, rowPointer + 2);
+                Text chartGroupName = new Text(admixChart.getXAxis().getLabel());
+                StackPane pane = new StackPane(chartGroupName);
+                pane.setAlignment(Pos.CENTER);
+                pane.setMargin(chartGroupName, new Insets(5));
+                String paneCssStyle = "-fx-border-color: black; -fx-border-width: 1px;";
+                pane.setStyle(paneCssStyle);
+                
+                pane.hoverProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue) {
+                        pane.setCursor(Cursor.HAND);
+                        pane.setStyle(paneCssStyle+"-fx-background-color: #e1f3f7;");
+                    } else {
+                        pane.setStyle(paneCssStyle+"-fx-background-color: transparent;");
+
+                    }
+                });
+                
+                gridPane.add(pane, colIndex, rowPointer + 2);
+                
+                gridPane.getChildren().removeIf(node -> GridPane.getRowIndex(node) == rowPointer + 1);
 
                 // add event to the label
-                chartGroupName.setOnMouseClicked((MouseEvent e) -> chartGroupNameClicked(e.getSource()));
+                pane.setOnMouseClicked((MouseEvent e) -> chartGroupNameClicked(e.getSource()));
 
                 // remove the x-axis label from the stackedbar chart
                 admixChart.getXAxis().setLabel(null);
@@ -332,7 +365,7 @@ public class AdmixtureGraphEventsHandler {
                                             // get last character on a btn and use it use it as the index of the ancestry
                                             String ancestryNumber = colorSortBtn.getText().substring(colorSortBtn.getText().length() - 1);
                                             // sort
-                                            sortChartByColor(stackedBarChart, Integer.valueOf(ancestryNumber));
+                                            sortChartByColor(stackedBarChart, Integer.valueOf(ancestryNumber)-1);
                                         }
                                     });
 
@@ -433,10 +466,10 @@ public class AdmixtureGraphEventsHandler {
     }
 
     private void chartGroupNameClicked(Object source) {
-        if (!(source instanceof Label)) {
+        if (!(source instanceof StackPane)) {
             return;
         }
-        Label lbl = (Label) source;
+        StackPane lbl = (StackPane) source;
 
         if (labelClickCounter == 0) {
             firstGroupLabel = lbl;
@@ -520,6 +553,74 @@ public class AdmixtureGraphEventsHandler {
             String temp = iids.remove(iids.indexOf(sorted_iids[j]));
             iids.add(j, temp);
             xAxis.setCategories(iids);
+        }
+
+    }
+    
+    public void saveChart(VBox vBox) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+
+        if (vBox == null) {
+            alert.setContentText("There is no chart to save");
+            alert.showAndWait();
+        } else {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save chart");
+            FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("png", "*.png");
+            FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("pdf", "*.pdf");
+            fileChooser.getExtensionFilters().addAll(pngFilter, pdfFilter);
+            File file = fileChooser.showSaveDialog(null);
+
+            // tranform scale can be reduced for lower resolutions (10, 10 or 5, 5)
+            int pixelScale = 5;
+            WritableImage writableImage = new WritableImage((int)Math.rint(pixelScale*vBox.getWidth()),
+                    (int)Math.rint(pixelScale*vBox.getHeight()));
+            
+            SnapshotParameters sp = new SnapshotParameters();
+            sp.setTransform(Transform.scale(pixelScale, pixelScale));
+            WritableImage image = vBox.snapshot(sp, writableImage);
+
+            if (file != null) {
+
+                try {
+                    String fileName = file.getName();
+                    String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1, file.getName().length());
+
+                    // save as png or pdf (as A4 landscape)
+                    switch (fileExtension) {
+                        case "png":
+                            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+                            break;
+                        case "pdf":
+                            float POINTS_PER_INCH = 72;
+                            float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
+
+                            PDDocument newPDF = new PDDocument();
+                            PDPage chartPage = new PDPage(new PDRectangle(297 * POINTS_PER_MM, 210 * POINTS_PER_MM));
+                            newPDF.addPage(chartPage);
+
+                            PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newPDF, SwingFXUtils.fromFXImage(image, null));
+                            PDPageContentStream contentStream = new PDPageContentStream(newPDF, chartPage);
+
+                            // draw image sizes can be adjusted for smaller images
+                            contentStream.drawImage(pdImageXObject, 5, 5, 830, 570);
+                            contentStream.close();
+
+                            newPDF.save(file);
+                            newPDF.close();
+                            break;
+                    }
+
+                } catch (IOException e) {
+                    alert.setContentText("An ERROR occurred while saving the file.");
+                    alert.showAndWait();
+                }
+            } else {
+                // do nothing if file selector is closed
+                ;
+            }
         }
 
     }
