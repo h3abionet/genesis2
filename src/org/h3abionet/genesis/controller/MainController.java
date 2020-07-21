@@ -677,7 +677,7 @@ public class MainController implements Initializable {
         pane.setStyle("-fx-border-color: red; -fx-border-width: 1;");
         
         admixVbox.getChildren().addAll(titlePane, pane);
-        admixVbox.setStyle("-fx-border-color: white; -fx-background-color: white; -fx-border-width: 5px");
+        admixVbox.setStyle("-fx-border-color: pink; -fx-background-color: white; -fx-border-width: 5px");
 
         // gridpane section for admixture plots
         gridPane = new GridPane();
@@ -686,7 +686,8 @@ public class MainController implements Initializable {
         gridPane.setGridLinesVisible(false);
         gridPane.setMinWidth(defaultAdmixPlotWidth); // TODO - change these hard coded values
         gridPane.setMaxWidth(defaultAdmixPlotWidth); // increase this value to increase the thickness of subjects
-        AnchorPane.setRightAnchor(gridPane, 30.0);
+        AnchorPane.setRightAnchor(gridPane, 40.0);
+        
         
         admixPane = new AnchorPane();
         admixPane.setStyle("-fx-border-color: green; -fx-border-width: 3px 3px 3px 3px");

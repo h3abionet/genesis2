@@ -30,6 +30,7 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -132,24 +133,41 @@ public class AdmixtureSettingsController implements Initializable {
     private Button doneBtn;
 
     private GridPane gridPane;
+    private static VBox vBox; // parent of gridpane
     private static AnchorPane admixPane;
     private static boolean admixHorizontal = true;
     private static boolean admixVertical = false;
+    
+    // track if plot was rotated (from vertical to horizontal)
     private static boolean admixRotated = false;
-    private static double width, height;
-    private static double horiAdmixPaneHeight, horiAdmixPaneWidth; // store initial height and width
+    
+    // keep intial size of the pane storing the admixture plot
+    private static double initalAdmixPaneWidth, initalAdmixPaneHeight;
+    
+    // keep the horizontal height and width before vertical rotation
+    private static double horiAdmixPaneHeight, horiAdmixPaneWidth;
+    
     private static double leftMargin = 0, rightMargin = 0, bottomMargin = 0, topMargin = 0;
-
+    
+    // keep new vbox vertical size - used when increasing the left and right margins
+    // Note: During rotation height and width are swapped which affects the vBox size
+    private static double verticalVboxWidth;
+    private static double verticalVboxHeight;
+    
+    // keep new vbox horizontal size - used when increasing the left and right margins
+    private static double newHorizontalVboxWidth;
+    private static double newHorizontalVboxHeight;
+    
     // heading
     private static Text chartHeading;
     private static boolean isHeadingBold = false, isHeadingItalic = false, isHeadingUnderlined = false;
 
     // labels
-    private static ArrayList<Double> groupNameWidthList; // keep all label width -> return max'm
+    // keep all label width -> return max'm (labels have different sizes - make them uniform)
+    private static ArrayList<Double> groupNameWidthList; 
     private static boolean isLabelBold = false, isLabelItalic = false, isLabelUnderlined = false;
     private static boolean labelsHidden = false;
     private static double labelAngelOfRotation = 0;
-    private static double minHoriLabelHeight, maxHoriLabelHeight;
     private static ObservableList<Node> gridPaneChildren;
     private static int numOfCols;
 
@@ -168,29 +186,24 @@ public class AdmixtureSettingsController implements Initializable {
     
 
     private static final double titleMargin = 50; // change
-
+    
+    /**
+     * check if plot was rotated from vertical back to horizontal orientation
+     * this helps to restore the v-grow of the VBox when importing other -
+     * admixture files
+     * @return 
+     */
     public static boolean isAdmixRotated() {
         return admixRotated;
     }
-
+    
+    /**
+     * check if vertical and tell the user to restore a horizontal orientation -
+     * of the plot before importing new admixture files
+     * @return 
+     */
     public static boolean isAdmixVertical() {
         return admixVertical;
-    }
-
-    public static boolean isAdmixHorizontal() {
-        return admixHorizontal;
-    }
-
-    public static Text getChartHeading() {
-        return chartHeading;
-    }
-
-    public static double getWidth() {
-        return width;
-    }
-
-    public static double getHeight() {
-        return height;
     }
 
     @FXML
@@ -205,9 +218,138 @@ public class AdmixtureSettingsController implements Initializable {
         }
 
         // format the heading
-        String headingFontFamily = headingFontCombo.getValue();
-        double headingFontSize = headingFontSizeSpinner.getValue();
+        setHeading(headingFontCombo.getValue(), headingFontSizeSpinner.getValue());
+        
+        // format labels
+        setPopulationGroupLabels();
 
+        // margins
+        topMargin = topMarginSpinner.getValue();
+        rightMargin = rightMarginSpinner.getValue();
+        bottomMargin = bottomMarginSpinner.getValue();
+        leftMargin = leftMarginSpinner.getValue();
+        double vBoxExtraWidth = leftMargin+rightMargin;
+
+        // setting margins
+        vBox.setPadding(new Insets(topMargin, rightMargin, bottomMargin, leftMargin));
+        // default vbox size with margins - used if no rotation was done
+        // if plot rotated, the defualt prefSize is affected
+        vBox.setPrefWidth(MainController.getAdmixVbox().getPrefWidth() + vBoxExtraWidth);
+        
+        // vertical rotation - increase the vbox size by sum of the margins
+        if(admixVertical){
+            setVboxWidth(verticalVboxWidth + vBoxExtraWidth);
+            setVboxHeight(verticalVboxHeight + (topMargin + bottomMargin));
+        }
+        
+        // horizontal rotation - increase the vbox size by sum of the margins
+        if(admixHorizontal){
+            setVboxWidth(newHorizontalVboxWidth + vBoxExtraWidth);
+            setVboxHeight(newHorizontalVboxHeight + (topMargin + bottomMargin));        
+        }
+        
+        // set gap
+        gridPane.setVgap(spaceSpinner.getValue());
+
+        // subject thickness - (1 spin = 100 px width)
+        double newGridpaneWidth = MainController.getDefaultAdmixPlotWidth() + thicknessSpinner.getValue() * thicknessSpinnerFactor;
+        gridPane.setMinWidth(newGridpaneWidth); // change size of gridpane
+        gridPane.setMaxWidth(newGridpaneWidth);
+        if(admixRotated){
+            setVboxWidth(newGridpaneWidth+titleMargin+vBoxExtraWidth);
+        
+        }
+
+        // show borders
+        borderSize = borderSizeSpinner.getValue();
+        borderColor = borderColorPicker.getValue();
+        setBorders(borderColor, borderSize);
+
+        // graph height
+        heightSpinnerValue = heightSpinner.getValue();
+        for (Node node : gridPaneChildren) {
+            if (node instanceof StackedBarChart) { 
+                // heightSpinnerFactor is a multiplication factor (1 spin = heightSpinnerFactor)
+                ((StackedBarChart) node).setPrefHeight(defaultGraphHeight + heightSpinnerValue * heightSpinnerFactor);
+            }
+        }
+        setVboxHeight(MainController.getAdmixPane().getHeight()+50);
+        setVboxWidth(MainController.getAdmixPane().getWidth()+15);
+ 
+        Genesis.closeOpenStage(event);
+    }
+
+    @FXML
+    private void entryCancelButton(ActionEvent event) {
+        Genesis.closeOpenStage(event);
+    }
+
+    public static void horizontalRotation() {
+
+        admixPane.getTransforms().add(new Rotate(-90, admixPane.getLayoutX(), horiAdmixPaneHeight));
+
+        for (Node node : gridPaneChildren) {
+            if (GridPane.getRowIndex(node) == MainController.getRowPointer() + 1 && GridPane.getColumnIndex(node) < numOfCols) {
+                StackPane pane = (StackPane) node;
+                Text lbl = (Text) pane.getChildren().get(0);
+                lbl.setRotate(0);
+
+            }
+        }
+
+        admixPane.relocate(0, 0);
+
+        // change size of vbox
+        setVBoxSize(horiAdmixPaneWidth+titleMargin/2, horiAdmixPaneHeight+titleMargin);
+
+//        vBox.setMaxHeight(Double.MAX_VALUE); // restore vGrow property
+        
+        // get vbox size
+        newHorizontalVboxHeight = vBox.getMaxHeight();
+        newHorizontalVboxWidth = vBox.getMaxWidth();
+             
+        // reset bool values
+        admixHorizontal = true;
+        admixVertical = false;
+        admixRotated = true;
+
+    }
+
+    public static void verticalRotation() {
+        // before rotation, store initial height and width of admixpane
+        horiAdmixPaneHeight = initalAdmixPaneHeight;
+        horiAdmixPaneWidth = initalAdmixPaneWidth;
+
+        // rotate - rotate at bottom left corner
+        admixPane.getTransforms().add(new Rotate(90, admixPane.getLayoutX(), initalAdmixPaneHeight));
+
+        for (Node node : gridPaneChildren) {
+            if (GridPane.getRowIndex(node) == MainController.getRowPointer() + 1 && GridPane.getColumnIndex(node) < numOfCols) {
+                StackPane pane = (StackPane) node;
+                Text lbl = (Text) pane.getChildren().get(0);
+                lbl.setRotate(-90);
+
+            }
+        }
+
+        // then shift the graph up by it's height        
+        admixPane.setLayoutY(-initalAdmixPaneHeight);
+
+        // set new size of vbox - swap height with width
+        setVBoxSize(initalAdmixPaneHeight + titleMargin/2, initalAdmixPaneWidth + titleMargin);
+        
+        // get new vbox vertical size - used when increasing the left and right margins
+        verticalVboxHeight = vBox.getMaxHeight();
+        verticalVboxWidth = vBox.getMaxWidth();
+              
+        // set the boolean trackers
+        admixVertical = true;
+        admixHorizontal = false;
+        admixRotated = false;
+
+    }
+    
+    private void setHeading(String headingFontFamily, double headingFontSize){
         if (boldHeadingCheckbox.isSelected()) {
             isHeadingBold = true;
             chartHeading.setText(titleField.getText());
@@ -240,6 +382,9 @@ public class AdmixtureSettingsController implements Initializable {
 
         chartHeading.setFill(headingColorPicker.getValue()); // set heading color
 
+    }
+    
+    private void setPopulationGroupLabels(){
         // format labels or group names
         for (Node node : gridPaneChildren) {
             if (GridPane.getRowIndex(node) == MainController.getRowPointer() + 1 && GridPane.getColumnIndex(node) < numOfCols) {
@@ -277,7 +422,7 @@ public class AdmixtureSettingsController implements Initializable {
                 labelAngelOfRotation = rotateLabelSpinner.getValue();
                 lbl.setRotate(labelAngelOfRotation);
 
-                // increase size of panes to fit the size of new labels
+                // increase size of panes to fit the size of new label sizes
                 pane.setMinHeight(Collections.max(groupNameWidthList) + 5); // 5 is a margin
                 pane.setMaxHeight(Collections.max(groupNameWidthList) + 5);
 
@@ -292,28 +437,9 @@ public class AdmixtureSettingsController implements Initializable {
 
             }
         }
-
-        // margins
-        topMargin = topMarginSpinner.getValue();
-        rightMargin = rightMarginSpinner.getValue();
-        bottomMargin = bottomMarginSpinner.getValue();
-        leftMargin = leftMarginSpinner.getValue();
-
-        // setting margins
-        MainController.getAdmixVbox().setPadding(new Insets(topMargin, rightMargin, bottomMargin, leftMargin));
-        MainController.getAdmixVbox().setPrefWidth(MainController.getAdmixVbox().getPrefWidth() + (leftMargin + rightMargin));
-
-        gridPane.setVgap(spaceSpinner.getValue()); // set gap
-
-        // subject thickness - (1 spin = 100 px width)
-        gridPane.setMinWidth(MainController.getDefaultAdmixPlotWidth() + thicknessSpinner.getValue() * thicknessSpinnerFactor);
-        gridPane.setMaxWidth(MainController.getDefaultAdmixPlotWidth() + thicknessSpinner.getValue() * thicknessSpinnerFactor);
-
-        MainController.getAdmixVbox().setPrefWidth(gridPane.getMinWidth() + 50);
-
-        // show borders
-        borderSize = borderSizeSpinner.getValue();
-        borderColor = borderColorPicker.getValue();
+        
+    }
+    private void setBorders(Color borderColor, double borderSize){
         String hex;
         // check if black
         if("ff".equals(Integer.toHexString(borderColor.hashCode()))){
@@ -364,103 +490,33 @@ public class AdmixtureSettingsController implements Initializable {
                 }
             });
         }
-
-        // graph height
-        heightSpinnerValue = heightSpinner.getValue();
-        for (Node node : gridPaneChildren) {
-            if (node instanceof StackedBarChart) { 
-                // heightSpinnerFactor is a multiplication factor (1 spin = heightSpinnerFactor)
-                ((StackedBarChart) node).setPrefHeight(defaultGraphHeight + heightSpinnerValue * heightSpinnerFactor);
-            }
-        }
-
-        Genesis.closeOpenStage(event);
     }
-
-    @FXML
-    private void entryCancelButton(ActionEvent event) {
-        Genesis.closeOpenStage(event);
+    
+    private void setVboxWidth(double newWidth){
+        vBox.setMinWidth(newWidth);
+        vBox.setMaxWidth(newWidth);
     }
-
-    public static void horizontalRotation() {
-
-        admixPane.getTransforms().add(new Rotate(-90, admixPane.getLayoutX(), horiAdmixPaneHeight));
-
-        for (Node node : gridPaneChildren) {
-            if (GridPane.getRowIndex(node) == MainController.getRowPointer() + 1 && GridPane.getColumnIndex(node) < numOfCols) {
-                StackPane pane = (StackPane) node;
-                Text lbl = (Text) pane.getChildren().get(0);
-                lbl.setRotate(0);
-                pane.setMinHeight(minHoriLabelHeight); // TODO - change default height of text
-                pane.setMaxHeight(maxHoriLabelHeight);
-
-            }
-        }
-
-        admixPane.relocate(0, 0);
-
-        // exchange height with width
-        MainController.getAdmixVbox().setMinSize(horiAdmixPaneWidth + 10, horiAdmixPaneHeight + 40);
-        MainController.getAdmixVbox().setMaxSize(horiAdmixPaneWidth + 10, horiAdmixPaneHeight + 40);
-
-        MainController.getAdmixVbox().setMaxHeight(Double.MAX_VALUE); // restore vgrow
-
-        // reset bool values
-        admixHorizontal = true;
-        admixVertical = false;
-        admixRotated = true;
-
+    
+    private void setVboxHeight(double newHeight){
+        vBox.setMinHeight(newHeight);
+        vBox.setMaxHeight(newHeight);
     }
-
-    public static void verticalRotation() {
-        // before rotation, store initial height and width of admixpane
-        horiAdmixPaneHeight = height;
-        horiAdmixPaneWidth = width;
-
-        // rotate
-        admixPane.getTransforms().add(new Rotate(90, admixPane.getLayoutX(), height));
-
-        for (Node node : gridPaneChildren) {
-            if (GridPane.getRowIndex(node) == MainController.getRowPointer() + 1 && GridPane.getColumnIndex(node) < numOfCols) {
-                StackPane pane = (StackPane) node;
-                Text lbl = (Text) pane.getChildren().get(0);
-                lbl.setRotate(0);
-
-                // store intial size of group name labels
-                minHoriLabelHeight = pane.getMinHeight();
-                maxHoriLabelHeight = pane.getMaxHeight();
-
-                // then increase the height of the labels
-                pane.setMinHeight(Collections.max(groupNameWidthList) + 5); // 5 is a margin
-                pane.setMaxHeight(Collections.max(groupNameWidthList) + 5);
-
-            }
-        }
-
-        // then shift the graph up by it's height        
-        admixPane.setLayoutY(-height);
-
-        // for the admix pane, exchange height with width
-        MainController.getAdmixVbox().setMinSize(height + titleMargin, width + titleMargin);
-        MainController.getAdmixVbox().setMaxSize(height + titleMargin, width + titleMargin);
-
-        // set the boolean trackers
-        admixVertical = true;
-        admixHorizontal = false;
-        admixRotated = false;
-
+    
+    private static void setVBoxSize(double newWidth, double newHeight){
+        vBox.setMinSize(newWidth, newHeight);
+        vBox.setMaxSize(newWidth, newHeight);
     }
     
     /**
      * set spinner and make it editable without user 
      * pressing ENTER to activate every input
      * @param sp
-     * @param startV
+     * @param startValue
      * @param endValue
      * @param defaultValue 
      */
-    private void setSpinner(Spinner sp, double startV, double endValue, double defaultValue){
-	SpinnerValueFactory<Double> spValues = new SpinnerValueFactory.DoubleSpinnerValueFactory(startV, endValue);
+    private void setSpinner(Spinner sp, double startValue, double endValue, double defaultValue){
+	SpinnerValueFactory<Double> spValues = new SpinnerValueFactory.DoubleSpinnerValueFactory(startValue, endValue);
 	sp.setEditable(true);
 	sp.setValueFactory(spValues);
 	sp.getValueFactory().setValue(defaultValue);
@@ -472,28 +528,34 @@ public class AdmixtureSettingsController implements Initializable {
 
     /**
      * Initializes the controller class.
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+        vBox = MainController.getAdmixVbox();
+        
+        // get default admixPane size everytime the setting button is clicked
         admixPane = MainController.getAdmixPane();
-        height = admixPane.getHeight();
-        width = admixPane.getWidth();
-
+        initalAdmixPaneHeight = admixPane.getHeight();
+        initalAdmixPaneWidth = admixPane.getWidth();
+        
         // get gridpane
         gridPane = MainController.getGridPane();
         gridPaneChildren = gridPane.getChildren();
         numOfCols = gridPane.getColumnConstraints().size();
 
         double lblFontSize = 0;
-        Paint lblDefaultColor = null;
-        String lblFontFamily = null;
+        Paint lblDefaultColor = null; 
+        String lblFontFamily = null; 
         groupNameWidthList = new ArrayList();
         for (Node node : gridPaneChildren) {
             if (GridPane.getRowIndex(node) == MainController.getRowPointer() + 1 && GridPane.getColumnIndex(node) < numOfCols) {
                 StackPane pane = (StackPane) node;
                 Text lbl = (Text) pane.getChildren().get(0);
-                lblFontSize = lbl.getFont().getSize();
-                lblFontFamily = lbl.getFont().getFamily();
+                lblFontSize = lbl.getFont().getSize(); // keep default or selected font color
+                lblFontFamily = lbl.getFont().getFamily(); // keep default or selected font family
                 lblDefaultColor = lbl.getFill();
                 groupNameWidthList.add(lbl.getLayoutBounds().getWidth()); // keep all the width of labels
             }
@@ -513,6 +575,8 @@ public class AdmixtureSettingsController implements Initializable {
             }
         });
         
+        // update the groupNameWidthList everytime you spin the label size
+        // prefSize of pane (Text parent) increases by default
         setSpinner(labelFontSizeSpinner, 0, 72, lblFontSize);
         labelFontSizeSpinner.setOnMouseClicked(event -> {
             groupNameWidthList.clear(); // remove exisiting label width
@@ -593,9 +657,14 @@ public class AdmixtureSettingsController implements Initializable {
         // subject thickness
         setSpinner(thicknessSpinner, 0, 200, (gridPane.getMaxWidth()-1200)/100);
         thicknessSpinner.setOnMouseClicked(event -> {
-             gridPane.setMinWidth(MainController.getDefaultAdmixPlotWidth() + thicknessSpinner.getValue() * thicknessSpinnerFactor);
-             gridPane.setMaxWidth(MainController.getDefaultAdmixPlotWidth() + thicknessSpinner.getValue() * thicknessSpinnerFactor);
-             MainController.getAdmixVbox().setPrefWidth(gridPane.getMinWidth() + 50);
+            double newGridpaneWidth = MainController.getDefaultAdmixPlotWidth() + thicknessSpinner.getValue() * thicknessSpinnerFactor;
+            gridPane.setMinWidth(newGridpaneWidth);
+            gridPane.setMaxWidth(newGridpaneWidth);
+            MainController.getAdmixVbox().setPrefWidth(gridPane.getMinWidth() + 50);
+            if(admixRotated){
+               MainController.getAdmixVbox().setMinWidth(newGridpaneWidth+titleMargin);
+               MainController.getAdmixVbox().setMaxWidth(newGridpaneWidth+titleMargin);
+            }
         });
 
         // graph height
@@ -607,6 +676,7 @@ public class AdmixtureSettingsController implements Initializable {
                     ((StackedBarChart) node).setPrefHeight(defaultGraphHeight + heightSpinner.getValue() * heightSpinnerFactor);
                 }
             }
+            MainController.getAdmixVbox().setMaxHeight(Double.MAX_VALUE);
         });
 
         // Linear layout
@@ -615,6 +685,14 @@ public class AdmixtureSettingsController implements Initializable {
             linearLayoutBox.getSelectionModel().select(0);
         } else {
             linearLayoutBox.getSelectionModel().select(1);
+        }
+        
+        // disable these spinners - they affect the width and height of the vbox
+        // TODO - increase the size of vbox everytime you spin these boxes
+        if(admixVertical){
+            spaceSpinner.setDisable(true);
+            thicknessSpinner.setDisable(true);
+            heightSpinner.setDisable(true);
         }
 
     }
