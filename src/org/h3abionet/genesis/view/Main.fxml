@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -14,145 +15,210 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1500.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.MainController">
    <children>
-      <BorderPane layoutX="144.0" layoutY="53.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <BorderPane layoutX="144.0" layoutY="53.0" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
-            <Label text="Genesis" BorderPane.alignment="CENTER">
-               <BorderPane.margin>
-                  <Insets />
-               </BorderPane.margin>
-               <font>
-                  <Font size="13.0" />
-               </font>
-            </Label>
+            <HBox alignment="CENTER_RIGHT" style="-fx-background-color: white;">
+               <children>
+                  <AnchorPane>
+                     <children>
+                        <ImageView fitHeight="41.0" fitWidth="79.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../image/logo.png" />
+                           </image>
+                           <viewport>
+                              <Rectangle2D />
+                           </viewport>
+                        </ImageView>
+                     </children>
+                  </AnchorPane>
+                  <ImageView fitHeight="40.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../image/gene.png" />
+                     </image>
+                     <viewport>
+                        <Rectangle2D />
+                     </viewport>
+                  </ImageView>
+               </children>
+               <padding>
+                  <Insets top="2.0" />
+               </padding>
+            </HBox>
          </top>
          <center>
             <TabPane fx:id="tabPane" prefHeight="481.0" prefWidth="716.0" style="-fx-border-color: #bdbbbb; -fx-border-width: 1px;" BorderPane.alignment="CENTER" />
          </center>
          <right>
-            <AnchorPane prefHeight="481.0" prefWidth="8.0" style="-fx-background-color: #dedfe0; -fx-border-color: #bdbbbb; -fx-border-width: 0.5px;" BorderPane.alignment="CENTER">
+            <AnchorPane prefHeight="481.0" prefWidth="8.0" style="-fx-background-color: #06587F; -fx-border-color: #bdbbbb; -fx-border-width: 0.5px;" BorderPane.alignment="CENTER">
                <BorderPane.margin>
                   <Insets />
                </BorderPane.margin>
             </AnchorPane>
          </right>
          <left>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="70.0" style="-fx-background-color: #dedfe0; -fx-border-color: #bdbbbb; -fx-border-width: 0.5px;">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="923.0" prefWidth="90.0" style="-fx-background-color: #06587F; -fx-border-color: #bdbbbb; -fx-border-width: 0.5px;">
                <children>
-                  <VBox layoutX="5.0" layoutY="3.0" prefHeight="381.0" prefWidth="100.0" spacing="6.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                  <VBox layoutX="5.0" layoutY="3.0" prefHeight="936.0" prefWidth="70.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                      <children>
-                        <Button fx:id="newproject" mnemonicParsing="false" onAction="#newProject" prefHeight="25.0" prefWidth="57.0" style="-fx-border-width: 0.5px; -fx-border-color: #000000; -fx-border-radius: 5;" text="New">
+                        <Button fx:id="newproject" mnemonicParsing="false" onAction="#newProject" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;" text="New">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
+                           <tooltip>
+                              <Tooltip text="Start Project">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
+                           </tooltip>
                         </Button>
-                        <Button fx:id="newpca" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newPCA" prefHeight="25.0" prefWidth="57.0" text="PCA">
+                        <Button fx:id="newpca" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newPCA" prefHeight="50.0" prefWidth="156.0" style="-fx-text-fill: white;" text="PCA">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
+                           <tooltip>
+                              <Tooltip text="Import PCA File" />
+                           </tooltip>
                         </Button>
-                        <Button fx:id="newadmixture" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newAdmixture" text="ADMIX">
+                        <Button fx:id="newadmixture" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newAdmixture" prefHeight="50.0" prefWidth="100.0" style="-fx-text-fill: white;" text="ADMIX">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
+                           <tooltip>
+                              <Tooltip text="Import Admixture File" />
+                           </tooltip>
                         </Button>
-                        <Button fx:id="threeDButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="28.0" prefWidth="40.0" text="Button">
+                        <Button fx:id="threeDButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="50.0" prefWidth="109.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="64.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../image/3d.png" />
                                  </image>
                               </ImageView>
                            </graphic>
+                           <tooltip>
+                              <Tooltip text="3D view" />
+                           </tooltip>
                         </Button>
-                        <Button fx:id="dataButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#loadData" prefHeight="28.0" prefWidth="39.0" text="Button">
+                        <Button fx:id="dataButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#loadData" prefHeight="50.0" prefWidth="119.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../image/database.png" />
                                  </image>
                               </ImageView>
                            </graphic>
+                           <tooltip>
+                              <Tooltip text="Load Data" />
+                           </tooltip>
                         </Button>
-                        <Button fx:id="settingsButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#settingsSelector" text="Button">
+                        <Button fx:id="settingsButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#settingsSelector" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="53.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/gear.png" />
+                                    <Image url="@../image/settings.png" />
                                  </image>
                               </ImageView>
                            </graphic>
+                           <tooltip>
+                              <Tooltip text="Settings" />
+                           </tooltip>
                         </Button>
-                        <Button fx:id="downloadButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#saveChart" prefHeight="28.0" prefWidth="40.0" text="Button">
+                        <Button fx:id="downloadButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#saveChart" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="67.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../image/download.png" />
                                  </image>
                               </ImageView>
                            </graphic>
+                           <tooltip>
+                              <Tooltip text="Save Graph" />
+                           </tooltip>
                         </Button>
-                        <Button fx:id="individualButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#showHidenIndividuals" prefHeight="28.0" prefWidth="40.0" text="Button">
+                        <Button fx:id="individualButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#showHidenIndividuals" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="58.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/family.png" />
+                                    <Image url="@../image/individual.png" />
                                  </image>
                               </ImageView>
                            </graphic>
+                           <tooltip>
+                              <Tooltip text="Show Hidden Individuals" />
+                           </tooltip>
                         </Button>
-                        <Button fx:id="searchButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="40.0" text="Button">
+                        <Button fx:id="searchButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="56.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../image/search.png" />
                                  </image>
                               </ImageView>
                            </graphic>
+                           <tooltip>
+                              <Tooltip text="Search Individual" />
+                           </tooltip>
                         </Button>
-                        <Button fx:id="drawingButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#drawingTool" text="Button">
+                        <Button fx:id="drawingButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#drawingTool" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="22.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../image/paint.png" />
                                  </image>
                               </ImageView>
                            </graphic>
+                           <tooltip>
+                              <Tooltip text="Annotate Graph" />
+                           </tooltip>
                         </Button>
-                        <Button fx:id="cancelButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#closeProgram" prefHeight="28.0" prefWidth="39.0" text="Button">
+                        <Button fx:id="saveButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;">
                            <graphic>
-                              <ImageView fitHeight="42.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../image/cancel.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
-                        <Button fx:id="saveButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="28.0" prefWidth="40.0">
-                           <graphic>
-                              <ImageView fitHeight="56.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../image/floppy-disk.png" />
                                  </image>
                               </ImageView>
                            </graphic>
+                           <tooltip>
+                              <Tooltip text="Save Project" />
+                           </tooltip>
                         </Button>
-                        <Button fx:id="fileButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" text="Button">
+                        <Button fx:id="fileButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../image/folder.png" />
                                  </image>
                               </ImageView>
                            </graphic>
+                           <tooltip>
+                              <Tooltip text="Open Project" />
+                           </tooltip>
                         </Button>
-                        <Button fx:id="helpButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" layoutX="10.0" layoutY="415.0" mnemonicParsing="false" onAction="#help" prefHeight="28.0" prefWidth="40.0" text="Button">
+                        <Button fx:id="helpButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" layoutX="10.0" layoutY="415.0" mnemonicParsing="false" onAction="#help" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="21.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../image/info.png" />
                                  </image>
                               </ImageView>
                            </graphic>
+                           <tooltip>
+                              <Tooltip text="Help Me" />
+                           </tooltip>
+                        </Button>
+                        <Button fx:id="cancelButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#closeProgram" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/cancel.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Close Genesis" />
+                           </tooltip>
                         </Button>
                      </children>
                   </VBox>
@@ -160,13 +226,13 @@
             </AnchorPane>
          </left>
          <bottom>
-            <AnchorPane fx:id="drawingAnchorPane" prefHeight="39.0" prefWidth="700.0" BorderPane.alignment="CENTER">
+            <AnchorPane fx:id="drawingAnchorPane" prefHeight="39.0" prefWidth="700.0" style="-fx-background-color: #B4CCD8;" BorderPane.alignment="CENTER">
                <children>
-                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="5.0">
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="40.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                      <children>
                         <Button fx:id="lineTool" mnemonicParsing="false" onAction="#addLine">
                            <graphic>
-                              <ImageView fitHeight="19.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="20.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../image/line.png" />
                                  </image>
@@ -175,7 +241,7 @@
                         </Button>
                         <Button fx:id="circleTool" mnemonicParsing="false" onAction="#addCircle" prefHeight="22.0" prefWidth="29.0">
                            <graphic>
-                              <ImageView fitHeight="23.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="19.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../image/circle.png" />
                                  </image>

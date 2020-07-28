@@ -68,7 +68,7 @@ public class PCADataInputController {
         dialogStage.setResizable(false);
 
         controller.pcaEvecFileBtn.setText(pcaFileName);
-        controller.pcaEvecFileBtn.setStyle("-fx-text-fill: green");
+        controller.pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
         controller.pcaComboButton1.setItems(pcaGraph.getPCAcolumns());
         controller.pcaComboButton2.setItems(pcaGraph.getPCAcolumns());
 
@@ -92,7 +92,7 @@ public class PCADataInputController {
         pcaFilePath = pcaFile.getAbsolutePath();
         pcaFileName = pcaFile.getName();
         pcaEvecFileBtn.setText(pcaFileName);
-        pcaEvecFileBtn.setStyle("-fx-text-fill: green");
+        pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
         pcaGraph = new PCAGraph(pcaFilePath);
         pcaComboButton1.setItems(pcaGraph.getPCAcolumns());
         pcaComboButton2.setItems(pcaGraph.getPCAcolumns());
@@ -135,7 +135,6 @@ public class PCADataInputController {
 
     /**
      * read evec file with pcas
-     *
      * @param which
      * @return
      */

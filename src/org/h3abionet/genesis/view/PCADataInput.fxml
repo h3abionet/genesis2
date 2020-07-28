@@ -22,7 +22,7 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <AnchorPane prefHeight="152.0" prefWidth="500.0" style="-fx-background-color: #e3e2de;">
+            <AnchorPane prefHeight="152.0" prefWidth="500.0" style="-fx-background-color: #F0F8FE;">
                <children>
                   <HBox layoutX="36.0" layoutY="14.0" prefHeight="42.0" prefWidth="404.0" spacing="60.0" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="60.0">
                      <children>

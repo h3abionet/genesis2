@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -55,6 +57,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.controller.AdmixtureIndividualDetailsController;
+import org.h3abionet.genesis.controller.AdmixtureOptionsController;
 import org.h3abionet.genesis.controller.AncestorOptionsController;
 
 /**
@@ -168,6 +171,7 @@ public class AdmixtureGraphEventsHandler {
                 pane.setOnMouseClicked((MouseEvent e) -> chartGroupNameClicked(e.getSource()));
 
                 // remove the x-axis label from the stackedbar chart
+                admixChart.setId(admixChart.getXAxis().getLabel()); // set chart id
                 admixChart.getXAxis().setLabel(null);
 
                 // add chart to a specific cell
@@ -186,7 +190,8 @@ public class AdmixtureGraphEventsHandler {
                                     Stage dialogStage = new Stage();
                                     dialogStage.setScene(new Scene(parent));
                                     dialogStage.setResizable(false);
-
+                                    
+                                    // show subject details when clicked
                                     AdmixtureIndividualDetailsController admixtureIndividualDetailsController = fxmlLoader.getController();
                                     iidDetails = Project.individualPhenoDetails.get(item.getXValue()); // get pheno details of clicked individual
                                     admixtureIndividualDetailsController.setPhenoList(iidDetails);
@@ -200,15 +205,29 @@ public class AdmixtureGraphEventsHandler {
                         });
                     });
                 });
+                
                 // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
                     MouseButton button = event.getButton();
                     if (button == MouseButton.SECONDARY) {
-
+                        
+                        try{
+                            FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureOptions.fxml"));
+                            Parent parent = (Parent) loader.load();
+                            Stage dialogStage = new Stage();
+                            dialogStage.setScene(new Scene(parent));
+                            dialogStage.setResizable(false);
+                            AdmixtureOptionsController aop = loader.getController();
+                            aop.setAdmixChart(admixChart);
+                            dialogStage.showAndWait();
+                        }catch(Exception e){
+                            Genesis.throwErrorException("Sorry! Try again");
+                        }
+                                    
                         rowIndexOfClickedAdmixChart = GridPane.getRowIndex(admixChart);
 
                         // charts in the firstGroupLabel row
-                        if (rowIndexOfClickedAdmixChart < rowPointer + 1) {
+                        if (rowIndexOfClickedAdmixChart < rowPointer + 1) {                            
                             // create vbox for editing options
                             VBox editChartOptionsVBox = new VBox();
                             editChartOptionsVBox.setPadding(new Insets(10));
@@ -248,8 +267,10 @@ public class AdmixtureGraphEventsHandler {
 
                                 Button famOrderBtn = new Button("Fam order");
                                 famOrderBtn.setOnMouseClicked((MouseEvent famOrderEvent) -> {
-                                    // TODO
-                                    System.out.println("add fam order code ");
+                                    listOfCharts.forEach((s) -> {
+                                        sortToFamOrder(s);
+                                    });
+                                    
                                 });
 
                                 Button dominantColourBtn = new Button("Dominant colour");
@@ -268,7 +289,7 @@ public class AdmixtureGraphEventsHandler {
                                                 sumList.add(sum);                                           
                                             }
                                             
-                                            // get index of the max value in sumList = serie index in the chart
+                                            // get index of the max value in sumList = dorminant serie index in the chart
                                             int ancestryIndex = sumList.indexOf(Collections.max(sumList));
 
                                             // sort chart by serie with max yvalues (dominant)
@@ -306,7 +327,6 @@ public class AdmixtureGraphEventsHandler {
                                     Background bg = node.getBackground();
                                     Paint paint = bg.getFills().get(0).getFill();
                                     ancestorColorDisplay.setFill(paint);
-//                                    ancestorColorDisplay.setFill(Color.web(AdmixtureGraph.admixColors.get(i)));
 
                                     //  set ancestor name -> used to name buttons and as a label for color options window
                                     String ancestorName = admixChart.getData().get(i).getName();
@@ -434,28 +454,7 @@ public class AdmixtureGraphEventsHandler {
         return gridPane;
 
     }
-
-    /**
-     * provide the list of ancestor HBoxes intent: the indexes of its HBoxes are
-     * swapped by the ancestor option controller, new swapped boxes are
-     * displayed when the controller scene is closed.
-     *
-     * @return
-     */
-    public static ArrayList<HBox> getListOfAncenstorHBox() {
-        return listOfAncenstorHBox;
-    }
-
-    /**
-     * this is the container for all the ancestor HBoxes it displays HBoxes
-     * according to their swapped order
-     *
-     * @return
-     */
-    public static VBox getLeftVBox() {
-        return leftVBox;
-    }
-
+    
     /**
      * track row with the charts that will be modified
      *
@@ -529,7 +528,35 @@ public class AdmixtureGraphEventsHandler {
         }
 
     }
-
+    
+    /**
+     * sort individuals according to fam order
+     * @param s 
+     */
+    private void sortToFamOrder(StackedBarChart<String, Number> s){
+        // get sorted iids
+        CategoryAxis xAxis = (CategoryAxis) s.getXAxis();
+        ObservableList<String> sorted_iids = xAxis.getCategories();
+        
+        // get fam order iids for this chart (population group) using its id as the key
+        List<String> fam_order_iids = AdmixtureGraph.famOrder.get(s.getId());
+        
+        // for loop run this number of times
+        int numOfIndividuals = s.getData().get(0).getData().size();
+        
+        // swap positions
+        for (int j = 0; j < numOfIndividuals; j++) {
+            String temp = sorted_iids.remove(sorted_iids.indexOf(fam_order_iids.get(j)));
+            sorted_iids.add(j, temp);
+            xAxis.setCategories(sorted_iids);
+        }
+    }
+    
+    /**
+     * sort iids based on selected serie or ancestry
+     * @param stackedBarChart
+     * @param ancestryNumber 
+     */
     private void sortChartByColor(StackedBarChart<String, Number> stackedBarChart, int ancestryNumber){
         
         CategoryAxis xAxis = (CategoryAxis) stackedBarChart.getXAxis();
@@ -538,7 +565,7 @@ public class AdmixtureGraphEventsHandler {
         int numOfIndividuals = chosenAncestry.getData().size();
 
         ObservableList<String> iids = xAxis.getCategories();
-
+        
         // sort the chosen ancestry
         chosenAncestry.getData().sort(Comparator.comparingDouble(d -> d.getYValue().doubleValue()));
 

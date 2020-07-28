@@ -31,6 +31,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -159,6 +160,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void newProject(ActionEvent event) throws IOException {
+        tabPane.setBackground(Background.EMPTY);
         Genesis.loadFxmlView("view/ProjDialogEntry.fxml");
 
     }
@@ -240,7 +242,8 @@ public class MainController implements Initializable {
             // create new tab for the pca chart 
             tabCount++;
             pcaChartTab = new Tab();
-            pcaChartTab.setText("PCA " + x + " & " + y); // tab name e.g PCA 1 & 2
+            // tab name e.g PCA 1 & 2 ans space with close icon
+            pcaChartTab.setText("PCA " + x + " & " + y+"    ");
             pcaChartTab.setClosable(true);
             pcaChartTab.setId("tab " + tabCount);
 
@@ -574,7 +577,6 @@ public class MainController implements Initializable {
 
         gr.getChildren().addAll(shape);
         p.getChildren().add(gr);
-
     }
 
     private double lineCurrentAngle(Line line) {

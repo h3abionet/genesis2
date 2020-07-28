@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
  import java.util.HashMap;
 import java.util.List;
+import javafx.collections.ObservableList;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
@@ -30,6 +31,8 @@ public class AdmixtureGraph extends Graph{
     
     private final HashMap<String, String[]> admixturePhenoData; // store pheno details
     private final HashMap<String, String[]> famData; // store fam details
+    // track fam order when user sort individuals by colour
+    public static final HashMap<String, List<String>> famOrder = new HashMap<>();
     
     public static int currentNumOfAncestries = 0; // number of series
     private static final double CHART_HEIGHT = 100; // default height for every chart
@@ -37,10 +40,9 @@ public class AdmixtureGraph extends Graph{
     
     // admixture plot colors -- add more depending on the number of ancestries
     static String[] hexCodes = {"#FF8C00", "#32CD32","#fffb00","#055ff0", "#ff0d00"};
-    public static ArrayList<String> admixColors = new ArrayList<>(Arrays.asList(hexCodes));
+    public static ArrayList<String> ancestryColors = new ArrayList<>(Arrays.asList(hexCodes));
     
-    public static ArrayList<String> ancestryOrder=new ArrayList<String>();  // to order colour
-        
+    public static ArrayList<String> ancestryOrder=new ArrayList<String>();  // to order colour        
             
     public AdmixtureGraph(String admixtureFilePath) throws IOException {
         this.admixturePhenoData = Project.admixturePhenoData;
@@ -81,20 +83,28 @@ public class AdmixtureGraph extends Graph{
      */
     @Override
     protected void setPopulationGroups(){
-        populationGroups = new HashMap<>();
+        populationGroups = new HashMap<>(); // k values grouped according to pheno column
         HashMap<String, String []> famAndQvalues = combineFamAndAdmixValues();
         
         for(String k : famData.keySet()){
+            List<String> famIds = new ArrayList<>();
             ArrayList<String[]> valuesList = new ArrayList<>();
-            String [] values = famAndQvalues.get(k);
+            String [] values = famAndQvalues.get(k); // [fid, iid, v1, v2, ...]
             
             if(admixturePhenoData.containsKey(k)){
                 String group = admixturePhenoData.get(k)[Project.phenoColumnNumber-3];
+                
+                // if group doesnot exist, create the group and its new list
                 if(!populationGroups.containsKey(group)){
                     valuesList.add(values);
                     populationGroups.put(group, valuesList);
+                    
+                    // fam ids grouped according to pheno column
+                    famIds.add(values[1]); // value = iid
+                    famOrder.put(group, famIds); // [MKK -> [iid1, iid2, iid3 ...]]
                 }else{
                     populationGroups.get(group).add(values);
+                    famOrder.get(group).add(values[1]);
                     
                 }
                 
@@ -103,11 +113,6 @@ public class AdmixtureGraph extends Graph{
             }
         
         }
-        
-//        print to test if individuals have been grouped according to specified column.
-//        for (String i : populationGroups.keySet()) {
-//            System.out.println("key: " + i + " value: " + populationGroups.get(i).toString());
-//        }
         
     }
     
@@ -147,12 +152,13 @@ public class AdmixtureGraph extends Graph{
                 }
                 
                 populationGroupChart.getData().add(ancestryValues); // add values to chart
-                setAncestryColors(populationGroupChart, admixColors); // set ancestry colors
+                setAncestryColors(populationGroupChart, ancestryColors); // set ancestry colors
                 
               
             }
             
             // update current num of ancestries
+            // used to label Ks (K=1,2,3,..) and create ancestry options buttons
             currentNumOfAncestries = populationGroupChart.getData().size();
                     
             // define populationGroupChart size

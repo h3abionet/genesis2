@@ -75,7 +75,7 @@ public class ProjectDetailsController implements Initializable{
             if(famFile != null){
                 fam_fname_s = famFile.getAbsolutePath();
                 fam_fname.setText(famFile.getName());
-                fam_fname.setStyle("-fx-text-fill: green");
+                fam_fname.setStyle("-fx-text-fill: #06587F");
                 entryOKButton.setDisable(true);
 
             }else{
@@ -93,7 +93,7 @@ public class ProjectDetailsController implements Initializable{
         } else {
                 pheno_fname_s = phen.getAbsolutePath();
                 pheno_fname.setText(phen.getName());
-                pheno_fname.setStyle("-fx-text-fill: green");
+                pheno_fname.setStyle("-fx-text-fill: #06587F");
                 
                 // display seletion for a column with phenotype
                 String [] phenoCols = {"Column 1", "Column 2", "Column 3", "Column 4", "Column 5", "Column 6"};

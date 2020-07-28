@@ -68,7 +68,7 @@ public class AdmixtureDataInputController implements Initializable {
         admixtureFilePath = admixture.getAbsolutePath();
         admixtureFileName = admixture.getName();
         btnAdmixtureData.setText(admixtureFileName);
-        btnAdmixtureData.setStyle("-fx-text-fill: green");
+        btnAdmixtureData.setStyle("-fx-text-fill: #06587F");
         admixtureGraph = new AdmixtureGraph(admixtureFilePath); // read the file using module class     
 
     }
