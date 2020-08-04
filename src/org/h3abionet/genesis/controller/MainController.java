@@ -2,6 +2,7 @@ package org.h3abionet.genesis.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -47,14 +48,8 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.model.PCAGraphEventsHandler;
-import org.h3abionet.genesis.model.LabelOptions;
-import org.h3abionet.genesis.model.CircleOptions;
 import jfxtras.labs.util.event.MouseControlUtil;
-import org.h3abionet.genesis.model.AdmixtureGraphEventsHandler;
-import org.h3abionet.genesis.model.Arrow;
 import org.h3abionet.genesis.model.Project;
-import org.h3abionet.genesis.model.RectangleOptions;
 import org.h3abionet.genesis.controller.AdmixtureSettingsController;
 import org.h3abionet.genesis.model.AdmixtureGraph;
 
@@ -147,6 +142,7 @@ public class MainController implements Initializable {
      * population group e.g. MKK, ASW, etc.
      */
     private static ArrayList<StackedBarChart<String, Number>> listOfAdmixtureCharts;
+    private static List<ArrayList<StackedBarChart<String, Number>>> allAdmixtureCharts;
     private Tab admixtureTab;
     private static GridPane gridPane; // gridpane for keeping list of admixture charts
     private static int rowPointer = 0; // points to a new row for every new admix charts or K value
@@ -160,7 +156,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void newProject(ActionEvent event) throws IOException {
-        tabPane.setBackground(Background.EMPTY);
+        tabPane.setStyle("-fx-background-image: null");
         Genesis.loadFxmlView("view/ProjDialogEntry.fxml");
 
     }
@@ -249,6 +245,7 @@ public class MainController implements Initializable {
 
             // add the pca chart container to the tab
             pcaChartTab.setContent(pc.addGraph());
+            System.out.println(tabPane.getTabs().size());
             tabPane.getTabs().add(pcaChartTab);
 
             // set pcaChart index to selected tab number 
@@ -271,6 +268,7 @@ public class MainController implements Initializable {
     @SuppressWarnings("empty-statement")
     private void setAdmixtureChart(ArrayList<StackedBarChart<String, Number>> admixCharts) {
         listOfAdmixtureCharts = admixCharts; // get multiple charts
+        allAdmixtureCharts.add(listOfAdmixtureCharts);
 
         int sumOfIndividuals = Project.numOfIndividuals;
 
@@ -619,7 +617,10 @@ public class MainController implements Initializable {
     public static double getDefaultAdmixPlotWidth() {
         return defaultAdmixPlotWidth;
     }
-    
+
+    public static List<ArrayList<StackedBarChart<String, Number>>> getAllAdmixtureCharts() {
+        return allAdmixtureCharts;
+    }
     
     @FXML
     private void help(ActionEvent event) {
@@ -655,6 +656,9 @@ public class MainController implements Initializable {
     public void initialize(java.net.URL arg0, ResourceBundle arg1) {
         // intialize buckets to store multiple charts
         pcaChartsList = new ArrayList<>();
+        
+        // list of all plotted admixture charts
+        allAdmixtureCharts = new ArrayList<>();
 
         // set the admixture tab
         admixtureTab = new Tab();
@@ -667,7 +671,6 @@ public class MainController implements Initializable {
         //VBox to keep the admix plot and heading
         admixVbox = new VBox(10);
         admixVbox.setPrefWidth(defaultAdmixPlotWidth + VBOX_MARGIN); // TODO - change these hard coded values
-//        admixVbox.setMaxWidth(defaultAdmixPlotWidth + VBOX_MARGIN); // increase this value to increase the thickness of subjects
         
         // add pane for the title
         chartHeading = new Text(AdmixtureGraph.getDefaultHeading());
@@ -676,10 +679,10 @@ public class MainController implements Initializable {
         titlePane.setPrefWidth(Double.MAX_VALUE);
         
         AnchorPane pane = new AnchorPane();
-        pane.setStyle("-fx-border-color: red; -fx-border-width: 1;");
+//        pane.setStyle("-fx-border-color: red; -fx-border-width: 1;");
         
         admixVbox.getChildren().addAll(titlePane, pane);
-        admixVbox.setStyle("-fx-border-color: pink; -fx-background-color: white; -fx-border-width: 5px");
+//        admixVbox.setStyle("-fx-border-color: pink; -fx-background-color: white; -fx-border-width: 5px");
 
         // gridpane section for admixture plots
         gridPane = new GridPane();
@@ -688,17 +691,16 @@ public class MainController implements Initializable {
         gridPane.setGridLinesVisible(false);
         gridPane.setMinWidth(defaultAdmixPlotWidth); // TODO - change these hard coded values
         gridPane.setMaxWidth(defaultAdmixPlotWidth); // increase this value to increase the thickness of subjects
-        AnchorPane.setRightAnchor(gridPane, 40.0);
-        
+        AnchorPane.setRightAnchor(gridPane, 40.0);        
         
         admixPane = new AnchorPane();
-        admixPane.setStyle("-fx-border-color: green; -fx-border-width: 3px 3px 3px 3px");
+//        admixPane.setStyle("-fx-border-color: green; -fx-border-width: 3px 3px 3px 3px");
 
         // set scrollpane that keeps admix charts
         scrollPane = new ScrollPane();
         scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setStyle("-fx-border-color: purple; -fx-border-width: 2px");
+//        scrollPane.setStyle("-fx-border-color: purple; -fx-border-width: 2px");
 
     }
 

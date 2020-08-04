@@ -80,36 +80,12 @@
                               <Tooltip text="Import PCA File" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="newadmixture" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newAdmixture" prefHeight="50.0" prefWidth="100.0" style="-fx-text-fill: white;" text="ADMIX">
+                        <Button fx:id="newadmixture" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newAdmixture" prefHeight="50.0" prefWidth="100.0" style="-fx-text-fill: white;" text="Admix">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
                            <tooltip>
                               <Tooltip text="Import Admixture File" />
-                           </tooltip>
-                        </Button>
-                        <Button fx:id="threeDButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="50.0" prefWidth="109.0" style="-fx-text-fill: white;" text="Button">
-                           <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../image/3d.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <tooltip>
-                              <Tooltip text="3D view" />
-                           </tooltip>
-                        </Button>
-                        <Button fx:id="dataButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#loadData" prefHeight="50.0" prefWidth="119.0" style="-fx-text-fill: white;" text="Button">
-                           <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../image/database.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <tooltip>
-                              <Tooltip text="Load Data" />
                            </tooltip>
                         </Button>
                         <Button fx:id="settingsButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#settingsSelector" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
@@ -124,6 +100,18 @@
                               <Tooltip text="Settings" />
                            </tooltip>
                         </Button>
+                        <Button fx:id="dataButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#loadData" prefHeight="50.0" prefWidth="119.0" style="-fx-text-fill: white;" text="Button">
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/database.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Load Data" />
+                           </tooltip>
+                        </Button>
                         <Button fx:id="downloadButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#saveChart" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
                               <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
@@ -134,6 +122,18 @@
                            </graphic>
                            <tooltip>
                               <Tooltip text="Save Graph" />
+                           </tooltip>
+                        </Button>
+                        <Button fx:id="drawingButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#drawingTool" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/paint.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Annotate Graph" />
                            </tooltip>
                         </Button>
                         <Button fx:id="individualButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#showHidenIndividuals" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
@@ -160,16 +160,16 @@
                               <Tooltip text="Search Individual" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="drawingButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#drawingTool" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="threeDButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="50.0" prefWidth="109.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/paint.png" />
+                                    <Image url="@../image/3d.png" />
                                  </image>
                               </ImageView>
                            </graphic>
                            <tooltip>
-                              <Tooltip text="Annotate Graph" />
+                              <Tooltip text="3D view" />
                            </tooltip>
                         </Button>
                         <Button fx:id="saveButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;">

@@ -38,7 +38,7 @@ public class Project {
     static HashMap<String, String[]> pcaPhenoData; // hashmap to store phenotype records. key = id; value = list of phenos.    
     static HashMap<String, String[]> admixturePhenoData; // used to map pheno details to fam details
 
-    static HashMap<String, String[]> individualPhenoDetails; // Hashmap to store individual pheno details for searching
+    public static HashMap<String, String[]> individualPhenoDetails; // Hashmap to store individual pheno details for searching
 
     static int phenoColumnNumber; // store selected column with phenotype
 
@@ -47,12 +47,6 @@ public class Project {
      * and other purposes
      */
     public static int numOfIndividuals;
-
-//    List<String[]> famFile;
-//    List<String[]> phenoFile;
-//    List<String[]> pcas;
-//    String pheno_cols[];
-//    String pca_cols[];
 
     Object layout;
     ArrayList<Graph> graphs;
@@ -138,13 +132,11 @@ public class Project {
 
         BufferedReader r = Genesis.openFile(phenoFilePath);
         String line = r.readLine();
-        String fields[] = line.split("\\s+");
-//        numOfColumnsInPhenoFile = fields.length;
-        //      boolean header = fields[0].equals("FID") && fields[1].equals("IID");
-        //      if (header) line = r.readLine();
+        String fields[] = line.trim().split("\\s+");
+        
         while (line != null) {
             fields = line.split("\\s+");
-            String ids = fields[0] + ":" + fields[1];
+            String ids = fields[0] + " " + fields[1];
             String[] curr_phenos = Arrays.copyOfRange(fields, 2, fields.length);
             // used to map with evec file individual pcs
             pcaPhenoData.put(ids, curr_phenos);

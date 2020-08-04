@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.h3abionet.genesis.model;
+package org.h3abionet.genesis.controller;
 
 import com.sun.javafx.charts.Legend;
 import java.io.File;

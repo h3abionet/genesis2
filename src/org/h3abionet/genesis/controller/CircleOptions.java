@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.h3abionet.genesis.model;
+package org.h3abionet.genesis.controller;
 
 import java.util.Optional;
 import java.util.stream.Collectors;

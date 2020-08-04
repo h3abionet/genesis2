@@ -20,8 +20,10 @@ package org.h3abionet.genesis.controller;
  *
  * @author scott
  */
+import java.io.BufferedReader;
 import org.h3abionet.genesis.model.Project;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -66,40 +68,38 @@ public class ProjectDetailsController implements Initializable{
     
     @FXML
     private void handleFamFname() {
-        entryOKButton.setDisable(false); //disable OK button
         File famFile = getFile("Choose FAM file");
-        //if no famFile provided and pheno file, disable OK button, else get file names
-        if (famFile == null && pheno_fname_s == "") { 
-            entryOKButton.setDisable(true);
-        } else {
-            if(famFile != null){
-                fam_fname_s = famFile.getAbsolutePath();
-                fam_fname.setText(famFile.getName());
-                fam_fname.setStyle("-fx-text-fill: #06587F");
-                entryOKButton.setDisable(true);
-
-            }else{
-                ;
-            }
+        if(famFile != null){
+            fam_fname_s = famFile.getAbsolutePath();
+            fam_fname.setText(famFile.getName());
+            fam_fname.setStyle("-fx-text-fill: #06587F");
         }
     }
 
     @FXML
     private void handlePhenoFname() throws IOException {
         File phen = getFile("Choose Pheno file");
-        if ((phen == null)) {
-            entryOKButton.setDisable(true);
+        if(phen != null){
+            pheno_fname_s = phen.getAbsolutePath();
+            pheno_fname.setText(phen.getName());
+            pheno_fname.setStyle("-fx-text-fill: #06587F");
+
+            // read first line of the pheno file to create column names
+            BufferedReader brTest = new BufferedReader(new FileReader(pheno_fname_s));
+            String brText = brTest .readLine();
+            String[] strArray = brText.split("\\s+");
             
-        } else {
-                pheno_fname_s = phen.getAbsolutePath();
-                pheno_fname.setText(phen.getName());
-                pheno_fname.setStyle("-fx-text-fill: #06587F");
-                
-                // display seletion for a column with phenotype
-                String [] phenoCols = {"Column 1", "Column 2", "Column 3", "Column 4", "Column 5", "Column 6"};
-                colWithPhenoComboBox.setItems(FXCollections.observableArrayList(phenoCols));
-                colWithPhenoComboBox.setValue("Column 3");
-                entryOKButton.setDisable(false);
+            // create column names
+            String [] phenoColNames = new String[strArray.length];
+            for(int i = 0; i< strArray.length; i++){
+                int phenoColNumber = i+1;
+                phenoColNames[i] = "Column "+phenoColNumber;
+            }
+            
+            // display seletion for a column with phenotype
+            colWithPhenoComboBox.setItems(FXCollections.observableArrayList(phenoColNames));
+            colWithPhenoComboBox.setValue("Column 3"); // default
+            entryOKButton.setDisable(false); // disable the ok button if the pheno is provided
         }
     }
 

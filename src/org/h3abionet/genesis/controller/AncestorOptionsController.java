@@ -26,7 +26,6 @@ import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.AdmixtureGraph;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import org.h3abionet.genesis.model.AdmixtureGraphEventsHandler;
 
 /**
  * FXML Controller class
@@ -60,7 +59,7 @@ public class AncestorOptionsController implements Initializable {
     private ArrayList<StackedBarChart<String, Number>> listOfAdmixtureCharts;
     private StackedBarChart<String, Number> newChart;
     private GridPane gridPane;
-    private int ancestryPosition; // position of the serie in the chart
+//    private int ancestryPosition; // position of the serie in the chart
     private boolean isColorSelected = false;
     private static ArrayList<HBox> listOfAncenstorHBox; // list of hboxes with ancestry btns
     private int rowIndexOfClickedAdmixChart;
@@ -70,10 +69,10 @@ public class AncestorOptionsController implements Initializable {
      *
      * @param serieIndex - position of the selectedSerie
      */
-    public void setAncestryPosition(int serieIndex) {
-        ancestryPosition = serieIndex;
-        
-    }
+//    public void setAncestryPosition(int serieIndex) {
+//        ancestryPosition = serieIndex;
+//        
+//    }
 
     /**
      * set name of ancestor when loading this interface
@@ -111,7 +110,6 @@ public class AncestorOptionsController implements Initializable {
     private void doneHandler(ActionEvent event) {
         // add code to change the order of the hboxes (ancestry buttons) in the previous window
         // if any of the shift buttons was clicked otherwise listOfAncenstorHBox wont change
-        
         Genesis.closeOpenStage(event);
 
     }
@@ -181,7 +179,7 @@ public class AncestorOptionsController implements Initializable {
             }
         }
      
-        // now we make arbitrary chaneg to order of colours for next time round
+        // now we make arbitrary change to order of colours for next time round
         String moved_label;
         moved_label = AdmixtureGraph.ancestryOrder.remove(pos_removed);
         AdmixtureGraph.ancestryOrder.add(pos_added, moved_label);

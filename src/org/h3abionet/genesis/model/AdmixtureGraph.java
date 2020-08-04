@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
  import java.util.HashMap;
 import java.util.List;
-import javafx.collections.ObservableList;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;

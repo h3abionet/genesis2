@@ -59,28 +59,114 @@ public class PCAGraph extends Graph {
     protected final void readGraphData(String pcaFilePath) throws FileNotFoundException, IOException {
         BufferedReader r = Genesis.openFile(pcaFilePath);
         String line = r.readLine();
-        String fields[] = line.split("\\s+");
-
-        int num_pcas = fields.length - 2; // get number of pcas
-        pcaColumnLabels = new String[num_pcas];
-        for (int i = 0; i < num_pcas; i++) {
-            pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1); // store every pca: [PCA 1, PCA 2, ...]
+        String fields[] = line.trim().split("\\s+");
+        
+        // check eigen values on the first line - if it first string contains "eig"
+        if(fields[0].contains("eig")){
+            eigenValues.addAll(Arrays.asList(Arrays.copyOfRange(fields, 1, fields.length)));
+            line = r.readLine(); // read next line
+            fields = line.trim().split("\\s+");
+        }
+        
+        if(fields[0].contains(":")){
+                fields = line.trim().split("\\s+");
+                String[] ids = fields[0].split(":");
+                String id_1 = ids[0];
+                String id_2 = ids[1];
+                String key = id_1+" "+id_2;
+                if(fields[fields.length-1].contains("C")){
+                    // remove first id and control column
+                    int num_pcas = fields.length - 2; // get number of pcas
+                    pcaColumnLabels = new String[num_pcas];
+                    for (int i = 0; i < num_pcas; i++) {
+                        // store every pca: [PCA 1, PCA 2, ...]
+                        pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1);
+                    }
+                    // store keys and values in a hashmap
+                    pcaValues.put(key, Arrays.copyOfRange(fields, 1, fields.length - 1));
+                    
+                    line = r.readLine();
+                    while (line != null) {
+                        fields = line.trim().split("\\s+");
+                        String[] ids_ = fields[0].split(":");
+                        String id_1_ = ids_[0];
+                        String id_2_ = ids_[1];
+                        String key_ = id_1_+" "+id_2_;
+                        pcaValues.put(key_, Arrays.copyOfRange(fields, 1, fields.length - 1)); // store keys and values in a hashmap
+                        line = r.readLine();
+                    }
+                    
+                }else{
+                    // remove only the id column
+                    int num_pcas = fields.length - 1; // get number of pcas
+                    pcaColumnLabels = new String[num_pcas];
+                    for (int i = 0; i < num_pcas; i++) {
+                        // store every pca: [PCA 1, PCA 2, ...]
+                        pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1);
+                    }
+                    pcaValues.put(key, Arrays.copyOfRange(fields, 1, fields.length));
+                    line = r.readLine();
+                    while (line != null) {
+                        fields = line.trim().split("\\s+");
+                        String[] ids_ = fields[0].split(":");
+                        String id_1_ = ids_[0];
+                        String id_2_ = ids_[1];
+                        String key_ = id_1_+" "+id_2_;
+                        pcaValues.put(key_, Arrays.copyOfRange(fields, 1, fields.length));
+                        line = r.readLine();
+                    }
+                }
+                
         }
 
-        // store eigen values
-        eigenValues.addAll(Arrays.asList(Arrays.copyOfRange(fields, 2, fields.length)));
-
-        line = r.readLine(); // read next line
-        while (line != null) {
-            fields = line.split("\\s+");
-            String key = fields[1];
-            pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length - 1)); // store keys and values in a hashmap
-            line = r.readLine();
+        if(!fields[0].contains(":")){
+            fields = line.trim().split("\\s+");
+            String key = fields[0]+" "+fields[1];
+            
+            if(fields[fields.length-1].contains("C")){
+                    // remove first and second id, and the control column
+                    int num_pcas = fields.length - 3; // get number of pcas
+                    pcaColumnLabels = new String[num_pcas];
+                    for (int i = 0; i < num_pcas; i++) {
+                        // store every pca: [PCA 1, PCA 2, ...]
+                        pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1);
+                    }
+                    // store keys and values in a hashmap
+                    pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length - 1));
+                    
+                    line = r.readLine();
+                    while (line != null) {
+                        fields = line.trim().split("\\s+");
+                        String key_ = fields[0]+" "+fields[1];
+                        pcaValues.put(key_, Arrays.copyOfRange(fields, 2, fields.length - 1));
+                        line = r.readLine();
+                    }
+                    
+                }else{
+                    // remove only the 2 id columns
+                    int num_pcas = fields.length - 2; // get number of pcas
+                    pcaColumnLabels = new String[num_pcas];
+                    for (int i = 0; i < num_pcas; i++) {
+                        // store every pca: [PCA 1, PCA 2, ...]
+                        pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1);
+                    }
+                    pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length));
+                    
+                    line = r.readLine();
+                    while (line != null) {
+                        fields = line.trim().split("\\s+");
+                        String key_ = fields[0]+" "+fields[1];
+                        pcaValues.put(key_, Arrays.copyOfRange(fields, 2, fields.length));
+                        line = r.readLine();
+                    }
+                }
+            
         }
 
-//        pcaValues.entrySet().forEach(entry->{
-//            System.out.println(entry.getKey() + " " + entry.getValue());  
-//        });
+
+        pcaValues.entrySet().forEach(entry->{
+            System.out.println(entry.getKey() + " " + entry.getValue());  
+        });
     }
 
     /**
