@@ -65,12 +65,15 @@ public class AdmixtureDataInputController implements Initializable {
     @FXML
     private void handleEntryBtnAdmixtureData(ActionEvent event) throws IOException {
         File admixture = getFile("Choose admixture file");
+        try{
         admixtureFilePath = admixture.getAbsolutePath();
         admixtureFileName = admixture.getName();
         btnAdmixtureData.setText(admixtureFileName);
         btnAdmixtureData.setStyle("-fx-text-fill: #06587F");
-        admixtureGraph = new AdmixtureGraph(admixtureFilePath); // read the file using module class     
-
+        admixtureGraph = new AdmixtureGraph(admixtureFilePath); // read the file using module class 
+        }catch(Exception ex){
+            Genesis.throwErrorException("No file imported");
+        }   
     }
 
     public static boolean isImportOk() {

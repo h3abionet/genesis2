@@ -10,8 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.ObservableList;
@@ -24,9 +22,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.StackedBarChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.image.WritableImage;
@@ -48,8 +44,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.controller.AdmixtureIndividualDetailsController;
-import org.h3abionet.genesis.controller.AdmixtureOptionsController;
 import org.h3abionet.genesis.model.AdmixtureGraph;
 import org.h3abionet.genesis.model.Project;
 
@@ -68,20 +62,11 @@ public class AdmixtureGraphEventsHandler {
     private String[] iidDetails;
     private int numOfAncestries = AdmixtureGraph.currentNumOfAncestries; // number of series;
     private int rowPointer; // defines the correct row with the cells for keeping charts
-    private static Stage optionsStage;
-    private Scene scene, sceneForPopulationGroupBtn;
 
     /**
      * To store all ancestor HBoxes which will be added the leftVBox
      */
     private static ArrayList<HBox> listOfAncenstorHBox;
-
-    /**
-     * this keeps the HBoxes with ancestry buttons the order of the buttons
-     * changes when the ancestry are shifted up or down It is accessed by the
-     * Ancestor option details controller.
-     */
-    private static VBox leftVBox;
 
     /**
      * before swapping the series, it is important to know which row contains
@@ -90,7 +75,9 @@ public class AdmixtureGraphEventsHandler {
     private static int rowIndexOfClickedAdmixChart;
 
     private static int labelClickCounter = 0;
+    private static int kClickCounter = 0;
     private StackPane firstGroupLabel, secondGroupLabel;
+    private static StackPane firstKLabel, secondKLabel;
     private Node firstChart, secondChart;
     /**
      *
@@ -102,7 +89,6 @@ public class AdmixtureGraphEventsHandler {
         this.listOfCharts = listOfCharts;
         this.gridPane = gridPane;
         this.rowPointer = rowPointer;
-        optionsStage = new Stage();
         listOfAncenstorHBox = new ArrayList<>();
     }
 
@@ -112,10 +98,19 @@ public class AdmixtureGraphEventsHandler {
     @SuppressWarnings("empty-statement")
     public GridPane getGridPane() {
         try {
-            Label groupLbl = new Label("K = " + numOfAncestries);
-            GridPane.setMargin(groupLbl, new Insets(0, 5, 0 ,5)); // add a margin of 5 to right and left
+            Text kValue = new Text("K = " + numOfAncestries);
+            StackPane kValuePane = new StackPane(kValue);
+            kValuePane.setAlignment(Pos.CENTER);
+            kValuePane.setMargin(kValue, new Insets(5));
+            kValuePane.hoverProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue) {
+                    kValuePane.setCursor(Cursor.HAND);
+                }
+            });
+            // add event to the label
+            kValuePane.setOnMouseClicked((MouseEvent e) -> kValueClicked(e.getSource()));
             
-            gridPane.add(groupLbl, 0, rowPointer); // add K value.
+            gridPane.add(kValuePane, 0, rowPointer); // add K value.
 
             int colIndex = 1;
             for (StackedBarChart<String, Number> admixChart : listOfCharts) {
@@ -136,8 +131,8 @@ public class AdmixtureGraphEventsHandler {
                 GridPane.setMargin(admixChart, new Insets(0, 0, -3, -3)); // TODO remove the chart content margins on axes
 
                 // remove last rowPointer - population group labels
-                gridPane.getChildren().removeIf(node -> GridPane.getRowIndex(node) == rowPointer + 1);
-
+                gridPane.getChildren().removeIf(node -> GridPane.getRowIndex(node) == rowPointer+1);
+                
                 // define Group names for individuals
                 Text chartGroupName = new Text(admixChart.getXAxis().getLabel());
                 StackPane pane = new StackPane(chartGroupName);
@@ -203,7 +198,8 @@ public class AdmixtureGraphEventsHandler {
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
                     MouseButton button = event.getButton();
                     if (button == MouseButton.SECONDARY) {
-                        
+                        // set the rowIndex of the clicked chart
+                        rowIndexOfClickedAdmixChart = GridPane.getRowIndex(admixChart);
                         try {
                             FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureOptions.fxml"));
                             Parent p = (Parent) loader.load();
@@ -213,236 +209,19 @@ public class AdmixtureGraphEventsHandler {
                             AdmixtureOptionsController aop = loader.getController();
                             aop.setAdmixChart(admixChart);
                             dialogStage.show();
-                            
-                            rowIndexOfClickedAdmixChart = GridPane.getRowIndex(admixChart);
-                            
-                            // charts in the firstGroupLabel row
-//                        if (rowIndexOfClickedAdmixChart < rowPointer + 1) {                            
-//                            // create vbox for editing options
-//                            VBox editChartOptionsVBox = new VBox();
-//                            editChartOptionsVBox.setPadding(new Insets(10));
-//                            editChartOptionsVBox.setSpacing(5);
-//
-//                            // declare two buttons and add them to the vbox
-//                            Button addLabelBtn = new Button("Create Label at Mouse Cursor");
-//                            addLabelBtn.setOnMouseClicked((MouseEvent labelEvent) -> {
-//                                System.out.println("Add implementation for adding ");
-//                            });
-//
-//                            // declare population group options button
-//                            Button populationGroupOptionsBtn = new Button("Population Group Options (Colours)");
-//
-//                            populationGroupOptionsBtn.setOnMouseClicked((MouseEvent popEvent) -> {
-//
-//                                // close the parent stage when the button is clicked
-//                                optionsStage.close();
-//
-//                                // borders for vbox and hbox containers
-//                                String cssLayout = "-fx-border-color: #d9d9d9;\n"
-//                                        + "-fx-border-width: 1;\n";
-//
-//                                VBox optionsContainerVBox = new VBox();
-//                                optionsContainerVBox.setPadding(new Insets(10));
-//                                optionsContainerVBox.setSpacing(5);
-//
-//                                HBox populationOptionsHBox = new HBox();
-//                                populationOptionsHBox.setStyle(cssLayout);
-//                                populationOptionsHBox.setSpacing(2);
-//
-//                                // create the right vbox to keep the fam order and dominant order buttons
-//                                VBox rightVBox = new VBox(new Label("Sort within populations algorithmically"));
-//                                rightVBox.setPadding(new Insets(10));
-//                                rightVBox.setSpacing(5);
-//                                rightVBox.setStyle(cssLayout);
-//
-//                                Button famOrderBtn = new Button("Fam order");
-//                                famOrderBtn.setOnMouseClicked((MouseEvent famOrderEvent) -> {
-//                                    listOfCharts.forEach((s) -> {
-//                                        sortToFamOrder(s);
-//                                    });
-//                                    
-//                                });
-//
-//                                Button dominantColourBtn = new Button("Dominant colour");
-//                                dominantColourBtn.setOnMouseClicked((MouseEvent devt) -> {
-//                                        for (StackedBarChart<String, Number> stackedBarChart : listOfCharts) {
-//                                            // store totals of yvalue elements in every serie                                            
-//                                            ArrayList<Double> sumList = new ArrayList<>();
-//                                            
-//                                            // get sum of all yvalues in every serie / ancestry
-//                                            for(int s=0; s<stackedBarChart.getData().size(); s++){
-//                                                double sum = 0;
-//                                                for(int n=0; n<stackedBarChart.getData().get(s).getData().size(); n++){
-//                                                    sum += stackedBarChart.getData().get(s).getData().get(n).getYValue().doubleValue();
-//                                       
-//                                                }
-//                                                sumList.add(sum);                                           
-//                                            }
-//                                            
-//                                            // get index of the max value in sumList = dorminant serie index in the chart
-//                                            int ancestryIndex = sumList.indexOf(Collections.max(sumList));
-//
-//                                            // sort chart by serie with max yvalues (dominant)
-//                                            sortChartByColor(stackedBarChart, ancestryIndex);
-//                                            
-//                                        }
-//
-//                                    });
-//                                
-//                                rightVBox.getChildren().addAll(famOrderBtn, dominantColourBtn);
-//
-//                                // create the left vbox to keep all ancestor elements added to hbox
-//                                leftVBox = new VBox(new Label("Change and order colours"));
-//                                leftVBox.setPadding(new Insets(10));
-//                                leftVBox.setSpacing(5);
-//                                leftVBox.setStyle(cssLayout);
-//
-//                                // for every ancestor, get its color, create a button with its name and create a sort button
-//                                for (int i = numOfAncestries - 1; i >= 0; i--) {
-//
-//                                    // HBox of ancestor buttons in the leftVBox
-//                                    HBox ancenstorHBox = new HBox(10);
-//                                    ancenstorHBox.setId("Ancestry" + i);
-//
-//                                    // rectangle to display ancestor colors
-//                                    Rectangle ancestorColorDisplay = new Rectangle();
-//                                    ancestorColorDisplay.setWidth(25);
-//                                    ancestorColorDisplay.setHeight(25);
-//                                    ancestorColorDisplay.setArcWidth(5);
-//                                    ancestorColorDisplay.setArcHeight(5);
-//
-//                                    String defaultColor = ".default-color" + i + ".chart-bar";
-//                                    // get the default color of every ancestor (using the default-color0,1,2 class) and fill it in the rectangle
-//                                    StackPane node = (StackPane) admixChart.getData().get(i).getData().get(i).getNode().lookup(defaultColor);
-//                                    Background bg = node.getBackground();
-//                                    Paint paint = bg.getFills().get(0).getFill();
-//                                    ancestorColorDisplay.setFill(paint);
-//
-//                                    //  set ancestor name -> used to name buttons and as a label for color options window
-//                                    String ancestorName = admixChart.getData().get(i).getName();
-//
-//                                    // create ancestor button
-//                                    Button ancenstorNameBtn = new Button("Change " + ancestorName);
-//
-//                                    // and mouse click events to the button - to load a color options stage with shift up or down buttons
-//                                    int serieIndex = i;
-//                                    ancenstorNameBtn.setOnMouseClicked((MouseEvent anacestorEvent) -> {
-//                                        try {
-//                                            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/AncestorOptions.fxml"));
-//                                            Parent parent = (Parent) fxmlLoader.load();
-//                                            Stage dialogStage = new Stage();
-//                                            dialogStage.setScene(new Scene(parent));
-//                                            dialogStage.setResizable(false);
-//
-//                                            AncestorOptionsController ancestorOptionsController = fxmlLoader.getController();
-//                                            ancestorOptionsController.setAncestorNumberLabel(ancestorName);
-//                                            ancestorOptionsController.setDefaultAncestorColor(paint);
-//                                            ancestorOptionsController.setAncestryPosition(listOfAncenstorHBox.indexOf(ancenstorHBox));
-//
-//                                            dialogStage.showAndWait();
-//
-//                                            // change the color of the ancestor color display if the color was selected
-//                                            if (ancestorOptionsController.isIsColorSelected()) {
-//                                                ancestorColorDisplay.setFill(ancestorOptionsController.getChosenPaint());
-//
-//                                                String selectedColor = ancestorOptionsController.getChosenColor();
-//
-//                                                // change the color of series
-//                                                for (StackedBarChart<String, Number> stackedbarChart : listOfCharts) {
-//                                                    stackedbarChart.getData().forEach((series) -> {
-//                                                        series.getData().forEach((bar) -> {
-//                                                            bar.getNode().lookupAll(".default-color" + serieIndex + ".chart-bar")
-//                                                                    .forEach(n -> n.setStyle("-fx-background-color: #" + selectedColor + ";"));
-//                                                        });
-//                                                    });
-//
-//                                                }
-//
-//                                            } else {
-//                                                ; // no color is selected
-//                                            }
-//
-//                                        } catch (IOException e) {
-//                                        }
-//
-//                                    });
-//
-//                                    // create a sort individuals button
-//                                    int serieNum = i+1;
-//                                    Button colorSortBtn = new Button("Sort Ancestry "+serieNum);
-//                                    colorSortBtn.setOnMouseClicked((MouseEvent devt) -> {
-//                                        for (StackedBarChart<String, Number> stackedBarChart : listOfCharts) {
-//                                            // get last character on a btn and use it use it as the index of the ancestry
-//                                            String ancestryNumber = colorSortBtn.getText().substring(colorSortBtn.getText().length() - 1);
-//                                            // sort
-//                                            sortChartByColor(stackedBarChart, Integer.valueOf(ancestryNumber)-1);
-//                                        }
-//                                    });
-//
-//                                    // for every serie, store its default color, change color btn, and sort btn in HBox
-//                                    ancenstorHBox.getChildren().addAll(ancestorColorDisplay, ancenstorNameBtn, colorSortBtn);
-//
-//                                    // add the the HBox to the list of HBoxes.
-//                                    listOfAncenstorHBox.add(ancenstorHBox);
-//
-//                                }
-//
-//                                // add the hbox to its parent (the left vbox)
-//                                leftVBox.getChildren().addAll(listOfAncenstorHBox);
-//
-//                                // add the left and right vbox to their parent hbox
-//                                populationOptionsHBox.getChildren().addAll(leftVBox, rightVBox);
-//
-//                                // create done button - > add it to the hbox
-//                                Button doneBtn = new Button("Done");
-//                                doneBtn.setAlignment(Pos.CENTER);
-//
-//                                // define what happens when the done btn is clicked
-//                                // should close the stage and the list of hboxes for reordering purpose
-//                                doneBtn.setOnMouseClicked((MouseEvent dominantEvent) -> {
-//                                    optionsStage.close();
-//                                    listOfAncenstorHBox.clear(); // clear all hboxes in the list
-//                                });
-//
-//                                HBox buttonCollectionHBox = new HBox(doneBtn);
-//                                buttonCollectionHBox.setAlignment(Pos.CENTER);
-//
-//                                // add all the above parent hboxes to their parent vbox 
-//                                optionsContainerVBox.getChildren().addAll(populationOptionsHBox, buttonCollectionHBox);
-//
-//                                // then show the stage
-//                                sceneForPopulationGroupBtn = new Scene(optionsContainerVBox);
-//                                optionsStage.setTitle(null);
-//                                optionsStage.setScene(sceneForPopulationGroupBtn);
-//                                optionsStage.setResizable(false);
-//                                optionsStage.show();
-//
-//                            });
-//
-//                            // chart editing options -> firstGroupLabel window to display when you right click the chart
-//                            editChartOptionsVBox.getChildren().addAll(addLabelBtn, populationGroupOptionsBtn);
-//                            scene = new Scene(editChartOptionsVBox);
-//                            optionsStage.setTitle("Options");
-//                            optionsStage.setScene(scene);
-//                            optionsStage.setResizable(false);
-//                            optionsStage.show();
-//
-//                        } else { // charts in the last row
-//                            System.out.println("Design interface for Last or middle charts");
-//                        }
+
                         } catch (IOException ex) {
-                            Logger.getLogger(AdmixtureGraphEventsHandler.class.getName()).log(Level.SEVERE, null, ex);
+                            Genesis.throwErrorException("Failed to load plot format options");
                         }
                     }
                 });
 
                 // incremement the column index
                 colIndex++;
-
             }
 
         } catch (Exception e) {
-            System.out.println("No chart dude");//do nothing
+            Genesis.throwErrorException("Sorry. Try Again");//do nothing
         }
         return gridPane;
 
@@ -456,7 +235,11 @@ public class AdmixtureGraphEventsHandler {
     public static int getRowIndexOfClickedAdmixChart() {
         return rowIndexOfClickedAdmixChart;
     }
-
+    
+    /**
+     * identify clicked population group labels
+     * @param source 
+     */
     private void chartGroupNameClicked(Object source) {
         if (!(source instanceof StackPane)) {
             return;
@@ -467,36 +250,40 @@ public class AdmixtureGraphEventsHandler {
             firstGroupLabel = lbl;
         } else {
             secondGroupLabel = lbl;
-            swap();
+            groupNameSwap();
         }
         labelClickCounter = ++labelClickCounter % 2;  // changes values between 0 1
 
     }
-
-    private void swap() {
+    
+    /**
+     * groupNameSwap population group labels
+     */
+    private void groupNameSwap() {
+        // column and row index for clicked labels
         int firstRow = GridPane.getRowIndex(firstGroupLabel);
         int firstCol = GridPane.getColumnIndex(firstGroupLabel);
         int secondRow = GridPane.getRowIndex(secondGroupLabel);
         int secondCol = GridPane.getColumnIndex(secondGroupLabel);
 
-        // swap their column constraints
+        // groupNameSwap their column constraints
         Collections.swap(gridPane.getColumnConstraints(), firstCol, secondCol);
 
         // remove group existing labels
         gridPane.getChildren().removeAll(firstGroupLabel, secondGroupLabel);
 
-        // swap population group nodes
+        // groupNameSwap population group nodes
         gridPane.add(firstGroupLabel, secondCol, secondRow);
         gridPane.add(secondGroupLabel, firstCol, firstRow);
 
-        int r = 0;
+        int rowIndex = 0;
         ObservableList<Node> children = gridPane.getChildren();
-        while (r < firstRow) {
+        while (rowIndex < firstRow) {
             for (Node node : children) {
-                if (GridPane.getColumnIndex(node) == firstCol && GridPane.getRowIndex(node) == r) {
+                if (GridPane.getColumnIndex(node) == firstCol && GridPane.getRowIndex(node) == rowIndex) {
                     firstChart = node;
                 }
-                if (GridPane.getColumnIndex(node) == secondCol && GridPane.getRowIndex(node) == r) {
+                if (GridPane.getColumnIndex(node) == secondCol && GridPane.getRowIndex(node) == rowIndex) {
                     secondChart = node;
                 }
             }
@@ -505,9 +292,9 @@ public class AdmixtureGraphEventsHandler {
                 // remove nodes
                 gridPane.getChildren().removeAll(firstChart, secondChart);
 
-                // swap nodes
-                gridPane.add(firstChart, secondCol, r);
-                gridPane.add(secondChart, firstCol, r);
+                // groupNameSwap nodes
+                gridPane.add(firstChart, secondCol, rowIndex);
+                gridPane.add(secondChart, firstCol, rowIndex);
 
             } else {
                 ;
@@ -517,66 +304,87 @@ public class AdmixtureGraphEventsHandler {
             firstChart = null;
             secondChart = null;
 
-            r++;
+            rowIndex++;
         }
 
     }
     
     /**
-     * sort individuals according to fam order
-     * @param s 
+     * identify clicked rows (using k value labels)
+     * @param source 
      */
-    private void sortToFamOrder(StackedBarChart<String, Number> s){
-        // get sorted iids
-        CategoryAxis xAxis = (CategoryAxis) s.getXAxis();
-        ObservableList<String> sorted_iids = xAxis.getCategories();
-        
-        // get fam order iids for this chart (population group) using its id as the key
-        List<String> fam_order_iids = AdmixtureGraph.famOrder.get(s.getId());
-        
-        // for loop run this number of times
-        int numOfIndividuals = s.getData().get(0).getData().size();
-        
-        // swap positions
-        for (int j = 0; j < numOfIndividuals; j++) {
-            String temp = sorted_iids.remove(sorted_iids.indexOf(fam_order_iids.get(j)));
-            sorted_iids.add(j, temp);
-            xAxis.setCategories(sorted_iids);
+    private void kValueClicked(Object source) {
+        if (!(source instanceof StackPane)) {
+            return;
         }
+        StackPane kValuePane = (StackPane) source;
+
+        if (kClickCounter == 0) {
+            firstKLabel = kValuePane;
+        } else {
+            secondKLabel = kValuePane;
+            swapPlots();
+        }
+        kClickCounter = ++kClickCounter % 2;  // changes values between 0 1
     }
-    
     /**
-     * sort iids based on selected serie or ancestry
-     * @param stackedBarChart
-     * @param ancestryNumber 
+     * swap admixture plots
      */
-    private void sortChartByColor(StackedBarChart<String, Number> stackedBarChart, int ancestryNumber){
+    private void swapPlots() {
+        int firstRow = GridPane.getRowIndex(firstKLabel);
+        int firstCol = GridPane.getColumnIndex(firstKLabel);
+        System.out.println(firstRow);
+        int secondRow = GridPane.getRowIndex(secondKLabel);
+        int secondCol = GridPane.getColumnIndex(secondKLabel);
+        System.out.println(secondRow);
         
-        CategoryAxis xAxis = (CategoryAxis) stackedBarChart.getXAxis();
+        // swap the plot lists
+        Collections.swap(MainController.getAllAdmixtureCharts(), firstRow, secondRow);
         
-        XYChart.Series<String, Number>  chosenAncestry = stackedBarChart.getData().get(ancestryNumber);
-        int numOfIndividuals = chosenAncestry.getData().size();
+        // remove group existing labels
+        gridPane.getChildren().removeAll(firstKLabel, secondKLabel);
 
-        ObservableList<String> iids = xAxis.getCategories();
-        
-        // sort the chosen ancestry
-        chosenAncestry.getData().sort(Comparator.comparingDouble(d -> d.getYValue().doubleValue()));
+        // swap the stackpanes with k values first
+        gridPane.add(firstKLabel, secondCol, secondRow);
+        gridPane.add(secondKLabel, firstCol, firstRow);
 
-        // get positions of iids from the sorted ancestry
-        String[] sorted_iids = new String[numOfIndividuals];
-        for (int p = 0; p < numOfIndividuals; p++) {
-            sorted_iids[p] = chosenAncestry.getData().get(p).getXValue();
-        }
+        int columnIndex = 1; // swap all the plots from second column to last
+        ObservableList<Node> children = gridPane.getChildren();
+        while (columnIndex < children.size()+1) {
+            for (Node node : children) {
+                if (GridPane.getColumnIndex(node) == columnIndex && GridPane.getRowIndex(node) == firstRow) {
+                    firstChart = node;
+                }
+                if (GridPane.getColumnIndex(node) == columnIndex && GridPane.getRowIndex(node) == secondRow) {
+                    secondChart = node;
+                }
+            }
 
-        // swap positions
-        for (int j = 0; j < numOfIndividuals; j++) {
-            String temp = iids.remove(iids.indexOf(sorted_iids[j]));
-            iids.add(j, temp);
-            xAxis.setCategories(iids);
+            if (firstChart != null && secondChart != null) {
+                // remove nodes
+                gridPane.getChildren().removeAll(firstChart, secondChart);
+
+                // groupNameSwap nodes
+                gridPane.add(firstChart, columnIndex, secondRow);
+                gridPane.add(secondChart, columnIndex, firstRow);
+
+            } else {
+                ;
+            }
+
+            // reset nodes
+            firstChart = null;
+            secondChart = null;
+
+            columnIndex++;
         }
 
     }
     
+  /**
+   * Save the parent of all plots
+   * @param vBox 
+   */
     public void saveChart(VBox vBox) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
@@ -634,7 +442,7 @@ public class AdmixtureGraphEventsHandler {
                     }
 
                 } catch (IOException e) {
-                    alert.setContentText("An ERROR occurred while saving the file.");
+                    alert.setContentText("ERROR occurred while saving the file.");
                     alert.showAndWait();
                 }
             } else {

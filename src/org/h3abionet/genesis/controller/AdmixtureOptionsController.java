@@ -19,6 +19,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -30,6 +31,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -76,18 +78,29 @@ public class AdmixtureOptionsController implements Initializable {
     // To store all ancestor HBoxes which will be added the leftVBox
     private ArrayList<HBox> listOfAncenstorHBox;
 
-    // number of series;
-    private final int numOfAncestries = AdmixtureGraph.currentNumOfAncestries;
-
     // borders for vbox and hbox containers
     private final String cssLayout = "-fx-border-color: #d9d9d9; -fx-border-width: 1;";
     
     private Stage optionsStage;
     private Scene sceneForPopulationGroupBtn;
+    private int rowIndexOfClickedAdmixChart;
 
     @FXML
     private void deleteGraph(ActionEvent event) {
-
+        // remove all nodes in clicked row
+        String result = Genesis.confirmAction("Are you sure you want to delete this plot?");
+        if (result.equals("yesBtnPressed")) {
+            MainController.getGridPane().getChildren().removeIf(
+                    node -> GridPane.getRowIndex(node) == rowIndexOfClickedAdmixChart);
+            
+        // remove a list of all charts in that index
+        MainController.getAllAdmixtureCharts().remove(rowIndexOfClickedAdmixChart);
+        MainController.setRowPointer(MainController.getRowPointer()-1);
+        // close stage
+        Genesis.closeOpenStage(event);
+        } else {
+            Genesis.closeOpenStage(event);
+        }
     }
 
     @FXML
@@ -146,15 +159,13 @@ public class AdmixtureOptionsController implements Initializable {
 
         // for every ancestor, get its color, create a button with its name and create a sort button
         for (int i = admixChart.getData().size()-1; i >= 0; i--) {
-
+            
             // HBox of ancestor buttons in the leftVBox
             HBox ancenstorHBox = new HBox(10);
             ancenstorHBox.setId("Ancestry" + i);
-
+            
             // rectangle to display ancestor colors
-            Rectangle ancestorColorDisplay = new Rectangle();
-            ancestorColorDisplay.setWidth(25);
-            ancestorColorDisplay.setHeight(25);
+            Rectangle ancestorColorDisplay = new Rectangle(25, 25);
             ancestorColorDisplay.setArcWidth(5);
             ancestorColorDisplay.setArcHeight(5);
 
@@ -164,50 +175,55 @@ public class AdmixtureOptionsController implements Initializable {
             Background bg = node.getBackground();
             Paint paint = bg.getFills().get(0).getFill();
             ancestorColorDisplay.setFill(paint);
+            
+            // show hand cursor for user to click and change the color
+            ancestorColorDisplay.hoverProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue) {
+                        ancestorColorDisplay.setCursor(Cursor.HAND);
+                    }
+            });
 
+            int ancestorIndex = i;
+            ancestorColorDisplay.setOnMouseClicked((MouseEvent colorEvt) -> {
+                try {
+                    // change the color of ancestries
+                    FXMLLoader colorLoader = new FXMLLoader(Genesis.class.getResource("view/AncestryColor.fxml"));
+                    Parent parent = (Parent) colorLoader.load();
+                    Stage colorStage = new Stage();
+                    colorStage.setScene(new Scene(parent));
+                    colorStage.setResizable(false);
+                    AncestryColorController acc = colorLoader.getController();
+                    acc.setAncestryColor(ancestorColorDisplay.getFill());
+                    acc.setAncestryIndex(ancestorIndex);
+                    colorStage.showAndWait();
+                    
+                    if (acc.isColorSelected()) {
+                        ancestorColorDisplay.setFill(acc.getChosenPaint());
+                    }
+                } catch (IOException ex) {
+                    Genesis.throwInformationException("Failed! Try Again!");
+                }
+            });
+            
             //  set ancestor name -> used to name buttons and as a label for color options window
             String ancestorName = admixChart.getData().get(i).getName();
-
+            
             // create ancestor button
             Button ancenstorNameBtn = new Button("Change " + ancestorName);
 
-            // and mouse click events to the button - to load a color options stage with shift up or down buttons
-            int serieIndex = i;
+            // load stage for shifting up or down the ancestries
             ancenstorNameBtn.setOnMouseClicked((MouseEvent anacestorEvent) -> {
                 try {
-                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/AncestorOptions.fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/ShiftAncestry.fxml"));
                     Parent parent = (Parent) fxmlLoader.load();
                     Stage dialogStage = new Stage();
                     dialogStage.setScene(new Scene(parent));
                     dialogStage.setResizable(false);
 
-                    AncestorOptionsController ancestorOptionsController = fxmlLoader.getController();
-                    ancestorOptionsController.setAncestorNumberLabel(ancestorName);
-                    ancestorOptionsController.setDefaultAncestorColor(paint);
-//                    ancestorOptionsController.setAncestryPosition(listOfAncenstorHBox.indexOf(ancenstorHBox));
-
+                    ShiftAncestryController sac = fxmlLoader.getController();
+                    sac.setAncestorNumberLabel(ancestorName); // set the ancestry name
+                    sac.setNumOfAncestry(admixChart.getData().size());
                     dialogStage.showAndWait();
-
-                    // change the color of the ancestor color display if the color was selected
-                    if (ancestorOptionsController.isIsColorSelected()) {
-                        ancestorColorDisplay.setFill(ancestorOptionsController.getChosenPaint());
-
-                        String selectedColor = ancestorOptionsController.getChosenColor();
-
-                        // change the color of series
-                        for (StackedBarChart<String, Number> stackedbarChart : listOfCharts) {
-                            stackedbarChart.getData().forEach((series) -> {
-                                series.getData().forEach((bar) -> {
-                                    bar.getNode().lookupAll(".default-color" + serieIndex + ".chart-bar")
-                                            .forEach(n -> n.setStyle("-fx-background-color: #" + selectedColor + ";"));
-                                });
-                            });
-
-                        }
-
-                    } else {
-                        ; // no color is selected
-                    }
 
                 } catch (IOException e) {
                 }
@@ -215,7 +231,6 @@ public class AdmixtureOptionsController implements Initializable {
             });
 
             // create a sort individuals button
-            int serieNum = i + 1;
             Button colorSortBtn = new Button("Sort Ancestry " + ancestorName.substring(ancestorName.length() - 1));
             colorSortBtn.setOnMouseClicked((MouseEvent devt) -> {
                 for (StackedBarChart<String, Number> stackedBarChart : listOfCharts) {
@@ -225,7 +240,7 @@ public class AdmixtureOptionsController implements Initializable {
                     sortChartByColor(stackedBarChart, Integer.valueOf(ancestryNumber) - 1);
                 }
             });
-
+            
             // for every serie, store its default color, change color btn, and sort btn in HBox
             ancenstorHBox.getChildren().addAll(ancestorColorDisplay, ancenstorNameBtn, colorSortBtn);
 
@@ -342,8 +357,13 @@ public class AdmixtureOptionsController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
-        listOfCharts = MainController.getAllAdmixtureCharts().get(AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart());
+        
+        // get row index of clicked chart - starts from 0
+        rowIndexOfClickedAdmixChart = AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart();
+        System.out.println("Row index is"+rowIndexOfClickedAdmixChart);
+        
+        // get list of charts in this position of row index
+        listOfCharts = MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
 
         listOfAncenstorHBox = new ArrayList<>();
         

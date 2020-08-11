@@ -26,7 +26,7 @@ import org.h3abionet.genesis.Genesis;
 public class AdmixtureGraph extends Graph{
 
     private List<String[]> admixValues; // arraylist of array to store row values
-    private String[] ancestries; // Labels_order represents @K or column
+    private String[] ancestries;
     
     private final HashMap<String, String[]> admixturePhenoData; // store pheno details
     private final HashMap<String, String[]> famData; // store fam details
@@ -41,7 +41,7 @@ public class AdmixtureGraph extends Graph{
     static String[] hexCodes = {"#FF8C00", "#32CD32","#fffb00","#055ff0", "#ff0d00"};
     public static ArrayList<String> ancestryColors = new ArrayList<>(Arrays.asList(hexCodes));
     
-    public static ArrayList<String> ancestryOrder=new ArrayList<String>();  // to order colour        
+    public static ArrayList<String> ancestryOrder = new ArrayList<String>();  // to order colour        
             
     public AdmixtureGraph(String admixtureFilePath) throws IOException {
         this.admixturePhenoData = Project.admixturePhenoData;
@@ -61,20 +61,29 @@ public class AdmixtureGraph extends Graph{
         String line = r.readLine();
         String fields[] = line.split("\\s+");
         
-        int num_ancestors = fields.length; // if ids are not included in the file
-        ancestries = new String[num_ancestors];
-        for (int i = 0; i < num_ancestors; i++) {
-            ancestries[i] = "Ancestry " + Integer.toString(i + 1);
+        // check first value: float or id ?
+        try{
+            // if it can't be float, then it might be another file type
+            float firstValue = Float.valueOf(fields[0]);
+
+            int num_ancestors = fields.length;
+            ancestries = new String[num_ancestors];
+            for (int i = 0; i < num_ancestors; i++) {
+                ancestries[i] = "Ancestry " + Integer.toString(i + 1);
+            }
+
+            while (line != null) {
+                fields = line.split("\\s+");
+                admixValues.add(fields);
+                line = r.readLine();
+            }
+            
+            setPopulationGroups();
+
+        }catch(Exception e){
+            Genesis.throwInformationException("You might have imported a wrong file");          
         }
-        
-//        line = r.readLine();
-        while (line != null) {
-            fields = line.split("\\s+");
-            admixValues.add(fields);
-            line = r.readLine();
-        }
-        setPopulationGroups();
-        
+            
     }
     
     /**
@@ -122,7 +131,7 @@ public class AdmixtureGraph extends Graph{
     @Override
     public ArrayList<StackedBarChart<String, Number>> createGraph(){
         
-//      charts = [chart1, chart2, chart3, ...]
+        // charts = [chart1, chart2, chart3, ...]
         ArrayList<StackedBarChart<String, Number>> charts = new ArrayList<>(); // store stackedbars for every group
         
         // hashmap [k, v] = [MKK, [[fid, iid, v1, v2],    [fid, iid, v1, v2],   [fid, iid, v1, v2]]]

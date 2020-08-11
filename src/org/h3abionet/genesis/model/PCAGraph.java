@@ -33,6 +33,8 @@ public class PCAGraph extends Graph {
     private String[] pcaColumnLabels; // store pca column name: PCA 1, PCA 2, ...
     private final List<String> eigenValues; // store eigen values
     private XYChart.Series<Number, Number> group;
+    private BufferedReader bufferReader;
+    private String line;
 
     /**
      *
@@ -57,35 +59,37 @@ public class PCAGraph extends Graph {
      */
     @Override
     protected final void readGraphData(String pcaFilePath) throws FileNotFoundException, IOException {
-        BufferedReader r = Genesis.openFile(pcaFilePath);
-        String line = r.readLine();
+        bufferReader = Genesis.openFile(pcaFilePath);
+        line = bufferReader.readLine();
         String fields[] = line.trim().split("\\s+");
         
-        // check eigen values on the first line - if it first string contains "eig"
+        // check if file has eigen values - search for "eig" in first string
         if(fields[0].contains("eig")){
             eigenValues.addAll(Arrays.asList(Arrays.copyOfRange(fields, 1, fields.length)));
-            line = r.readLine(); // read next line
+            line = bufferReader.readLine(); // read next line
             fields = line.trim().split("\\s+");
         }
         
+        // check if ids are seperated by colons:
         if(fields[0].contains(":")){
                 fields = line.trim().split("\\s+");
+                // if yes, split them
                 String[] ids = fields[0].split(":");
                 String id_1 = ids[0];
                 String id_2 = ids[1];
-                String key = id_1+" "+id_2;
-                if(fields[fields.length-1].contains("C")){
-                    // remove first id and control column
-                    int num_pcas = fields.length - 2; // get number of pcas
-                    pcaColumnLabels = new String[num_pcas];
-                    for (int i = 0; i < num_pcas; i++) {
-                        // store every pca: [PCA 1, PCA 2, ...]
-                        pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1);
-                    }
-                    // store keys and values in a hashmap
+                String key = id_1+" "+id_2; // hashmap key
+                
+                // check if last column is a control column
+                if(fields[fields.length-1].contains("C") || fields[fields.length-1].contains("c")){
+                    
+                    setPcaColumnLabels(fields, 2);
+                    
+                    // store keys and values in a hashmap - from 2nd string to 2nd last
                     pcaValues.put(key, Arrays.copyOfRange(fields, 1, fields.length - 1));
                     
-                    line = r.readLine();
+                    line = bufferReader.readLine(); // read next line
+                    
+                    // read all the remaining lines
                     while (line != null) {
                         fields = line.trim().split("\\s+");
                         String[] ids_ = fields[0].split(":");
@@ -93,19 +97,18 @@ public class PCAGraph extends Graph {
                         String id_2_ = ids_[1];
                         String key_ = id_1_+" "+id_2_;
                         pcaValues.put(key_, Arrays.copyOfRange(fields, 1, fields.length - 1)); // store keys and values in a hashmap
-                        line = r.readLine();
+                        line = bufferReader.readLine();
                     }
                     
                 }else{
+                    // if the file doesnot contain the control column
                     // remove only the id column
-                    int num_pcas = fields.length - 1; // get number of pcas
-                    pcaColumnLabels = new String[num_pcas];
-                    for (int i = 0; i < num_pcas; i++) {
-                        // store every pca: [PCA 1, PCA 2, ...]
-                        pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1);
-                    }
+                    setPcaColumnLabels(fields, 1);
+
                     pcaValues.put(key, Arrays.copyOfRange(fields, 1, fields.length));
-                    line = r.readLine();
+                    
+                    line = bufferReader.readLine(); // read next line
+                    
                     while (line != null) {
                         fields = line.trim().split("\\s+");
                         String[] ids_ = fields[0].split(":");
@@ -113,7 +116,7 @@ public class PCAGraph extends Graph {
                         String id_2_ = ids_[1];
                         String key_ = id_1_+" "+id_2_;
                         pcaValues.put(key_, Arrays.copyOfRange(fields, 1, fields.length));
-                        line = r.readLine();
+                        line = bufferReader.readLine();
                     }
                 }
                 
@@ -125,48 +128,51 @@ public class PCAGraph extends Graph {
             
             if(fields[fields.length-1].contains("C")){
                     // remove first and second id, and the control column
-                    int num_pcas = fields.length - 3; // get number of pcas
-                    pcaColumnLabels = new String[num_pcas];
-                    for (int i = 0; i < num_pcas; i++) {
-                        // store every pca: [PCA 1, PCA 2, ...]
-                        pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1);
-                    }
+                    setPcaColumnLabels(fields, 3);
+                    
                     // store keys and values in a hashmap
                     pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length - 1));
                     
-                    line = r.readLine();
+                    line = bufferReader.readLine(); // read next line
+                                        
                     while (line != null) {
                         fields = line.trim().split("\\s+");
                         String key_ = fields[0]+" "+fields[1];
                         pcaValues.put(key_, Arrays.copyOfRange(fields, 2, fields.length - 1));
-                        line = r.readLine();
+                        line = bufferReader.readLine();
                     }
                     
                 }else{
                     // remove only the 2 id columns
-                    int num_pcas = fields.length - 2; // get number of pcas
-                    pcaColumnLabels = new String[num_pcas];
-                    for (int i = 0; i < num_pcas; i++) {
-                        // store every pca: [PCA 1, PCA 2, ...]
-                        pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1);
-                    }
+                    setPcaColumnLabels(fields, 2);
+
                     pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length));
                     
-                    line = r.readLine();
+                    line = bufferReader.readLine();
+                    
                     while (line != null) {
                         fields = line.trim().split("\\s+");
                         String key_ = fields[0]+" "+fields[1];
                         pcaValues.put(key_, Arrays.copyOfRange(fields, 2, fields.length));
-                        line = r.readLine();
+                        line = bufferReader.readLine();
                     }
                 }
             
         }
 
+//        pcaValues.entrySet().forEach(entry->{
+//            System.out.println(entry.getKey() + " " + entry.getValue());  
+//        });
+    }
 
-        pcaValues.entrySet().forEach(entry->{
-            System.out.println(entry.getKey() + " " + entry.getValue());  
-        });
+    private void setPcaColumnLabels(String fields[], int unwantedCols){
+        // remove first id and control column
+        int num_pcas = fields.length - unwantedCols; // get number of pcas
+        pcaColumnLabels = new String[num_pcas];
+        for (int i = 0; i < num_pcas; i++) {
+            // store every pca: [PCA 1, PCA 2, ...]
+            pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1);
+        }
     }
 
     /**

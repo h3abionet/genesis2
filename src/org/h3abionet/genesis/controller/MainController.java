@@ -75,7 +75,6 @@ import org.h3abionet.genesis.model.AdmixtureGraph;
  * @author scott
  */
 public class MainController implements Initializable {
-
     // interface (view) variables
     @FXML
     private TabPane tabPane;
@@ -164,6 +163,7 @@ public class MainController implements Initializable {
     @FXML
     @SuppressWarnings("empty-statement")
     private void newPCA(ActionEvent event) throws IOException {
+        
         Genesis.loadFxmlView("view/PCADataInput.fxml");
         try {
             setPCAChart(PCADataInputController.pcaChart);
@@ -171,6 +171,7 @@ public class MainController implements Initializable {
         } catch (NullPointerException e) {
             Genesis.throwErrorException("Oops, there was an error!");
         }
+
     }
 
     @FXML
@@ -597,6 +598,10 @@ public class MainController implements Initializable {
     public static int getRowPointer() {
         return rowPointer;
     }
+    
+    static void setRowPointer(int i) {
+        rowPointer = i;
+    }
 
     // get pane for rotation
     public static AnchorPane getAdmixPane() {
@@ -635,16 +640,9 @@ public class MainController implements Initializable {
     @FXML
     @SuppressWarnings("empty-statement")
     private void closeProgram(ActionEvent event) {
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setContentText("Are you sure you want to close this program?");
-
-        ButtonType yesBtn = new ButtonType("YES");
-        ButtonType cancelBtn = new ButtonType("NO");
-        alert.getButtonTypes().setAll(yesBtn, cancelBtn);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == yesBtn) {
+        // call the confirmation method
+        String result = Genesis.confirmAction("Are you sure you want to close this program?");
+        if (result.equals("yesBtnPressed")) {
             Platform.exit();
         } else {
             ; //do nothing

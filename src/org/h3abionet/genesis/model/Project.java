@@ -66,7 +66,7 @@ public class Project {
     }
 
     /**
-     * Create a new project, initialized by fam fi
+     * Create a new project
      *
      * @param proj_name
      * @throws java.io.FileNotFoundException

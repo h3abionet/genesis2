@@ -20,8 +20,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Optional;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -94,6 +96,28 @@ public class Genesis extends Application {
         Node source = (Node) event.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
+    }
+    
+    /**
+     * user show choose yes or no to confirm action
+     * @param contentText
+     * @return 
+     */
+    public static String confirmAction(String contentText){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Dialog");
+        alert.setContentText(contentText);
+
+        ButtonType yesBtn = new ButtonType("YES");
+        ButtonType noBtn = new ButtonType("NO");
+        alert.getButtonTypes().setAll(yesBtn, noBtn);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == yesBtn) {
+            return "yesBtnPressed";
+        } else {
+            return "noBtnPressed";
+        }        
     }
     
      /**

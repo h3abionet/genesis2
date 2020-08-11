@@ -21,13 +21,13 @@
             <Button fx:id="populationGroupOptionsBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#loadPopulationGroupOptions" prefHeight="27.0" prefWidth="420.0" text="Population Group Options (Colours)" />
             <Button fx:id="previousGraphColourBtn" layoutX="10.0" layoutY="37.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="385.0" text="Colour this graph similar to previous " />
             <Button fx:id="nextGraphColourBtn" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="398.0" text="Colour this graph similar to next" />
-            <HBox prefHeight="100.0" prefWidth="200.0" spacing="30.0">
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                <children>
                   <Label text="Order" />
-                  <ComboBox fx:id="orderCombobox" prefHeight="27.0" prefWidth="102.0" />
+                  <ComboBox fx:id="orderCombobox" prefHeight="27.0" prefWidth="195.0" />
                </children>
                <padding>
-                  <Insets left="70.0" />
+                  <Insets left="40.0" />
                </padding>
             </HBox>
             <Button fx:id="deleteGraphBtn" layoutX="10.0" layoutY="91.0" mnemonicParsing="false" onAction="#deleteGraph" prefHeight="27.0" prefWidth="426.0" text="Delete Graph" />
