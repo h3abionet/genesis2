@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="203.0" prefWidth="299.0" style="-fx-background-color: #F0F8FE;" stylesheets="@../css/AdmixtureOptions.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.AdmixtureOptionsController">
+   <children>
+      <VBox prefHeight="203.0" prefWidth="299.0" spacing="5.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <Button fx:id="creatLabelBtn" mnemonicParsing="false" prefHeight="27.0" prefWidth="427.0" text="Create Label at Mouse Cursor">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Button>
+            <Button fx:id="populationGroupOptionsBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#loadPopulationGroupOptions" prefHeight="27.0" prefWidth="420.0" text="Population Group Options (Colours)" />
+            <Button fx:id="previousGraphColourBtn" layoutX="10.0" layoutY="37.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="385.0" text="Colour this graph similar to previous " />
+            <Button fx:id="nextGraphColourBtn" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="398.0" text="Colour this graph similar to next" />
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+               <children>
+                  <Label text="Order" />
+                  <ComboBox fx:id="orderCombobox" prefHeight="27.0" prefWidth="195.0" />
+               </children>
+               <padding>
+                  <Insets left="40.0" />
+               </padding>
+            </HBox>
+            <Button fx:id="deleteGraphBtn" layoutX="10.0" layoutY="91.0" mnemonicParsing="false" onAction="#deleteGraph" prefHeight="27.0" prefWidth="426.0" text="Delete Graph" />
+            <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancelHandler" text="Cancel">
+               <VBox.margin>
+                  <Insets left="120.0" right="50.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

@@ -36,7 +36,7 @@ import org.h3abionet.genesis.Genesis;
  *
  * @author Henry
  */
-public class IndividualDetailsController implements Initializable {
+public class PCAIndividualDetailsController implements Initializable {
 
     @FXML
     private Label pcaLabel;
@@ -78,7 +78,6 @@ public class IndividualDetailsController implements Initializable {
     private Button btnCancel;
 
     private ScatterChart<Number, Number> chart;
-    private Open0Controller open0Controller;
     private HiddenIndividualsController hiddenIndividualsController;
 
     private static int iconSize;
@@ -92,17 +91,17 @@ public class IndividualDetailsController implements Initializable {
 
     // set icon properties from the iconOptionsController
     public void setIconSize(int iconSize) {
-        IndividualDetailsController.iconSize = iconSize;
+        PCAIndividualDetailsController.iconSize = iconSize;
         System.out.println("Icon_size is " + iconSize);
     }
 
     public void setIconColor(String iconColor) {
-        IndividualDetailsController.iconColor = iconColor;
+        PCAIndividualDetailsController.iconColor = iconColor;
         System.out.println("Icon Color is " + iconColor);
     }
 
     public void setIconType(String iconType) {
-        IndividualDetailsController.iconType = iconType;
+        PCAIndividualDetailsController.iconType = iconType;
         System.out.println("Icon type is" + iconType);
     }
 
@@ -244,26 +243,19 @@ public class IndividualDetailsController implements Initializable {
             }
         }
 
-        closeStage(event);
+        Genesis.closeOpenStage(event);
     }
 
     @FXML
     private void entryCancelButton(ActionEvent event) {
-        closeStage(event);
-    }
-
-    public void closeStage(ActionEvent event) {
-        Node source = (Node) event.getSource();
-        Stage stage = (Stage) source.getScene().getWindow();
-        stage.close();
+        Genesis.closeOpenStage(event);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         hiddenIndividualsController = new HiddenIndividualsController();
-        open0Controller = new Open0Controller();
         chosenIconDisplay.setVisible(false);
-        chart = Open0Controller.getChart();
+        chart = MainController.getPcaChart();
 
         ObservableList<String> groups = FXCollections.observableArrayList();
 

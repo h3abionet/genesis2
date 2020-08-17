@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.h3abionet.genesis.model;
+package org.h3abionet.genesis.controller;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,66 +23,51 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 
 /**
  *
  * @author Henry
  */
-public class RectangleOptions {
+public class CircleOptions {
     
-    Rectangle rectangle;
+    Circle circle;
     GridPane grid;
     
     // grid components or controllers
     Label StrokeWidthLabel;
-    Label widthSizeLabel;
-    Label heightSizeLabel;
+    Label radiusSizeLabel;
     Label cpStrokeLabel;
     Label cpFillLabel;
-    Label archSizeLabel;
     ColorPicker cpStroke;
     ColorPicker cpFill;
-    Slider widthSlider;
-    Slider heightSlider;
+    Slider slider;
     ComboBox stkWidth;
-    ComboBox archSizeCombo;
 
-    public RectangleOptions(Rectangle rectangle) {
-        this.rectangle = rectangle;
+    public CircleOptions(Circle circle) {
+        this.circle = circle;
         setControllers();
     }
     
     private void setControllers(){
         StrokeWidthLabel = new Label("Stroke Width");
-        widthSizeLabel = new Label("Width: ");
-        heightSizeLabel = new Label("Height: ");
+        radiusSizeLabel = new Label("Radius size: ");
         cpStrokeLabel = new Label("Stroke color: ");
         cpFillLabel = new Label("Fill color: ");
-        archSizeLabel = new Label("Arch size: ");
-        
-        cpStroke = new ColorPicker((Color) rectangle.getStroke());
+
+        cpStroke = new ColorPicker((Color) circle.getStroke());
         cpStroke.getStyleClass().add("split-button");
 
-        cpFill = new ColorPicker((Color) rectangle.getFill());
+        cpFill = new ColorPicker((Color) circle.getFill());
         cpFill.getStyleClass().add("split-button");
         
-        widthSlider = new Slider(5, 300, (int)rectangle.getWidth());
-        widthSlider.setShowTickLabels(true);
-        widthSlider.setShowTickMarks(true);
-        
-        heightSlider = new Slider(5, 300, (int)rectangle.getHeight());
-        heightSlider.setShowTickLabels(true);
-        heightSlider.setShowTickMarks(true);
+        slider = new Slider(5, 200, (int)circle.getRadius());
+        slider.setShowTickLabels(true);
+        slider.setShowTickMarks(true);
         
         stkWidth = new ComboBox(FXCollections.
                         observableArrayList(IntStream.range(1, 11).boxed().collect(Collectors.toList())));
-                stkWidth.setValue((int)rectangle.getStrokeWidth());
-        
-        archSizeCombo = new ComboBox(FXCollections.
-                observableArrayList(IntStream.range(1, 11).boxed().collect(Collectors.toList())));
-        archSizeCombo.setValue((int)rectangle.getArcWidth());
+                stkWidth.setValue((int)circle.getStrokeWidth());
         
         // set the grid
         grid = new GridPane();
@@ -94,50 +79,36 @@ public class RectangleOptions {
         // add controllers to the grid
         grid.add(StrokeWidthLabel, 1, 1);
         grid.add(stkWidth, 2, 1);
-        grid.add(widthSizeLabel, 1, 2);
-        grid.add(widthSlider, 2, 2);
-        grid.add(heightSizeLabel, 1, 3);
-        grid.add(heightSlider, 2, 3);
+        grid.add(radiusSizeLabel, 1, 2);
+        grid.add(slider, 2, 2);
+        grid.add(cpStrokeLabel, 1, 3);
+        grid.add(cpStroke, 2, 3);
         grid.add(cpFillLabel, 1, 4);
         grid.add(cpFill, 2, 4);
-        grid.add(cpStrokeLabel, 1, 5);
-        grid.add(cpStroke, 2, 5);
-        grid.add(archSizeLabel, 1, 6);
-        grid.add(archSizeCombo, 2, 6);
         
         //add event handlers to the controllers
-        widthSlider.valueProperty().addListener((ObservableValue <? extends Number >  
+        slider.valueProperty().addListener((ObservableValue <? extends Number >  
                 observable, Number oldValue, Number newValue) -> {
-                rectangle.setWidth((double) newValue); 
-        });
-        
-        heightSlider.valueProperty().addListener((ObservableValue <? extends Number >  
-                observable, Number oldValue, Number newValue) -> {
-                rectangle.setHeight((double) newValue); 
+                circle.setRadius((double) newValue); 
         });
         
         cpStroke.setOnAction((ActionEvent e) -> {
-            rectangle.setStroke(cpStroke.getValue());
+            circle.setStroke(cpStroke.getValue());
         });
         
         cpFill.setOnAction((ActionEvent e) -> {
-            rectangle.setFill(cpFill.getValue());
+            circle.setFill(cpFill.getValue());
 
         });
         
         stkWidth.setOnAction(e -> {
-            rectangle.setStrokeWidth((int) stkWidth.getValue());
-        });
-        
-        archSizeCombo.setOnAction(e ->{
-            rectangle.setArcHeight((int)archSizeCombo.getValue());
-            rectangle.setArcWidth((int)archSizeCombo.getValue());
+            circle.setStrokeWidth((int) stkWidth.getValue());
         });
     }
 
-    public void modifyRectangle(){
+    public void modifyCircle(){
         Dialog<Options> dialog = new Dialog<>();
-        dialog.setTitle("Rectangle options");
+        dialog.setTitle("Circle options");
         dialog.setHeaderText(null);
         dialog.setResizable(false);
 
@@ -151,11 +122,9 @@ public class RectangleOptions {
             @Override
             public Options call(ButtonType b) {                      
                 if (b == doneBtn) {        
-                    return new Options((int)widthSlider.getValue(), (int)heightSlider.getValue(),
-                            (int)archSizeCombo.getValue(), (int)archSizeCombo.getValue(),
-                            (int)stkWidth.getValue(), cpStroke.getValue(), cpFill.getValue());
+                    return new Options((int)slider.getValue(), (int) stkWidth.getValue(), cpStroke.getValue(), cpFill.getValue());
                 }else{
-                    rectangle.setVisible(false);
+                    circle.setVisible(false);
                 }
 
                 return null;
@@ -164,37 +133,26 @@ public class RectangleOptions {
         
         Optional<Options> results = dialog.showAndWait();
             results.ifPresent((Options options) -> {
-            rectangle.setWidth(options.width);
-            rectangle.setHeight(options.height);
-            rectangle.setArcHeight(options.archHeight);
-            rectangle.setArcWidth(options.archWidth);
-            rectangle.setStrokeWidth(options.strokeWidth);
-            rectangle.setStroke(options.strokeColor);
-            rectangle.setFill(options.fillColor);
+            circle.setRadius(options.radius);
+            circle.setStrokeWidth(options.strokeWidth);
+            circle.setStroke(options.strokeColor);
+            circle.setFill(options.fillColor);
 
         });
 
     }
 
     private static class Options {
-        int width;
-        int height;
-        int archWidth;
-        int archHeight;
+        int radius;
         int strokeWidth;
         Color strokeColor;
         Color fillColor;
 
-        public Options(int width, int height, int archWidth, int archHeight, int strokeWidth, Color strokeColor, Color fillColor) {
-            this.width = width;
-            this.height = height;
-            this.archWidth = archWidth;
-            this.archHeight = archHeight;
+        public Options(int radius, int strokeWidth, Color strokeColor, Color fillColor) {
+            this.radius = radius;
             this.strokeWidth = strokeWidth;
             this.strokeColor = strokeColor;
             this.fillColor = fillColor;
         }
-
-        
     }
 }

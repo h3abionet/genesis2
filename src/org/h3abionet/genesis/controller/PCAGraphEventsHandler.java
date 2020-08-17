@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.h3abionet.genesis.model;
+package org.h3abionet.genesis.controller;
 
 import com.sun.javafx.charts.Legend;
 import java.io.File;
@@ -50,25 +50,25 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.controller.IndividualDetailsController;
-import org.h3abionet.genesis.controller.Open0Controller;
+import org.h3abionet.genesis.controller.PCAIndividualDetailsController;
+import org.h3abionet.genesis.controller.MainController;
 
 /**
  *
  * @author scott
  */
-public class PCGraph {
+public class PCAGraphEventsHandler {
 
     private final XYChart<Number, Number> chart;
     private AnchorPane chartContainer;
 
-    public PCGraph(XYChart<Number, Number> chart) {
+    public PCAGraphEventsHandler(XYChart<Number, Number> chart) {
         this.chart = chart;
     }
 
     @SuppressWarnings("empty-statement")
     public AnchorPane addGraph() {
-        chart.getStylesheets().add(Genesis.class.getResource("css/scatterchart.css").toExternalForm());
+        chart.getStylesheets().add(Genesis.class.getResource("css/pca.css").toExternalForm());
 
         if (chart != null) {
             String xAxisLabel = chart.getXAxis().getLabel();
@@ -99,14 +99,14 @@ public class PCGraph {
                                 Stage dialogStage = new Stage();
                                 dialogStage.setScene(new Scene(parent));
                                 dialogStage.setResizable(false);
-
-                                IndividualDetailsController individualDetailsController = fxmlLoader.getController();
+                                
+                                PCAIndividualDetailsController individualDetailsController = fxmlLoader.getController();
                                 individualDetailsController.setPcaLabel(xAxisLabel + ": " + data.getXValue() + "\n" + yAxisLabel + ": " + data.getYValue());
                                 individualDetailsController.setIconDisplay(data.getNode());
                                 dialogStage.showAndWait();
 
-                            } catch (IOException ex) {
-                                Logger.getLogger(Open0Controller.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (Exception ex) {
+                                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
 
@@ -174,17 +174,20 @@ public class PCGraph {
             alert.showAndWait();
         } else {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save as");
+            fileChooser.setTitle("Save chart");
             FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("png", "*.png");
             FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("pdf", "*.pdf");
             fileChooser.getExtensionFilters().addAll(pngFilter, pdfFilter);
             File file = fileChooser.showSaveDialog(null);
 
             // tranform scale can be reduced for lower resolutions (10, 10 or 5, 5)
+            int pixelScale = 5;
+            WritableImage writableImage = new WritableImage((int)Math.rint(pixelScale*chart.getWidth()),
+                    (int)Math.rint(pixelScale*chart.getHeight()));
+            
             SnapshotParameters sp = new SnapshotParameters();
-            Transform transform = Transform.scale(15, 15);
-            sp.setTransform(transform);
-            WritableImage image = chart.snapshot(sp, null);
+            sp.setTransform(Transform.scale(pixelScale, pixelScale));
+            WritableImage image = chart.snapshot(sp, writableImage);
 
             if (file != null) {
 
@@ -215,7 +218,6 @@ public class PCGraph {
                             newPDF.save(file);
                             newPDF.close();
                             break;
-                        // No default because extension filters have been applied.
                     }
 
                 } catch (IOException e) {

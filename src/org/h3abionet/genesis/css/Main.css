@@ -1,54 +1,55 @@
 .button{
-    -fx-border-width:0.5px;
-    -fx-border-color:#000000;
-    -fx-border-radius:3;
+    -fx-background-color:  transparent;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial Black";
 }
 .button:hover{
-    -fx-background-color:white;
-    -fx-text-fill: red;
+    -fx-background-color: #B4CCD8;
+    -fx-font-size: 16px;
+    
 }
 
-.button:hover .glyph-icon{
-    -fx-fill: red;
+.tooltip {
+    -fx-background-color: #06587F;
+    -fx-show-duration: 5s;
+    -fx-show-delay: 1s;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial Black";
 }
-
-/*tabs*/
-.tab-pane:top *.tab-header-area {
-    -fx-background-insets: 0, 0 0 1 0;
- /* -fx-padding: 0.416667em 0.166667em 0.0em 0.833em; /* 5 2 0 10 */
-    -fx-padding: 0.416667em 0.166667em 0.0em 0.0em; /* overridden as 5 2 0 0 */
-}
-/*.tab-pane .tab-header-area .tab-header-background {
-    -fx-opacity: 0;
-}*/
 
 .tab-pane
 {
-    -fx-tab-min-width:90px;
+    -fx-background-image: url("../image/logo.png"), url("../image/H3ABioNet.png"), url("../image/sbimb.jpg");
+    -fx-background-repeat: stretch;   
+    -fx-background-size: 250 100, 100 60, 100 50;
+    -fx-background-position: center, bottom left, bottom right;
 }
 
-.tab{
-    -fx-background-insets: 0 1 0 1,0,0;
-}
 .tab-pane .tab
 {
-    -fx-background-color: #e6e6e6;
-
+    -fx-background-color: #84ADC0;
 }
 
 .tab-pane .tab:selected
 {
-    -fx-background-color: #3c3c3c;
+    -fx-background-color: #06587F;
 }
 
 .tab .tab-label { 
     -fx-alignment: CENTER;
-    -fx-text-fill: #828282;
-    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
 
-.tab:selected .tab-label { 
-    -fx-alignment: CENTER;
-    -fx-text-fill: #96b946;
+.tab:selected > .tab-container > .tab-close-button {
+    -fx-background-color: white;
+}
+
+/*
+* Add padding such that charts donot reach the borders of the main window.
+*/
+.tab-content-area {
+    -fx-padding: 10px;
 }

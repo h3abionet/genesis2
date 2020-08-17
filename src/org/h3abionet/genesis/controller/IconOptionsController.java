@@ -13,12 +13,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.stage.Stage;
+import org.h3abionet.genesis.Genesis;
 
 /**
  *
@@ -26,7 +25,7 @@ import javafx.stage.Stage;
  */
 public class IconOptionsController implements Initializable {
 
-    private IndividualDetailsController individualDetailsController;
+    private PCAIndividualDetailsController individualDetailsController;
 
     private final ObservableList<String> shapesList = FXCollections.observableArrayList("kite", "cross",
             "triangle", "tick", "rectangle");
@@ -71,19 +70,13 @@ public class IconOptionsController implements Initializable {
         individualDetailsController.setIconType(iconsHashmap.get(this.iconTypeValue));
         individualDetailsController.setIconColor(this.colorPickerValue);
     
-        closeStage(event);
+        Genesis.closeOpenStage(event);
     }
 
     @FXML
     private void entryCancelBtn(ActionEvent event) {
-        closeStage(event);
+        Genesis.closeOpenStage(event);
 
-    }
-
-    public void closeStage(ActionEvent event) {
-        Node source = (Node) event.getSource();
-        Stage stage = (Stage) source.getScene().getWindow();
-        stage.close();
     }
 
     @Override
@@ -116,7 +109,7 @@ public class IconOptionsController implements Initializable {
         }
         );
 
-        individualDetailsController = new IndividualDetailsController();
+        individualDetailsController = new PCAIndividualDetailsController();
         
         
     }
