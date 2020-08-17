@@ -38,6 +38,7 @@ public class PCADataInputController {
     private static String pcaComboButton1Value = "";
     private static String pcaComboButton2Value = "";
     public static ScatterChart<Number, Number> pcaChart;
+    public static boolean firstPcaSuccessful = false;
 
     @FXML
     private Button pcaEvecFileBtn;
@@ -89,14 +90,17 @@ public class PCADataInputController {
     @FXML
     private void handlePCAEvecFileBtn(ActionEvent event) throws IOException {
         File pcaFile = getFile("Choose PCA file");
-        pcaFilePath = pcaFile.getAbsolutePath();
-        pcaFileName = pcaFile.getName();
-        pcaEvecFileBtn.setText(pcaFileName);
-        pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
-        pcaGraph = new PCAGraph(pcaFilePath);
-        pcaComboButton1.setItems(pcaGraph.getPCAcolumns());
-        pcaComboButton2.setItems(pcaGraph.getPCAcolumns());
-
+        try{
+            pcaFilePath = pcaFile.getAbsolutePath();
+            pcaFileName = pcaFile.getName();
+            pcaEvecFileBtn.setText(pcaFileName);
+            pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
+            pcaGraph = new PCAGraph(pcaFilePath);
+            pcaComboButton1.setItems(pcaGraph.getPCAcolumns());
+            pcaComboButton2.setItems(pcaGraph.getPCAcolumns());
+        }catch(Exception e){
+            Genesis.throwErrorException("No File Imported");
+        }
     }
 
     @FXML
@@ -120,16 +124,15 @@ public class PCADataInputController {
 
         if (!pcaComboButton1Value.equals("") && !pcaComboButton2Value.equals("")) {
             if (pcaGraph != null) {
+                // set the chart
                 pcaChart = pcaGraph.createGraph(pcaComboButton1Value, pcaComboButton2Value);
+                firstPcaSuccessful = true;
             }
             Genesis.closeOpenStage(event);
 
         } else {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setHeaderText(null);
-            alert.setContentText("Please select the PCAs to plot");
-            alert.showAndWait();
+            Genesis.throwInformationException("Please import the file or select the PCAs to plot");
+            
         }
     }
 

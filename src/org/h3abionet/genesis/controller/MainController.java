@@ -19,10 +19,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.StackedBarChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
@@ -32,7 +29,6 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -166,8 +162,15 @@ public class MainController implements Initializable {
         
         Genesis.loadFxmlView("view/PCADataInput.fxml");
         try {
-            setPCAChart(PCADataInputController.pcaChart);
-
+            if(PCADataInputController.firstPcaSuccessful==true){
+                setPCAChart(PCADataInputController.pcaChart);
+                // disable the pca button after first import
+                // then use the data load button
+                newpca.setDisable(true);
+            }else{
+                ;
+            }
+            
         } catch (NullPointerException e) {
             Genesis.throwErrorException("Oops, there was an error!");
         }
@@ -246,13 +249,12 @@ public class MainController implements Initializable {
 
             // add the pca chart container to the tab
             pcaChartTab.setContent(pc.addGraph());
-            System.out.println(tabPane.getTabs().size());
             tabPane.getTabs().add(pcaChartTab);
 
             // set pcaChart index to selected tab number 
             tabPane.getSelectionModel().selectedIndexProperty().addListener((ObservableValue<? extends Number> ov, Number oldValue, Number newValue) -> {
                 pcaChartIndex = (int) newValue;
-
+                System.out.println(pcaChartIndex);
             });
             pcaChartsList.add(pcaChart);
 

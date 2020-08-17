@@ -327,6 +327,7 @@ public class AdmixtureGraphEventsHandler {
         }
         kClickCounter = ++kClickCounter % 2;  // changes values between 0 1
     }
+    
     /**
      * swap admixture plots
      */
