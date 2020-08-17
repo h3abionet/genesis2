@@ -209,11 +209,12 @@ public class IndividualDetailsController implements Initializable {
                             dialog.setTitle(null);
                             dialog.setHeaderText(null);
                             dialog.setGraphic(null);
+                            
                             dialog.setContentText("Choose: ");
                             Optional<String> result = dialog.showAndWait();
                             result.ifPresent(letter -> {
                                 if(letter.equals("unhide"))
-                                     data.getNode().setVisible(true);
+//                                     series.getData().add(data);
                                      System.out.println("Hello");
                                     
                                     });
