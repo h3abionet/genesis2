@@ -68,6 +68,11 @@ public class Genesis extends Application {
             }
         });
         
+        stage.setWidth(1000);
+        stage.setHeight(700);
+        stage.setMaximized(false);
+        stage.setFullScreen(false);
+        
         stage.setScene(scene);
         stage.show();
     }
