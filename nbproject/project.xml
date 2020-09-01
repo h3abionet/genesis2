@@ -23,6 +23,8 @@
             <word>eigen</word>
             <word>fam</word>
             <word>iids</word>
+            <word>pcs</word>
+            <word>pheno</word>
             <word>serie</word>
         </spellchecker-wordlist>
     </configuration>

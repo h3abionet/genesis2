@@ -29,7 +29,7 @@ import org.h3abionet.genesis.Genesis;
 public class PCAGraph extends Graph {
 
     private final HashMap<String, String[]> pcaValues; // store pca values with associated ids
-    private final List<String[]> pcasWithPhenoList; // rows in pca (evec) file
+    private static List<String[]> pcasWithPhenoList; // rows in pca (evec) file
     private String[] pcaColumnLabels; // store pca column name: PCA 1, PCA 2, ...
     private final List<String> eigenValues; // store eigen values
     private XYChart.Series<Number, Number> group;
@@ -167,7 +167,7 @@ public class PCAGraph extends Graph {
 
     private void setPcaColumnLabels(String fields[], int unwantedCols){
         // remove first id and control column
-        int num_pcas = fields.length - unwantedCols; // get number of pcas
+        int num_pcas = fields.length - unwantedCols; // get number of pcs
         pcaColumnLabels = new String[num_pcas];
         for (int i = 0; i < num_pcas; i++) {
             // store every pca: [PCA 1, PCA 2, ...]
@@ -189,7 +189,7 @@ public class PCAGraph extends Graph {
                 .collect(Collectors.groupingBy(array -> array[Project.phenoColumnNumber - 3], // groupby [YRI, EXM, LWK, ...] - third col in pheno file
                         Collectors.mapping(e -> Arrays.copyOfRange(e, 1, e.length),
                                 Collectors.toList())));
-
+        
     }
 
     /**
@@ -200,13 +200,13 @@ public class PCAGraph extends Graph {
     private List<String[]> mergePhenoWithPCA() {
         HashMap<String, String[]> combinerMap = new HashMap<>();
         combinerMap.putAll(pcaValues);
-        Project.pcaPhenoData.forEach((key, value_of_pheno) -> {
-            // Get the value for key in combinerMap of pcaValues --- returns a list of pcas.
-            String[] list_of_pcas = combinerMap.get(key);
-            if (list_of_pcas != null) {
+        Project.pcaPhenoData.forEach((key, pheno_data) -> {
+            // Get the value for key in combinerMap of pcaValues --- returns a list of pcs.
+            String[] pcs = combinerMap.get(key);
+            if (pcs != null) {
                 // Merge two list together: 
-                String[] pcas_with_phenos = combine(value_of_pheno, list_of_pcas);
-                combinerMap.put(key, pcas_with_phenos); // new combinerMap [key1 -> [pheno and pca values], key2 -> [pheno and pca values], ...]
+                String[] pcs_with_pheno_data = combine(pheno_data, pcs);
+                combinerMap.put(key, pcs_with_pheno_data); // new combinerMap [key1 -> [pheno and pca values], key2 -> [pheno and pca values], ...]
             } else {
                 // Do nothing to remove nulls
                 ;
@@ -245,7 +245,14 @@ public class PCAGraph extends Graph {
     public List<String> getEigenValues() {
         return eigenValues;
     }
-
+    
+    /**
+     * list of arrays with pheno and associated pcs
+     * @return 
+     */
+    public static List<String[]> getPcasWithPhenoList() {
+        return pcasWithPhenoList;
+    }
 
     /**
      *

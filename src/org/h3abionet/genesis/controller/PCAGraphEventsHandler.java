@@ -15,14 +15,23 @@
  */
 package org.h3abionet.genesis.controller;
 
+import com.idrsolutions.image.JDeli;
+import com.idrsolutions.image.tiff.TiffEncoder;
 import com.sun.javafx.charts.Legend;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -35,6 +44,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -50,8 +60,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.controller.PCAIndividualDetailsController;
-import org.h3abionet.genesis.controller.MainController;
+import org.h3abionet.genesis.model.PCAGraph;
 
 /**
  *
@@ -59,11 +68,12 @@ import org.h3abionet.genesis.controller.MainController;
  */
 public class PCAGraphEventsHandler {
 
-    private final XYChart<Number, Number> chart;
+    private XYChart<Number, Number> chart;
     private AnchorPane chartContainer;
 
     public PCAGraphEventsHandler(XYChart<Number, Number> chart) {
         this.chart = chart;
+        
     }
 
     @SuppressWarnings("empty-statement")
@@ -101,8 +111,20 @@ public class PCAGraphEventsHandler {
                                 dialogStage.setResizable(false);
                                 
                                 PCAIndividualDetailsController individualDetailsController = fxmlLoader.getController();
-                                individualDetailsController.setPcaLabel(xAxisLabel + ": " + data.getXValue() + "\n" + yAxisLabel + ": " + data.getYValue());
-                                individualDetailsController.setIconDisplay(data.getNode());
+                                String xValue = data.getXValue().toString();
+                                String yValue = data.getYValue().toString();
+                                individualDetailsController.setPcaLabel(xAxisLabel + ": " + xValue + "\n" + yAxisLabel + ": " + yValue);
+                                // get pheno data using x & y co-ordinates
+                                for(String [] s: PCAGraph.getPcasWithPhenoList() ){
+                                    // if an array in pcasWithPhenoList has both x & y
+                                    if(Arrays.asList(s).contains(xValue) && Arrays.asList(s).contains(yValue)){
+                                        // get pheno data: [MKK, AFR, pc1, pc2, pc3, ..., FID IID]
+                                        ObservableList<String> phenos = FXCollections.<String>observableArrayList(s[s.length-1], s[0], s[1]);
+                                        individualDetailsController.setPhenoLabel(phenos);
+                                        break;
+                                    }
+                                }
+                                individualDetailsController.setIconDisplay(data.getNode().getStyle());
                                 dialogStage.showAndWait();
 
                             } catch (Exception ex) {
@@ -164,11 +186,11 @@ public class PCAGraphEventsHandler {
 
     }
 
-    public void saveChart() {
+    public void saveChart() throws Exception {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);
-
+        
         if (chart == null) {
             alert.setContentText("There is no chart to save");
             alert.showAndWait();
@@ -176,18 +198,27 @@ public class PCAGraphEventsHandler {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save chart");
             FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("png", "*.png");
+            FileChooser.ExtensionFilter tiffFilter = new FileChooser.ExtensionFilter("tiff", "*.tiff");
+            FileChooser.ExtensionFilter jpgFilter = new FileChooser.ExtensionFilter("JPG", "*.JPG");
             FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("pdf", "*.pdf");
-            fileChooser.getExtensionFilters().addAll(pngFilter, pdfFilter);
+            fileChooser.getExtensionFilters().addAll(pngFilter, tiffFilter,jpgFilter,pdfFilter);
             File file = fileChooser.showSaveDialog(null);
 
             // tranform scale can be reduced for lower resolutions (10, 10 or 5, 5)
             int pixelScale = 5;
-            WritableImage writableImage = new WritableImage((int)Math.rint(pixelScale*chart.getWidth()),
-                    (int)Math.rint(pixelScale*chart.getHeight()));
-            
+            int width = (int) Math.rint(pixelScale*chart.getWidth());
+            int height = (int) Math.rint(pixelScale*chart.getHeight());
+            WritableImage writableImage = new WritableImage(width, height);
+                        
             SnapshotParameters sp = new SnapshotParameters();
             sp.setTransform(Transform.scale(pixelScale, pixelScale));
-            WritableImage image = chart.snapshot(sp, writableImage);
+            Image image = chart.snapshot(sp, writableImage);
+            
+            BufferedImage bufImageARGB = SwingFXUtils.fromFXImage(image, null);
+            BufferedImage bufImageRGB = new BufferedImage(bufImageARGB.getWidth(), 
+                    bufImageARGB.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics = bufImageRGB.createGraphics();
+            graphics.drawImage(bufImageARGB, 0, 0, null);
 
             if (file != null) {
 
@@ -198,7 +229,16 @@ public class PCAGraphEventsHandler {
                     // save as png or pdf (as A4 landscape)
                     switch (fileExtension) {
                         case "png":
-                            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+                            ImageIO.write(bufImageRGB, "png", file);
+                            break;
+                        case "tiff":
+                            OutputStream out = new FileOutputStream(file);
+                            TiffEncoder tiffEncoder = new TiffEncoder();
+                            tiffEncoder.setCompressed(true);
+                            tiffEncoder.write(bufImageRGB, out);
+                            break;
+                        case "JPG":
+                            ImageIO.write(bufImageRGB, "JPG", file);
                             break;
                         case "pdf":
                             float POINTS_PER_INCH = 72;
@@ -226,10 +266,12 @@ public class PCAGraphEventsHandler {
                 }
             } else {
                 // do nothing if file selector is closed
-                ;
+//                ; 
             }
         }
 
     }
+    
 
 }
+

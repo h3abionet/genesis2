@@ -242,6 +242,7 @@ public class MainController implements Initializable {
             // create new tab for the pca chart 
             tabCount++;
             pcaChartTab = new Tab();
+            
             // tab name e.g PCA 1 & 2 ans space with close icon
             pcaChartTab.setText("PCA " + x + " & " + y+"    ");
             pcaChartTab.setClosable(true);

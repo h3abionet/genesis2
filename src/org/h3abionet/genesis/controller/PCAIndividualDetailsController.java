@@ -29,6 +29,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 
@@ -42,7 +44,7 @@ public class PCAIndividualDetailsController implements Initializable {
     private Label pcaLabel;
 
     @FXML
-    private Label phenoLabel;
+    private ListView<String> phenoLabel;
 
     @FXML
     private RadioButton hideRadioBtn;
@@ -60,10 +62,10 @@ public class PCAIndividualDetailsController implements Initializable {
     private RadioButton seriesRadioBtn;
 
     @FXML
-    private Button iconDisplay;
+    private AnchorPane iconDisplay;
 
     @FXML
-    private Button chosenIconDisplay;
+    private AnchorPane chosenIconDisplay;
 
     @FXML
     private ComboBox<String> groupName;
@@ -123,13 +125,13 @@ public class PCAIndividualDetailsController implements Initializable {
         pcaLabel.setText(coordinates);
     }
 
-    public void setPhenoLabel(String phenotype) {
-        phenoLabel.setText(phenotype);
+    public void setPhenoLabel(ObservableList<String> pheno_data) {
+        phenoLabel.getItems().addAll(pheno_data);
     }
 
     // display icon 
-    public void setIconDisplay(Node shape) {
-//        iconDisplay.setGraphic(shape);
+    public void setIconDisplay(String style) {
+        iconDisplay.setStyle(style);
 
     }
 

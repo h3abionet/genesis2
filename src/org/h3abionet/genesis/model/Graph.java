@@ -15,13 +15,35 @@
  */
 package org.h3abionet.genesis.model;
 
+import com.idrsolutions.image.tiff.TiffEncoder;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.StackedBarChart;
+import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
+import javafx.scene.layout.VBox;
+import javafx.scene.transform.Transform;
+import javafx.stage.FileChooser;
+import javax.imageio.ImageIO;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 /**
  *
@@ -41,9 +63,9 @@ public abstract class Graph {
     abstract ArrayList<StackedBarChart<String, Number>> createGraph(); // used by admixture
     abstract ScatterChart<Number, Number> createGraph(String PCA1, String PCA2) throws IOException; // used by pca
     
-    public void saveChart(){
-        
-        System.out.println("Saving the chart");
-    }
+    // TODO - expand method for saving charts
+    public void saveChart(){;}
+
+    
 
 }
