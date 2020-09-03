@@ -11,13 +11,11 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.stage.Stage;
-
+import org.h3abionet.genesis.Genesis;
 
 /**
  * FXML Controller class
@@ -59,34 +57,23 @@ public class AdmixtureIndividualDetailsController implements Initializable {
 
     @FXML
     private void entryBtnCancel(ActionEvent event) {
-        closeStage(event);
+        Genesis.closeOpenStage(event);
 
     }
 
     @FXML
     private void entryBtnOK(ActionEvent event) {
-        closeStage(event);
-        
+        Genesis.closeOpenStage(event);
 
     }
     
-    /**
-     * close the stage
-     * @param event 
-     */
-    private void closeStage(ActionEvent event) {
-        Node source = (Node) event.getSource();
-        Stage stage = (Stage) source.getScene().getWindow();
-        stage.close();
-    }
-
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
        
-        
+        //TODO
         
     }    
     

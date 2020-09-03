@@ -14,7 +14,6 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -24,10 +23,10 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.FontPosture;
+import org.h3abionet.genesis.Genesis;
 /**
  *
  * @author Henry
@@ -88,7 +87,7 @@ public class FontSelectorController implements Initializable{
     private Button btnCancel;
     
     private ScatterChart<Number, Number> chart;
-    private Open0Controller open0Controller;
+    private MainController open0Controller;
     
     // default chosen values -- changed by event handlers 
     private String chosenFont = "System";
@@ -184,24 +183,18 @@ public class FontSelectorController implements Initializable{
          
          }
         
-        closeStage(event);
+        Genesis.closeOpenStage(event);
     }
     
     @FXML
     private void entryCancelButton(ActionEvent event) {
-        closeStage(event);
-    }
-    
-    public void closeStage(ActionEvent event) {
-        Node source = (Node) event.getSource();
-        Stage stage = (Stage) source.getScene().getWindow();
-        stage.close();
+        Genesis.closeOpenStage(event);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        open0Controller = new Open0Controller();
-        chart = Open0Controller.getChart();
+        open0Controller = new MainController();
+        chart = MainController.getPcaChart();
 
         // set default values
         titleLabel.setText(chart.getTitle());

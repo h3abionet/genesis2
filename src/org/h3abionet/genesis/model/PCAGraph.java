@@ -1,233 +1,311 @@
 /*
- * Copyright 2019 University of the Witwatersrand, Johannesburg on behalf of the Pan-African Bioinformatics Network for H3Africa.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package org.h3abionet.genesis.model;
 
-import com.sun.javafx.charts.Legend;
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
+import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Side;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Tooltip;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.transform.Transform;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javax.imageio.ImageIO;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.controller.IndividualDetailsController;
-import org.h3abionet.genesis.controller.Open0Controller;
 
 /**
  *
- * @author scott
+ * @author Henry
  */
-public class PCAGraph {
+public class PCAGraph extends Graph {
 
-    private final XYChart<Number, Number> chart;
-    private AnchorPane chartContainer;
+    private final HashMap<String, String[]> pcaValues; // store pca values with associated ids
+    private final List<String[]> pcasWithPhenoList; // rows in pca (evec) file
+    private String[] pcaColumnLabels; // store pca column name: PCA 1, PCA 2, ...
+    private final List<String> eigenValues; // store eigen values
+    private XYChart.Series<Number, Number> group;
+    private BufferedReader bufferReader;
+    private String line;
 
-    public PCAGraph(XYChart<Number, Number> chart) {
-        this.chart = chart;
+    /**
+     *
+     * @param pcaFilePath - PCA file absolute path
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public PCAGraph(String pcaFilePath) throws FileNotFoundException, IOException {
+        pcasWithPhenoList = new ArrayList<>();
+        pcaValues = new HashMap<>();
+        eigenValues = new ArrayList<>();
+        readGraphData(pcaFilePath);
+        setPopulationGroups();
+
     }
 
-    @SuppressWarnings("empty-statement")
-    public AnchorPane addGraph() {
-        chart.getStylesheets().add(Genesis.class.getResource("css/pca.css").toExternalForm());
+    /**
+     *
+     * @param pcaFilePath This is the PCA file absolute path
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    @Override
+    protected final void readGraphData(String pcaFilePath) throws FileNotFoundException, IOException {
+        bufferReader = Genesis.openFile(pcaFilePath);
+        line = bufferReader.readLine();
+        String fields[] = line.trim().split("\\s+");
+        
+        // check if file has eigen values - search for "eig" in first string
+        if(fields[0].contains("eig")){
+            eigenValues.addAll(Arrays.asList(Arrays.copyOfRange(fields, 1, fields.length)));
+            line = bufferReader.readLine(); // read next line
+            fields = line.trim().split("\\s+");
+        }
+        
+        // check if ids are seperated by colons:
+        if(fields[0].contains(":")){
+                fields = line.trim().split("\\s+");
+                // if yes, split them
+                String[] ids = fields[0].split(":");
+                String id_1 = ids[0];
+                String id_2 = ids[1];
+                String key = id_1+" "+id_2; // hashmap key
+                
+                // check if last column is a control column
+                if(fields[fields.length-1].contains("C") || fields[fields.length-1].contains("c")){
+                    
+                    setPcaColumnLabels(fields, 2);
+                    
+                    // store keys and values in a hashmap - from 2nd string to 2nd last
+                    pcaValues.put(key, Arrays.copyOfRange(fields, 1, fields.length - 1));
+                    
+                    line = bufferReader.readLine(); // read next line
+                    
+                    // read all the remaining lines
+                    while (line != null) {
+                        fields = line.trim().split("\\s+");
+                        String[] ids_ = fields[0].split(":");
+                        String id_1_ = ids_[0];
+                        String id_2_ = ids_[1];
+                        String key_ = id_1_+" "+id_2_;
+                        pcaValues.put(key_, Arrays.copyOfRange(fields, 1, fields.length - 1)); // store keys and values in a hashmap
+                        line = bufferReader.readLine();
+                    }
+                    
+                }else{
+                    // if the file doesnot contain the control column
+                    // remove only the id column
+                    setPcaColumnLabels(fields, 1);
 
-        if (chart != null) {
-            String xAxisLabel = chart.getXAxis().getLabel();
-            String yAxisLabel = chart.getYAxis().getLabel();
-            String x = xAxisLabel.substring(4, xAxisLabel.length());
-            String y = yAxisLabel.substring(4, yAxisLabel.length());
-
-            // Set chart container and its anchors to 0 to make the parent 
-            // AnchorPane resize the child to fill it's whole area:
-            chartContainer = new AnchorPane();
-            AnchorPane.setBottomAnchor(chart, 0.0);
-            AnchorPane.setTopAnchor(chart, 0.0);
-            AnchorPane.setLeftAnchor(chart, 0.0);
-            AnchorPane.setRightAnchor(chart, 0.0);
-            chartContainer.getChildren().add(chart);
-
-            // add the chart and the container to the Zoom class              
-            Zoom zoom = new Zoom(chart, chartContainer);
-
-            for (XYChart.Series<Number, Number> series : chart.getData()) {
-                for (XYChart.Data<Number, Number> data : series.getData()) {
-                    data.getNode().addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent event) {
-                            try {
-                                FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IndividualDetails.fxml"));
-                                Parent parent = (Parent) fxmlLoader.load();
-                                Stage dialogStage = new Stage();
-                                dialogStage.setScene(new Scene(parent));
-                                dialogStage.setResizable(false);
-
-                                IndividualDetailsController individualDetailsController = fxmlLoader.getController();
-                                individualDetailsController.setPcaLabel(xAxisLabel + ": " + data.getXValue() + "\n" + yAxisLabel + ": " + data.getYValue());
-                                individualDetailsController.setIconDisplay(data.getNode());
-                                dialogStage.showAndWait();
-
-                            } catch (IOException ex) {
-                                Logger.getLogger(Open0Controller.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-
-                    });
-                    // manage tooltip delay
-                    Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
-                }
-            }
-
-            // Legend section
-            for (Node n : chart.getChildrenUnmodifiable()) {
-                if (n instanceof Legend) {
-                    Legend l = (Legend) n;
-                    for (Legend.LegendItem li : l.getItems()) {
-                        for (XYChart.Series<Number, Number> s : chart.getData()) {
-                            if (s.getName().equals(li.getText())) {
-                                li.getSymbol().setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
-                                li.getSymbol().setOnMouseClicked(me -> {
-                                    // Toggle group (phenotype) visibility on left click
-                                    if (me.getButton() == MouseButton.PRIMARY) {
-                                        for (XYChart.Data<Number, Number> d : s.getData()) {
-                                            if (d.getNode() != null) {
-                                                d.getNode().setVisible(!d.getNode().isVisible()); // Toggle visibility of every node in the series
-                                            }
-                                        }
-                                    }else{
-                                        // show dialog for legend position and hiding phenotype 
-                                        List<String> choices = new ArrayList<>();
-                                        choices.add("bottom");
-                                        choices.add("right");
-
-                                        ChoiceDialog<String> dialog = new ChoiceDialog<>("right", choices);
-                                        dialog.setTitle("Legend");
-                                        dialog.setHeaderText("Select legend position");
-                                        dialog.setContentText("Position:");
-
-                                        Optional<String> result = dialog.showAndWait();
-                                        result.ifPresent(position -> chart.lookup(".chart").setStyle("-fx-legend-side: " + position + ";"));
-                                    }
-                                    
-                                });
-                                break;
-                            }
-                        }
+                    pcaValues.put(key, Arrays.copyOfRange(fields, 1, fields.length));
+                    
+                    line = bufferReader.readLine(); // read next line
+                    
+                    while (line != null) {
+                        fields = line.trim().split("\\s+");
+                        String[] ids_ = fields[0].split(":");
+                        String id_1_ = ids_[0];
+                        String id_2_ = ids_[1];
+                        String key_ = id_1_+" "+id_2_;
+                        pcaValues.put(key_, Arrays.copyOfRange(fields, 1, fields.length));
+                        line = bufferReader.readLine();
                     }
                 }
-            }
-
-        } else {
-            //            return to the main window if no pcas were selected
-            ;
+                
         }
 
-        return chartContainer;
+        if(!fields[0].contains(":")){
+            fields = line.trim().split("\\s+");
+            String key = fields[0]+" "+fields[1];
+            
+            if(fields[fields.length-1].contains("C")){
+                    // remove first and second id, and the control column
+                    setPcaColumnLabels(fields, 3);
+                    
+                    // store keys and values in a hashmap
+                    pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length - 1));
+                    
+                    line = bufferReader.readLine(); // read next line
+                                        
+                    while (line != null) {
+                        fields = line.trim().split("\\s+");
+                        String key_ = fields[0]+" "+fields[1];
+                        pcaValues.put(key_, Arrays.copyOfRange(fields, 2, fields.length - 1));
+                        line = bufferReader.readLine();
+                    }
+                    
+                }else{
+                    // remove only the 2 id columns
+                    setPcaColumnLabels(fields, 2);
+
+                    pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length));
+                    
+                    line = bufferReader.readLine();
+                    
+                    while (line != null) {
+                        fields = line.trim().split("\\s+");
+                        String key_ = fields[0]+" "+fields[1];
+                        pcaValues.put(key_, Arrays.copyOfRange(fields, 2, fields.length));
+                        line = bufferReader.readLine();
+                    }
+                }
+            
+        }
+
+//        pcaValues.entrySet().forEach(entry->{
+//            System.out.println(entry.getKey() + " " + entry.getValue());  
+//        });
+    }
+
+    private void setPcaColumnLabels(String fields[], int unwantedCols){
+        // remove first id and control column
+        int num_pcas = fields.length - unwantedCols; // get number of pcas
+        pcaColumnLabels = new String[num_pcas];
+        for (int i = 0; i < num_pcas; i++) {
+            // store every pca: [PCA 1, PCA 2, ...]
+            pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1);
+        }
+    }
+
+    /**
+     * Group individuals by chosen column - default is column 3 in the phenotype
+     * file
+     *
+     * @return
+     */
+    @Override
+    protected final void setPopulationGroups() {
+        List<String[]> combinedValues = mergePhenoWithPCA(); // ArrayList of array from mergePhenoWithPCA method
+
+        populationGroups = combinedValues.stream()
+                .collect(Collectors.groupingBy(array -> array[Project.phenoColumnNumber - 3], // groupby [YRI, EXM, LWK, ...] - third col in pheno file
+                        Collectors.mapping(e -> Arrays.copyOfRange(e, 1, e.length),
+                                Collectors.toList())));
 
     }
 
-    public void saveChart() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText(null);
-
-        if (chart == null) {
-            alert.setContentText("There is no chart to save");
-            alert.showAndWait();
-        } else {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save as");
-            FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("png", "*.png");
-            FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("pdf", "*.pdf");
-            fileChooser.getExtensionFilters().addAll(pngFilter, pdfFilter);
-            File file = fileChooser.showSaveDialog(null);
-
-            // tranform scale can be reduced for lower resolutions (10, 10 or 5, 5)
-            SnapshotParameters sp = new SnapshotParameters();
-            Transform transform = Transform.scale(15, 15);
-            sp.setTransform(transform);
-            WritableImage image = chart.snapshot(sp, null);
-
-            if (file != null) {
-
-                try {
-                    String fileName = file.getName();
-                    String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1, file.getName().length());
-
-                    // save as png or pdf (as A4 landscape)
-                    switch (fileExtension) {
-                        case "png":
-                            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-                            break;
-                        case "pdf":
-                            float POINTS_PER_INCH = 72;
-                            float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
-
-                            PDDocument newPDF = new PDDocument();
-                            PDPage chartPage = new PDPage(new PDRectangle(297 * POINTS_PER_MM, 210 * POINTS_PER_MM));
-                            newPDF.addPage(chartPage);
-
-                            PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newPDF, SwingFXUtils.fromFXImage(image, null));
-                            PDPageContentStream contentStream = new PDPageContentStream(newPDF, chartPage);
-
-                            // draw image sizes can be adjusted for smaller images
-                            contentStream.drawImage(pdImageXObject, 5, 5, 830, 570);
-                            contentStream.close();
-
-                            newPDF.save(file);
-                            newPDF.close();
-                            break;
-                        // No default because extension filters have been applied.
-                    }
-
-                } catch (IOException e) {
-                    alert.setContentText("An ERROR occurred while saving the file.");
-                    alert.showAndWait();
-                }
+    /**
+     * merge 2 hash maps using keys: 1- pheno hashmap; 2- pca hashmap
+     *
+     * @return List of arrays: [YRI, AFR, -0.0266, 0.0318, ..., NA19178:NA19178]
+     */
+    private List<String[]> mergePhenoWithPCA() {
+        HashMap<String, String[]> combinerMap = new HashMap<>();
+        combinerMap.putAll(pcaValues);
+        Project.pcaPhenoData.forEach((key, value_of_pheno) -> {
+            // Get the value for key in combinerMap of pcaValues --- returns a list of pcas.
+            String[] list_of_pcas = combinerMap.get(key);
+            if (list_of_pcas != null) {
+                // Merge two list together: 
+                String[] pcas_with_phenos = combine(value_of_pheno, list_of_pcas);
+                combinerMap.put(key, pcas_with_phenos); // new combinerMap [key1 -> [pheno and pca values], key2 -> [pheno and pca values], ...]
             } else {
-                // do nothing if file selector is closed
+                // Do nothing to remove nulls
                 ;
             }
-        }
+        });
 
+        combinerMap.entrySet().forEach(entry -> {
+            ArrayList<String> entries = new ArrayList<>(Arrays.asList(entry.getValue())); // [YRI, AFR, -0.0266, 0.0318, ...]
+            entries.add(entry.getKey());  // [YRI, AFR, -0.0266, 0.0318, ..., id]
+
+            String[] individualRows = entries.toArray(new String[entries.size()]);
+            pcasWithPhenoList.add(individualRows);
+        });
+
+//         checked merged results
+//        for (int i = 0; i < pcasWithPhenoList.size(); i++){
+//            System.out.println(Arrays.asList(pcasWithPhenoList.get(i)));
+//        }
+        return pcasWithPhenoList; // [YRI, AFR, -0.0266, 0.0318, ..., NA19178:NA19178]
     }
 
+    /**
+     *
+     * @return
+     */
+    public ObservableList<String> getPCAcolumns() {
+        ObservableList<String> pca_list = FXCollections.observableArrayList();
+        pca_list.addAll(Arrays.asList(pcaColumnLabels));
+        return pca_list;
+    }
+    
+     /**
+     *
+     * @return List of eigen values
+     */
+    public List<String> getEigenValues() {
+        return eigenValues;
+    }
+
+
+    /**
+     *
+     * @param x e.g. PCA 1 -> only consider the integer (1)
+     * @param y e.g. PCA 2 -> only consider the integer (2)
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public ScatterChart<Number, Number> createGraph(String x, String y) throws IOException {
+        String xAxisPca = x;
+        String yAxisPca = y;
+
+        int xPcaNumber = Integer.parseInt(xAxisPca.substring(4, xAxisPca.length()));
+        int yPcaNumber = Integer.parseInt(yAxisPca.substring(4, yAxisPca.length()));
+
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setSide(Side.BOTTOM);
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setSide(Side.LEFT);
+        ScatterChart<Number, Number> sc = new ScatterChart<>(xAxis, yAxis);
+
+        // setup chart
+        xAxis.setLabel(xAxisPca);
+        yAxis.setLabel(yAxisPca);
+        sc.setTitle(xAxisPca + " Vs " + yAxisPca + " Chart"); // set as default value
+
+        populationGroups.forEach((k, v) -> { // get groups
+            group = new XYChart.Series<>();
+            group.setName(k);
+
+            for (String[] v1 : v) {
+                group.getData().add(new XYChart.Data(Float.parseFloat(v1[xPcaNumber]), Float.parseFloat(v1[yPcaNumber])));
+            }
+            sc.getData().add(group);
+        });
+
+        return sc;
+    }
+    
+    /**
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    private String[] combine(String[] a, String[] b) {
+        int length = a.length + b.length;
+        String[] result = new String[length];
+        System.arraycopy(a, 0, result, 0, a.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
+    }
+
+    /*
+    * This method is not used by pca
+     */
+    @Override
+    public ArrayList<StackedBarChart<String, Number>> createGraph() {
+        return null;
+    }
+;
 }
