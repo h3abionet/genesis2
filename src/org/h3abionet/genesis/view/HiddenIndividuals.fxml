@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
@@ -25,6 +26,16 @@
                      <children>
                         <Label prefHeight="17.0" prefWidth="126.0" text="Select Individual" />
                         <ComboBox fx:id="hiddenIndividual" prefWidth="150.0" />
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="10.0" layoutY="47.0" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="100.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0">
+                     <children>
+                        <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#entryCancelBtn" prefHeight="27.0" prefWidth="89.0" text="Cancel" />
+                        <Button fx:id="unhideBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#entryUnhideBtn" prefHeight="27.0" prefWidth="83.0" text="Unhide" />
                      </children>
                   </HBox>
                </children>

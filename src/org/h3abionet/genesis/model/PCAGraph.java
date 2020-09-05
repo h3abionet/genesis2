@@ -62,102 +62,102 @@ public class PCAGraph extends Graph {
         bufferReader = Genesis.openFile(pcaFilePath);
         line = bufferReader.readLine();
         String fields[] = line.trim().split("\\s+");
-        
+
         // check if file has eigen values - search for "eig" in first string
-        if(fields[0].contains("eig")){
+        if (fields[0].contains("eig")) {
             eigenValues.addAll(Arrays.asList(Arrays.copyOfRange(fields, 1, fields.length)));
             line = bufferReader.readLine(); // read next line
             fields = line.trim().split("\\s+");
         }
-        
-        // check if ids are seperated by colons:
-        if(fields[0].contains(":")){
-                fields = line.trim().split("\\s+");
-                // if yes, split them
-                String[] ids = fields[0].split(":");
-                String id_1 = ids[0];
-                String id_2 = ids[1];
-                String key = id_1+" "+id_2; // hashmap key
-                
-                // check if last column is a control column
-                if(fields[fields.length-1].contains("C") || fields[fields.length-1].contains("c")){
-                    
-                    setPcaColumnLabels(fields, 2);
-                    
-                    // store keys and values in a hashmap - from 2nd string to 2nd last
-                    pcaValues.put(key, Arrays.copyOfRange(fields, 1, fields.length - 1));
-                    
-                    line = bufferReader.readLine(); // read next line
-                    
-                    // read all the remaining lines
-                    while (line != null) {
-                        fields = line.trim().split("\\s+");
-                        String[] ids_ = fields[0].split(":");
-                        String id_1_ = ids_[0];
-                        String id_2_ = ids_[1];
-                        String key_ = id_1_+" "+id_2_;
-                        pcaValues.put(key_, Arrays.copyOfRange(fields, 1, fields.length - 1)); // store keys and values in a hashmap
-                        line = bufferReader.readLine();
-                    }
-                    
-                }else{
-                    // if the file doesnot contain the control column
-                    // remove only the id column
-                    setPcaColumnLabels(fields, 1);
 
-                    pcaValues.put(key, Arrays.copyOfRange(fields, 1, fields.length));
-                    
-                    line = bufferReader.readLine(); // read next line
-                    
-                    while (line != null) {
-                        fields = line.trim().split("\\s+");
-                        String[] ids_ = fields[0].split(":");
-                        String id_1_ = ids_[0];
-                        String id_2_ = ids_[1];
-                        String key_ = id_1_+" "+id_2_;
-                        pcaValues.put(key_, Arrays.copyOfRange(fields, 1, fields.length));
-                        line = bufferReader.readLine();
-                    }
+        // check if ids are seperated by colons:
+        if (fields[0].contains(":")) {
+            fields = line.trim().split("\\s+");
+            // if yes, split them
+            String[] ids = fields[0].split(":");
+            String id_1 = ids[0];
+            String id_2 = ids[1];
+            String key = id_1 + " " + id_2; // hashmap key
+
+            // check if last column is a control column
+            if (fields[fields.length - 1].contains("C") || fields[fields.length - 1].contains("c")) {
+
+                setPcaColumnLabels(fields, 2);
+
+                // store keys and values in a hashmap - from 2nd string to 2nd last
+                pcaValues.put(key, Arrays.copyOfRange(fields, 1, fields.length - 1));
+
+                line = bufferReader.readLine(); // read next line
+
+                // read all the remaining lines
+                while (line != null) {
+                    fields = line.trim().split("\\s+");
+                    String[] ids_ = fields[0].split(":");
+                    String id_1_ = ids_[0];
+                    String id_2_ = ids_[1];
+                    String key_ = id_1_ + " " + id_2_;
+                    pcaValues.put(key_, Arrays.copyOfRange(fields, 1, fields.length - 1)); // store keys and values in a hashmap
+                    line = bufferReader.readLine();
                 }
-                
+
+            } else {
+                // if the file doesnot contain the control column
+                // remove only the id column
+                setPcaColumnLabels(fields, 1);
+
+                pcaValues.put(key, Arrays.copyOfRange(fields, 1, fields.length));
+
+                line = bufferReader.readLine(); // read next line
+
+                while (line != null) {
+                    fields = line.trim().split("\\s+");
+                    String[] ids_ = fields[0].split(":");
+                    String id_1_ = ids_[0];
+                    String id_2_ = ids_[1];
+                    String key_ = id_1_ + " " + id_2_;
+                    pcaValues.put(key_, Arrays.copyOfRange(fields, 1, fields.length));
+                    line = bufferReader.readLine();
+                }
+            }
+
         }
 
-        if(!fields[0].contains(":")){
+        if (!fields[0].contains(":")) {
             fields = line.trim().split("\\s+");
-            String key = fields[0]+" "+fields[1];
-            
-            if(fields[fields.length-1].contains("C")){
-                    // remove first and second id, and the control column
-                    setPcaColumnLabels(fields, 3);
-                    
-                    // store keys and values in a hashmap
-                    pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length - 1));
-                    
-                    line = bufferReader.readLine(); // read next line
-                                        
-                    while (line != null) {
-                        fields = line.trim().split("\\s+");
-                        String key_ = fields[0]+" "+fields[1];
-                        pcaValues.put(key_, Arrays.copyOfRange(fields, 2, fields.length - 1));
-                        line = bufferReader.readLine();
-                    }
-                    
-                }else{
-                    // remove only the 2 id columns
-                    setPcaColumnLabels(fields, 2);
+            String key = fields[0] + " " + fields[1];
 
-                    pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length));
-                    
+            if (fields[fields.length - 1].contains("C")) {
+                // remove first and second id, and the control column
+                setPcaColumnLabels(fields, 3);
+
+                // store keys and values in a hashmap
+                pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length - 1));
+
+                line = bufferReader.readLine(); // read next line
+
+                while (line != null) {
+                    fields = line.trim().split("\\s+");
+                    String key_ = fields[0] + " " + fields[1];
+                    pcaValues.put(key_, Arrays.copyOfRange(fields, 2, fields.length - 1));
                     line = bufferReader.readLine();
-                    
-                    while (line != null) {
-                        fields = line.trim().split("\\s+");
-                        String key_ = fields[0]+" "+fields[1];
-                        pcaValues.put(key_, Arrays.copyOfRange(fields, 2, fields.length));
-                        line = bufferReader.readLine();
-                    }
                 }
-            
+
+            } else {
+                // remove only the 2 id columns
+                setPcaColumnLabels(fields, 2);
+
+                pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length));
+
+                line = bufferReader.readLine();
+
+                while (line != null) {
+                    fields = line.trim().split("\\s+");
+                    String key_ = fields[0] + " " + fields[1];
+                    pcaValues.put(key_, Arrays.copyOfRange(fields, 2, fields.length));
+                    line = bufferReader.readLine();
+                }
+            }
+
         }
 
 //        pcaValues.entrySet().forEach(entry->{
@@ -165,7 +165,7 @@ public class PCAGraph extends Graph {
 //        });
     }
 
-    private void setPcaColumnLabels(String fields[], int unwantedCols){
+    private void setPcaColumnLabels(String fields[], int unwantedCols) {
         // remove first id and control column
         int num_pcas = fields.length - unwantedCols; // get number of pcs
         pcaColumnLabels = new String[num_pcas];
@@ -189,7 +189,7 @@ public class PCAGraph extends Graph {
                 .collect(Collectors.groupingBy(array -> array[Project.phenoColumnNumber - 3], // groupby [YRI, EXM, LWK, ...] - third col in pheno file
                         Collectors.mapping(e -> Arrays.copyOfRange(e, 1, e.length),
                                 Collectors.toList())));
-        
+
     }
 
     /**
@@ -237,18 +237,19 @@ public class PCAGraph extends Graph {
         pca_list.addAll(Arrays.asList(pcaColumnLabels));
         return pca_list;
     }
-    
-     /**
+
+    /**
      *
      * @return List of eigen values
      */
     public List<String> getEigenValues() {
         return eigenValues;
     }
-    
+
     /**
      * list of arrays with pheno and associated pcs
-     * @return 
+     *
+     * @return
      */
     public static List<String[]> getPcasWithPhenoList() {
         return pcasWithPhenoList;
@@ -283,7 +284,6 @@ public class PCAGraph extends Graph {
         populationGroups.forEach((k, v) -> { // get groups
             group = new XYChart.Series<>();
             group.setName(k);
-
             for (String[] v1 : v) {
                 group.getData().add(new XYChart.Data(Float.parseFloat(v1[xPcaNumber]), Float.parseFloat(v1[yPcaNumber])));
             }
@@ -292,7 +292,7 @@ public class PCAGraph extends Graph {
 
         return sc;
     }
-    
+
     /**
      *
      * @param a

@@ -9,6 +9,8 @@ import com.sun.javafx.charts.Legend;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -33,6 +35,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.model.PCAGraph;
 
 /**
  *
@@ -80,7 +83,7 @@ public class PCAIndividualDetailsController implements Initializable {
     private Button btnCancel;
 
     private ScatterChart<Number, Number> chart;
-    private HiddenIndividualsController hiddenIndividualsController;
+//    private HiddenIndividualsController hiddenIndividualsController;
 
     private static int iconSize;
     private static String iconColor;
@@ -201,26 +204,24 @@ public class PCAIndividualDetailsController implements Initializable {
             for (XYChart.Data<Number, Number> data : series.getData()) {
                 if (hideRadioBtnClicked) {
                     data.getNode().setOnMouseClicked(e -> {
+                        // hide the visibility of the button
                         data.getNode().setVisible(!data.getNode().isVisible());
+                                                
+                        // get its coordinates
+                        String xValue = data.getXValue().toString();
+                        String yValue = data.getYValue().toString();
                         
-                        data.getNode().setOnMouseClicked(ev -> {
-                            List<String> choices = new ArrayList<>();
-                            choices.add("unhide");
-                            ChoiceDialog<String> dialog = new ChoiceDialog<>("unhide", choices);
-                            dialog.setTitle(null);
-                            dialog.setHeaderText(null);
-                            dialog.setGraphic(null);
-                            
-                            dialog.setContentText("Choose: ");
-                            Optional<String> result = dialog.showAndWait();
-                            result.ifPresent(letter -> {
-                                if(letter.equals("unhide"))
-//                                     series.getData().add(data);
-                                     System.out.println("Hello");
-                                    
-                                    });
-                        });
-                        hiddenIndividualsController.setInd(data.getNode());
+                        // get pheno data using x & y co-ordinates
+                        for(String [] s: PCAGraph.getPcasWithPhenoList() ){
+                            // if an array in pcasWithPhenoList has both x & y
+                            if(Arrays.asList(s).contains(xValue) && Arrays.asList(s).contains(yValue)){
+                                // get pheno data: [MKK, AFR, pc1, pc2, pc3, ..., FID IID]
+                                String[] coord = {xValue, yValue, s[0]};
+                                HiddenIndividualsController.getHidenIds().put(s[s.length-1], coord);
+                                break;
+                            }
+                        }
+                        
                     });
                 }
                 if (topRadioBtnClicked) {
@@ -255,7 +256,7 @@ public class PCAIndividualDetailsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        hiddenIndividualsController = new HiddenIndividualsController();
+//        hiddenIndividualsController = new HiddenIndividualsController();
         chosenIconDisplay.setVisible(false);
         chart = MainController.getPcaChart();
 

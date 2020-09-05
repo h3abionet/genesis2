@@ -381,12 +381,12 @@ public class MainController implements Initializable {
         dialogStage.setScene(new Scene(parent));
         dialogStage.setResizable(false);
 
-        HiddenIndividualsController hidden = fxmlLoader.getController();
-        for (Node n : hidden.getItems()) {
-            n.setOnMouseClicked(e -> {
-                n.setVisible(true);
-            });
-        }
+//        HiddenIndividualsController hidden = fxmlLoader.getController();
+//        for (String s : hidden.getItems()) {
+//            n.setOnMouseClicked(e -> {
+//                n.setVisible(true);
+//            });
+//        }
         dialogStage.showAndWait();
     }
 

@@ -6,13 +6,15 @@
 package org.h3abionet.genesis.controller;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import org.h3abionet.genesis.Genesis;
 
 /**
  *
@@ -21,21 +23,41 @@ import javafx.scene.control.ComboBox;
 public class HiddenIndividualsController implements Initializable{
     
     @FXML
-    private ComboBox<Node> hiddenIndividual;
+    private ComboBox<String> hiddenIndividual;
     
-    static ObservableList<Node> ind = FXCollections.observableArrayList();
+    @FXML
+    private Button cancelBtn;
 
-    public ObservableList<Node> getItems() {
-        return ind;
+    @FXML
+    private Button unhideBtn;
+    
+    private static HashMap<String, String[]> hidenIds = new HashMap<String, String[]>();
+    
+    public static HashMap<String, String[]> getHidenIds() {
+        return hidenIds;
     }
+    
+    @FXML
+    private void entryUnhideBtn(ActionEvent event) {
+        // (x,y)
+        String [] hidenPoint = hidenIds.get(hiddenIndividual.getValue());
+        
+        Float x = Float.parseFloat(hidenPoint[0]);
+        Float y =Float.parseFloat(hidenPoint[1]);
 
-    public void setInd(Node node) {
-        ind.add(node);
+        MainController.getPcaChart().getData().get(1).getData().add(new XYChart.Data(x,y));
+        Genesis.closeOpenStage(event);
+
+    }
+    
+    @FXML
+    private void entryCancelBtn(ActionEvent event) {
+        Genesis.closeOpenStage(event);
     }
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        hiddenIndividual.getItems().addAll(ind);
+        hiddenIndividual.getItems().addAll(hidenIds.keySet());
         
     }
     

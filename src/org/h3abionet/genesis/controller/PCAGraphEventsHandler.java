@@ -15,7 +15,6 @@
  */
 package org.h3abionet.genesis.controller;
 
-import com.idrsolutions.image.JDeli;
 import com.idrsolutions.image.tiff.TiffEncoder;
 import com.sun.javafx.charts.Legend;
 import java.awt.Graphics2D;
@@ -205,6 +204,7 @@ public class PCAGraphEventsHandler {
             File file = fileChooser.showSaveDialog(null);
 
             // tranform scale can be reduced for lower resolutions (10, 10 or 5, 5)
+            
             int pixelScale = 5;
             int width = (int) Math.rint(pixelScale*chart.getWidth());
             int height = (int) Math.rint(pixelScale*chart.getHeight());
@@ -232,6 +232,7 @@ public class PCAGraphEventsHandler {
                             ImageIO.write(bufImageRGB, "png", file);
                             break;
                         case "tiff":
+//                            ImageIO.write(bufImageRGB, "tiff", file);
                             OutputStream out = new FileOutputStream(file);
                             TiffEncoder tiffEncoder = new TiffEncoder();
                             tiffEncoder.setCompressed(true);
