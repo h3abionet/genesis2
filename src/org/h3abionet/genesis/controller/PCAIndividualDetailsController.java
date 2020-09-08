@@ -8,11 +8,7 @@ package org.h3abionet.genesis.controller;
 import com.sun.javafx.charts.Legend;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,7 +22,6 @@ import javafx.scene.Scene;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -212,7 +207,7 @@ public class PCAIndividualDetailsController implements Initializable {
                         String yValue = data.getYValue().toString();
                         
                         // get pheno data using x & y co-ordinates
-                        for(String [] s: PCAGraph.getPcasWithPhenoList() ){
+                        for(String [] s: PCAGraph.getPcasWithPhenoList()){
                             // if an array in pcasWithPhenoList has both x & y
                             if(Arrays.asList(s).contains(xValue) && Arrays.asList(s).contains(yValue)){
                                 // get pheno data: [MKK, AFR, pc1, pc2, pc3, ..., FID IID]

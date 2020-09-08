@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -44,8 +45,18 @@ public class HiddenIndividualsController implements Initializable{
         
         Float x = Float.parseFloat(hidenPoint[0]);
         Float y =Float.parseFloat(hidenPoint[1]);
+        
+        ScatterChart<Number, Number> chart = MainController.getPcaChart();
+        for(XYChart.Series<Number, Number> s: chart.getData()){
+            if(s.getName().equals(hidenPoint[2])){
+                System.out.println(hidenPoint[2]);
+                s.getData().add(new XYChart.Data(x,y));
+            }
+            break;
+        }
+        
 
-        MainController.getPcaChart().getData().get(1).getData().add(new XYChart.Data(x,y));
+//        MainController.getPcaChart().getData().get(1).getData().add(new XYChart.Data(x,y));
         Genesis.closeOpenStage(event);
 
     }
