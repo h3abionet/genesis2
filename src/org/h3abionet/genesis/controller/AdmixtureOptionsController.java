@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -10,9 +11,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
@@ -76,7 +80,7 @@ public class AdmixtureOptionsController implements Initializable {
     private StackedBarChart<String, Number> admixChart;
 
     // To store all ancestor HBoxes which will be added the leftVBox
-    private ArrayList<HBox> listOfAncenstorHBox;
+    private ArrayList<HBox> listOfAncestorHBox;
 
     // borders for vbox and hbox containers
     private final String cssLayout = "-fx-border-color: #d9d9d9; -fx-border-width: 1;";
@@ -105,12 +109,83 @@ public class AdmixtureOptionsController implements Initializable {
 
     
     @FXML void colourLikePrevious(ActionEvent event) {
+        int K = currChart.get(0).getData().size();
+        ArrayList<String> ancestryOrder = new ArrayList<String>();
+        ArrayList<String> currAncestries =  new ArrayList<>();   
+        boolean used [] = new boolean [K];
+        ArrayList<String> curColourCodes = new ArrayList<>();
+        String defaultColor;
+        StackPane node;
         Stage stage = (Stage) previousGraphColourBtn.getScene().getWindow();
         stage.close();
-      
+        if (rowIndexOfClickedAdmixChart == 0 ) return; // There isn't a previous chart
+        ArrayList<StackedBarChart<String,Number>> prev =  MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart-1);
+       
+        int Kp = prev.get(0).getData().size();
+        int ancestry_match[][]  = new int [Kp][2];     
+        getMatch(currChart, prev, ancestry_match);
+        
+        for (int i=0; i<K; i++)  {
+            XYChart.Series<String, Number> firstSegI = currChart.get(0).getData().get(i);
+            currAncestries.add(firstSegI.getName());
+            curColourCodes.add(firstSegI.getData().get(0).getNode().lookup(".default-color"+i+".chart-bar").getStyle());
+        }
+        for (int i=0; i<Kp; i++) {
+            if (ancestry_match[i][1]>0) {// There was a match
+               int curr_ind = ancestry_match[i][0];
+               System.out.println(i+"=>"+curr_ind+" "+used[curr_ind]);
+               if (used[curr_ind]) continue; // due to odd colouring we already have this
+               used[curr_ind]=true;
+               String curr_anc = currChart.get(0).getData().get(curr_ind).getName();  // name of ancestry
+               XYChart.Series<String, Number> other_hue = prev.get(0).getData().get(i);
+               String style = other_hue.getData().get(0).getNode().lookup(".default-color"+i+".chart-bar").getStyle();
+               currAncestries.add(curr_anc);
+               for (StackedBarChart<String,Number> currSeg: currChart )  { 
+                  XYChart.Series<String,Number> series = currSeg.getData().get(curr_ind);
+                  for (XYChart.Data<String,Number> item : series.getData())
+                    item.getNode().setStyle(style);     
+               }
+               curColourCodes.remove(style); // We've used this colour
+            }
+        }
+        /*
+            selectedColor = Integer.toHexString(colorPicker.getValue().hashCode());
+            // change the color of series
+            for (StackedBarChart<String, Number> stackedbarChart : listOfAdmixtureCharts) {
+                stackedbarChart.getData().forEach((series) -> {
+                    series.getData().forEach((bar) -> {
+                        bar.getNode().lookupAll(".default-color" + serieIndex + ".chart-bar")
+                                .forEach(n -> n.setStyle("-fx-background-color: #" + selectedColor + ";"));
+                    });
+                });
+
+        */
+        for (int i=0; i<K; i++) {  // There may be at least one colour in the previous chart not used
+           if (!used[i]) {
+               String style = curColourCodes.remove(0);
+                currAncestries.add(currChart.get(0).getData().get(i).getName());
+                for (StackedBarChart<String,Number> currSeg: currChart )  { 
+                   XYChart.Series<String,Number> series = currSeg.getData().get(i);
+                  for (XYChart.Data<String,Number> item : series.getData())
+                    item.getNode().setStyle(style);  
+                }
+           }
+        }
+        Comparator<XYChart.Series<String, Number>> mycomp
+                = (s1, s2)
+                -> currAncestries.indexOf(s1.getName()) - currAncestries.indexOf(s2.getName());
+        for (StackedBarChart<String,Number> segment : currChart) 
+             segment.setData(segment.getData().sorted(mycomp));
+
+        int i=0;
+        defaultColor = ".default-color" + i + ".chart-bar";
+        StackedBarChart<String, Number> m = currChart.get(0);
+        m.getData().get(0).getName();
+        node = (StackPane) currChart.get(0).getData().get(i).getData().get(0).getNode().lookup(defaultColor);
+       
         
        
-    }
+           }
     
     
     @FXML
@@ -128,138 +203,16 @@ public class AdmixtureOptionsController implements Initializable {
         VBox rightVBox = setVbox(new Label("Sort within populations algorithmically"));
         rightVBox.setStyle(cssLayout);
 
-        // fam sort button
-        Button famOrderBtn = new Button("Fam order");
-        famOrderBtn.setOnMouseClicked((MouseEvent famOrderEvent) -> {
-            currChart.forEach((s) -> {
-                sortToFamOrder(s);
-            });
-        });
-
-        // dominant sort button
-        Button dominantColourBtn = new Button("Dominant colour");
-        dominantColourBtn.setOnMouseClicked((MouseEvent devt) -> {
-            for (StackedBarChart<String, Number> stackedBarChart : currChart) {
-                // store totals of yvalue elements in every serie                                            
-                ArrayList<Double> sumList = new ArrayList<>();
-
-                // get sum of all yvalues in every serie / ancestry
-                for (int s = 0; s < stackedBarChart.getData().size(); s++) {
-                    double sum = 0;
-                    for (int n = 0; n < stackedBarChart.getData().get(s).getData().size(); n++) {
-                        sum += stackedBarChart.getData().get(s).getData().get(n).getYValue().doubleValue();
-
-                    }
-                    sumList.add(sum);
-                }
-
-                // get index of the max value in sumList = dorminant serie index in the chart
-                int ancestryIndex = sumList.indexOf(Collections.max(sumList));
-
-                // sort chart by serie with max yvalues (dominant)
-                sortChartByColor(stackedBarChart, ancestryIndex);
-
-            }
-
-        });
-
+        Button famOrderBtn = famOrderButton();
+        Button dominantColourBtn = dominantColourButton();
         rightVBox.getChildren().addAll(famOrderBtn, dominantColourBtn);
 
         VBox leftVBox = setVbox(new Label("Change and order colours"));
 
-        // for every ancestor, get its color, create a button with its name and create a sort button
-        for (int i = admixChart.getData().size()-1; i >= 0; i--) {
-            
-            // HBox of ancestor buttons in the leftVBox
-            HBox ancenstorHBox = new HBox(10);
-            ancenstorHBox.setId("Ancestry" + i);
-            
-            // rectangle to display ancestor colors
-            Rectangle ancestorColorDisplay = new Rectangle(25, 25);
-            ancestorColorDisplay.setArcWidth(5);
-            ancestorColorDisplay.setArcHeight(5);
-
-            String defaultColor = ".default-color" + i + ".chart-bar";
-            // get the default color of every ancestor (using the default-color0,1,2 class) and fill it in the rectangle
-            StackPane node = (StackPane) admixChart.getData().get(i).getData().get(i).getNode().lookup(defaultColor);
-            Background bg = node.getBackground();
-            Paint paint = bg.getFills().get(0).getFill();
-            ancestorColorDisplay.setFill(paint);
-            
-            // show hand cursor for user to click and change the color
-            ancestorColorDisplay.hoverProperty().addListener((observable, oldValue, newValue) -> {
-                    if (newValue) {
-                        ancestorColorDisplay.setCursor(Cursor.HAND);
-                    }
-            });
-
-            int ancestorIndex = i;
-            ancestorColorDisplay.setOnMouseClicked((MouseEvent colorEvt) -> {
-                try {
-                    // change the color of ancestries
-                    FXMLLoader colorLoader = new FXMLLoader(Genesis.class.getResource("view/AncestryColor.fxml"));
-                    Parent parent = (Parent) colorLoader.load();
-                    Stage colorStage = new Stage();
-                    colorStage.setScene(new Scene(parent));
-                    colorStage.setResizable(false);
-                    AncestryColorController acc = colorLoader.getController();
-                    acc.setAncestryColor(ancestorColorDisplay.getFill());
-                    acc.setAncestryIndex(ancestorIndex);
-                    colorStage.showAndWait();
-                    
-                    if (acc.isColorSelected()) {
-                        ancestorColorDisplay.setFill(acc.getChosenPaint());
-                    }
-                } catch (IOException ex) {
-                    Genesis.throwInformationException("Failed! Try Again!");
-                }
-            });
-            
-            //  set ancestor name -> used to name buttons and as a label for color options window
-            String ancestorName = admixChart.getData().get(i).getName();
-            
-            // create ancestor button
-            Button ancenstorNameBtn = new Button("Change " + ancestorName);
-
-            // load stage for shifting up or down the ancestries
-            ancenstorNameBtn.setOnMouseClicked((MouseEvent anacestorEvent) -> {
-                try {
-                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/ShiftAncestry.fxml"));
-                    Parent parent = (Parent) fxmlLoader.load();
-                    Stage dialogStage = new Stage();
-                    dialogStage.setScene(new Scene(parent));
-                    dialogStage.setResizable(false);
-
-                    ShiftAncestryController sac = fxmlLoader.getController();
-                    sac.setAncestorNumberLabel(ancestorName); // set the ancestry name
-                    sac.setNumOfAncestry(admixChart.getData().size());
-                    dialogStage.showAndWait();
-
-                } catch (IOException e) {
-                }
-
-            });
-
-            // create a sort individuals button
-            Button colorSortBtn = new Button("Sort Ancestry " + ancestorName.substring(ancestorName.length() - 1));
-            colorSortBtn.setOnMouseClicked((MouseEvent devt) -> {
-                for (StackedBarChart<String, Number> stackedBarChart : currChart) {
-                    // get last character on a btn and use it use it as the index of the ancestry
-                    String ancestryNumber = colorSortBtn.getText().substring(colorSortBtn.getText().length() - 1);
-                    // sort
-                    sortChartByColor(stackedBarChart, Integer.valueOf(ancestryNumber) - 1);
-                }
-            });
-            
-            // for every serie, store its default color, change color btn, and sort btn in HBox
-            ancenstorHBox.getChildren().addAll(ancestorColorDisplay, ancenstorNameBtn, colorSortBtn);
-
-            // add the the HBox to the list of HBoxes.
-            listOfAncenstorHBox.add(ancenstorHBox);
-        }
+        ancestorSortButtons(listOfAncestorHBox);
         
         // add the hbox to its parent (the left vbox)
-        leftVBox.getChildren().addAll(listOfAncenstorHBox);
+        leftVBox.getChildren().addAll(listOfAncestorHBox);
 
         // add the left and right vbox to their parent hbox
         populationOptionsHBox.getChildren().addAll(leftVBox, rightVBox);
@@ -286,6 +239,157 @@ public class AdmixtureOptionsController implements Initializable {
         optionsStage.setResizable(false);
         optionsStage.show();
 
+    }
+
+    private void ancestorSortButtons(ArrayList<HBox> listOfAncestorHBox) {
+        // for every ancestor, get its color, create a button with its name and create a sort button
+        for (int i = admixChart.getData().size()-1; i >= 0; i--) {
+            
+            // HBox of ancestor buttons in the leftVBox
+            HBox ancestorHBox = new HBox(10);
+            ancestorHBox.setId("Ancestry" + i);
+            
+            Rectangle ancestorColorDisplay = ancColourDisplayEvents(i);
+
+            ancColDisplMouseEvent(i, ancestorColorDisplay);
+            
+            //  set ancestor name -> used to name buttons and as a label for color options window
+            String ancestorName = admixChart.getData().get(i).getName();
+           
+            Button ancenstorNameBtn = ancestorNameButtonMouseEvent(ancestorName);
+
+            Button colorSortBtn = colourSortButtonMouseEvent(ancestorName);
+            
+            // for every serie, store its default color, change color btn, and sort btn in HBox
+            ancestorHBox.getChildren().addAll(ancestorColorDisplay, ancenstorNameBtn, colorSortBtn);
+
+            // add the the HBox to the list of HBoxes.
+            listOfAncestorHBox.add(ancestorHBox);
+        }
+
+    }
+
+    private Rectangle ancColourDisplayEvents(int i) {
+        // rectangle to display ancestor colors
+        Rectangle ancestorColorDisplay = new Rectangle(25, 25);
+        ancestorColorDisplay.setArcWidth(5);
+        ancestorColorDisplay.setArcHeight(5);
+        String defaultColor = ".default-color" + i + ".chart-bar";
+        // get the default color of every ancestor (using the default-color0,1,2 class) and fill it in the rectangle
+        // SH: I don't understand this code -- why a second .get(i) -- surely should just be .get(0)
+        StackPane node = (StackPane) admixChart.getData().get(i).getData().get(i).getNode().lookup(defaultColor);
+        Background bg = node.getBackground();
+        Paint paint = bg.getFills().get(0).getFill();
+        ancestorColorDisplay.setFill(paint);
+        // show hand cursor for user to click and change the color
+        ancestorColorDisplay.hoverProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                ancestorColorDisplay.setCursor(Cursor.HAND);
+            }
+        });
+        return ancestorColorDisplay;
+    }
+
+    private Button colourSortButtonMouseEvent(String ancestorName) {
+        // create a sort individuals button
+        Button colorSortBtn = new Button("Sort Ancestry " + ancestorName.substring(ancestorName.length() - 1));
+        colorSortBtn.setOnMouseClicked((MouseEvent devt) -> {
+            for (StackedBarChart<String, Number> stackedBarChart : currChart) {
+                // get last character on a btn and use it use it as the index of the ancestry
+                String ancestryNumber = colorSortBtn.getText().substring(colorSortBtn.getText().length() - 1);
+                // sort
+                sortChartByColor(stackedBarChart, Integer.valueOf(ancestryNumber) - 1);
+            }
+        });
+        return colorSortBtn;
+    }
+
+    private Button ancestorNameButtonMouseEvent(String ancestorName) {
+        // create ancestor button
+        Button ancenstorNameBtn = new Button("Change " + ancestorName);
+        // load stage for shifting up or down the ancestries
+        ancenstorNameBtn.setOnMouseClicked((MouseEvent anacestorEvent) -> {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/ShiftAncestry.fxml"));
+                Parent parent = (Parent) fxmlLoader.load();
+                Stage dialogStage = new Stage();
+                dialogStage.setScene(new Scene(parent));
+                dialogStage.setResizable(false);
+                
+                ShiftAncestryController sac = fxmlLoader.getController();
+                sac.setAncestorNumberLabel(ancestorName); // set the ancestry name
+                sac.setNumOfAncestry(admixChart.getData().size());
+                dialogStage.showAndWait();
+                
+            } catch (IOException e) {
+            }
+            
+        });
+        return ancenstorNameBtn;
+    }
+
+    private void ancColDisplMouseEvent(int i, Rectangle ancestorColorDisplay) {
+        int ancestorIndex = i;
+        ancestorColorDisplay.setOnMouseClicked((MouseEvent colorEvt) -> {
+            try {
+                // change the color of ancestries
+                FXMLLoader colorLoader = new FXMLLoader(Genesis.class.getResource("view/AncestryColor.fxml"));
+                Parent parent = (Parent) colorLoader.load();
+                Stage colorStage = new Stage();
+                colorStage.setScene(new Scene(parent));
+                colorStage.setResizable(false);
+                AncestryColorController acc = colorLoader.getController();
+                acc.setAncestryColor(ancestorColorDisplay.getFill());
+                acc.setAncestryIndex(ancestorIndex);
+                colorStage.showAndWait();
+                
+                if (acc.isColorSelected()) {
+                    ancestorColorDisplay.setFill(acc.getChosenPaint());
+                }
+            } catch (IOException ex) {
+                Genesis.throwInformationException("Failed! Try Again!");
+            }
+        });
+    }
+
+    private Button dominantColourButton() {
+        Button dominantColourBtn = new Button("Dominant colour");
+        dominantColourBtn.setOnMouseClicked((MouseEvent devt) -> {
+            for (StackedBarChart<String, Number> stackedBarChart : currChart) {
+                // store totals of yvalue elements in every serie
+                ArrayList<Double> sumList = new ArrayList<>();
+                
+                // get sum of all yvalues in every serie / ancestry
+                for (int s = 0; s < stackedBarChart.getData().size(); s++) {
+                    double sum = 0;
+                    for (int n = 0; n < stackedBarChart.getData().get(s).getData().size(); n++) {
+                        sum += stackedBarChart.getData().get(s).getData().get(n).getYValue().doubleValue();
+                        
+                    }
+                    sumList.add(sum);
+                }
+                
+                // get index of the max value in sumList = dorminant serie index in the chart
+                int ancestryIndex = sumList.indexOf(Collections.max(sumList));
+                
+                // sort chart by serie with max yvalues (dominant)
+                sortChartByColor(stackedBarChart, ancestryIndex);
+                
+            }
+            
+        });
+        return dominantColourBtn;
+    }
+
+    private Button famOrderButton() {
+        // fam sort button
+        Button famOrderBtn = new Button("Fam order");
+        famOrderBtn.setOnMouseClicked((MouseEvent famOrderEvent) -> {
+            currChart.forEach((s) -> {
+                sortToFamOrder(s);
+            });
+        });
+        return famOrderBtn;
     }
 
     @FXML
@@ -375,13 +479,60 @@ public class AdmixtureOptionsController implements Initializable {
         // get list of charts in this position of row index
         currChart = MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
 
-        listOfAncenstorHBox = new ArrayList<>();
+        listOfAncestorHBox = new ArrayList<>();
         
         optionsStage = new Stage();
 
         // TODO - change this item list based on the position of the graph
         orderCombobox.getItems().addAll("Shift Graph Up", "Shift Graph to Top",
                 "Shift Graph Down", "Shift Graph to Bottom");
+    }
+
+    private void getMatch(ArrayList<StackedBarChart<String, Number>> currChart, ArrayList<StackedBarChart<String, Number>> prev, 
+                          int[][] colour_match) {
+        // For every ancestry in the previous chart find the best match in the currer one
+        int K = currChart.get(0).getData().size();
+        XYChart.Series<String,Number> c, p;
+        float curr_usage [], prev_usage [];
+        
+        // go through each group
+        for (int i=0; i<currChart.size(); i++) {
+            System.out.println("Segment "+i);
+            ObservableList<XYChart.Series<String, Number>> currChartSeg = currChart.get(i).getData();
+            curr_usage = getColourUsage(currChartSeg);
+            prev_usage = getColourUsage(prev.get(i).getData());
+            for(int colour=0; colour<K; colour++) {
+                System.out.println("  colour"+colour);
+                int curr_size = currChartSeg.get(0).getData().size();
+                for(int other_colour=0; other_colour<prev_usage.length; other_colour++) {
+                                    System.out.println("      other colour"+other_colour);
+                   if (((curr_usage[colour]>=0.5) && (prev_usage[other_colour]>=0.5)) ||
+                        ((curr_usage[colour]>=0.4) && (prev_usage[other_colour]>=0.4))) {
+                       System.out.println(other_colour+">"+colour+" Curr:"+curr_size+"  Prev:"+colour_match[other_colour][1]);
+                       if (curr_size>colour_match[other_colour][1]) {
+                          colour_match[other_colour][0] = colour;
+                          colour_match[other_colour][1] = curr_size;
+                       }                   
+                   }
+                }
+            }
+        }
+            
+        
+        
+    }
+
+    private float[] getColourUsage(ObservableList<XYChart.Series<String, Number>> data) {
+       float usage [] = new float[data.size()];
+       int i=0;
+       for (XYChart.Series<String,Number> series : data) {
+           for (XYChart.Data<String, Number> x : series.getData()) {
+                usage[i]=usage[i]+x.getYValue().floatValue();
+           }
+           usage[i]=usage[i]/series.getData().size();
+           i=i+1;
+       }
+       return usage;
     }
 
 }

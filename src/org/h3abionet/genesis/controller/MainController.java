@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -48,6 +50,7 @@ import jfxtras.labs.util.event.MouseControlUtil;
 import org.h3abionet.genesis.model.Project;
 import org.h3abionet.genesis.controller.AdmixtureSettingsController;
 import org.h3abionet.genesis.model.AdmixtureGraph;
+import org.h3abionet.genesis.model.Project;
 
 /*
  * Copyright (C) 2018 scott
@@ -72,6 +75,11 @@ import org.h3abionet.genesis.model.AdmixtureGraph;
  */
 public class MainController implements Initializable {
     // interface (view) variables
+    
+    
+    static boolean debug=true;
+    
+    
     @FXML
     private TabPane tabPane;
     @FXML
@@ -653,7 +661,7 @@ public class MainController implements Initializable {
     }
 
     @Override
-    public void initialize(java.net.URL arg0, ResourceBundle arg1) {
+    public void initialize(java.net.URL arg0, ResourceBundle arg1)  {
         // intialize buckets to store multiple charts
         pcaChartsList = new ArrayList<>();
         
@@ -701,6 +709,24 @@ public class MainController implements Initializable {
         scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 //        scrollPane.setStyle("-fx-border-color: purple; -fx-border-width: 2px");
+
+        if (debug) {
+            Project project;
+            try {
+                project = new Project("Sample", "/Users/scott/populationtut/comm.fam", "/Users/scott/populationtut/comm.phe");
+                project.setPhenoColumnNumber(3);
+                //AdmixtureGraph admix = new AdmixtureGraph("/Users/scott/populationtut/comm-3.Q");
+                //setAdmixtureChart(admix.createGraph());
+                //admix = new AdmixtureGraph("/Users/scott/populationtut/comm-4.Q");
+                //setAdmixtureChart(admix.createGraph());
+                
+            } catch (IOException ex) {
+                System.out.println("I/O Error");
+                System.exit(20);
+            }
+ 
+        }
+
 
     }
 
