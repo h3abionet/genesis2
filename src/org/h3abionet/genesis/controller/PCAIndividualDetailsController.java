@@ -5,7 +5,7 @@
  */
 package org.h3abionet.genesis.controller;
 
-import com.sun.javafx.charts.Legend;
+//import com.sun.javafx.charts.Legend;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -180,18 +180,18 @@ public class PCAIndividualDetailsController implements Initializable {
                             dt.getNode().lookup(".chart-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
                                     + "-fx-background-color: #" + iconColor + ";");
 
-                            for (Node n : chart.getChildrenUnmodifiable()) {
-                                if (n instanceof Legend) {
-                                    Legend l = (Legend) n;
-                                    for (Legend.LegendItem li : l.getItems()) {                                        
-                                        if (li.getText().equals(groupName.getValue())) {
-                                            li.getSymbol().lookup(".chart-legend-item-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
-                                                    + "-fx-background-color: #" + iconColor + ";");
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
+//                            for (Node n : chart.getChildrenUnmodifiable()) {
+//                                if (n instanceof Legend) {
+//                                    Legend l = (Legend) n;
+//                                    for (Legend.LegendItem li : l.getItems()) {                                        
+//                                        if (li.getText().equals(groupName.getValue())) {
+//                                            li.getSymbol().lookup(".chart-legend-item-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
+//                                                    + "-fx-background-color: #" + iconColor + ";");
+//                                            break;
+//                                        }
+//                                    }
+//                                }
+//                            }
                         }
                     }
             }

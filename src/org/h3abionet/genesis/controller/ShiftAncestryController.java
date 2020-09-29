@@ -5,7 +5,7 @@
  */
 package org.h3abionet.genesis.controller;
 
-import com.sun.javafx.charts.Legend;
+//import com.sun.javafx.charts.Legend;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,7 +13,6 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
@@ -103,8 +102,8 @@ public class ShiftAncestryController implements Initializable {
                     newChart.setData(newChart.getData().sorted(mycomp));
                     
                     // clear legend items
-                    Legend legend = (Legend) newChart.lookup(".chart-legend");
-                    legend.getItems().clear();
+//                    Legend legend = (Legend) newChart.lookup(".chart-legend").;
+//                    legend.getItems().clear();
 
                 }
             }

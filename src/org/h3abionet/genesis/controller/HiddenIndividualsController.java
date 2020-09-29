@@ -32,6 +32,9 @@ public class HiddenIndividualsController implements Initializable{
     @FXML
     private Button unhideBtn;
     
+    /**
+     * keep iids and their x, y values in a hashMap 
+     */
     private static HashMap<String, String[]> hidenIds = new HashMap<String, String[]>();
     
     public static HashMap<String, String[]> getHidenIds() {
@@ -40,23 +43,29 @@ public class HiddenIndividualsController implements Initializable{
     
     @FXML
     private void entryUnhideBtn(ActionEvent event) {
+        // get iid
+        String iid = hiddenIndividual.getValue();
+        // get (x & y coordinates, and group name)
+        String [] hidenPoint = hidenIds.get(iid);
+        
         // (x,y)
-        String [] hidenPoint = hidenIds.get(hiddenIndividual.getValue());
-        
         Float x = Float.parseFloat(hidenPoint[0]);
-        Float y =Float.parseFloat(hidenPoint[1]);
+        Float y = Float.parseFloat(hidenPoint[1]);
         
+        // group name
+        String groupName = hidenPoint[2];
+                                
         ScatterChart<Number, Number> chart = MainController.getPcaChart();
         for(XYChart.Series<Number, Number> s: chart.getData()){
-            if(s.getName().equals(hidenPoint[2])){
-                System.out.println(hidenPoint[2]);
+            if(s.getName().equals(groupName)){
                 s.getData().add(new XYChart.Data(x,y));
+                break;
             }
-            break;
         }
         
-
-//        MainController.getPcaChart().getData().get(1).getData().add(new XYChart.Data(x,y));
+        //remove the id from the hidden ids
+        hidenIds.remove(iid);
+        
         Genesis.closeOpenStage(event);
 
     }
