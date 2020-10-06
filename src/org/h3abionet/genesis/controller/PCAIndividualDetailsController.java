@@ -194,7 +194,8 @@ public class PCAIndividualDetailsController implements Initializable {
                                     if (gname.equals(groupName.getValue())) {
                                         // If so then modify the corresponding style
                                         Region rli = (Region) li[i];
-                                        rli.setStyle("-fx-shape: \"" + iconType + "\";" + "-fx-background-color: #" + iconColor + ";");
+                                        System.out.println("-fx-shape: \"" + iconType + "\";" + "-fx-background-color: #" + iconColor + ";");
+                                        //rli.setStyle("-fx-shape: \"" + iconType + "\";" + "-fx-background-color: #" + iconColor + ";");
                      
                                     }
                                       
