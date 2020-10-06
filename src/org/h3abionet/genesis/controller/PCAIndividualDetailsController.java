@@ -82,9 +82,9 @@ public class PCAIndividualDetailsController implements Initializable {
     private ScatterChart<Number, Number> chart;
     private HiddenIndividualsController hiddenIndividualsController;
 
-    private static int iconSize;
-    private static String iconColor;
-    private static String iconType;
+    private  int iconSize;
+    private  String iconColor;
+    private  String iconType;
 
     private boolean hideRadioBtnClicked;
     private boolean topRadioBtnClicked;
@@ -93,17 +93,17 @@ public class PCAIndividualDetailsController implements Initializable {
 
     // set icon properties from the iconOptionsController
     public void setIconSize(int iconSize) {
-        PCAIndividualDetailsController.iconSize = iconSize;
- 
+        this.iconSize = iconSize;
+
     }
 
     public void setIconColor(String iconColor) {
-        PCAIndividualDetailsController.iconColor = iconColor;
+        this.iconColor = iconColor;
         System.out.println("Icon Color is " + iconColor);
     }
 
     public void setIconType(String iconType) {
-        PCAIndividualDetailsController.iconType = iconType;
+        this.iconType = iconType;
         System.out.println("Icon type is" + iconType);
     }
 
@@ -139,9 +139,13 @@ public class PCAIndividualDetailsController implements Initializable {
     @FXML
     private void changeIcon(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IconOptions.fxml"));
+        
         Stage iconStage = new Stage();
         iconStage.initOwner(iconDisplay.getScene().getWindow());
-        iconStage.setScene(new Scene((Parent) fxmlLoader.load()));
+        Scene icon_root = new Scene((Parent) fxmlLoader.load());
+        IconOptionsController iconCtrlr =  (IconOptionsController) fxmlLoader.getController();
+        iconCtrlr.setPCAController(this);       
+        iconStage.setScene(icon_root);
         iconStage.setResizable(false);
         iconStage.showAndWait();
 

@@ -109,9 +109,13 @@ public class IconOptionsController implements Initializable {
         }
         );
 
-        individualDetailsController = new PCAIndividualDetailsController();
+       
         
         
+    }
+    
+    void setPCAController (PCAIndividualDetailsController caller) {
+        individualDetailsController = caller;
     }
     
     // set css style for icons
