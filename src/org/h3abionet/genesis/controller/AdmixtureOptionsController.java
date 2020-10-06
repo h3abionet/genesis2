@@ -114,78 +114,75 @@ public class AdmixtureOptionsController implements Initializable {
         ArrayList<String> currAncestries =  new ArrayList<>();   
         boolean used [] = new boolean [K];
         ArrayList<String> curColourCodes = new ArrayList<>();
-        String defaultColor;
-        StackPane node;
+    
         Stage stage = (Stage) previousGraphColourBtn.getScene().getWindow();
         stage.close();
+        
         if (rowIndexOfClickedAdmixChart == 0 ) return; // There isn't a previous chart
         ArrayList<StackedBarChart<String,Number>> prev =  MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart-1);
        
         int Kp = prev.get(0).getData().size();
         int ancestry_match[][]  = new int [Kp][2];     
+   
+        // work out which series in the prevous match the current 
         getMatch(currChart, prev, ancestry_match);
-        
-        for (int i=0; i<K; i++)  {
-            XYChart.Series<String, Number> firstSegI = currChart.get(0).getData().get(i);
-            currAncestries.add(firstSegI.getName());
-            curColourCodes.add(firstSegI.getData().get(0).getNode().lookup(".default-color"+i+".chart-bar").getStyle());
-        }
-        for (int i=0; i<Kp; i++) {
-            if (ancestry_match[i][1]>0) {// There was a match
-               int curr_ind = ancestry_match[i][0];
-               System.out.println(i+"=>"+curr_ind+" "+used[curr_ind]);
-               if (used[curr_ind]) continue; // due to odd colouring we already have this
-               used[curr_ind]=true;
-               String curr_anc = currChart.get(0).getData().get(curr_ind).getName();  // name of ancestry
-               XYChart.Series<String, Number> other_hue = prev.get(0).getData().get(i);
-               String style = other_hue.getData().get(0).getNode().lookup(".default-color"+i+".chart-bar").getStyle();
-               currAncestries.add(curr_anc);
-               for (StackedBarChart<String,Number> currSeg: currChart )  { 
-                  XYChart.Series<String,Number> series = currSeg.getData().get(curr_ind);
-                  for (XYChart.Data<String,Number> item : series.getData())
-                    item.getNode().setStyle(style);     
-               }
-               curColourCodes.remove(style); // We've used this colour
-            }
-        }
-        /*
-            selectedColor = Integer.toHexString(colorPicker.getValue().hashCode());
-            // change the color of series
-            for (StackedBarChart<String, Number> stackedbarChart : listOfAdmixtureCharts) {
-                stackedbarChart.getData().forEach((series) -> {
-                    series.getData().forEach((bar) -> {
-                        bar.getNode().lookupAll(".default-color" + serieIndex + ".chart-bar")
-                                .forEach(n -> n.setStyle("-fx-background-color: #" + selectedColor + ";"));
-                    });
-                });
-
-        */
-        for (int i=0; i<K; i++) {  // There may be at least one colour in the previous chart not used
-           if (!used[i]) {
-               String style = curColourCodes.remove(0);
-                currAncestries.add(currChart.get(0).getData().get(i).getName());
-                for (StackedBarChart<String,Number> currSeg: currChart )  { 
-                   XYChart.Series<String,Number> series = currSeg.getData().get(i);
-                  for (XYChart.Data<String,Number> item : series.getData())
-                    item.getNode().setStyle(style);  
-                }
-           }
-        }
+        // get the hex colour codes that we currently use 
+        getCurrentColours(K, currAncestries, curColourCodes);
+        //  Recolour appropriately and get the correct order for the series (currAncestries)
+        matchToPrevious(Kp, ancestry_match, used, prev, currAncestries, curColourCodes);
+        // there may be series not used
+        handleUnmatchedColours(K, used, curColourCodes, currAncestries);
         Comparator<XYChart.Series<String, Number>> mycomp
                 = (s1, s2)
                 -> currAncestries.indexOf(s1.getName()) - currAncestries.indexOf(s2.getName());
         for (StackedBarChart<String,Number> segment : currChart) 
              segment.setData(segment.getData().sorted(mycomp));
+     
+       
+    }
 
-        int i=0;
-        defaultColor = ".default-color" + i + ".chart-bar";
-        StackedBarChart<String, Number> m = currChart.get(0);
-        m.getData().get(0).getName();
-        node = (StackPane) currChart.get(0).getData().get(i).getData().get(0).getNode().lookup(defaultColor);
-       
-        
-       
-           }
+    private void handleUnmatchedColours(int K, boolean[] used, ArrayList<String> curColourCodes, ArrayList<String> currAncestries) {
+        for (int i=0; i<K; i++) {  // There may be at least one colour in the previous chart not used
+            if (!used[i]) {
+                String style = curColourCodes.remove(0);
+                currAncestries.add(currChart.get(0).getData().get(i).getName());
+                for (StackedBarChart<String,Number> currSeg: currChart )  {
+                    XYChart.Series<String,Number> series = currSeg.getData().get(i);
+                    for (XYChart.Data<String,Number> item : series.getData())
+                        item.getNode().setStyle(style);
+                }
+            }
+        }
+    }
+
+    private void matchToPrevious(int Kp, int[][] ancestry_match, boolean[] used, ArrayList<StackedBarChart<String, Number>> prev, ArrayList<String> currAncestries, ArrayList<String> curColourCodes) {
+        for (int i=0; i<Kp; i++) {
+            if (ancestry_match[i][1]>0) {// There was a match
+                int curr_ind = ancestry_match[i][0];
+                System.out.println(i+"=>"+curr_ind+" "+used[curr_ind]);
+                if (used[curr_ind]) continue; // due to odd colouring we already have this
+                used[curr_ind]=true;
+                String curr_anc = currChart.get(0).getData().get(curr_ind).getName();  // name of ancestry
+                XYChart.Series<String, Number> other_hue = prev.get(0).getData().get(i);
+                String style = other_hue.getData().get(0).getNode().lookup(".default-color"+i+".chart-bar").getStyle();
+                currAncestries.add(curr_anc);
+                for (StackedBarChart<String,Number> currSeg: currChart )  {
+                    XYChart.Series<String,Number> series = currSeg.getData().get(curr_ind);
+                    for (XYChart.Data<String,Number> item : series.getData())
+                        item.getNode().setStyle(style);
+                }
+                curColourCodes.remove(style); // We've used this colour
+            }
+        }
+    }
+
+    private void getCurrentColours(int K, ArrayList<String> currAncestries, ArrayList<String> curColourCodes) {
+        for (int i=0; i<K; i++)  {
+            XYChart.Series<String, Number> firstSegI = currChart.get(0).getData().get(i);
+            currAncestries.add(firstSegI.getName());
+            curColourCodes.add(firstSegI.getData().get(0).getNode().lookup(".default-color"+i+".chart-bar").getStyle());
+        }
+    }
     
     
     @FXML
@@ -250,14 +247,10 @@ public class AdmixtureOptionsController implements Initializable {
             ancestorHBox.setId("Ancestry" + i);
             
             Rectangle ancestorColorDisplay = ancColourDisplayEvents(i);
-
             ancColDisplMouseEvent(i, ancestorColorDisplay);
-            
             //  set ancestor name -> used to name buttons and as a label for color options window
-            String ancestorName = admixChart.getData().get(i).getName();
-           
+            String ancestorName = admixChart.getData().get(i).getName();           
             Button ancenstorNameBtn = ancestorNameButtonMouseEvent(ancestorName);
-
             Button colorSortBtn = colourSortButtonMouseEvent(ancestorName);
             
             // for every serie, store its default color, change color btn, and sort btn in HBox
@@ -497,18 +490,14 @@ public class AdmixtureOptionsController implements Initializable {
         
         // go through each group
         for (int i=0; i<currChart.size(); i++) {
-            System.out.println("Segment "+i);
             ObservableList<XYChart.Series<String, Number>> currChartSeg = currChart.get(i).getData();
             curr_usage = getColourUsage(currChartSeg);
             prev_usage = getColourUsage(prev.get(i).getData());
             for(int colour=0; colour<K; colour++) {
-                System.out.println("  colour"+colour);
                 int curr_size = currChartSeg.get(0).getData().size();
                 for(int other_colour=0; other_colour<prev_usage.length; other_colour++) {
-                                    System.out.println("      other colour"+other_colour);
                    if (((curr_usage[colour]>=0.5) && (prev_usage[other_colour]>=0.5)) ||
-                        ((curr_usage[colour]>=0.4) && (prev_usage[other_colour]>=0.4))) {
-                       System.out.println(other_colour+">"+colour+" Curr:"+curr_size+"  Prev:"+colour_match[other_colour][1]);
+                       ((curr_usage[colour]>=0.4) && (prev_usage[other_colour]>=0.4))) {
                        if (curr_size>colour_match[other_colour][1]) {
                           colour_match[other_colour][0] = colour;
                           colour_match[other_colour][1] = curr_size;

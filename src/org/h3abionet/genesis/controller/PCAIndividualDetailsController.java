@@ -29,6 +29,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 
@@ -175,13 +177,33 @@ public class PCAIndividualDetailsController implements Initializable {
 
         for (XYChart.Series<Number, Number> series : chart.getData()) {
             if (seriesRadioBtnClicked) {
-                    if (series.getName().equals(groupName.getValue())) {                       
-                        for (XYChart.Data<Number, Number> dt : series.getData()) {                            
-                            dt.getNode().lookup(".chart-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
+                if (series.getName().equals(groupName.getValue())) {                       
+                    for (XYChart.Data<Number, Number> dt : series.getData()) {                            
+                        dt.getNode().lookup(".chart-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
                                     + "-fx-background-color: #" + iconColor + ";");
 
-                            for (Node n : chart.getChildrenUnmodifiable()) {
-                                //if (n instanceof Legend) {
+                        for (Node n : chart.getChildrenUnmodifiable()) {
+                            if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+                                TilePane tn = (TilePane) n;
+                                // find the list item styles
+                                Object li [] =  tn.lookupAll(".chart-legend-item-symbol").toArray();
+                                for (int i=0 ; i<  tn.getChildren().size(); i++) {
+                                    // get the label and see if it's this group
+                                    Label lab  =  (Label) (((Region) tn).getChildrenUnmodifiable().get(i));
+                                    String gname = lab.getText();
+                                    if (gname.equals(groupName.getValue())) {
+                                        // If so then modify the corresponding style
+                                        Region rli = (Region) li[i];
+                                        rli.setStyle("-fx-shape: \"" + iconType + "\";" + "-fx-background-color: #" + iconColor + ";");
+                     
+                                    }
+                                      
+                                  }
+                                     
+                                  System.out.println();
+                                }
+  
+                                //if (n instanceof Legend) {s
                                 //    Legend l = (Legend) n;
                                 //    for (Legend.LegendItem li : l.getItems()) {                                        
                                 //        if (li.getText().equals(groupName.getValue())) {
