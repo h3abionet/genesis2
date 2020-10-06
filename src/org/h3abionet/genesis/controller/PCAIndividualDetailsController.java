@@ -94,7 +94,7 @@ public class PCAIndividualDetailsController implements Initializable {
     // set icon properties from the iconOptionsController
     public void setIconSize(int iconSize) {
         PCAIndividualDetailsController.iconSize = iconSize;
-        System.out.println("Icon_size is " + iconSize);
+ 
     }
 
     public void setIconColor(String iconColor) {
@@ -151,7 +151,7 @@ public class PCAIndividualDetailsController implements Initializable {
                 + "-fx-background-radius: " + iconSize + "px;"
                 + "-fx-padding: " + iconSize + "px;"
                 + "-fx-pref-width: " + iconSize + "px;"
-                + "fx-pref-height: " + iconSize + "px;");
+                + "-fx-pref-height: " + iconSize + "px;");
     }
 
     // get radio selections (only one selection at a time)
@@ -194,8 +194,8 @@ public class PCAIndividualDetailsController implements Initializable {
                                     if (gname.equals(groupName.getValue())) {
                                         // If so then modify the corresponding style
                                         Region rli = (Region) li[i];
-                                        System.out.println("-fx-shape: \"" + iconType + "\";" + "-fx-background-color: #" + iconColor + ";");
-                                        //rli.setStyle("-fx-shape: \"" + iconType + "\";" + "-fx-background-color: #" + iconColor + ";");
+                                        System.out.println("-fx-shape: \"" + iconType + "\"; " + "-fx-background-color: #" + iconColor + ";");
+                                        rli.setStyle("-fx-shape: \"" + iconType + "\"; " + "-fx-background-color: #" + iconColor + ";");
                      
                                     }
                                       
@@ -286,6 +286,7 @@ public class PCAIndividualDetailsController implements Initializable {
             groups.add(series.getName());
         });
 
+        btnOK.setDisable(true);
         groupName.setItems(groups);
 
         hideRadioBtnClicked = false;
@@ -294,5 +295,11 @@ public class PCAIndividualDetailsController implements Initializable {
         seriesRadioBtnClicked = false;
 
     }
+
+    void enableOK() {
+        btnOK.setDisable(false);
+    }
+
+   
 
 }

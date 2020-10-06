@@ -69,7 +69,7 @@ public class IconOptionsController implements Initializable {
         individualDetailsController.setIconSize(this.iconSizeValue);
         individualDetailsController.setIconType(iconsHashmap.get(this.iconTypeValue));
         individualDetailsController.setIconColor(this.colorPickerValue);
-    
+        individualDetailsController.enableOK();
         Genesis.closeOpenStage(event);
     }
 
@@ -116,12 +116,15 @@ public class IconOptionsController implements Initializable {
     
     // set css style for icons
     public void setStyle(String chosenIcon, int chosenSize, String chosenColor){
+        for (String s : iconsHashmap.keySet())
+            System.out.println(s);
+        System.out.println("lookig for " + chosenIcon);
         iconDisplay.setStyle("-fx-shape: \"" + iconsHashmap.get(chosenIcon) + "\";"
                     + "-fx-background-color: #" + chosenColor + ";"
                     + "-fx-background-radius: " + chosenSize + "px;"
                     + "-fx-padding: "+ chosenSize +"px;"
                     + "-fx-pref-width: "+ chosenSize +"px;"
-                    + "fx-pref-height: "+ chosenSize +"px;");
+                    + "-fx-pref-height: "+ chosenSize +"px;");
     
     }
 
