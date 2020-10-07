@@ -264,11 +264,11 @@ public class PCAGraph extends Graph {
      */
     @Override
     public ScatterChart<Number, Number> createGraph(String x, String y) throws IOException {
-        String xAxisPca = x;
-        String yAxisPca = y;
+        String xAxisPca = x; // PCA 1
+        String yAxisPca = y; // PCA 2
 
-        int xPcaNumber = Integer.parseInt(xAxisPca.substring(4, xAxisPca.length()));
-        int yPcaNumber = Integer.parseInt(yAxisPca.substring(4, yAxisPca.length()));
+        int xPcaNumber = Integer.parseInt(xAxisPca.substring(4, xAxisPca.length())); //1
+        int yPcaNumber = Integer.parseInt(yAxisPca.substring(4, yAxisPca.length())); //2
 
         NumberAxis xAxis = new NumberAxis();
         xAxis.setSide(Side.BOTTOM);
@@ -281,10 +281,10 @@ public class PCAGraph extends Graph {
         yAxis.setLabel(yAxisPca);
         sc.setTitle(xAxisPca + " Vs " + yAxisPca + " Chart"); // set as default value
 
-        populationGroups.forEach((k, v) -> { // get groups
+        populationGroups.forEach((k, v) -> { // get groups [MKK -> [pc1,pc2,pc3,...], [pc1,pc2,pc3,...],...]
             group = new XYChart.Series<>();
             group.setName(k);
-            for (String[] v1 : v) {
+            for (String[] v1 : v) { // [pc1, pc2, pc3,...]
                 group.getData().add(new XYChart.Data(Float.parseFloat(v1[xPcaNumber]), Float.parseFloat(v1[yPcaNumber])));
             }
             sc.getData().add(group);

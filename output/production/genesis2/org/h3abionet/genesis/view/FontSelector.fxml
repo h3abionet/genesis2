@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.FontSelectorController">
+   <children>
+      <VBox prefHeight="300.0" prefWidth="500.0" spacing="10.0" style="-fx-background-color: #F0F8FE;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ebedf0;">
+               <children>
+                  <Label text="Select font" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="10.0">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <effect>
+                  <DropShadow height="5.0" radius="6.0" />
+               </effect>
+            </AnchorPane>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <VBox prefHeight="200.0" prefWidth="500.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <HBox layoutX="40.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                           <children>
+                              <Label prefHeight="17.0" prefWidth="41.0" text="Title   " />
+                              <TextField fx:id="titleLabel" prefHeight="25.0" prefWidth="272.0" />
+                              <CheckBox fx:id="titleFormat" mnemonicParsing="false" text="apply changes" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="30.0" right="30.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                           <children>
+                              <Label text="X-axis" />
+                              <TextField prefHeight="25.0" prefWidth="272.0" fx:id="xLabel" />
+                              <CheckBox mnemonicParsing="false" text="apply changes" fx:id="xFormat" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="30.0" right="30.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox layoutX="10.0" layoutY="110.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                           <children>
+                              <Label text="Y-axis" />
+                              <TextField fx:id="yLabel" prefHeight="27.0" prefWidth="273.0" />
+                              <CheckBox fx:id="yFormat" mnemonicParsing="false" text="apply changes" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="30.0" right="30.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <AnchorPane style="-fx-background-color: #ebedf0;">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                           <children>
+                              <HBox prefHeight="41.0" prefWidth="436.0" spacing="75.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="2.0">
+                                 <children>
+                                    <VBox prefHeight="41.0" prefWidth="239.0" spacing="5.0">
+                                       <children>
+                                          <CheckBox fx:id="hideAxes" mnemonicParsing="false" prefHeight="18.0" prefWidth="125.0" text="Hide Axes" />
+                                          <CheckBox fx:id="hideAxisLabels" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="141.0" text="Hide Axis Labels" />
+                                       </children>
+                                    </VBox>
+                                    <Separator orientation="VERTICAL" prefHeight="200.0" />
+                                    <VBox layoutX="10.0" layoutY="10.0" prefHeight="41.0" prefWidth="194.0" spacing="5.0">
+                                       <children>
+                                          <CheckBox fx:id="showBorder" mnemonicParsing="false" text="Show Border" />
+                                          <CheckBox fx:id="hideGrid" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Hide Grid" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                           <effect>
+                              <DropShadow height="5.0" radius="6.0" />
+                           </effect>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="59.0" prefWidth="500.0">
+               <children>
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="160.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="37.0" text="Font" />
+                        <Label layoutX="10.0" layoutY="10.0" text="Style">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Label>
+                        <Label layoutX="38.0" layoutY="10.0" prefHeight="17.0" prefWidth="40.0" text="Size" />
+                     </children>
+                  </HBox>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="-40.0" />
+               </padding>
+            </AnchorPane>
+            <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
+                     <children>
+                        <ListView fx:id="fontList" prefHeight="100.0" prefWidth="189.0" />
+                        <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
+                           <children>
+                              <ListView fx:id="styleList" prefHeight="100.0" prefWidth="96.0" />
+                              <ListView fx:id="postureList" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="142.0" />
+                           </children>
+                        </VBox>
+                        <ListView fx:id="sizeList" layoutX="110.0" layoutY="10.0" prefHeight="100.0" prefWidth="78.0" />
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="10.0" layoutY="160.0" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <HBox layoutX="-1.0" prefHeight="23.0" prefWidth="411.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
+                     <children>
+                        <Label fx:id="sample" prefHeight="39.0" prefWidth="338.0" text="Sample">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin></Label>
+                        <ColorPicker fx:id="colorPicker" prefHeight="33.0" prefWidth="159.0">
+                           <HBox.margin>
+                              <Insets bottom="2.0" top="2.0" />
+                           </HBox.margin>
+                        </ColorPicker>
+                     </children>
+                  </HBox>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </AnchorPane>
+            <AnchorPane layoutX="10.0" layoutY="210.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ebedf0;">
+               <children>
+                  <HBox layoutY="55.0" prefHeight="45.0" prefWidth="200.0" spacing="70.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="20.0">
+                     <children>
+                        <Button fx:id="btnOK" mnemonicParsing="false" onAction="#entryOkButton" prefHeight="25.0" prefWidth="62.0" text="OK" />
+                        <Button fx:id="btnCancel" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#entryCancelButton" prefHeight="25.0" prefWidth="66.0" text="Cancel" />
+                     </children>
+                  </HBox>
+               </children>
+               <effect>
+                  <DropShadow height="5.0" radius="6.0" />
+               </effect>
+            </AnchorPane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

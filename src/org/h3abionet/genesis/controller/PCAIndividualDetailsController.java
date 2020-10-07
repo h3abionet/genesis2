@@ -78,11 +78,10 @@ public class PCAIndividualDetailsController implements Initializable {
     private Button btnCancel;
 
     private ScatterChart<Number, Number> chart;
-//    private HiddenIndividualsController hiddenIndividualsController;
 
-    private static int iconSize;
-    private static String iconColor;
-    private static String iconType;
+    private int iconSize;
+    private String iconColor;
+    private String iconType;
 
     private boolean hideRadioBtnClicked;
     private boolean topRadioBtnClicked;
@@ -91,32 +90,32 @@ public class PCAIndividualDetailsController implements Initializable {
 
     // set icon properties from the iconOptionsController
     public void setIconSize(int iconSize) {
-        PCAIndividualDetailsController.iconSize = iconSize;
-        System.out.println("Icon_size is " + iconSize);
+        this.iconSize = iconSize;
+//        System.out.println("Icon_size is " + iconSize);
     }
 
     public void setIconColor(String iconColor) {
-        PCAIndividualDetailsController.iconColor = iconColor;
-        System.out.println("Icon Color is " + iconColor);
+        this.iconColor = iconColor;
+//        System.out.println("Icon Color is " + iconColor);
     }
 
     public void setIconType(String iconType) {
-        PCAIndividualDetailsController.iconType = iconType;
-        System.out.println("Icon type is" + iconType);
+        this.iconType = iconType;
+//        System.out.println("Icon type is" + iconType);
     }
 
     // return requested icon properties
-    public int getIconSize() {
-        return iconSize;
-    }
-
-    public String getIconColor() {
-        return iconColor;
-    }
-
-    public String getIconType() {
-        return iconType;
-    }
+//    public int getIconSize() {
+//        return iconSize;
+//    }
+//
+//    public String getIconColor() {
+//        return iconColor;
+//    }
+//
+//    public String getIconType() {
+//        return iconType;
+//    }
 
     // display pc/pheno values on labels  
     public void setPcaLabel(String coordinates) {
@@ -172,6 +171,8 @@ public class PCAIndividualDetailsController implements Initializable {
     @FXML
     @SuppressWarnings("empty-statement")
     private void entryOkButton(ActionEvent event) {
+        System.out.println("Icon_size is " + iconSize);
+        System.out.println("Icon Color is " + iconColor);
 
         for (XYChart.Series<Number, Number> series : chart.getData()) {
             if (seriesRadioBtnClicked) {
@@ -183,7 +184,7 @@ public class PCAIndividualDetailsController implements Initializable {
 //                            for (Node n : chart.getChildrenUnmodifiable()) {
 //                                if (n instanceof Legend) {
 //                                    Legend l = (Legend) n;
-//                                    for (Legend.LegendItem li : l.getItems()) {                                        
+//                                    for (Legend.LegendItem li : l.getItems()) {
 //                                        if (li.getText().equals(groupName.getValue())) {
 //                                            li.getSymbol().lookup(".chart-legend-item-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
 //                                                    + "-fx-background-color: #" + iconColor + ";");

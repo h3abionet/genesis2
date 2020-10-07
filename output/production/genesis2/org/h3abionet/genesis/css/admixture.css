@@ -1,0 +1,67 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jul 23, 2019, 12:10:12 AM
+    Author     : Henry
+*/
+
+.chart {
+    -fx-padding: 0px;
+    
+}
+.chart-content {
+    -fx-padding: 0px;
+}
+
+.axis{
+    -fx-padding: 0;
+    -fx-start-margin: 0;
+    -fx-end-margin: 0;
+    -fx-gap-start-and-end: false;
+    
+}
+
+.chart-title {
+    -fx-padding: 0px;
+    -fx-background-color: red;
+
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.axis:top {
+    -fx-border-color: transparent;
+}
+
+.axis:right {
+    -fx-border-color: transparent;
+}
+
+.axis:bottom {
+    -fx-border-color: transparent;
+}
+
+.axis:left {
+    -fx-border-color: transparent;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: transparent;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: transparent;
+}
+
+.chart-horizontal-zero-line  {
+    -fx-stroke: transparent;
+}
+.axis-label {
+  
+  -fx-text-fill: white;
+}
