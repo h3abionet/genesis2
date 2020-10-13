@@ -8,14 +8,12 @@ package org.h3abionet.genesis.model;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.StackedBarChart;
@@ -36,6 +34,17 @@ public class PCAGraph extends Graph {
     private BufferedReader bufferReader;
     private String line;
 
+    private String[] colors = {"#860061","#ff8000","#008000","#800080","#800000","#000080","#808000","#FFFF00","#00ffff","#ff00ff"};
+    private String[] shapes = {"M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z",
+                                "M0 -3.5 v7 l 4 -3.5z",
+                                "M5,0 L10,9 L5,18 L0,9 Z",
+                                "M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,10 L0,10 L0,8 L4,5 L0,2 L0,0 Z",
+                                "M 20.0 20.0  v24.0 h 10.0  v-24   Z",
+                                "M0,4 L2,4 L4,8 L7,0 L9,0 L4,11 Z",
+                                "M 2 2 L 6 2 L 4 6 z",
+                                "M 10 10 H 90 V 90 H 10 L 10 10"
+                            };
+
     /**
      *
      * @param pcaFilePath - PCA file absolute path
@@ -46,6 +55,8 @@ public class PCAGraph extends Graph {
         pcasWithPhenoList = new ArrayList<>();
         pcaValues = new HashMap<>();
         eigenValues = new ArrayList<>();
+
+        // read data
         readGraphData(pcaFilePath);
         setPopulationGroups();
 
@@ -264,11 +275,11 @@ public class PCAGraph extends Graph {
      */
     @Override
     public ScatterChart<Number, Number> createGraph(String x, String y) throws IOException {
-        String xAxisPca = x;
-        String yAxisPca = y;
+        String xAxisPca = x; // PCA 1
+        String yAxisPca = y; // PCA 2
 
-        int xPcaNumber = Integer.parseInt(xAxisPca.substring(4, xAxisPca.length()));
-        int yPcaNumber = Integer.parseInt(yAxisPca.substring(4, yAxisPca.length()));
+        int xPcaNumber = Integer.parseInt(xAxisPca.substring(4, xAxisPca.length())); //1
+        int yPcaNumber = Integer.parseInt(yAxisPca.substring(4, yAxisPca.length())); //2
 
         NumberAxis xAxis = new NumberAxis();
         xAxis.setSide(Side.BOTTOM);
@@ -281,13 +292,28 @@ public class PCAGraph extends Graph {
         yAxis.setLabel(yAxisPca);
         sc.setTitle(xAxisPca + " Vs " + yAxisPca + " Chart"); // set as default value
 
-        populationGroups.forEach((k, v) -> { // get groups
+        populationGroups.forEach((k, v) -> { // get groups [MKK -> [pc1,pc2,pc3,...], [pc1,pc2,pc3,...],...]
             group = new XYChart.Series<>();
             group.setName(k);
-            for (String[] v1 : v) {
+
+            for (String[] v1 : v) { // [pc1, pc2, pc3,...]
                 group.getData().add(new XYChart.Data(Float.parseFloat(v1[xPcaNumber]), Float.parseFloat(v1[yPcaNumber])));
             }
+
             sc.getData().add(group);
+
+            for(int i=0; i<sc.getData().size(); i++) {
+                Set<Node> nodes = sc.lookupAll(".series" + i);
+                for (Node n : nodes) {
+                    String col = colors[i];
+                    String icon = shapes[i];
+                    n.setStyle("-fx-background-color: col, white;\n"
+                            + "-fx-shape: icon;\n"
+                            + "    -fx-background-insets: 0, 2;\n"
+                            + "    -fx-background-radius: 5px;\n"
+                            + "    -fx-padding: 5px;");
+                }
+            }
         });
 
         return sc;

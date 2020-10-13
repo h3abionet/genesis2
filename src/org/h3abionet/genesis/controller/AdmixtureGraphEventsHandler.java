@@ -5,13 +5,11 @@
  */
 package org.h3abionet.genesis.controller;
 
-import com.sun.javafx.charts.Legend;
+//import com.sun.javafx.charts.Legend;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
@@ -123,8 +121,8 @@ public class AdmixtureGraphEventsHandler {
                 admixChart.setMaxWidth(Double.MAX_VALUE);
 
                 // clear legend items
-                Legend legend = (Legend) admixChart.lookup(".chart-legend");
-                legend.getItems().clear();
+//                Legend legend = (Legend) admixChart.lookup(".chart-legend");
+//                legend.getItems().clear();
 
                 // set the margins of the chart
                 GridPane.setMargin(admixChart, new Insets(0, 0, -3, -3)); // TODO remove the chart content margins on axes
@@ -186,7 +184,7 @@ public class AdmixtureGraphEventsHandler {
                                     dialogStage.showAndWait();
 
                                 } catch (IOException ex) {
-                                    Logger.getLogger(AdmixtureGraphEventsHandler.class.getName()).log(Level.SEVERE, null, ex);
+                                    ;
                                 }
                             }
                         });

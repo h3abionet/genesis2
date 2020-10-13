@@ -16,7 +16,7 @@
 package org.h3abionet.genesis.controller;
 
 import com.idrsolutions.image.tiff.TiffEncoder;
-import com.sun.javafx.charts.Legend;
+//import com.sun.javafx.charts.Legend;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -127,7 +125,7 @@ public class PCAGraphEventsHandler {
                                 dialogStage.showAndWait();
 
                             } catch (Exception ex) {
-                                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+                                ;
                             }
                         }
 
@@ -137,44 +135,44 @@ public class PCAGraphEventsHandler {
                 }
             }
 
-            // Legend section
-            for (Node n : chart.getChildrenUnmodifiable()) {
-                if (n instanceof Legend) {
-                    Legend l = (Legend) n;
-                    for (Legend.LegendItem li : l.getItems()) {
-                        for (XYChart.Series<Number, Number> s : chart.getData()) {
-                            if (s.getName().equals(li.getText())) {
-                                li.getSymbol().setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
-                                li.getSymbol().setOnMouseClicked(me -> {
-                                    // Toggle group (phenotype) visibility on left click
-                                    if (me.getButton() == MouseButton.PRIMARY) {
-                                        for (XYChart.Data<Number, Number> d : s.getData()) {
-                                            if (d.getNode() != null) {
-                                                d.getNode().setVisible(!d.getNode().isVisible()); // Toggle visibility of every node in the series
-                                            }
-                                        }
-                                    }else{
-                                        // show dialog for legend position and hiding phenotype 
-                                        List<String> choices = new ArrayList<>();
-                                        choices.add("bottom");
-                                        choices.add("right");
-
-                                        ChoiceDialog<String> dialog = new ChoiceDialog<>("right", choices);
-                                        dialog.setTitle("Legend");
-                                        dialog.setHeaderText("Select legend position");
-                                        dialog.setContentText("Position:");
-
-                                        Optional<String> result = dialog.showAndWait();
-                                        result.ifPresent(position -> chart.lookup(".chart").setStyle("-fx-legend-side: " + position + ";"));
-                                    }
-                                    
-                                });
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+//             Legend section
+//            for (Node n : chart.getChildrenUnmodifiable()) {
+//                if (n instanceof Legend) {
+//                    Legend l = (Legend) n;
+//                    for (Legend.LegendItem li : l.getItems()) {
+//                        for (XYChart.Series<Number, Number> s : chart.getData()) {
+//                            if (s.getName().equals(li.getText())) {
+//                                li.getSymbol().setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
+//                                li.getSymbol().setOnMouseClicked(me -> {
+//                                    // Toggle group (phenotype) visibility on left click
+//                                    if (me.getButton() == MouseButton.PRIMARY) {
+//                                        for (XYChart.Data<Number, Number> d : s.getData()) {
+//                                            if (d.getNode() != null) {
+//                                                d.getNode().setVisible(!d.getNode().isVisible()); // Toggle visibility of every node in the series
+//                                            }
+//                                        }
+//                                    }else{
+//                                        // show dialog for legend position and hiding phenotype
+//                                        List<String> choices = new ArrayList<>();
+//                                        choices.add("bottom");
+//                                        choices.add("right");
+//
+//                                        ChoiceDialog<String> dialog = new ChoiceDialog<>("right", choices);
+//                                        dialog.setTitle("Legend");
+//                                        dialog.setHeaderText("Select legend position");
+//                                        dialog.setContentText("Position:");
+//
+//                                        Optional<String> result = dialog.showAndWait();
+//                                        result.ifPresent(position -> chart.lookup(".chart").setStyle("-fx-legend-side: " + position + ";"));
+//                                    }
+//
+//                                });
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
 
         } else {
             //            return to the main window if no pcas were selected

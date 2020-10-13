@@ -5,14 +5,10 @@
  */
 package org.h3abionet.genesis.controller;
 
-import com.sun.javafx.charts.Legend;
+//import com.sun.javafx.charts.Legend;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,7 +22,6 @@ import javafx.scene.Scene;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -83,11 +78,10 @@ public class PCAIndividualDetailsController implements Initializable {
     private Button btnCancel;
 
     private ScatterChart<Number, Number> chart;
-//    private HiddenIndividualsController hiddenIndividualsController;
 
-    private static int iconSize;
-    private static String iconColor;
-    private static String iconType;
+    private int iconSize;
+    private String iconColor;
+    private String iconType;
 
     private boolean hideRadioBtnClicked;
     private boolean topRadioBtnClicked;
@@ -96,32 +90,29 @@ public class PCAIndividualDetailsController implements Initializable {
 
     // set icon properties from the iconOptionsController
     public void setIconSize(int iconSize) {
-        PCAIndividualDetailsController.iconSize = iconSize;
-        System.out.println("Icon_size is " + iconSize);
+        this.iconSize = iconSize;
     }
 
     public void setIconColor(String iconColor) {
-        PCAIndividualDetailsController.iconColor = iconColor;
-        System.out.println("Icon Color is " + iconColor);
+        this.iconColor = iconColor;
     }
 
     public void setIconType(String iconType) {
-        PCAIndividualDetailsController.iconType = iconType;
-        System.out.println("Icon type is" + iconType);
+        this.iconType = iconType;
     }
 
     // return requested icon properties
-    public int getIconSize() {
-        return iconSize;
-    }
-
-    public String getIconColor() {
-        return iconColor;
-    }
-
-    public String getIconType() {
-        return iconType;
-    }
+//    public int getIconSize() {
+//        return iconSize;
+//    }
+//
+//    public String getIconColor() {
+//        return iconColor;
+//    }
+//
+//    public String getIconType() {
+//        return iconType;
+//    }
 
     // display pc/pheno values on labels  
     public void setPcaLabel(String coordinates) {
@@ -142,9 +133,13 @@ public class PCAIndividualDetailsController implements Initializable {
     @FXML
     private void changeIcon(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IconOptions.fxml"));
+
         Stage iconStage = new Stage();
         iconStage.initOwner(iconDisplay.getScene().getWindow());
-        iconStage.setScene(new Scene((Parent) fxmlLoader.load()));
+        Scene icon_root = new Scene((Parent) fxmlLoader.load());
+        IconOptionsController iconCtrlr =  (IconOptionsController) fxmlLoader.getController();
+        iconCtrlr.setPCAController(this);
+        iconStage.setScene(icon_root);
         iconStage.setResizable(false);
         iconStage.showAndWait();
 
@@ -177,6 +172,8 @@ public class PCAIndividualDetailsController implements Initializable {
     @FXML
     @SuppressWarnings("empty-statement")
     private void entryOkButton(ActionEvent event) {
+        System.out.println("Icon_size is " + iconSize);
+        System.out.println("Icon Color is " + iconColor);
 
         for (XYChart.Series<Number, Number> series : chart.getData()) {
             if (seriesRadioBtnClicked) {
@@ -185,18 +182,18 @@ public class PCAIndividualDetailsController implements Initializable {
                             dt.getNode().lookup(".chart-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
                                     + "-fx-background-color: #" + iconColor + ";");
 
-                            for (Node n : chart.getChildrenUnmodifiable()) {
-                                if (n instanceof Legend) {
-                                    Legend l = (Legend) n;
-                                    for (Legend.LegendItem li : l.getItems()) {                                        
-                                        if (li.getText().equals(groupName.getValue())) {
-                                            li.getSymbol().lookup(".chart-legend-item-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
-                                                    + "-fx-background-color: #" + iconColor + ";");
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
+//                            for (Node n : chart.getChildrenUnmodifiable()) {
+//                                if (n instanceof Legend) {
+//                                    Legend l = (Legend) n;
+//                                    for (Legend.LegendItem li : l.getItems()) {
+//                                        if (li.getText().equals(groupName.getValue())) {
+//                                            li.getSymbol().lookup(".chart-legend-item-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
+//                                                    + "-fx-background-color: #" + iconColor + ";");
+//                                            break;
+//                                        }
+//                                    }
+//                                }
+//                            }
                         }
                     }
             }
@@ -212,7 +209,7 @@ public class PCAIndividualDetailsController implements Initializable {
                         String yValue = data.getYValue().toString();
                         
                         // get pheno data using x & y co-ordinates
-                        for(String [] s: PCAGraph.getPcasWithPhenoList() ){
+                        for(String [] s: PCAGraph.getPcasWithPhenoList()){
                             // if an array in pcasWithPhenoList has both x & y
                             if(Arrays.asList(s).contains(xValue) && Arrays.asList(s).contains(yValue)){
                                 // get pheno data: [MKK, AFR, pc1, pc2, pc3, ..., FID IID]
@@ -275,4 +272,7 @@ public class PCAIndividualDetailsController implements Initializable {
 
     }
 
+    public void enableOK() {
+        btnOK.setDisable(false);
+    }
 }
