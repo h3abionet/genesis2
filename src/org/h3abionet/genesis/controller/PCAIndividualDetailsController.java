@@ -91,17 +91,14 @@ public class PCAIndividualDetailsController implements Initializable {
     // set icon properties from the iconOptionsController
     public void setIconSize(int iconSize) {
         this.iconSize = iconSize;
-//        System.out.println("Icon_size is " + iconSize);
     }
 
     public void setIconColor(String iconColor) {
         this.iconColor = iconColor;
-//        System.out.println("Icon Color is " + iconColor);
     }
 
     public void setIconType(String iconType) {
         this.iconType = iconType;
-//        System.out.println("Icon type is" + iconType);
     }
 
     // return requested icon properties
@@ -136,9 +133,13 @@ public class PCAIndividualDetailsController implements Initializable {
     @FXML
     private void changeIcon(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IconOptions.fxml"));
+
         Stage iconStage = new Stage();
         iconStage.initOwner(iconDisplay.getScene().getWindow());
-        iconStage.setScene(new Scene((Parent) fxmlLoader.load()));
+        Scene icon_root = new Scene((Parent) fxmlLoader.load());
+        IconOptionsController iconCtrlr =  (IconOptionsController) fxmlLoader.getController();
+        iconCtrlr.setPCAController(this);
+        iconStage.setScene(icon_root);
         iconStage.setResizable(false);
         iconStage.showAndWait();
 
@@ -271,4 +272,7 @@ public class PCAIndividualDetailsController implements Initializable {
 
     }
 
+    public void enableOK() {
+        btnOK.setDisable(false);
+    }
 }

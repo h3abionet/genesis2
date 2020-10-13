@@ -135,7 +135,7 @@ public class PCAGraphEventsHandler {
                 }
             }
 
-            // Legend section
+//             Legend section
 //            for (Node n : chart.getChildrenUnmodifiable()) {
 //                if (n instanceof Legend) {
 //                    Legend l = (Legend) n;
@@ -152,7 +152,7 @@ public class PCAGraphEventsHandler {
 //                                            }
 //                                        }
 //                                    }else{
-//                                        // show dialog for legend position and hiding phenotype 
+//                                        // show dialog for legend position and hiding phenotype
 //                                        List<String> choices = new ArrayList<>();
 //                                        choices.add("bottom");
 //                                        choices.add("right");
@@ -165,7 +165,7 @@ public class PCAGraphEventsHandler {
 //                                        Optional<String> result = dialog.showAndWait();
 //                                        result.ifPresent(position -> chart.lookup(".chart").setStyle("-fx-legend-side: " + position + ";"));
 //                                    }
-//                                    
+//
 //                                });
 //                                break;
 //                            }
