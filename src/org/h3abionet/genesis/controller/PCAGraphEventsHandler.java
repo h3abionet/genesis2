@@ -23,10 +23,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -40,12 +38,14 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -70,7 +70,7 @@ public class PCAGraphEventsHandler {
 
     public PCAGraphEventsHandler(XYChart<Number, Number> chart) {
         this.chart = chart;
-        
+
     }
 
     @SuppressWarnings("empty-statement")
@@ -106,7 +106,7 @@ public class PCAGraphEventsHandler {
                                 Stage dialogStage = new Stage();
                                 dialogStage.setScene(new Scene(parent));
                                 dialogStage.setResizable(false);
-                                
+
                                 PCAIndividualDetailsController individualDetailsController = fxmlLoader.getController();
                                 String xValue = data.getXValue().toString();
                                 String yValue = data.getYValue().toString();
@@ -135,59 +135,59 @@ public class PCAGraphEventsHandler {
                 }
             }
 
-//             Legend section
-//            for (Node n : chart.getChildrenUnmodifiable()) {
-//                if (n instanceof Legend) {
-//                    Legend l = (Legend) n;
-//                    for (Legend.LegendItem li : l.getItems()) {
-//                        for (XYChart.Series<Number, Number> s : chart.getData()) {
-//                            if (s.getName().equals(li.getText())) {
-//                                li.getSymbol().setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
-//                                li.getSymbol().setOnMouseClicked(me -> {
-//                                    // Toggle group (phenotype) visibility on left click
-//                                    if (me.getButton() == MouseButton.PRIMARY) {
-//                                        for (XYChart.Data<Number, Number> d : s.getData()) {
-//                                            if (d.getNode() != null) {
-//                                                d.getNode().setVisible(!d.getNode().isVisible()); // Toggle visibility of every node in the series
-//                                            }
-//                                        }
-//                                    }else{
-//                                        // show dialog for legend position and hiding phenotype
-//                                        List<String> choices = new ArrayList<>();
-//                                        choices.add("bottom");
-//                                        choices.add("right");
-//
-//                                        ChoiceDialog<String> dialog = new ChoiceDialog<>("right", choices);
-//                                        dialog.setTitle("Legend");
-//                                        dialog.setHeaderText("Select legend position");
-//                                        dialog.setContentText("Position:");
-//
-//                                        Optional<String> result = dialog.showAndWait();
-//                                        result.ifPresent(position -> chart.lookup(".chart").setStyle("-fx-legend-side: " + position + ";"));
-//                                    }
-//
-//                                });
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+            // set the legend
+            for (Node n : chart.getChildrenUnmodifiable()) { // get all nodes on the chart
+                if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) { // if legend
+                    TilePane tn = (TilePane) n; // get tile pane
+                    ObservableList<Node> children = tn.getChildren(); // get all items (population groups)
+                    for(Node child : children){
+                        Label lab = (Label) child.lookup(".chart-legend-item"); // popn group + its icon
+                        for (XYChart.Series<Number, Number> s : chart.getData()) {
+                            if (s.getName().equals(lab.getText())) {
+                                lab.setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
+                                lab.setOnMouseClicked(me -> {
+                                    // Toggle group (phenotype) visibility on left click
+                                    if (me.getButton() == MouseButton.PRIMARY) {
+                                        for (XYChart.Data<Number, Number> d : s.getData()) {
+                                            if (d.getNode() != null) {
+                                                d.getNode().setVisible(!d.getNode().isVisible()); // Toggle visibility of every node in the series
+                                            }
+                                        }
+                                    }else{ // right click
+                                        // show dialog for legend position and hiding phenotype
+                                          List<String> choices = new ArrayList<>({"bottom"});
+                                          choices.add("bottom");
+                                          choices.add("right");
+
+                                          ChoiceDialog<String> dialog = new ChoiceDialog<>("right", choices);
+                                          dialog.setTitle("Legend");
+                                          dialog.setHeaderText("Select legend position");
+                                          dialog.setContentText("Position:");
+
+                                          Optional<String> result = dialog.showAndWait();
+                                          result.ifPresent(position -> chart.lookup(".chart").setStyle("-fx-legend-side: " + position + ";"));
+
+                                    }
+                                });
+                                break;
+                            }
+                        }
+                    }
+
+                }
+            }
 
         } else {
-            //            return to the main window if no pcas were selected
             ;
         }
-
         return chartContainer;
-
     }
 
     public void saveChart() throws Exception {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);
-        
+
         if (chart == null) {
             alert.setContentText("There is no chart to save");
             alert.showAndWait();
@@ -202,18 +202,18 @@ public class PCAGraphEventsHandler {
             File file = fileChooser.showSaveDialog(null);
 
             // tranform scale can be reduced for lower resolutions (10, 10 or 5, 5)
-            
+
             int pixelScale = 5;
             int width = (int) Math.rint(pixelScale*chart.getWidth());
             int height = (int) Math.rint(pixelScale*chart.getHeight());
             WritableImage writableImage = new WritableImage(width, height);
-                        
+
             SnapshotParameters sp = new SnapshotParameters();
             sp.setTransform(Transform.scale(pixelScale, pixelScale));
             Image image = chart.snapshot(sp, writableImage);
-            
+
             BufferedImage bufImageARGB = SwingFXUtils.fromFXImage(image, null);
-            BufferedImage bufImageRGB = new BufferedImage(bufImageARGB.getWidth(), 
+            BufferedImage bufImageRGB = new BufferedImage(bufImageARGB.getWidth(),
                     bufImageARGB.getHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics2D graphics = bufImageRGB.createGraphics();
             graphics.drawImage(bufImageARGB, 0, 0, null);
@@ -270,7 +270,7 @@ public class PCAGraphEventsHandler {
         }
 
     }
-    
+
 
 }
 

@@ -18,6 +18,8 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
+import javafx.scene.layout.TilePane;
 import org.h3abionet.genesis.Genesis;
 
 /**
@@ -34,16 +36,8 @@ public class PCAGraph extends Graph {
     private BufferedReader bufferReader;
     private String line;
 
-    private String[] colors = {"#860061","#ff8000","#008000","#800080","#800000","#000080","#808000","#FFFF00","#00ffff","#ff00ff"};
-    private String[] shapes = {"M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z",
-                                "M0 -3.5 v7 l 4 -3.5z",
-                                "M5,0 L10,9 L5,18 L0,9 Z",
-                                "M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,10 L0,10 L0,8 L4,5 L0,2 L0,0 Z",
-                                "M 20.0 20.0  v24.0 h 10.0  v-24   Z",
-                                "M0,4 L2,4 L4,8 L7,0 L9,0 L4,11 Z",
-                                "M 2 2 L 6 2 L 4 6 z",
-                                "M 10 10 H 90 V 90 H 10 L 10 10"
-                            };
+    private String[] colors;
+    private String[] icons;
 
     /**
      *
@@ -60,6 +54,16 @@ public class PCAGraph extends Graph {
         readGraphData(pcaFilePath);
         setPopulationGroups();
 
+        colors = new String[]{"#860061", "#ff8000", "#008000","#800080","#800000","#000080","#808000","#FFFF00","#00ffff","#ff00ff"};
+        icons = new String[]{"M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z",
+                                "M0 -3.5 v7 l 4 -3.5z",
+                                "M5,0 L10,9 L5,18 L0,9 Z",
+                                "M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,10 L0,10 L0,8 L4,5 L0,2 L0,0 Z",
+                                "M 20.0 20.0  v24.0 h 10.0  v-24   Z",
+                                "M0,4 L2,4 L4,8 L7,0 L9,0 L4,11 Z",
+                                "M 2 2 L 6 2 L 4 6 z",
+                                "M 10 10 H 90 V 90 H 10 L 10 10"
+                                };
     }
 
     /**
@@ -299,22 +303,34 @@ public class PCAGraph extends Graph {
             for (String[] v1 : v) { // [pc1, pc2, pc3,...]
                 group.getData().add(new XYChart.Data(Float.parseFloat(v1[xPcaNumber]), Float.parseFloat(v1[yPcaNumber])));
             }
-
             sc.getData().add(group);
-
-            for(int i=0; i<sc.getData().size(); i++) {
-                Set<Node> nodes = sc.lookupAll(".series" + i);
-                for (Node n : nodes) {
-                    String col = colors[i];
-                    String icon = shapes[i];
-                    n.setStyle("-fx-background-color: col, white;\n"
-                            + "-fx-shape: icon;\n"
-                            + "    -fx-background-insets: 0, 2;\n"
-                            + "    -fx-background-radius: 5px;\n"
-                            + "    -fx-padding: 5px;");
-                }
-            }
         });
+
+//         set colors and icons
+        for(int i=0; i<sc.getData().size(); i++) {
+            Set<Node> nodes = sc.lookupAll(".series" + i);
+            for (Node n : nodes) {
+                n.setStyle("-fx-background-color: "+colors[i]+", white;"
+                        + "-fx-shape: \""+ icons[i]+"\";"
+                        + "-fx-background-insets: 0, 2;"
+                        + "-fx-background-radius: 5px;"
+                        + "-fx-padding: 5px;");
+            }
+            // set the legend
+            for (Node n : sc.getChildrenUnmodifiable()) {
+                if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+                    TilePane tn = (TilePane) n;
+                    ObservableList<Node> children = tn.getChildren();
+                    Label lab = (Label) children.get(i).lookup(".chart-legend-item");
+                    lab.getGraphic().setStyle("-fx-background-color: "+colors[i]+", white;"
+                            + "-fx-shape: \""+ icons[i]+"\";"
+                            + "-fx-background-insets: 0, 2;"
+                            + "-fx-background-radius: 5px;"
+                            + "-fx-padding: 5px;");
+                }
+
+            }
+        }
 
         return sc;
     }
