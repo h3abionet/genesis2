@@ -7,9 +7,13 @@ package org.h3abionet.genesis.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.ScatterChart;
@@ -25,9 +29,8 @@ import org.h3abionet.genesis.model.PCAGraph;
  *
  * @author Henry
  */
-public class PCADataInputController {
+public class PCADataInputController implements Initializable {
 
-    private static Stage dialogStage;
     private static PCAGraph pcaGraph;
 
     private static String pcaFilePath = "";
@@ -53,30 +56,15 @@ public class PCADataInputController {
     @FXML
     private Button entryCancelButton;
 
-    /**
-     * presents a dialog box with a stored PCA file
-     *
-     * @throws IOException
-     */
-    public static void launchPCADataInputView() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCADataInput.fxml"));
-        Parent root = (Parent) fxmlLoader.load();
-        PCADataInputController controller = (PCADataInputController) fxmlLoader.getController();
-        dialogStage = new Stage();
-        dialogStage.setScene(new Scene(root));
-        dialogStage.setResizable(false);
-
-        controller.pcaEvecFileBtn.setText(pcaFileName);
-        controller.pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
-        controller.pcaComboButton1.setItems(pcaGraph.getPCAcolumns());
-        controller.pcaComboButton2.setItems(pcaGraph.getPCAcolumns());
+    void setButtons(){
+        pcaEvecFileBtn.setText(pcaFileName);
+        pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
+        pcaComboButton1.setItems(pcaGraph.getPCAcolumns());
+        pcaComboButton2.setItems(pcaGraph.getPCAcolumns());
 
         // show current PCAs being displayed - user changes them
-        controller.pcaComboButton1.setValue(pcaComboButton1Value);
-        controller.pcaComboButton2.setValue(pcaComboButton2Value);
-
-        dialogStage.showAndWait();
-
+        pcaComboButton1.setValue(pcaComboButton1Value);
+        pcaComboButton2.setValue(pcaComboButton2Value);
     }
 
     /**
@@ -96,6 +84,13 @@ public class PCADataInputController {
             pcaGraph = new PCAGraph(pcaFilePath);
             pcaComboButton1.setItems(pcaGraph.getPCAcolumns());
             pcaComboButton2.setItems(pcaGraph.getPCAcolumns());
+
+            // set default pcas
+            pcaComboButton1.setValue(pcaGraph.getPCAcolumns().get(0)); // set to PCA1
+            pcaComboButton2.setValue(pcaGraph.getPCAcolumns().get(1)); // set to PCA2
+
+            entryOKButton.setDisable(false);
+
         }catch(Exception e){
             Genesis.throwErrorException("No File Imported");
         }
@@ -130,7 +125,6 @@ public class PCADataInputController {
 
         } else {
             Genesis.throwInformationException("Please import the file or select the PCAs to plot");
-            
         }
     }
 
@@ -142,10 +136,11 @@ public class PCADataInputController {
     private File getFile(String which) {
         File wanted;
         FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("pca file", "*.eigenvec", "*.evec");
+        fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setTitle(which);
-        wanted = fileChooser.showOpenDialog(dialogStage);
+        wanted = fileChooser.showOpenDialog(new Stage());
         return wanted;
-
     }
 
     /**
@@ -159,4 +154,13 @@ public class PCADataInputController {
         Genesis.closeOpenStage(event);
     }
 
+    void enableOK() {
+        entryOKButton.setDisable(false);
+    }
+
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        entryOKButton.setDisable(true);
+    }
 }

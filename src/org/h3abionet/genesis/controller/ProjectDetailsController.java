@@ -150,6 +150,8 @@ public class ProjectDetailsController implements Initializable{
     private File getFile(String which) {
         File wanted;
         FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("project files", "*.phe", "*.fam");
+        fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setTitle(which);
         Stage stage = new Stage();
         wanted = fileChooser.showOpenDialog(stage);

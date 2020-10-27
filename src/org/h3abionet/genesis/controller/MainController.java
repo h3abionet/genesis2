@@ -212,7 +212,16 @@ public class MainController implements Initializable {
     @FXML
     @SuppressWarnings("empty-statement")
     private void loadData(ActionEvent event) throws IOException {
-        PCADataInputController.launchPCADataInputView();
+        FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCADataInput.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+        PCADataInputController controller = (PCADataInputController) fxmlLoader.getController();
+        controller.enableOK();
+        controller.setButtons();
+        Stage dialogStage = new Stage();
+        dialogStage.setScene(new Scene(root));
+        dialogStage.setResizable(false);
+        dialogStage.showAndWait();
+
         try {
             setPCAChart(PCADataInputController.pcaChart);
         } catch (Exception e) {

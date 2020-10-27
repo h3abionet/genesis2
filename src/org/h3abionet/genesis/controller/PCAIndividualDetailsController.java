@@ -28,6 +28,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCAGraph;
@@ -82,6 +83,7 @@ public class PCAIndividualDetailsController implements Initializable {
     private int iconSize;
     private String iconColor;
     private String iconType;
+    private String clickedIconStyle;
 
     private boolean hideRadioBtnClicked;
     private boolean topRadioBtnClicked;
@@ -101,19 +103,6 @@ public class PCAIndividualDetailsController implements Initializable {
         this.iconType = iconType;
     }
 
-    // return requested icon properties
-//    public int getIconSize() {
-//        return iconSize;
-//    }
-//
-//    public String getIconColor() {
-//        return iconColor;
-//    }
-//
-//    public String getIconType() {
-//        return iconType;
-//    }
-
     // display pc/pheno values on labels  
     public void setPcaLabel(String coordinates) {
         pcaLabel.setText(coordinates);
@@ -125,8 +114,8 @@ public class PCAIndividualDetailsController implements Initializable {
 
     // display icon 
     public void setIconDisplay(String style) {
-        iconDisplay.setStyle(style);
-
+        clickedIconStyle = style;
+        iconDisplay.setStyle(clickedIconStyle);
     }
 
     // load iconOptionsController upon request
@@ -139,11 +128,11 @@ public class PCAIndividualDetailsController implements Initializable {
         Scene icon_root = new Scene((Parent) fxmlLoader.load());
         IconOptionsController iconCtrlr =  (IconOptionsController) fxmlLoader.getController();
         iconCtrlr.setPCAController(this);
+        iconCtrlr.setIconDisplay(clickedIconStyle); // show clicked icon
         iconStage.setScene(icon_root);
         iconStage.setResizable(false);
         iconStage.showAndWait();
 
-        chosenIconDisplay.setVisible(true);
         chosenIconDisplay.setStyle("-fx-shape: \"" + iconType + "\";"
                 + "-fx-background-color: #" + iconColor + ";"
                 + "-fx-background-radius: " + iconSize + "px;"
@@ -172,28 +161,39 @@ public class PCAIndividualDetailsController implements Initializable {
     @FXML
     @SuppressWarnings("empty-statement")
     private void entryOkButton(ActionEvent event) {
-        System.out.println("Icon_size is " + iconSize);
-        System.out.println("Icon Color is " + iconColor);
 
         for (XYChart.Series<Number, Number> series : chart.getData()) {
             if (seriesRadioBtnClicked) {
                     if (series.getName().equals(groupName.getValue())) {                       
                         for (XYChart.Data<Number, Number> dt : series.getData()) {                            
                             dt.getNode().lookup(".chart-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
-                                    + "-fx-background-color: #" + iconColor + ";");
+                                    + "-fx-background-color: #"+iconColor+", white;"
+                                    + "-fx-shape: \""+ iconType+"\";"
+                                    + "-fx-background-insets: 0, 2;"
+                                    + "-fx-background-radius: 5px;"
+                                    + "-fx-padding: 5px;");
 
-//                            for (Node n : chart.getChildrenUnmodifiable()) {
-//                                if (n instanceof Legend) {
-//                                    Legend l = (Legend) n;
-//                                    for (Legend.LegendItem li : l.getItems()) {
-//                                        if (li.getText().equals(groupName.getValue())) {
-//                                            li.getSymbol().lookup(".chart-legend-item-symbol").setStyle("-fx-shape: \"" + iconType + "\";"
-//                                                    + "-fx-background-color: #" + iconColor + ";");
-//                                            break;
-//                                        }
-//                                    }
-//                                }
-//                            }
+                            // set the legend
+                            for (Node n : chart.getChildrenUnmodifiable()) {
+                                if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+                                    TilePane tn = (TilePane) n;
+                                    ObservableList<Node> children = tn.getChildren();
+                                    for(int i=0;i<children.size();i++){
+                                        Label lab = (Label) children.get(i).lookup(".chart-legend-item");
+                                        if(lab.getText().equals(groupName.getValue())){
+                                            lab.getGraphic().setStyle("-fx-background-color: "+iconColor+", white;"
+                                                    + "-fx-shape: \""+ iconType+"\";"
+                                                    + "-fx-background-insets: 0, 2;"
+                                                    + "-fx-background-radius: 5px;"
+                                                    + "-fx-padding: 5px;");
+                                            break;
+                                        }
+
+                                    }
+
+                                }
+
+                            }
                         }
                     }
             }

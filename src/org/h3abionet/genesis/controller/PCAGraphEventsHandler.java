@@ -155,7 +155,7 @@ public class PCAGraphEventsHandler {
                                         }
                                     }else{ // right click
                                         // show dialog for legend position and hiding phenotype
-                                          List<String> choices = new ArrayList<>({"bottom"});
+                                          List<String> choices = new ArrayList<>();
                                           choices.add("bottom");
                                           choices.add("right");
 

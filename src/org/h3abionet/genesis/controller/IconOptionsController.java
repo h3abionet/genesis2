@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.layout.AnchorPane;
 import org.h3abionet.genesis.Genesis;
 
 /**
@@ -27,8 +28,8 @@ public class IconOptionsController implements Initializable {
 
     private PCAIndividualDetailsController individualDetailsController;
 
-    private final ObservableList<String> shapesList = FXCollections.observableArrayList("kite", "cross",
-            "triangle", "tick", "rectangle");
+    private final ObservableList<String> shapesList = FXCollections.observableArrayList("star", "arrow", "kite", "cross",
+            "rectangle", "tick", "triangle", "square");
 
     HashMap<String, String> iconsHashmap;
 
@@ -52,7 +53,7 @@ public class IconOptionsController implements Initializable {
     private Spinner iconSize;
 
     @FXML
-    private Button iconDisplay;
+    private AnchorPane iconDisplay;
 
     @FXML
     private ColorPicker colorPicker;
@@ -64,7 +65,7 @@ public class IconOptionsController implements Initializable {
     private Button btnCancel;
     
     private String iconTypeValue;
-    private Integer iconSizeValue;
+    private Integer iconSizeValue = 5;
     private String colorPickerValue;
 
     @FXML
@@ -84,19 +85,18 @@ public class IconOptionsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.iconSizeValue = 5;
-        iconDisplay.setVisible(false);
+//        this.iconSizeValue = 5;
+//        iconDisplay.setVisible(false);
         
-        SpinnerValueFactory<Integer> iconSizes = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 20, 5);
+        SpinnerValueFactory<Integer> iconSizes = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 30, 5);
         iconSize.setValueFactory(iconSizes);
         iconSize.setEditable(true);
 
         SpinnerValueFactory<String> shapeFactory = new SpinnerValueFactory.ListSpinnerValueFactory<>(shapesList);
         iconType.setValueFactory(shapeFactory);
-        
 
         iconType.valueProperty().addListener((obs, oldValue, newValue) -> {
-            iconDisplay.setVisible(true);
+//            iconDisplay.setVisible(true);
             this.iconTypeValue = (String) newValue;
             this.colorPickerValue = Integer.toHexString(colorPicker.getValue().hashCode());
             setStyle(this.iconTypeValue, this.iconSizeValue, this.colorPickerValue);
@@ -129,4 +129,10 @@ public class IconOptionsController implements Initializable {
     public void setPCAController(PCAIndividualDetailsController caller) {
         individualDetailsController = caller;
     }
+
+    // display icon
+    public void setIconDisplay(String style) {
+        iconDisplay.setStyle(style);
+    }
+
 }
