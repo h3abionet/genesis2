@@ -5,6 +5,7 @@
  */
 package org.h3abionet.genesis.controller;
 
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
@@ -45,6 +46,7 @@ public class HiddenIndividualsController implements Initializable{
     private void entryUnhideBtn(ActionEvent event) {
         // get iid
         String iid = hiddenIndividual.getValue();
+
         // get (x & y coordinates, and group name)
         String [] hidenPoint = hidenIds.get(iid);
         
@@ -58,7 +60,10 @@ public class HiddenIndividualsController implements Initializable{
         ScatterChart<Number, Number> chart = MainController.getPcaChart();
         for(XYChart.Series<Number, Number> s: chart.getData()){
             if(s.getName().equals(groupName)){
-                s.getData().add(new XYChart.Data(x,y));
+                XYChart.Data<Number, Number> data = new XYChart.Data(x,y);
+                data.getNode().removeEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, new DataPointMouseEvent(data, chart));
+
+                s.getData().add(data);
                 break;
             }
         }

@@ -97,39 +97,10 @@ public class PCAGraphEventsHandler {
 
             for (XYChart.Series<Number, Number> series : chart.getData()) {
                 for (XYChart.Data<Number, Number> data : series.getData()) {
-                    data.getNode().addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent event) {
-                            try {
-                                FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IndividualDetails.fxml"));
-                                Parent parent = (Parent) fxmlLoader.load();
-                                Stage dialogStage = new Stage();
-                                dialogStage.setScene(new Scene(parent));
-                                dialogStage.setResizable(false);
+                    // add event which loads the data point details
+                    DataPointMouseEvent iid_details = new DataPointMouseEvent(data,chart);
+                    data.getNode().addEventHandler(MouseEvent.MOUSE_CLICKED, iid_details);
 
-                                PCAIndividualDetailsController individualDetailsController = fxmlLoader.getController();
-                                String xValue = data.getXValue().toString();
-                                String yValue = data.getYValue().toString();
-                                individualDetailsController.setPcaLabel(xAxisLabel + ": " + xValue + "\n" + yAxisLabel + ": " + yValue);
-                                // get pheno data using x & y co-ordinates
-                                for(String [] s: PCAGraph.getPcasWithPhenoList() ){
-                                    // if an array in pcasWithPhenoList has both x & y
-                                    if(Arrays.asList(s).contains(xValue) && Arrays.asList(s).contains(yValue)){
-                                        // get pheno data: [MKK, AFR, pc1, pc2, pc3, ..., FID IID]
-                                        ObservableList<String> phenos = FXCollections.<String>observableArrayList(s[s.length-1], s[0], s[1]);
-                                        individualDetailsController.setPhenoLabel(phenos);
-                                        break;
-                                    }
-                                }
-                                individualDetailsController.setIconDisplay(data.getNode().getStyle());
-                                dialogStage.showAndWait();
-
-                            } catch (Exception ex) {
-                                ;
-                            }
-                        }
-
-                    });
                     // manage tooltip delay
                     Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
                 }
@@ -198,14 +169,14 @@ public class PCAGraphEventsHandler {
             FileChooser.ExtensionFilter tiffFilter = new FileChooser.ExtensionFilter("tiff", "*.tiff");
             FileChooser.ExtensionFilter jpgFilter = new FileChooser.ExtensionFilter("JPG", "*.JPG");
             FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("pdf", "*.pdf");
-            fileChooser.getExtensionFilters().addAll(pngFilter, tiffFilter,jpgFilter,pdfFilter);
+            fileChooser.getExtensionFilters().addAll(pngFilter, tiffFilter, jpgFilter, pdfFilter);
             File file = fileChooser.showSaveDialog(null);
 
             // tranform scale can be reduced for lower resolutions (10, 10 or 5, 5)
 
             int pixelScale = 5;
-            int width = (int) Math.rint(pixelScale*chart.getWidth());
-            int height = (int) Math.rint(pixelScale*chart.getHeight());
+            int width = (int) Math.rint(pixelScale * chart.getWidth());
+            int height = (int) Math.rint(pixelScale * chart.getHeight());
             WritableImage writableImage = new WritableImage(width, height);
 
             SnapshotParameters sp = new SnapshotParameters();
@@ -270,7 +241,6 @@ public class PCAGraphEventsHandler {
         }
 
     }
-
 
 }
 

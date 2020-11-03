@@ -26,6 +26,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.TilePane;
@@ -89,6 +90,8 @@ public class PCAIndividualDetailsController implements Initializable {
     private boolean topRadioBtnClicked;
     private boolean clearRadioBtnClicked;
     private boolean seriesRadioBtnClicked;
+
+    private DataPointMouseEvent dataPointMouseEvent;
 
     // set icon properties from the iconOptionsController
     public void setIconSize(int iconSize) {
@@ -202,12 +205,16 @@ public class PCAIndividualDetailsController implements Initializable {
                 if (hideRadioBtnClicked) {
                     data.getNode().setOnMouseClicked(e -> {
                         // hide the visibility of the button
-                        data.getNode().setVisible(!data.getNode().isVisible());
-                                                
+                        data.getNode().setVisible(false);
+                        data.getNode().setStyle("-fx-background-color: white"); // hide point with white color
+
+                        // remove mouse event from the pca point
+                        data.getNode().removeEventHandler(MouseEvent.MOUSE_CLICKED, dataPointMouseEvent);
+
                         // get its coordinates
                         String xValue = data.getXValue().toString();
                         String yValue = data.getYValue().toString();
-                        
+
                         // get pheno data using x & y co-ordinates
                         for(String [] s: PCAGraph.getPcasWithPhenoList()){
                             // if an array in pcasWithPhenoList has both x & y
@@ -218,7 +225,7 @@ public class PCAIndividualDetailsController implements Initializable {
                                 break;
                             }
                         }
-                        
+
                     });
                 }
                 if (topRadioBtnClicked) {
@@ -253,7 +260,6 @@ public class PCAIndividualDetailsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        hiddenIndividualsController = new HiddenIndividualsController();
         chosenIconDisplay.setVisible(false);
         chart = MainController.getPcaChart();
 
@@ -275,4 +281,10 @@ public class PCAIndividualDetailsController implements Initializable {
     public void enableOK() {
         btnOK.setDisable(false);
     }
+
+    void setDataPointMouseEvent( DataPointMouseEvent event){
+        dataPointMouseEvent = event;
+    }
+
+
 }
