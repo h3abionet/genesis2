@@ -6,19 +6,18 @@
 package org.h3abionet.genesis.controller;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.ResourceBundle;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.model.PCAGraph;
 
 /**
  *
@@ -28,29 +27,14 @@ public class IconOptionsController implements Initializable {
 
     private PCAIndividualDetailsController individualDetailsController;
 
-    private final ObservableList<String> shapesList = FXCollections.observableArrayList("star", "arrow", "kite", "cross",
-            "rectangle", "tick", "triangle", "square");
-
-    HashMap<String, String> iconsHashmap;
-
-    public IconOptionsController() {
-        this.iconsHashmap = new HashMap<>();
-        iconsHashmap = new HashMap<String, String>();
-        iconsHashmap.put("star", "M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z");
-        iconsHashmap.put("arrow", "M0 -3.5 v7 l 4 -3.5z");
-        iconsHashmap.put("kite", "M5,0 L10,9 L5,18 L0,9 Z");
-        iconsHashmap.put("cross", "M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,10 L0,10 L0,8 L4,5 L0,2 L0,0 Z");
-        iconsHashmap.put("rectangle", "M 20.0 20.0  v24.0 h 10.0  v-24   Z");
-        iconsHashmap.put("tick", "M0,4 L2,4 L4,8 L7,0 L9,0 L4,11 Z");
-        iconsHashmap.put("triangle", "M 2 2 L 6 2 L 4 6 z");
-        iconsHashmap.put("square", "M 10 10 H 90 V 90 H 10 L 10 10");
-    }
+    private PCAGraph pcaGraph;
+    private ObservableList<String> shapesList;
 
     @FXML
-    private Spinner iconType;
+    private ComboBox<String> iconTypeCombo;
 
     @FXML
-    private Spinner iconSize;
+    private ComboBox<Integer> iconSizeCombo;
 
     @FXML
     private AnchorPane iconDisplay;
@@ -65,14 +49,14 @@ public class IconOptionsController implements Initializable {
     private Button btnCancel;
     
     private String iconTypeValue;
-    private Integer iconSizeValue = 5;
-    private String colorPickerValue;
+    private Integer iconSizeValue = 5; // default
+    private String iconColorValue;
 
     @FXML
     private void entryOKBtn(ActionEvent event) {
         individualDetailsController.setIconSize(this.iconSizeValue);
-        individualDetailsController.setIconType(iconsHashmap.get(this.iconTypeValue));
-        individualDetailsController.setIconColor(this.colorPickerValue);
+        individualDetailsController.setIconType(this.iconTypeValue);
+        individualDetailsController.setIconColor(this.iconColorValue);
         individualDetailsController.enableOK();
         Genesis.closeOpenStage(event);
     }
@@ -80,59 +64,89 @@ public class IconOptionsController implements Initializable {
     @FXML
     private void entryCancelBtn(ActionEvent event) {
         Genesis.closeOpenStage(event);
-
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        this.iconSizeValue = 5;
-//        iconDisplay.setVisible(false);
-        
-        SpinnerValueFactory<Integer> iconSizes = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 30, 5);
-        iconSize.setValueFactory(iconSizes);
-        iconSize.setEditable(true);
+        // set a list of icon sizes
+//        SpinnerValueFactory<Integer> iconSizesFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 30);
+//        iconSizeSpinner.setValueFactory(iconSizesFactory);
+//        iconSizesFactory.setValue(iconSizeValue);
+//        iconSizeSpinner.setEditable(true);
 
-        SpinnerValueFactory<String> shapeFactory = new SpinnerValueFactory.ListSpinnerValueFactory<>(shapesList);
-        iconType.setValueFactory(shapeFactory);
-
-        iconType.valueProperty().addListener((obs, oldValue, newValue) -> {
+//        iconTypeSpinner.valueProperty().addListener((obs, oldValue, newValue) -> {
+//            iconTypeValue = (String) newValue;
+//            iconColorValue = Integer.toHexString(colorPicker.getValue().hashCode());
+//            setStyle(iconTypeValue, iconSizeValue, iconColorValue);
+//
+//        });
+////
+//        iconSizeSpinner.valueProperty().addListener((obs, oldValue, newValue) -> {
 //            iconDisplay.setVisible(true);
-            this.iconTypeValue = (String) newValue;
-            this.colorPickerValue = Integer.toHexString(colorPicker.getValue().hashCode());
-            setStyle(this.iconTypeValue, this.iconSizeValue, this.colorPickerValue);
+//            this.iconSizeValue = (Integer) newValue;
+//            this.iconColorValue = Integer.toHexString(colorPicker.getValue().hashCode());
+//            setStyle(this.iconTypeValue, this.iconSizeValue, this.iconColorValue);
+//        });
+    }
 
-        });
+    @FXML
+    private void setIconSizeComboPressed(ActionEvent event){
+        setStyle(iconTypeValue, iconSizeValue, iconColorValue);
+    }
 
-        iconSize.valueProperty().addListener((obs, oldValue, newValue) -> {
-            iconDisplay.setVisible(true);
-            this.iconSizeValue = (Integer) newValue;
-            this.colorPickerValue = Integer.toHexString(colorPicker.getValue().hashCode());
-            setStyle(this.iconTypeValue, this.iconSizeValue, this.colorPickerValue);
+    @FXML
+    private void iconTypeComboPressed(ActionEvent event){
+        iconTypeValue = (String) iconTypeCombo.getValue();
+        setStyle(iconTypeValue, iconSizeValue, iconColorValue);
+    }
 
-        }
-        );
-
-        
+    @FXML
+    private void colorPickerPressed(ActionEvent event){
+        iconColorValue = Integer.toHexString(colorPicker.getValue().hashCode());
+        System.out.println(iconColorValue);
+        String icon = individualDetailsController.getShape(iconTypeValue);
+        setStyle(icon, iconSizeValue, iconColorValue);
     }
     
     // set css style for icons
     public void setStyle(String chosenIcon, int chosenSize, String chosenColor){
-        iconDisplay.setStyle("-fx-shape: \"" + iconsHashmap.get(chosenIcon) + "\";"
-                    + "-fx-background-color: #" + chosenColor + ";"
+        iconDisplay.setStyle("-fx-shape: \""+ chosenIcon+ "\";"
+                    + "-fx-background-color: #" + chosenColor + ", white;"
                     + "-fx-background-radius: " + chosenSize + "px;"
                     + "-fx-padding: "+ chosenSize +"px;"
                     + "-fx-pref-width: "+ chosenSize +"px;"
                     + "fx-pref-height: "+ chosenSize +"px;");
-    
+    }
+
+    public void setShapesList(ObservableList<String> shapesList) {
+        this.shapesList = shapesList;
+        // set a list of icon names
+        iconTypeCombo.getItems().addAll(shapesList);
+        iconTypeCombo.setValue(iconTypeValue);
     }
 
     public void setPCAController(PCAIndividualDetailsController caller) {
         individualDetailsController = caller;
     }
 
-    // display icon
+    // set default icon on the display
     public void setIconDisplay(String style) {
         iconDisplay.setStyle(style);
     }
+    // set default color
+    public void setIconColorValue(String color) {
+        this.iconColorValue = color;
+        colorPicker.setValue(Color.web(color));
+    }
 
+    // set default icon type
+    public void setIconTypeValue(String iconTypeValue) {
+        this.iconTypeValue = iconTypeValue;
+    }
+    // set default icon size
+    public void setIconSizeValue(Integer iconSizeValue) {
+        this.iconSizeValue = iconSizeValue;
+        iconSizeCombo.getItems().addAll(FXCollections.observableArrayList(3,4,5,6,7,8,9,10,11,12,13,14,15));
+        iconSizeCombo.setValue(iconSizeValue);
+    }
 }

@@ -39,7 +39,7 @@ public class PCADataInputController implements Initializable {
     private static String pcaComboButton1Value = "";
     private static String pcaComboButton2Value = "";
     public static ScatterChart<Number, Number> pcaChart;
-    public static boolean firstPcaSuccessful = false;
+    private boolean firstPcaSuccessful = false;
 
     @FXML
     private Button pcaEvecFileBtn;
@@ -55,6 +55,7 @@ public class PCADataInputController implements Initializable {
 
     @FXML
     private Button entryCancelButton;
+    private MainController mainController;
 
     void setButtons(){
         pcaEvecFileBtn.setText(pcaFileName);
@@ -81,7 +82,10 @@ public class PCADataInputController implements Initializable {
             pcaFileName = pcaFile.getName();
             pcaEvecFileBtn.setText(pcaFileName);
             pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
+
             pcaGraph = new PCAGraph(pcaFilePath);
+            mainController.setPcaGraph(pcaGraph); // set pca graph in the main controller
+
             pcaComboButton1.setItems(pcaGraph.getPCAcolumns());
             pcaComboButton2.setItems(pcaGraph.getPCAcolumns());
 
@@ -119,6 +123,7 @@ public class PCADataInputController implements Initializable {
             if (pcaGraph != null) {
                 // set the chart
                 pcaChart = pcaGraph.createGraph(pcaComboButton1Value, pcaComboButton2Value);
+
                 firstPcaSuccessful = true;
             }
             Genesis.closeOpenStage(event);
@@ -152,6 +157,14 @@ public class PCADataInputController implements Initializable {
     @FXML
     void handlePcaEntryCancel(ActionEvent event) {
         Genesis.closeOpenStage(event);
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
+
+    public boolean isFirstPcaSuccessful() {
+        return firstPcaSuccessful;
     }
 
     void enableOK() {

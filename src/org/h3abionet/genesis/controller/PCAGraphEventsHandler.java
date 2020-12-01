@@ -16,40 +16,22 @@
 package org.h3abionet.genesis.controller;
 
 import com.idrsolutions.image.tiff.TiffEncoder;
-//import com.sun.javafx.charts.Legend;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.*;
-
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javax.imageio.ImageIO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -57,7 +39,17 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.model.PCAGraph;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -95,16 +87,16 @@ public class PCAGraphEventsHandler {
             // add the chart and the container to the Zoom class              
             Zoom zoom = new Zoom(chart, chartContainer);
 
-            for (XYChart.Series<Number, Number> series : chart.getData()) {
-                for (XYChart.Data<Number, Number> data : series.getData()) {
-                    // add event which loads the data point details
-                    DataPointMouseEvent iid_details = new DataPointMouseEvent(data,chart);
-                    data.getNode().addEventHandler(MouseEvent.MOUSE_CLICKED, iid_details);
-
-                    // manage tooltip delay
-                    Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
-                }
-            }
+//            for (XYChart.Series<Number, Number> series : chart.getData()) {
+//                for (XYChart.Data<Number, Number> data : series.getData()) {
+//                    // add event which loads the data point details
+//                    DataPointMouseEvent dataPointMouseEvent = new DataPointMouseEvent(data,chart);
+//                    data.getNode().addEventHandler(MouseEvent.MOUSE_CLICKED, dataPointMouseEvent);
+//
+//                    // manage tooltip delay
+//                    Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
+//                }
+//            }
 
             // set the legend
             for (Node n : chart.getChildrenUnmodifiable()) { // get all nodes on the chart

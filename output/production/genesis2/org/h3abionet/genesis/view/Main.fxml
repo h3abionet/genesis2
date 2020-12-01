@@ -136,7 +136,7 @@
                               <Tooltip text="Annotate Graph" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="individualButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#showHidenIndividuals" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="individualButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#showHiddenIndividuals" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>

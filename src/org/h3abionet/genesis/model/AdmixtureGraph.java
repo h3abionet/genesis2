@@ -199,21 +199,7 @@ public class AdmixtureGraph extends Graph{
         return listOfFamAndAdmixture;
         
     }
-    
-     /**
-     *
-     * @param a
-     * @param b
-     * @return
-     */
-    private String[] combine(String[] a, String[] b) {
-        int length = a.length + b.length;
-        String[] result = new String[length];
-        System.arraycopy(a, 0, result, 0, a.length);
-        System.arraycopy(b, 0, result, a.length, b.length);
-        return result;
-    }
-    
+
     /**
      *
      * Set colors

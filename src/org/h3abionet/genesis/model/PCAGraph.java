@@ -5,22 +5,29 @@
  */
 package org.h3abionet.genesis.model;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.TilePane;
+import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.controller.PCAIndividualDetailsController;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -35,9 +42,8 @@ public class PCAGraph extends Graph {
     private XYChart.Series<Number, Number> group;
     private BufferedReader bufferReader;
     private String line;
+    HashMap<String, String[]> hiddenIndividual = new HashMap();
 
-    private String[] colors;
-    private String[] icons;
 
     /**
      *
@@ -54,16 +60,6 @@ public class PCAGraph extends Graph {
         readGraphData(pcaFilePath);
         setPopulationGroups();
 
-        colors = new String[]{"#860061", "#ff8000", "#008000","#800080","#800000","#000080","#808000","#FFFF00","#00ffff","#ff00ff"};
-        icons = new String[]{"M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z",
-                                "M0 -3.5 v7 l 4 -3.5z",
-                                "M5,0 L10,9 L5,18 L0,9 Z",
-                                "M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,10 L0,10 L0,8 L4,5 L0,2 L0,0 Z",
-                                "M 20.0 20.0  v24.0 h 10.0  v-24   Z",
-                                "M0,4 L2,4 L4,8 L7,0 L9,0 L4,11 Z",
-                                "M 2 2 L 6 2 L 4 6 z",
-                                "M 10 10 H 90 V 90 H 10 L 10 10"
-                                };
     }
 
     /**
@@ -262,15 +258,6 @@ public class PCAGraph extends Graph {
     }
 
     /**
-     * list of arrays with pheno and associated pcs
-     *
-     * @return
-     */
-    public static List<String[]> getPcasWithPhenoList() {
-        return pcasWithPhenoList;
-    }
-
-    /**
      *
      * @param x e.g. PCA 1 -> only consider the integer (1)
      * @param y e.g. PCA 2 -> only consider the integer (2)
@@ -306,47 +293,58 @@ public class PCAGraph extends Graph {
             sc.getData().add(group);
         });
 
-//         set colors and icons
+        // set colors and icons
         for(int i=0; i<sc.getData().size(); i++) {
+            String color = (String) groupColors.get(sc.getData().get(i).getName());
+            String icon = (String) groupIcons.get(sc.getData().get(i).getName());
             Set<Node> nodes = sc.lookupAll(".series" + i);
             for (Node n : nodes) {
-                n.setStyle("-fx-background-color: "+colors[i]+", white;"
-                        + "-fx-shape: \""+ icons[i]+"\";"
-                        + "-fx-background-insets: 0, 2;"
-                        + "-fx-background-radius: 5px;"
-                        + "-fx-padding: 5px;");
+                n.setStyle(getStyle(color, icon, 5));
             }
+
+            // set mouse event and tooltip
+            for(XYChart.Data<Number, Number> data : sc.getData().get(i).getData()){
+                setTooltip(data); // set tool tip
+
+                data.getNode().setOnMouseClicked(e -> {
+                    try {
+                        // set the event
+                        setMouseEvent(data, sc);
+                    } catch (Exception ex) {
+                        ;
+                    }
+                });
+            }
+
             // set the legend
             for (Node n : sc.getChildrenUnmodifiable()) {
                 if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                     TilePane tn = (TilePane) n;
                     ObservableList<Node> children = tn.getChildren();
+
                     Label lab = (Label) children.get(i).lookup(".chart-legend-item");
-                    lab.getGraphic().setStyle("-fx-background-color: "+colors[i]+", white;"
-                            + "-fx-shape: \""+ icons[i]+"\";"
-                            + "-fx-background-insets: 0, 2;"
-                            + "-fx-background-radius: 5px;"
-                            + "-fx-padding: 5px;");
+
+                    // get color and shape of the group for this lab
+                    String bgColor = (String) groupColors.get(lab.getText());
+                    String shape = (String) groupIcons.get(lab.getText());
+
+                    // set graphics
+                    lab.getGraphic().setStyle(getStyle(bgColor, shape, 5));
+
                 }
 
             }
+
         }
 
-        return sc;
-    }
+        // sort legend items
+//        for (Node n : sc.getChildrenUnmodifiable()) {
+//            if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+//                Collections.sort(((TilePane) n).getChildren(), new NodeComparator());
+//            }
+//        }
 
-    /**
-     *
-     * @param a
-     * @param b
-     * @return
-     */
-    private String[] combine(String[] a, String[] b) {
-        int length = a.length + b.length;
-        String[] result = new String[length];
-        System.arraycopy(a, 0, result, 0, a.length);
-        System.arraycopy(b, 0, result, a.length, b.length);
-        return result;
+        return sc;
     }
 
     /*
@@ -356,5 +354,94 @@ public class PCAGraph extends Graph {
     public ArrayList<StackedBarChart<String, Number>> createGraph() {
         return null;
     }
-;
+
+    public String getStyle(String color, String icon, int padding){
+        String s = "-fx-background-color: "+color+", white;"
+                + "-fx-shape: \""+icon+"\";"
+                + "-fx-background-insets: 0, 2;"
+                + "-fx-background-radius: 5px;"
+                + "-fx-padding: "+padding+"px;";
+        return s;
+    }
+
+
+    public void hideIndividual(XYChart.Data<Number, Number> data, boolean b){
+        if (b == true){
+            // hide the visibility of the button
+            data.getNode().setVisible(false);
+            data.getNode().setStyle("-fx-background-color: transparent"); // hide point with white color
+            data.getNode().setOnMouseClicked(e->{;});
+
+            // get its coordinates
+            String xValue = data.getXValue().toString();
+            String yValue = data.getYValue().toString();
+
+            // get pheno data using x & y co-ordinates
+            for(String [] s: pcasWithPhenoList){
+                // if an array in pcasWithPhenoList has both x & y
+                if(Arrays.asList(s).contains(xValue) && Arrays.asList(s).contains(yValue)){
+                    // get pheno data: [MKK, AFR, pc1, pc2, pc3, ..., FID IID]
+                    String[] coord = {xValue, yValue, s[0]};
+                    hiddenIndividual.put(s[s.length-1], coord);
+                    break;
+                }
+            }
+        }else {
+            data.getNode().setVisible(true);
+        }
+
+    }
+
+    public void setMouseEvent(XYChart.Data<Number, Number> data, ScatterChart<Number, Number> chart) throws IOException {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IndividualDetails.fxml"));
+            Parent parent = (Parent) fxmlLoader.load();
+            Stage dialogStage = new Stage();
+            dialogStage.setScene(new Scene(parent));
+            dialogStage.setResizable(false);
+
+            PCAIndividualDetailsController individualDetailsController = fxmlLoader.getController();
+            individualDetailsController.setPCAGraph(this);
+
+            // set values of clicked pca point
+            String xValue = String.valueOf(data.getXValue());
+            String yValue = String.valueOf(data.getYValue());
+            individualDetailsController.setClickedPoint(xValue, yValue);
+
+            // display details of the point
+            String xAxisLabel = chart.getXAxis().getLabel();
+            String yAxisLabel = chart.getYAxis().getLabel();
+            individualDetailsController.setPcaLabel(xAxisLabel + ": " + xValue + "\n" + yAxisLabel + ": " + yValue);
+
+            // get pheno data using x & y co-ordinates
+            for(String [] s: pcasWithPhenoList ){
+                // if an array in pcasWithPhenoList has both x & y
+                if(Arrays.asList(s).contains(xValue) && Arrays.asList(s).contains(yValue)){
+                    // get pheno data: [MKK, AFR, pc1, pc2, pc3, ..., FID IID]
+                    ObservableList<String> phenos = FXCollections.<String>observableArrayList(s[s.length-1], s[0], s[1]);
+                    individualDetailsController.setPhenoLabel(phenos);
+                    break;
+                }
+            }
+
+            // display icon for clicked point
+            individualDetailsController.setIconDisplay(data.getNode().getStyle());
+
+            // set values of groupName combo box
+            individualDetailsController.setGroupName(FXCollections.observableArrayList(groupNames));
+            dialogStage.showAndWait();
+
+        } catch (Exception ex) {
+            ;
+        }
+    }
+
+    public HashMap<String, String[]> getHiddenIndividual() {
+        return hiddenIndividual;
+    }
+
+    private void setTooltip(XYChart.Data<Number, Number> data){
+        // manage tooltip delay
+        Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
+    }
 }

@@ -5,7 +5,6 @@
  */
 package org.h3abionet.genesis.controller;
 
-import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
@@ -17,6 +16,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.model.PCAGraph;
 
 /**
  *
@@ -25,51 +25,58 @@ import org.h3abionet.genesis.Genesis;
 public class HiddenIndividualsController implements Initializable{
     
     @FXML
-    private ComboBox<String> hiddenIndividual;
+    private ComboBox<String> hiddenIndividualCombo;
     
     @FXML
     private Button cancelBtn;
 
     @FXML
     private Button unhideBtn;
-    
-    /**
-     * keep iids and their x, y values in a hashMap 
-     */
-    private static HashMap<String, String[]> hidenIds = new HashMap<String, String[]>();
-    
-    public static HashMap<String, String[]> getHidenIds() {
-        return hidenIds;
-    }
+
+    private MainController mainController;
+    private PCAGraph pcaGraph;
+
     
     @FXML
     private void entryUnhideBtn(ActionEvent event) {
         // get iid
-        String iid = hiddenIndividual.getValue();
+        String iid = hiddenIndividualCombo.getValue();
 
         // get (x & y coordinates, and group name)
-        String [] hidenPoint = hidenIds.get(iid);
+        String [] hiddenPoint =  pcaGraph.getHiddenIndividual().get(iid);
         
         // (x,y)
-        Float x = Float.parseFloat(hidenPoint[0]);
-        Float y = Float.parseFloat(hidenPoint[1]);
+        Float x = Float.parseFloat(hiddenPoint[0]);
+        Float y = Float.parseFloat(hiddenPoint[1]);
         
         // group name
-        String groupName = hidenPoint[2];
+        String groupName = hiddenPoint[2];
                                 
-        ScatterChart<Number, Number> chart = MainController.getPcaChart();
+        ScatterChart<Number, Number> chart = mainController.getPcaChart();
+
         for(XYChart.Series<Number, Number> s: chart.getData()){
             if(s.getName().equals(groupName)){
                 XYChart.Data<Number, Number> data = new XYChart.Data(x,y);
-                data.getNode().removeEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, new DataPointMouseEvent(data, chart));
-
                 s.getData().add(data);
+                String color = (String) pcaGraph.getGroupColors().get(groupName);
+                String icon = (String) pcaGraph.getGroupIcons().get(groupName);
+                data.getNode().setStyle(pcaGraph.getStyle(color, icon, 5));
+
+                data.getNode().setOnMouseClicked(e ->{
+                    try {
+                        pcaGraph.setMouseEvent(data, chart);
+                    } catch (Exception ex) {
+                        ;
+                    }
+                });
+
+//                data.getNode().addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, new DataPointMouseEvent(data, chart));
                 break;
             }
         }
         
         //remove the id from the hidden ids
-        hidenIds.remove(iid);
+        pcaGraph.getHiddenIndividual().remove(iid);
         
         Genesis.closeOpenStage(event);
 
@@ -81,9 +88,17 @@ public class HiddenIndividualsController implements Initializable{
     }
     
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        hiddenIndividual.getItems().addAll(hidenIds.keySet());
-        
+    public void initialize(URL location, ResourceBundle resources) {}
+
+    public void setHiddenIndividualCombo (){
+        hiddenIndividualCombo.getItems().addAll(pcaGraph.getHiddenIndividual().keySet());
     }
-    
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
+
+    public void setPcaGraph(PCAGraph pcaGraph) {
+        this.pcaGraph = pcaGraph;
+    }
 }

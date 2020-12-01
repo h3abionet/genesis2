@@ -44,6 +44,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import jfxtras.labs.util.event.MouseControlUtil;
+import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.Project;
 import org.h3abionet.genesis.controller.AdmixtureSettingsController;
 import org.h3abionet.genesis.model.AdmixtureGraph;
@@ -147,6 +148,9 @@ public class MainController implements Initializable {
     private static double defaultAdmixPlotWidth = 1200; // default width
     private static Text chartHeading; // default heading;
     private AdmixtureGraphEventsHandler admixtureChart;
+    private HiddenIndividualsController hiddenIndividualsController;
+    private PCADataInputController pcaDataInputController;
+    private PCAGraph pcaGraph;
 
     @FXML
     private void newProject(ActionEvent event) throws IOException {
@@ -155,14 +159,28 @@ public class MainController implements Initializable {
 
     }
 
+    public void setPcaGraph(PCAGraph pcaGraph) {
+        this.pcaGraph = pcaGraph;
+    }
+
     @FXML
     @SuppressWarnings("empty-statement")
     private void newPCA(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCADataInput.fxml"));
+        Parent parent = (Parent) fxmlLoader.load();
+        pcaDataInputController = fxmlLoader.getController();
+        pcaDataInputController.setMainController(this);
+        Stage dialogStage = new Stage();
+        dialogStage.setScene(new Scene(parent));
+        dialogStage.setResizable(false);
+
+        dialogStage.showAndWait();
         
-        Genesis.loadFxmlView("view/PCADataInput.fxml");
+//        Genesis.loadFxmlView("view/PCADataInput.fxml");
+
         try {
-            if(PCADataInputController.firstPcaSuccessful==true){
-                setPCAChart(PCADataInputController.pcaChart);
+            if(pcaDataInputController.isFirstPcaSuccessful()){
+                setPCAChart(PCADataInputController.pcaChart); // change this static
                 // disable the pca button after first import
                 // then use the data load button
                 newpca.setDisable(true);
@@ -274,8 +292,6 @@ public class MainController implements Initializable {
 
     /**
      * This method sets the admixture pcaChart.
-     *
-     * @param admixtureDataInputController used to access the pcaChart
      */
     @SuppressWarnings("empty-statement")
     private void setAdmixtureChart(ArrayList<StackedBarChart<String, Number>> admixCharts) {
@@ -382,20 +398,22 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    public void showHidenIndividuals() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/HiddenIndividuals.fxml"));
-        Parent parent = (Parent) fxmlLoader.load();
+    public void showHiddenIndividuals() throws IOException {
+        FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/HiddenIndividuals.fxml"));
+        Parent parent = (Parent) loader.load();
+        hiddenIndividualsController = loader.getController();
+        hiddenIndividualsController.setMainController(this);
+        hiddenIndividualsController.setPcaGraph(pcaGraph);
+        hiddenIndividualsController.setHiddenIndividualCombo();
         Stage dialogStage = new Stage();
         dialogStage.setScene(new Scene(parent));
         dialogStage.setResizable(false);
 
-//        HiddenIndividualsController hidden = fxmlLoader.getController();
-//        for (String s : hidden.getItems()) {
-//            n.setOnMouseClicked(e -> {
-//                n.setVisible(true);
-//            });
-//        }
         dialogStage.showAndWait();
+    }
+
+    public HiddenIndividualsController getHiddenIndividualsController() {
+        return hiddenIndividualsController;
     }
 
     /**

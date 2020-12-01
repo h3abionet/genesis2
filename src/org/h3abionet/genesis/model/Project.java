@@ -51,16 +51,22 @@ public class Project {
     Object layout;
     ArrayList<Graph> graphs;
 
+    private static Project project;
+
     private String projectName;
     private String phenoFileName;
     private String famFileName;
+
+    private List<String> groupNames = new ArrayList<>();
+    private HashMap groupColors = new HashMap(); // mkk -> #800000
+    private HashMap groupIcons =  new HashMap();
 
     public Project(String proj_name, String pheno_fname_s) throws IOException {
         this.projectName = proj_name;
         this.phenoFileName = pheno_fname_s;
         layout = null;
         graphs = new ArrayList<>();
-
+        project = this;
         readPhenotypeFile(pheno_fname_s);
 
     }
@@ -76,6 +82,7 @@ public class Project {
         layout = null;
         graphs = new ArrayList<>();
 
+        project = this;
         readPhenotypeFile(pheno_fname_s);
         readFamFile(fam_fname_s);
     }
@@ -118,7 +125,6 @@ public class Project {
         }
         
         numOfIndividuals = famData.size();
-        System.out.println("no of individuals = "+numOfIndividuals);
         // test if the fam file is imported -- comment this section otherwise it prints in the results in the terminal
 //        for (int i = 0; i < famIDsList.size(); i++){
 //            System.out.println(Arrays.asList(famIDsList.get(i)));
@@ -132,8 +138,7 @@ public class Project {
 
         BufferedReader r = Genesis.openFile(phenoFilePath);
         String line = r.readLine();
-        String fields[] = line.trim().split("\\s+");
-        
+        String fields[];
         while (line != null) {
             fields = line.split("\\s+");
             String ids = fields[0] + " " + fields[1];
@@ -148,7 +153,17 @@ public class Project {
             admixturePhenoData.put(fields[0] + " " + fields[1], curr_phenos);
             line = r.readLine();
 
+            // keep track of unique phenotypes
+            if (!groupNames.contains(fields[phenoColumnNumber-1])) {
+                groupNames.add(fields[phenoColumnNumber-1]);
+            }
         }
+
+        // set colors and icons for every phenotype
+//        for (int i = 0; i < groupNames.size(); i++){
+//            groupColors.put(groupNames.get(i),colors[i]);
+//            groupIcons.put(groupNames.get(i),icons[i]);
+//        }
 
         // print phenotype rows -- testing
 //        for (int i = 0; i < listOfRows.size(); i++){
@@ -163,6 +178,15 @@ public class Project {
      */
     public static void setPhenoColumnNumber(int phenoColumnNumber) {
         Project.phenoColumnNumber = phenoColumnNumber;
+    }
+
+    // singleton pattern is used to limit creation of a class to only one object
+    public static Project getProject() {
+        return project;
+    }
+
+    public List<String> getGroupNames() {
+        return groupNames;
     }
 
     /**

@@ -21,6 +21,8 @@ package org.h3abionet.genesis.controller;
  * @author scott
  */
 import java.io.BufferedReader;
+
+import org.h3abionet.genesis.model.Graph;
 import org.h3abionet.genesis.model.Project;
 import java.io.File;
 import java.io.FileReader;
@@ -120,14 +122,16 @@ public class ProjectDetailsController implements Initializable{
         }
         
         //check if files have been provided (can be only one or both), else display an alert message.
+        int phenoColumnNumber = Integer.parseInt(colWithPhenoValue.substring(7, colWithPhenoValue.length()));
         if (fam_fname_s.length() != 0 && pheno_fname_s.length() != 0) {
+            project.setPhenoColumnNumber(phenoColumnNumber);
             project = new Project(proj_name_s, fam_fname_s, pheno_fname_s);
-            project.setPhenoColumnNumber(Integer.parseInt(colWithPhenoValue.substring(7, colWithPhenoValue.length())));
-            
+
+
         } else if (pheno_fname_s.length() != 0) {
+            project.setPhenoColumnNumber(phenoColumnNumber);
             project = new Project(proj_name_s, pheno_fname_s);
-            project.setPhenoColumnNumber(Integer.parseInt(colWithPhenoValue.substring(7, colWithPhenoValue.length())));
-            
+
         } else {
             Genesis.throwInformationException("No files provided");
         }
