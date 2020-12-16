@@ -35,7 +35,6 @@ public class HiddenIndividualsController implements Initializable{
 
     private MainController mainController;
     private PCAGraph pcaGraph;
-
     
     @FXML
     private void entryUnhideBtn(ActionEvent event) {
@@ -56,11 +55,15 @@ public class HiddenIndividualsController implements Initializable{
 
         for(XYChart.Series<Number, Number> s: chart.getData()){
             if(s.getName().equals(groupName)){
-                XYChart.Data<Number, Number> data = new XYChart.Data(x,y);
-                s.getData().add(data);
+                XYChart.Data<Number, Number> data = new XYChart.Data(x, y);
+                s.getData().add(data); // add point to graph
+
+                // get group properties
                 String color = (String) pcaGraph.getGroupColors().get(groupName);
-                String icon = (String) pcaGraph.getGroupIcons().get(groupName);
-                data.getNode().setStyle(pcaGraph.getStyle(color, icon, 5));
+                String iconType = (String) pcaGraph.getGroupIcons().get(groupName);
+
+                // set the style of icon
+                data.getNode().setStyle(pcaGraph.getStyle(color, iconType, 5));
 
                 data.getNode().setOnMouseClicked(e ->{
                     try {
@@ -69,8 +72,6 @@ public class HiddenIndividualsController implements Initializable{
                         ;
                     }
                 });
-
-//                data.getNode().addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, new DataPointMouseEvent(data, chart));
                 break;
             }
         }
@@ -79,7 +80,6 @@ public class HiddenIndividualsController implements Initializable{
         pcaGraph.getHiddenIndividual().remove(iid);
         
         Genesis.closeOpenStage(event);
-
     }
     
     @FXML

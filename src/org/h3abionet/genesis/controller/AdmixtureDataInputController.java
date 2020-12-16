@@ -57,7 +57,7 @@ public class AdmixtureDataInputController implements Initializable {
             importOk = true;
 
         } catch (Exception e) {
-            Genesis.throwErrorException("Sorry. You might have imported a wromg file");
+            Genesis.throwErrorException("Sorry. You might have imported a wrong file");
         }
         Genesis.closeOpenStage(event);
     }

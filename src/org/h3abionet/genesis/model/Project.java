@@ -19,7 +19,7 @@ import org.h3abionet.genesis.Genesis;
  *
  * @author scott
  */
-public class Project {
+public class Project implements java.io.Serializable {
 
     // <! This a fam section: with all the variables needed store fam details >
     /* Hash map to store fam ids as keys and array of other fields as values

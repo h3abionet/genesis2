@@ -8,15 +8,18 @@ package org.h3abionet.genesis.model;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
- import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
+import javafx.scene.layout.TilePane;
 import org.h3abionet.genesis.Genesis;
 
 /**
@@ -161,8 +164,7 @@ public class AdmixtureGraph extends Graph{
                 
                 populationGroupChart.getData().add(ancestryValues); // add values to chart
                 setAncestryColors(populationGroupChart, ancestryColors); // set ancestry colors
-                
-              
+
             }
             
             // update current num of ancestries
@@ -174,8 +176,20 @@ public class AdmixtureGraph extends Graph{
             populationGroupChart.getXAxis().setVisible(false);
             populationGroupChart.setPrefHeight(CHART_HEIGHT);
             populationGroupChart.setMinHeight(CHART_HEIGHT);
-            charts.add(populationGroupChart);
 
+            // legend
+            for (Node n : populationGroupChart.getChildrenUnmodifiable()) {
+                if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+                    TilePane tn = (TilePane) n;
+                    ObservableList<Node> children = tn.getChildren();
+                    for(int j=0;j<children.size();j++){
+                        Label lab = (Label) children.get(j).lookup(".chart-legend-item");
+                        lab.setText(null);
+                        lab.setGraphic(null);
+                    }
+                }
+            }
+            charts.add(populationGroupChart);
         }
         return charts;
 

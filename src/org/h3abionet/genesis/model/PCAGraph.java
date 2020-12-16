@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,8 +17,10 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
@@ -331,6 +334,38 @@ public class PCAGraph extends Graph {
                     // set graphics
                     lab.getGraphic().setStyle(getStyle(bgColor, shape, 5));
 
+                    for (XYChart.Series<Number, Number> s : sc.getData()) {
+                        if (s.getName().equals(lab.getText())) {
+                            lab.setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
+                            lab.setOnMouseClicked(me -> {
+                                // Toggle group (phenotype) visibility on left click
+                                if (me.getButton() == MouseButton.PRIMARY) {
+                                    for (XYChart.Data<Number, Number> d : s.getData()) {
+                                        if (d.getNode() != null) {
+                                            d.getNode().setVisible(!d.getNode().isVisible()); // Toggle visibility of every node in the series
+                                        }
+                                    }
+                                }else{ // right click
+                                    // show dialog for legend position and hiding phenotype
+                                    List<String> choices = new ArrayList<>();
+                                    choices.add("bottom");
+                                    choices.add("right");
+
+                                    ChoiceDialog<String> dialog = new ChoiceDialog<>("right", choices);
+                                    dialog.setTitle("Legend");
+                                    dialog.setHeaderText("Select legend position");
+                                    dialog.setContentText("Position:");
+
+                                    Optional<String> result = dialog.showAndWait();
+                                    result.ifPresent(position -> sc.lookup(".chart").setStyle("-fx-legend-side: " + position + ";"));
+
+                                }
+                            });
+                            break;
+                        }
+                    }
+
+
                 }
 
             }
@@ -338,11 +373,21 @@ public class PCAGraph extends Graph {
         }
 
         // sort legend items
-//        for (Node n : sc.getChildrenUnmodifiable()) {
-//            if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
-//                Collections.sort(((TilePane) n).getChildren(), new NodeComparator());
-//            }
-//        }
+        for (Node n : sc.getChildrenUnmodifiable()) {
+            if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+                TilePane tn = (TilePane) n;
+                ObservableList<Node> children = tn.getChildren();
+                ObservableList<Label> labels = FXCollections.observableArrayList();
+
+                for(int i=0;i<children.size();i++){
+                    labels.add((Label)children.get(i).lookup(".chart-legend-item"));
+                }
+
+                Collections.sort(labels, new LabelComparator());
+
+                tn.getChildren().setAll(labels);
+            }
+        }
 
         return sc;
     }
@@ -365,12 +410,10 @@ public class PCAGraph extends Graph {
     }
 
 
-    public void hideIndividual(XYChart.Data<Number, Number> data, boolean b){
+    public void hideIndividual(XYChart.Series<Number, Number> series, XYChart.Data<Number, Number> data, boolean b){
         if (b == true){
-            // hide the visibility of the button
-            data.getNode().setVisible(false);
-            data.getNode().setStyle("-fx-background-color: transparent"); // hide point with white color
-            data.getNode().setOnMouseClicked(e->{;});
+            //remove the point
+            series.getData().remove(data);
 
             // get its coordinates
             String xValue = data.getXValue().toString();
@@ -386,10 +429,7 @@ public class PCAGraph extends Graph {
                     break;
                 }
             }
-        }else {
-            data.getNode().setVisible(true);
-        }
-
+        }else { ; } // do nothing
     }
 
     public void setMouseEvent(XYChart.Data<Number, Number> data, ScatterChart<Number, Number> chart) throws IOException {
@@ -443,5 +483,18 @@ public class PCAGraph extends Graph {
     private void setTooltip(XYChart.Data<Number, Number> data){
         // manage tooltip delay
         Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
+    }
+
+    /**
+     * Sort legend items
+     */
+    private static class LabelComparator implements Comparator<Label> {
+        @Override
+        public int compare(Label o1, Label o2) {
+            String s1 = o1.getText();
+            String s2 = o2.getText();
+
+            return s1.compareTo(s2);
+        }
     }
 }

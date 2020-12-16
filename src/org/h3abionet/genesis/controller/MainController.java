@@ -1,6 +1,9 @@
 package org.h3abionet.genesis.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +44,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import jfxtras.labs.util.event.MouseControlUtil;
@@ -99,9 +103,9 @@ public class MainController implements Initializable {
     @FXML
     private Button cancelButton;
     @FXML
-    private Button saveButton;
+    private Button saveProjBtn;
     @FXML
-    private Button fileButton;
+    private Button importProjBtn;
     @FXML
     private Button helpButton;
 
@@ -175,8 +179,6 @@ public class MainController implements Initializable {
         dialogStage.setResizable(false);
 
         dialogStage.showAndWait();
-        
-//        Genesis.loadFxmlView("view/PCADataInput.fxml");
 
         try {
             if(pcaDataInputController.isFirstPcaSuccessful()){
@@ -231,8 +233,8 @@ public class MainController implements Initializable {
     @SuppressWarnings("empty-statement")
     private void loadData(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCADataInput.fxml"));
-        Parent root = (Parent) fxmlLoader.load();
-        PCADataInputController controller = (PCADataInputController) fxmlLoader.getController();
+        Parent root = fxmlLoader.load();
+        PCADataInputController controller = fxmlLoader.getController();
         controller.enableOK();
         controller.setButtons();
         Stage dialogStage = new Stage();
@@ -281,7 +283,6 @@ public class MainController implements Initializable {
             // set pcaChart index to selected tab number 
             tabPane.getSelectionModel().selectedIndexProperty().addListener((ObservableValue<? extends Number> ov, Number oldValue, Number newValue) -> {
                 pcaChartIndex = (int) newValue;
-                System.out.println(pcaChartIndex);
             });
             pcaChartsList.add(pcaChart);
 
@@ -393,7 +394,6 @@ public class MainController implements Initializable {
         } catch (Exception e) {
             Genesis.throwInformationException("No chart to save");
         }
-        
 
     }
 
@@ -655,7 +655,31 @@ public class MainController implements Initializable {
     public static List<ArrayList<StackedBarChart<String, Number>>> getAllAdmixtureCharts() {
         return allAdmixtureCharts;
     }
-    
+
+    @FXML
+    private void importProject(ActionEvent event) throws IOException {
+        Genesis.loadFxmlView("view/ImportProject.fxml");
+    }
+
+    @FXML
+    void saveProject(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Project");
+        FileChooser.ExtensionFilter genFilter = new FileChooser.ExtensionFilter("gen", "*.gen");
+        fileChooser.getExtensionFilters().addAll(genFilter);
+        File projFile = fileChooser.showSaveDialog(null);
+
+        try {
+            FileOutputStream fileOut =  new FileOutputStream(projFile);
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(Project.getProject());
+            out.close();
+            fileOut.close();
+        } catch (IOException i) {
+            i.printStackTrace();
+        }
+    }
+
     @FXML
     private void help(ActionEvent event) {
         TextInputDialog dialog = new TextInputDialog("Help");

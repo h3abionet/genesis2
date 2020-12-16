@@ -172,7 +172,7 @@
                               <Tooltip text="3D view" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="saveButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;">
+                        <Button fx:id="saveProjBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#saveProject" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;">
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -184,7 +184,7 @@
                               <Tooltip text="Save Project" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="fileButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="importProjBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#importProject" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;">
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
