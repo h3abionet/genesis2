@@ -6,13 +6,12 @@
 package org.h3abionet.genesis.model;
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
-import java.io.File;
+import java.util.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.h3abionet.genesis.Genesis;
 
 /**
@@ -21,36 +20,35 @@ import org.h3abionet.genesis.Genesis;
  */
 public class Project implements java.io.Serializable {
 
-    // <! This a fam section: with all the variables needed store fam details >
-    /* Hash map to store fam ids as keys and array of other fields as values
-    *  Can be used to join the fam file with the phenotype file
-     */
+    private String[] colors = new String[]{"#800000", "#000080", "#808000", "#FFFF00", "#860061", "#ff8000", "#008000", "#800080", "#004C4C", "#ff00ff"};
+    private String[] icons = new String[]{"M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z",
+            "M0 -3.5 v7 l 4 -3.5z",
+            "M5,0 L10,9 L5,18 L0,9 Z",
+            "M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,10 L0,10 L0,8 L4,5 L0,2 L0,0 Z",
+            "M 20.0 20.0  v24.0 h 10.0  v-24   Z",
+            "M0,4 L2,4 L4,8 L7,0 L9,0 L4,11 Z",
+            "M 2 2 L 6 2 L 4 6 z",
+            "M 10 10 H 90 V 90 H 10 L 10 10",
+            "M0 -3.5 v7 l 4 -3.5z", // repeated
+            "M5,0 L10,9 L5,18 L0,9 Z", // repeated
+            "M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,10 L0,10 L0,8 L4,5 L0,2 L0,0 Z" // repeated
+    };
+
+    //TODO Admiture Plot section to be modified
     static HashMap<String, String[]> famData; // [iid, [...]]
-
-    /* Arraylist of arrays storing row values from the fam file
-    *  Used to merge the fam file with the Q file
-    *  Note: The Q file might contain ids that are not in the fam file
-     */
     static List<String[]> famIDsList;
-
-    // <! This a pheno section: with all the variables needed store details in the pheno file>
-    // only one hashmap is required - but the pheno files provided in the examples had different formats: Find out??
-    static HashMap<String, String[]> pcaPhenoData; // hashmap to store phenotype records. key = id; value = list of phenos.    
     static HashMap<String, String[]> admixturePhenoData; // used to map pheno details to fam details
-
     public static HashMap<String, String[]> individualPhenoDetails; // Hashmap to store individual pheno details for searching
 
-    static int phenoColumnNumber; // store selected column with phenotype
+    private int phenoColumnNumber; // store selected column with phenotype
+    private int currentTabIndex;
 
     /**
      * required to calculate column constraints in the main controller
      * and other purposes
      */
-    public static int numOfIndividuals;
-
-    Object layout;
-    ArrayList<Graph> graphs;
-
+    private int numOfIndividuals;
+    private ArrayList<ArrayList<Subject> > pcGraphList =  new ArrayList<ArrayList<Subject>>();
     private static Project project;
 
     private String projectName;
@@ -60,15 +58,17 @@ public class Project implements java.io.Serializable {
     private List<String> groupNames = new ArrayList<>();
     private HashMap groupColors = new HashMap(); // mkk -> #800000
     private HashMap groupIcons =  new HashMap();
+    private ArrayList<ArrayList<String>> hiddenPoints = new ArrayList<>();
+    private ArrayList<Subject> subjectArrayList;
 
-    public Project(String proj_name, String pheno_fname_s) throws IOException {
+    public Project(String proj_name, String pheno_fname_s, int phenoColumnNumber) throws IOException {
         this.projectName = proj_name;
         this.phenoFileName = pheno_fname_s;
-        layout = null;
-        graphs = new ArrayList<>();
-        project = this;
-        readPhenotypeFile(pheno_fname_s);
+        this.phenoColumnNumber = phenoColumnNumber;
 
+        project = this;
+        subjectArrayList = new ArrayList<Subject>();
+        readPhenotypeFile(pheno_fname_s);
     }
 
     /**
@@ -77,10 +77,10 @@ public class Project implements java.io.Serializable {
      * @param proj_name
      * @throws java.io.FileNotFoundException
      */
-    public Project(String proj_name, String fam_fname_s, String pheno_fname_s) throws IOException {
+    public Project(String proj_name, String fam_fname_s, String pheno_fname_s, int phenoColumnNumber) throws IOException {
         this.projectName = proj_name;
-        layout = null;
-        graphs = new ArrayList<>();
+        this.phenoColumnNumber = phenoColumnNumber;
+        subjectArrayList = new ArrayList<>();
 
         project = this;
         readPhenotypeFile(pheno_fname_s);
@@ -101,8 +101,7 @@ public class Project implements java.io.Serializable {
         String sex;
         String phe;
 
-        BufferedReader r;
-        r = Genesis.openFile(famFilePath);
+        BufferedReader r = Genesis.openFile(famFilePath);
         famData = new HashMap<>();
         famIDsList = new ArrayList<>();
         String l = r.readLine();
@@ -116,6 +115,17 @@ public class Project implements java.io.Serializable {
             mat = fields[3];
             sex = fields[4];
             phe = fields[5];
+
+            // add fam details to subjects
+            for(Subject sub : subjectArrayList){
+                if (sub.getFid().equals(fid) && sub.getIid().equals(iid)){
+                    sub.setPat(pat);
+                    sub.setMat(mat);
+                    sub.setSex(sex);
+                    sub.setPhen(phe);
+                }
+            }
+
             String ids = fid + " " + iid;
             String[] idsList = {fid, iid};
             famIDsList.add(idsList); // store ids of the farm file to map with the admixture values
@@ -123,7 +133,7 @@ public class Project implements java.io.Serializable {
             famData.put(ids, other_cols);
             l = r.readLine();
         }
-        
+
         numOfIndividuals = famData.size();
         // test if the fam file is imported -- comment this section otherwise it prints in the results in the terminal
 //        for (int i = 0; i < famIDsList.size(); i++){
@@ -132,52 +142,68 @@ public class Project implements java.io.Serializable {
     }
 
     private void readPhenotypeFile(String phenoFilePath) throws FileNotFoundException, IOException {
-        pcaPhenoData = new HashMap<>(); // key is FID:IID
         individualPhenoDetails = new HashMap<>(); // key is IID
         admixturePhenoData = new HashMap<>(); // key is "FID IID"
 
         BufferedReader r = Genesis.openFile(phenoFilePath);
-        String line = r.readLine();
+
+        // get phenotype groups and assign colors and icons
+        String row = r.readLine();
+        String rowValues[];
+        while (row != null) {
+            rowValues = row.split("\\s+");
+            // keep track of unique phenotypes
+            if (!groupNames.contains(rowValues[phenoColumnNumber-1])) {
+                groupNames.add(rowValues[phenoColumnNumber-1]);
+            }
+            row = r.readLine();
+        }
+
+        // set colors and icons for every phenotype
+        for (int i = 0; i < groupNames.size(); i++){
+            groupColors.put(groupNames.get(i), colors[i]);  // mkk -> #800000
+            groupIcons.put(groupNames.get(i), icons[i]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
+        }
+
+        BufferedReader secBuf = Genesis.openFile(phenoFilePath);
+        String line = secBuf.readLine();
         String fields[];
         while (line != null) {
             fields = line.split("\\s+");
-            String ids = fields[0] + " " + fields[1];
-            String[] curr_phenos = Arrays.copyOfRange(fields, 2, fields.length);
-            // used to map with evec file individual pcs
-            pcaPhenoData.put(ids, curr_phenos);
+
+            String fid = fields[0];
+            String iid = fields[1];
+            String phenotypeA = fields[2];
+            String phenotypeB = fields[3];
+
+            // get color and icon for selected pheno group or column
+            String chosenPheno = fields[phenoColumnNumber-1];
+            String color = (String) groupColors.get(chosenPheno);
+            String icon = (String) groupIcons.get(chosenPheno);
+
+            // store this individual
+            subjectArrayList.add(new Subject(fid, iid, phenotypeA, phenotypeB, color, icon, false));
 
             // provide details when individual is clicked or searched
             individualPhenoDetails.put(fields[1], fields);
 
             // used to map with the fam file
-            admixturePhenoData.put(fields[0] + " " + fields[1], curr_phenos);
-            line = r.readLine();
+            admixturePhenoData.put(fields[0] + " " + fields[1], Arrays.copyOfRange(fields, 2, fields.length));
+            line = secBuf.readLine();
 
-            // keep track of unique phenotypes
-            if (!groupNames.contains(fields[phenoColumnNumber-1])) {
-                groupNames.add(fields[phenoColumnNumber-1]);
-            }
         }
-
-        // set colors and icons for every phenotype
-//        for (int i = 0; i < groupNames.size(); i++){
-//            groupColors.put(groupNames.get(i),colors[i]);
-//            groupIcons.put(groupNames.get(i),icons[i]);
-//        }
-
         // print phenotype rows -- testing
 //        for (int i = 0; i < listOfRows.size(); i++){
 //            System.out.println(Arrays.asList(listOfRows.get(i)));
 //        }
     }
 
-    /**
-     * set column with phenotype
-     *
-     * @param phenoColumnNumber
-     */
-    public static void setPhenoColumnNumber(int phenoColumnNumber) {
-        Project.phenoColumnNumber = phenoColumnNumber;
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public int getPhenoColumnNumber() {
+        return phenoColumnNumber;
     }
 
     // singleton pattern is used to limit creation of a class to only one object
@@ -189,17 +215,51 @@ public class Project implements java.io.Serializable {
         return groupNames;
     }
 
-    /**
-     * Given a new graph, add it to the project
-     *
-     * @param g
-     */
-    public void addGraph(Graph g) {
-        boolean add = graphs.add(g);
+    public int getNumOfIndividuals() {
+        return numOfIndividuals;
     }
 
-    public void addPCA(File file) {
-
+    public HashMap getGroupColors() {
+        return groupColors;
     }
 
+    public HashMap getGroupIcons() {
+        return groupIcons;
+    }
+
+    public ArrayList<Subject> getSubjectArrayList() {
+        return subjectArrayList;
+    }
+
+    public ArrayList<ArrayList<Subject>> getPcGraphList() {
+        return pcGraphList;
+    }
+
+    public void setCurrentTabIndex(int tabIndex) {
+        this.currentTabIndex = tabIndex;
+    }
+
+    public int getCurrentTabIndex() {
+        return currentTabIndex;
+    }
+
+    public ObservableList<String> getHiddenIndvsOfCurrentGraph(){
+        ObservableList<String> hiddenIndividualsList = FXCollections.observableArrayList();
+        for(Subject s: pcGraphList.get(currentTabIndex)){
+            if(s.isHidden()){
+                String fid_iid = s.getFid()+" "+s.getIid();
+
+                // check if a list of hidden points exists
+                if (currentTabIndex >= 0 && currentTabIndex < hiddenPoints.size() && hiddenPoints.get(currentTabIndex).contains(fid_iid)) {
+                    // An entry exists; add ids to the obsList
+                    hiddenIndividualsList.add(fid_iid);
+                }
+            }
+        }
+        return hiddenIndividualsList;
+    }
+
+    public ArrayList<ArrayList<String>> getHiddenPoints() {
+        return hiddenPoints;
+    }
 }

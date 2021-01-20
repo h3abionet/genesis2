@@ -50,7 +50,6 @@ import org.h3abionet.genesis.Genesis;
 import jfxtras.labs.util.event.MouseControlUtil;
 import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.Project;
-import org.h3abionet.genesis.controller.AdmixtureSettingsController;
 import org.h3abionet.genesis.model.AdmixtureGraph;
 
 /*
@@ -130,9 +129,8 @@ public class MainController implements Initializable {
     // pca variables
     private static Tab pcaChartTab;
     private static int tabCount = 0;
-    private static int pcaChartIndex; // changed by clicking on tabs
+    private static int currentTabIndex; // changed by clicking on tabs
     private static ScatterChart<Number, Number> pcaChart;
-    private static ArrayList<ScatterChart> pcaChartsList;
 
     // admixture variables
     /**
@@ -146,7 +144,7 @@ public class MainController implements Initializable {
     private static GridPane gridPane; // gridpane for keeping list of admixture charts
     private static int rowPointer = 0; // points to a new row for every new admix charts or K value
     private static VBox admixVbox; // has only 2 nodes : chart title & gridPane
-    private static ScrollPane scrollPane; // its content = admixVbox 
+    private static ScrollPane scrollPane; // its content = admixVbox
     private static AnchorPane admixPane;
     private double VBOX_MARGIN = 50;
     private static double defaultAdmixPlotWidth = 1200; // default width
@@ -154,17 +152,33 @@ public class MainController implements Initializable {
     private AdmixtureGraphEventsHandler admixtureChart;
     private HiddenIndividualsController hiddenIndividualsController;
     private PCADataInputController pcaDataInputController;
+    private ProjectDetailsController projectDetailsController;
+    private ImportProjectController importProjectController;
     private PCAGraph pcaGraph;
+    private Project project;
+    private static ArrayList<ScatterChart> pcaChartsList;
 
     @FXML
     private void newProject(ActionEvent event) throws IOException {
+        // remove background image
         tabPane.setStyle("-fx-background-image: null");
-        Genesis.loadFxmlView("view/ProjDialogEntry.fxml");
-
+        // load data input scene
+        FXMLLoader projLoader = new FXMLLoader(Genesis.class.getResource("view/ProjDialogEntry.fxml"));
+        Parent projParent = projLoader.load();
+        projectDetailsController =  projLoader.getController();
+        projectDetailsController.setMainController(this);
+        Stage dialogStage = new Stage();
+        dialogStage.setScene(new Scene(projParent));
+        dialogStage.setResizable(false);
+        dialogStage.showAndWait();
     }
 
     public void setPcaGraph(PCAGraph pcaGraph) {
         this.pcaGraph = pcaGraph;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     @FXML
@@ -182,18 +196,16 @@ public class MainController implements Initializable {
 
         try {
             if(pcaDataInputController.isFirstPcaSuccessful()){
-                setPCAChart(PCADataInputController.pcaChart); // change this static
+                setPCAChart(pcaGraph.getPcaChart()); // change this static
                 // disable the pca button after first import
                 // then use the data load button
                 newpca.setDisable(true);
             }else{
                 ;
             }
-            
         } catch (NullPointerException e) {
             Genesis.throwErrorException("Oops, there was an error!");
         }
-
     }
 
     @FXML
@@ -207,7 +219,7 @@ public class MainController implements Initializable {
             Genesis.loadFxmlView("view/AdmixtureDataInput.fxml");
 
             if (AdmixtureDataInputController.isImportOk()) { // was data imported correctly
-                
+
                 if (AdmixtureSettingsController.isAdmixRotated()) {
                     setAdmixtureChart(AdmixtureDataInputController.listOfStackedBarCharts);
                     admixVbox.setMaxHeight(Double.MAX_VALUE); // restore vGrow property
@@ -243,7 +255,7 @@ public class MainController implements Initializable {
         dialogStage.showAndWait();
 
         try {
-            setPCAChart(PCADataInputController.pcaChart);
+            setPCAChart(pcaGraph.getPcaChart());
         } catch (Exception e) {
             ;
         }
@@ -267,10 +279,10 @@ public class MainController implements Initializable {
             String x = xAxisLabel.substring(4, xAxisLabel.length());
             String y = yAxisLabel.substring(4, yAxisLabel.length());
 
-            // create new tab for the pca chart 
+            // create new tab for the pca chart
             tabCount++;
             pcaChartTab = new Tab();
-            
+
             // tab name e.g PCA 1 & 2 ans space with close icon
             pcaChartTab.setText("PCA " + x + " & " + y+"    ");
             pcaChartTab.setClosable(true);
@@ -280,10 +292,12 @@ public class MainController implements Initializable {
             pcaChartTab.setContent(pc.addGraph());
             tabPane.getTabs().add(pcaChartTab);
 
-            // set pcaChart index to selected tab number 
+            // set pcaChart index to selected tab number
             tabPane.getSelectionModel().selectedIndexProperty().addListener((ObservableValue<? extends Number> ov, Number oldValue, Number newValue) -> {
-                pcaChartIndex = (int) newValue;
+                currentTabIndex = (int) newValue;
+                project.setCurrentTabIndex(currentTabIndex);
             });
+
             pcaChartsList.add(pcaChart);
 
         } catch (Exception e) {
@@ -299,7 +313,7 @@ public class MainController implements Initializable {
         listOfAdmixtureCharts = admixCharts; // get multiple charts
         allAdmixtureCharts.add(listOfAdmixtureCharts);
 
-        int sumOfIndividuals = Project.numOfIndividuals;
+        int sumOfIndividuals = project.getNumOfIndividuals();
 
         // check if the first rowPointer has nodes. If not, define column constraints.
         if (gridPane.contains(1, 0)) {
@@ -323,7 +337,6 @@ public class MainController implements Initializable {
 
         try {
             // use this class for additional Chart features: add event handlers and group labels
-            
             admixtureChart = new AdmixtureGraphEventsHandler(listOfAdmixtureCharts, gridPane, rowPointer);
 
             // if first chart, add gridpane to index 1 of vbox else reset index 1 with new gridpane
@@ -354,21 +367,21 @@ public class MainController implements Initializable {
 
     @FXML
     private void settingsSelector(ActionEvent event) throws IOException {
-        
-            // get selected tab
-            Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
-            try{
-                if (selectedTab.getId().contains("tab")) {
-                    // show pca settings
-                    Genesis.loadFxmlView("view/FontSelector.fxml");
-                }else if(selectedTab.getId().contains("admix")){
-                    // show admixture settings
-                    Genesis.loadFxmlView("view/AdmixtureSettings.fxml");
-                }
-            }catch(Exception e){
-                //TODO disable setting button if no chart
-                Genesis.throwInformationException("No chart to format");
+
+        // get selected tab
+        Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
+        try{
+            if (selectedTab.getId().contains("tab")) {
+                // show pca settings
+                Genesis.loadFxmlView("view/FontSelector.fxml");
+            }else if(selectedTab.getId().contains("admix")){
+                // show admixture settings
+                Genesis.loadFxmlView("view/AdmixtureSettings.fxml");
             }
+        }catch(Exception e){
+            //TODO disable setting button if no chart
+            Genesis.throwInformationException("No chart to format");
+        }
     }
 
     /**
@@ -382,10 +395,9 @@ public class MainController implements Initializable {
         try {
             // load pca setting
             if (selectedTab.getId().contains("tab")) {
-                PCAGraphEventsHandler pc = new PCAGraphEventsHandler(pcaChartsList.get(pcaChartIndex));
+                PCAGraphEventsHandler pc = new PCAGraphEventsHandler(pcaChartsList.get(currentTabIndex));
                 pc.saveChart();
             }
-
             // load admixture setting
             if (selectedTab.getId().contains("admix")){
                 admixtureChart.saveChart(admixVbox);
@@ -404,7 +416,9 @@ public class MainController implements Initializable {
         hiddenIndividualsController = loader.getController();
         hiddenIndividualsController.setMainController(this);
         hiddenIndividualsController.setPcaGraph(pcaGraph);
-        hiddenIndividualsController.setHiddenIndividualCombo();
+        // get all hidden points for the current pca graph
+        hiddenIndividualsController.setHiddenIndividualCombo(project.getHiddenIndvsOfCurrentGraph());
+        // show stage
         Stage dialogStage = new Stage();
         dialogStage.setScene(new Scene(parent));
         dialogStage.setResizable(false);
@@ -422,7 +436,7 @@ public class MainController implements Initializable {
      * @return PCA pcaChart
      */
     public static ScatterChart<Number, Number> getPcaChart() {
-        return pcaChartsList.get(pcaChartIndex);
+        return pcaChartsList.get(currentTabIndex);
     }
 
     /*
@@ -484,7 +498,7 @@ public class MainController implements Initializable {
 
         MouseControlUtil.makeDraggable(arrow);
 
-        Pane p = (Pane) pcaChartsList.get(pcaChartIndex).getChildrenUnmodifiable().get(1);
+        Pane p = (Pane) pcaChartsList.get(currentTabIndex).getChildrenUnmodifiable().get(1);
         Region r = (Region) p.getChildren().get(0);
         Group gr = new Group();
 
@@ -589,7 +603,7 @@ public class MainController implements Initializable {
     }
 
     private void addShapeToChart(Shape shape) {
-        Pane p = (Pane) pcaChartsList.get(pcaChartIndex).getChildrenUnmodifiable().get(1);
+        Pane p = (Pane) pcaChartsList.get(currentTabIndex).getChildrenUnmodifiable().get(1);
         Region r = (Region) p.getChildren().get(0);
         Group gr = new Group();
 
@@ -627,7 +641,7 @@ public class MainController implements Initializable {
     public static int getRowPointer() {
         return rowPointer;
     }
-    
+
     static void setRowPointer(int i) {
         rowPointer = i;
     }
@@ -642,7 +656,7 @@ public class MainController implements Initializable {
     }
     /**
      * access this heading for text formatting
-     * @return 
+     * @return
      */
     public static Text getChartHeading() {
         return chartHeading;
@@ -658,21 +672,32 @@ public class MainController implements Initializable {
 
     @FXML
     private void importProject(ActionEvent event) throws IOException {
-        Genesis.loadFxmlView("view/ImportProject.fxml");
+        FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/ImportProject.fxml"));
+        Parent p = loader.load();
+        importProjectController = loader.getController();
+        importProjectController.setMainController(this);
+        importProjectController.disableDoneBtn(true);
+        Stage dialogStage = new Stage();
+        dialogStage.setScene(new Scene(p));
+        dialogStage.setResizable(false);
+
+        dialogStage.showAndWait();
+
     }
 
     @FXML
     void saveProject(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Project");
-        FileChooser.ExtensionFilter genFilter = new FileChooser.ExtensionFilter("gen", "*.gen");
+        FileChooser.ExtensionFilter genFilter = new FileChooser.ExtensionFilter("Genesis File", "*.ggf");
         fileChooser.getExtensionFilters().addAll(genFilter);
+        fileChooser.setInitialFileName(project.getProjectName()+".ggf");
         File projFile = fileChooser.showSaveDialog(null);
 
         try {
             FileOutputStream fileOut =  new FileOutputStream(projFile);
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(Project.getProject());
+            out.writeObject(project);
             out.close();
             fileOut.close();
         } catch (IOException i) {
@@ -705,9 +730,8 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(java.net.URL arg0, ResourceBundle arg1) {
-        // intialize buckets to store multiple charts
         pcaChartsList = new ArrayList<>();
-        
+
         // list of all plotted admixture charts
         allAdmixtureCharts = new ArrayList<>();
 
@@ -722,16 +746,16 @@ public class MainController implements Initializable {
         //VBox to keep the admix plot and heading
         admixVbox = new VBox(10);
         admixVbox.setPrefWidth(defaultAdmixPlotWidth + VBOX_MARGIN); // TODO - change these hard coded values
-        
+
         // add pane for the title
         chartHeading = new Text(AdmixtureGraph.getDefaultHeading());
         StackPane titlePane = new StackPane(chartHeading);
         titlePane.setAlignment(Pos.CENTER);
         titlePane.setPrefWidth(Double.MAX_VALUE);
-        
+
         AnchorPane pane = new AnchorPane();
 //        pane.setStyle("-fx-border-color: red; -fx-border-width: 1;");
-        
+
         admixVbox.getChildren().addAll(titlePane, pane);
 //        admixVbox.setStyle("-fx-border-color: pink; -fx-background-color: white; -fx-border-width: 5px");
 
@@ -742,8 +766,8 @@ public class MainController implements Initializable {
         gridPane.setGridLinesVisible(false);
         gridPane.setMinWidth(defaultAdmixPlotWidth); // TODO - change these hard coded values
         gridPane.setMaxWidth(defaultAdmixPlotWidth); // increase this value to increase the thickness of subjects
-        AnchorPane.setRightAnchor(gridPane, 40.0);        
-        
+        AnchorPane.setRightAnchor(gridPane, 40.0);
+
         admixPane = new AnchorPane();
 //        admixPane.setStyle("-fx-border-color: green; -fx-border-width: 3px 3px 3px 3px");
 

@@ -32,7 +32,7 @@ import javafx.scene.chart.XYChart;
 public abstract class Graph {
 
     public List<String> groupNames;
-    private Project project;
+    public Project project;
     HashMap groupColors = new HashMap();
     HashMap groupIcons =  new HashMap();
     private HashMap iconsHashmap;
@@ -45,7 +45,8 @@ public abstract class Graph {
     protected abstract void readGraphData(String filePath) throws FileNotFoundException, IOException;
     protected abstract void setPopulationGroups();
     abstract ArrayList<StackedBarChart<String, Number>> createGraph(); // used by admixture
-    abstract ScatterChart<Number, Number> createGraph(String PCA1, String PCA2) throws IOException; // used by pca
+    abstract void createGraph(String PCA1, String PCA2) throws IOException; // used by pca
+//    abstract ScatterChart<Number, Number> createGraph(String PCA1, String PCA2) throws IOException; // used by pca
 
     private String[] colors = new String[]{"#800000", "#000080", "#808000", "#FFFF00", "#860061", "#ff8000", "#008000", "#800080", "#004C4C", "#ff00ff"};
     private String[] icons = new String[]{"M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z",

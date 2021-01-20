@@ -62,12 +62,13 @@ public class ProjectDetailsController implements Initializable{
     private TextField proj_name;
     @FXML
     private ComboBox<String> colWithPhenoComboBox;
-    
-    Project project;
+
+    private Project project;
+    private MainController mainController;
     private static String fam_fname_s = ""; // fam file absolute path
     private static String pheno_fname_s = ""; // phenotype file absolute path
     private static String proj_name_s = ""; // project name
-    
+
     @FXML
     private void handleFamFname() {
         File famFile = getFile("Choose FAM file");
@@ -90,14 +91,14 @@ public class ProjectDetailsController implements Initializable{
             BufferedReader brTest = new BufferedReader(new FileReader(pheno_fname_s));
             String brText = brTest .readLine();
             String[] strArray = brText.split("\\s+");
-            
+
             // create column names
             String [] phenoColNames = new String[strArray.length];
             for(int i = 0; i< strArray.length; i++){
                 int phenoColNumber = i+1;
                 phenoColNames[i] = "Column "+phenoColNumber;
             }
-            
+
             // display seletion for a column with phenotype
             colWithPhenoComboBox.setItems(FXCollections.observableArrayList(phenoColNames));
             colWithPhenoComboBox.setValue("Column 3"); // default
@@ -116,26 +117,26 @@ public class ProjectDetailsController implements Initializable{
     private void handlePcaEntryOK(ActionEvent event) throws IOException {
         proj_name_s = proj_name.getText();
         String colWithPhenoValue = colWithPhenoComboBox.getValue(); // get combox string value e.g. Column 1
-        
+
         if (!proj_name_s.matches(".*\\w.*")) { //check alphanumerics in the title
             proj_name_s = "Project"; // set project name - this will be changed at runtime (can be a combination of file names)
         }
-        
+
         //check if files have been provided (can be only one or both), else display an alert message.
         int phenoColumnNumber = Integer.parseInt(colWithPhenoValue.substring(7, colWithPhenoValue.length()));
-        if (fam_fname_s.length() != 0 && pheno_fname_s.length() != 0) {
-            project.setPhenoColumnNumber(phenoColumnNumber);
-            project = new Project(proj_name_s, fam_fname_s, pheno_fname_s);
 
+        if (fam_fname_s.length() != 0 && pheno_fname_s.length() != 0) {
+            project = new Project(proj_name_s, fam_fname_s, pheno_fname_s, phenoColumnNumber);
+            mainController.setProject(project);
 
         } else if (pheno_fname_s.length() != 0) {
-            project.setPhenoColumnNumber(phenoColumnNumber);
-            project = new Project(proj_name_s, pheno_fname_s);
+            project = new Project(proj_name_s, pheno_fname_s, phenoColumnNumber);
+            mainController.setProject(project);
 
         } else {
             Genesis.throwInformationException("No files provided");
         }
-       Genesis.closeOpenStage(event);
+        Genesis.closeOpenStage(event);
     }
 
     /**
@@ -145,9 +146,9 @@ public class ProjectDetailsController implements Initializable{
     private void handlePcaEntryCancel(ActionEvent event) {
         Genesis.closeOpenStage(event);
     }
-    
+
     /**
-     * 
+     *
      * @param which This is the title of the dialog box
      * @return File object
      */
@@ -163,10 +164,14 @@ public class ProjectDetailsController implements Initializable{
 
     }
 
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-       entryOKButton.setDisable(true); // disable OK button 
-        
+        entryOKButton.setDisable(true); // disable OK button
+
     }
 
 }

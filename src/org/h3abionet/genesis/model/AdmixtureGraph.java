@@ -103,7 +103,7 @@ public class AdmixtureGraph extends Graph{
             String [] values = famAndQvalues.get(k); // [fid, iid, v1, v2, ...]
             
             if(admixturePhenoData.containsKey(k)){
-                String group = admixturePhenoData.get(k)[Project.phenoColumnNumber-3];
+                String group = admixturePhenoData.get(k)[project.getPhenoColumnNumber()-3];
                 
                 // if group doesnot exist, create the group and its new list
                 if(!populationGroups.containsKey(group)){
@@ -239,8 +239,6 @@ public class AdmixtureGraph extends Graph{
     
     // not necessary
     @Override
-    public ScatterChart<Number, Number> createGraph(String PCA1, String PCA2){
-        return null;
-    }
+    public void createGraph(String PCA1, String PCA2){ ; }
     
 }

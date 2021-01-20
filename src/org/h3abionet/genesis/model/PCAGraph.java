@@ -29,24 +29,22 @@ import org.h3abionet.genesis.controller.PCAIndividualDetailsController;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  *
  * @author Henry
  */
-public class PCAGraph extends Graph {
+public class PCAGraph extends Graph implements Serializable {
 
-    private final HashMap<String, String[]> pcaValues; // store pca values with associated ids
-    private static List<String[]> pcasWithPhenoList; // rows in pca (evec) file
     private String[] pcaColumnLabels; // store pca column name: PCA 1, PCA 2, ...
     private final List<String> eigenValues; // store eigen values
-    private XYChart.Series<Number, Number> group;
+    private XYChart.Series<Number, Number> series;
     private BufferedReader bufferReader;
     private String line;
-    HashMap<String, String[]> hiddenIndividual = new HashMap();
-
+    private ScatterChart<Number, Number> pcaChart;
+    private ArrayList<Subject> graphDetailsList;
 
     /**
      *
@@ -55,14 +53,9 @@ public class PCAGraph extends Graph {
      * @throws IOException
      */
     public PCAGraph(String pcaFilePath) throws FileNotFoundException, IOException {
-        pcasWithPhenoList = new ArrayList<>();
-        pcaValues = new HashMap<>();
         eigenValues = new ArrayList<>();
-
         // read data
         readGraphData(pcaFilePath);
-        setPopulationGroups();
-
     }
 
     /**
@@ -86,31 +79,25 @@ public class PCAGraph extends Graph {
 
         // check if ids are seperated by colons:
         if (fields[0].contains(":")) {
-            fields = line.trim().split("\\s+");
-            // if yes, split them
-            String[] ids = fields[0].split(":");
-            String id_1 = ids[0];
-            String id_2 = ids[1];
-            String key = id_1 + " " + id_2; // hashmap key
-
             // check if last column is a control column
             if (fields[fields.length - 1].contains("C") || fields[fields.length - 1].contains("c")) {
-
+                // set columns
                 setPcaColumnLabels(fields, 2);
-
-                // store keys and values in a hashmap - from 2nd string to 2nd last
-                pcaValues.put(key, Arrays.copyOfRange(fields, 1, fields.length - 1));
-
-                line = bufferReader.readLine(); // read next line
 
                 // read all the remaining lines
                 while (line != null) {
                     fields = line.trim().split("\\s+");
-                    String[] ids_ = fields[0].split(":");
-                    String id_1_ = ids_[0];
-                    String id_2_ = ids_[1];
-                    String key_ = id_1_ + " " + id_2_;
-                    pcaValues.put(key_, Arrays.copyOfRange(fields, 1, fields.length - 1)); // store keys and values in a hashmap
+                    String[] ids = fields[0].split(":");
+                    String fid = ids[0];
+                    String iid = ids[1];
+                    String pcs[] = Arrays.copyOfRange(fields, 1, fields.length - 1);
+
+                    // set pcs for every subject
+                    for(Subject s: project.getSubjectArrayList()){
+                        if(s.getFid().equals(fid) && s.getIid().equals(iid)){
+                            s.setPcs(pcs);
+                        }
+                    }
                     line = bufferReader.readLine();
                 }
 
@@ -119,17 +106,20 @@ public class PCAGraph extends Graph {
                 // remove only the id column
                 setPcaColumnLabels(fields, 1);
 
-                pcaValues.put(key, Arrays.copyOfRange(fields, 1, fields.length));
-
-                line = bufferReader.readLine(); // read next line
-
                 while (line != null) {
                     fields = line.trim().split("\\s+");
-                    String[] ids_ = fields[0].split(":");
-                    String id_1_ = ids_[0];
-                    String id_2_ = ids_[1];
-                    String key_ = id_1_ + " " + id_2_;
-                    pcaValues.put(key_, Arrays.copyOfRange(fields, 1, fields.length));
+                    String[] ids = fields[0].split(":");
+                    String fid = ids[0];
+                    String iid = ids[1];
+                    String pcs[] = Arrays.copyOfRange(fields, 1, fields.length);
+
+                    // set pcs for every subject
+                    for(Subject s: project.getSubjectArrayList()){
+                        if(s.getFid().equals(fid) && s.getIid().equals(iid)){
+                            s.setPcs(pcs);
+                        }
+                    }
+
                     line = bufferReader.readLine();
                 }
             }
@@ -137,109 +127,59 @@ public class PCAGraph extends Graph {
         }
 
         if (!fields[0].contains(":")) {
-            fields = line.trim().split("\\s+");
-            String key = fields[0] + " " + fields[1];
-
-            if (fields[fields.length - 1].contains("C")) {
+            if (fields[fields.length - 1].contains("C") || fields[fields.length - 1].contains("c")) {
                 // remove first and second id, and the control column
                 setPcaColumnLabels(fields, 3);
 
-                // store keys and values in a hashmap
-                pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length - 1));
-
-                line = bufferReader.readLine(); // read next line
-
                 while (line != null) {
                     fields = line.trim().split("\\s+");
-                    String key_ = fields[0] + " " + fields[1];
-                    pcaValues.put(key_, Arrays.copyOfRange(fields, 2, fields.length - 1));
+                    String fid = fields[0];
+                    String iid = fields[1];
+                    String[] pcs = Arrays.copyOfRange(fields, 2, fields.length - 1);
+
+                    // set pcs for every subject
+                    for(Subject s: project.getSubjectArrayList()){
+                        if(s.getFid().equals(fid) && s.getIid().equals(iid)){
+                            s.setPcs(pcs);
+                        }
+                    }
+
+                    // read next line
                     line = bufferReader.readLine();
                 }
 
             } else {
                 // remove only the 2 id columns
                 setPcaColumnLabels(fields, 2);
-
-                pcaValues.put(key, Arrays.copyOfRange(fields, 2, fields.length));
-
-                line = bufferReader.readLine();
-
                 while (line != null) {
                     fields = line.trim().split("\\s+");
-                    String key_ = fields[0] + " " + fields[1];
-                    pcaValues.put(key_, Arrays.copyOfRange(fields, 2, fields.length));
+                    String fid = fields[0];
+                    String iid = fields[1];
+                    String pcs[] = Arrays.copyOfRange(fields, 2, fields.length);
+
+                    // set pcs for every subject
+                    for(Subject s: project.getSubjectArrayList()){
+                        // note: some ids in pheno are not in the evec file
+                        if(s.getFid().equals(fid) && s.getIid().equals(iid)){
+                            s.setPcs(pcs);
+                        }
+                    }
                     line = bufferReader.readLine();
                 }
             }
 
         }
 
-//        pcaValues.entrySet().forEach(entry->{
-//            System.out.println(entry.getKey() + " " + entry.getValue());  
-//        });
     }
 
     private void setPcaColumnLabels(String fields[], int unwantedCols) {
         // remove first id and control column
-        int num_pcas = fields.length - unwantedCols; // get number of pcs
-        pcaColumnLabels = new String[num_pcas];
-        for (int i = 0; i < num_pcas; i++) {
+        int num_of_pcs = fields.length - unwantedCols; // get number of pcs
+        pcaColumnLabels = new String[num_of_pcs];
+        for (int i = 0; i < num_of_pcs; i++) {
             // store every pca: [PCA 1, PCA 2, ...]
             pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1);
         }
-    }
-
-    /**
-     * Group individuals by chosen column - default is column 3 in the phenotype
-     * file
-     *
-     * @return
-     */
-    @Override
-    protected final void setPopulationGroups() {
-        List<String[]> combinedValues = mergePhenoWithPCA(); // ArrayList of array from mergePhenoWithPCA method
-
-        populationGroups = combinedValues.stream()
-                .collect(Collectors.groupingBy(array -> array[Project.phenoColumnNumber - 3], // groupby [YRI, EXM, LWK, ...] - third col in pheno file
-                        Collectors.mapping(e -> Arrays.copyOfRange(e, 1, e.length),
-                                Collectors.toList())));
-
-    }
-
-    /**
-     * merge 2 hash maps using keys: 1- pheno hashmap; 2- pca hashmap
-     *
-     * @return List of arrays: [YRI, AFR, -0.0266, 0.0318, ..., NA19178:NA19178]
-     */
-    private List<String[]> mergePhenoWithPCA() {
-        HashMap<String, String[]> combinerMap = new HashMap<>();
-        combinerMap.putAll(pcaValues);
-        Project.pcaPhenoData.forEach((key, pheno_data) -> {
-            // Get the value for key in combinerMap of pcaValues --- returns a list of pcs.
-            String[] pcs = combinerMap.get(key);
-            if (pcs != null) {
-                // Merge two list together: 
-                String[] pcs_with_pheno_data = combine(pheno_data, pcs);
-                combinerMap.put(key, pcs_with_pheno_data); // new combinerMap [key1 -> [pheno and pca values], key2 -> [pheno and pca values], ...]
-            } else {
-                // Do nothing to remove nulls
-                ;
-            }
-        });
-
-        combinerMap.entrySet().forEach(entry -> {
-            ArrayList<String> entries = new ArrayList<>(Arrays.asList(entry.getValue())); // [YRI, AFR, -0.0266, 0.0318, ...]
-            entries.add(entry.getKey());  // [YRI, AFR, -0.0266, 0.0318, ..., id]
-
-            String[] individualRows = entries.toArray(new String[entries.size()]);
-            pcasWithPhenoList.add(individualRows);
-        });
-
-//         checked merged results
-//        for (int i = 0; i < pcasWithPhenoList.size(); i++){
-//            System.out.println(Arrays.asList(pcasWithPhenoList.get(i)));
-//        }
-        return pcasWithPhenoList; // [YRI, AFR, -0.0266, 0.0318, ..., NA19178:NA19178]
     }
 
     /**
@@ -268,7 +208,7 @@ public class PCAGraph extends Graph {
      * @throws IOException
      */
     @Override
-    public ScatterChart<Number, Number> createGraph(String x, String y) throws IOException {
+    public void createGraph(String x, String y) throws IOException {
         String xAxisPca = x; // PCA 1
         String yAxisPca = y; // PCA 2
 
@@ -279,6 +219,7 @@ public class PCAGraph extends Graph {
         xAxis.setSide(Side.BOTTOM);
         NumberAxis yAxis = new NumberAxis();
         yAxis.setSide(Side.LEFT);
+
         ScatterChart<Number, Number> sc = new ScatterChart<>(xAxis, yAxis);
 
         // setup chart
@@ -286,23 +227,49 @@ public class PCAGraph extends Graph {
         yAxis.setLabel(yAxisPca);
         sc.setTitle(xAxisPca + " Vs " + yAxisPca + " Chart"); // set as default value
 
-        populationGroups.forEach((k, v) -> { // get groups [MKK -> [pc1,pc2,pc3,...], [pc1,pc2,pc3,...],...]
-            group = new XYChart.Series<>();
-            group.setName(k);
+        // clone subject list
+        graphDetailsList = (ArrayList)project.getSubjectArrayList().clone();
+        // add clone to graph list
+        project.getPcGraphList().add(graphDetailsList);
 
-            for (String[] v1 : v) { // [pc1, pc2, pc3,...]
-                group.getData().add(new XYChart.Data(Float.parseFloat(v1[xPcaNumber]), Float.parseFloat(v1[yPcaNumber])));
+        // create series
+        for (int i= 0; i<project.getGroupNames().size(); i++){
+            series = new XYChart.Series<>();
+
+            String serieName = project.getGroupNames().get(i);
+            series.setName(serieName);
+
+            for (Subject s: graphDetailsList){
+                if(project.getPhenoColumnNumber() == 3){ // read 4th column in pheno file
+                    if(s.getPhenotypeA().equals(serieName) && s.getPcs() != null){
+                        series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaNumber-1]), Float.parseFloat(s.getPcs()[yPcaNumber-1])));
+                    }
+                }else {
+                    if(s.getPhenotypeB().equals(serieName) && s.getPcs() != null){ // read 3rd column in pheno file
+                        series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaNumber-1]), Float.parseFloat(s.getPcs()[yPcaNumber-1])));
+                    }
+                }
             }
-            sc.getData().add(group);
-        });
+            // do not add empty series (pheno groups with no data) to the chart
+            if(series.getData().size()>0){
+                sc.getData().add(series);
+            }
+        }
 
         // set colors and icons
         for(int i=0; i<sc.getData().size(); i++) {
-            String color = (String) groupColors.get(sc.getData().get(i).getName());
-            String icon = (String) groupIcons.get(sc.getData().get(i).getName());
+            XYChart.Series<Number, Number> serie = sc.getData().get(i);
             Set<Node> nodes = sc.lookupAll(".series" + i);
-            for (Node n : nodes) {
-                n.setStyle(getStyle(color, icon, 5));
+
+            if(project.getPhenoColumnNumber() == 3){
+                for(Subject s : graphDetailsList){
+                    if(s.getPhenotypeA().equals(serie.getName())){
+                        for (Node n : nodes) {
+                            n.setStyle(getStyle(s.getColor(), s.getIcon(), 5));
+                        }
+                        break;
+                    }
+                }
             }
 
             // set mouse event and tooltip
@@ -328,8 +295,8 @@ public class PCAGraph extends Graph {
                     Label lab = (Label) children.get(i).lookup(".chart-legend-item");
 
                     // get color and shape of the group for this lab
-                    String bgColor = (String) groupColors.get(lab.getText());
-                    String shape = (String) groupIcons.get(lab.getText());
+                    String bgColor = (String) project.getGroupColors().get(lab.getText());
+                    String shape = (String) project.getGroupIcons().get(lab.getText());
 
                     // set graphics
                     lab.getGraphic().setStyle(getStyle(bgColor, shape, 5));
@@ -382,23 +349,27 @@ public class PCAGraph extends Graph {
                 for(int i=0;i<children.size();i++){
                     labels.add((Label)children.get(i).lookup(".chart-legend-item"));
                 }
-
                 Collections.sort(labels, new LabelComparator());
 
                 tn.getChildren().setAll(labels);
             }
         }
+        pcaChart =  sc;
+    }
 
-        return sc;
+    public ScatterChart<Number, Number> getPcaChart() {
+        return pcaChart;
     }
 
     /*
-    * This method is not used by pca
+     * This method is not used by pca
      */
     @Override
     public ArrayList<StackedBarChart<String, Number>> createGraph() {
         return null;
     }
+    @Override
+    protected void setPopulationGroups() {}
 
     public String getStyle(String color, String icon, int padding){
         String s = "-fx-background-color: "+color+", white;"
@@ -409,29 +380,99 @@ public class PCAGraph extends Graph {
         return s;
     }
 
+    /**
+     *
+     * @param series
+     * @param data
+     */
+    public void hideIndividual(XYChart.Series<Number, Number> series, XYChart.Data<Number, Number> data){
+        //remove the point
+        series.getData().remove(data);
 
-    public void hideIndividual(XYChart.Series<Number, Number> series, XYChart.Data<Number, Number> data, boolean b){
-        if (b == true){
-            //remove the point
-            series.getData().remove(data);
+        // get its coordinates
+        String xValue = data.getXValue().toString();
+        String yValue = data.getYValue().toString();
 
-            // get its coordinates
-            String xValue = data.getXValue().toString();
-            String yValue = data.getYValue().toString();
+        // get the chart index
+        for(Subject s: project.getPcGraphList().get(project.getCurrentTabIndex())){
+            if(s.getPcs() != null && Arrays.asList(s.getPcs()).contains(xValue) && Arrays.asList(s.getPcs()).contains(yValue)){
+                s.setHiddenXValue(Float.parseFloat(xValue));
+                s.setHiddenYValue(Float.parseFloat(yValue));
 
-            // get pheno data using x & y co-ordinates
-            for(String [] s: pcasWithPhenoList){
-                // if an array in pcasWithPhenoList has both x & y
-                if(Arrays.asList(s).contains(xValue) && Arrays.asList(s).contains(yValue)){
-                    // get pheno data: [MKK, AFR, pc1, pc2, pc3, ..., FID IID]
-                    String[] coord = {xValue, yValue, s[0]};
-                    hiddenIndividual.put(s[s.length-1], coord);
-                    break;
+                // if the arraylist of ids for current pc graph exists
+                if(project.getCurrentTabIndex()>=0 && project.getCurrentTabIndex()<project.getHiddenPoints().size()){
+                    project.getHiddenPoints().get(project.getCurrentTabIndex()).add(s.getFid()+" "+s.getIid());
+                }else {
+                    ArrayList<String> hiddenIndvList = new ArrayList<>();
+                    hiddenIndvList.add(s.getFid()+" "+s.getIid());
+                    project.getHiddenPoints().add(hiddenIndvList);
                 }
+                s.setHidden(true);
+                break;
             }
-        }else { ; } // do nothing
+        }
     }
 
+    /**
+     *
+     * @param chart
+     * @param ids
+     */
+    public void unhideIndividual(ScatterChart<Number, Number> chart, String ids[]){
+        String fid = ids[0];
+        String iid = ids[1];
+
+        Float x = null, y = null;
+        String groupName = null;
+
+        for(Subject s: project.getPcGraphList().get(project.getCurrentTabIndex())){
+            if(s.getFid().equals(fid) && s.getIid().equals(iid) && project.getPhenoColumnNumber()==3){
+                x = s.getHiddenXValue();
+                y = s.getHiddenYValue();
+                groupName = s.getPhenotypeA();
+                s.setHidden(false); // activate visibility of a point
+                break;
+            }
+            if(s.getFid().equals(fid) && s.getIid().equals(iid) && project.getPhenoColumnNumber()==4){
+                x = s.getHiddenXValue();
+                y = s.getHiddenYValue();
+                groupName = s.getPhenotypeA();
+                s.setHidden(false);
+                break;
+            }
+        }
+
+        for(XYChart.Series<Number, Number> s: chart.getData()){
+            if(s.getName().equals(groupName)){
+
+                XYChart.Data<Number, Number> data = new XYChart.Data(x, y);
+                s.getData().add(data); // add point to graph
+
+                // get group properties
+                String color = (String) project.getGroupColors().get(groupName);
+                String iconType = (String) project.getGroupIcons().get(groupName);
+
+                // set the style of icon
+                data.getNode().setStyle(getStyle(color, iconType, 5));
+
+                data.getNode().setOnMouseClicked(e ->{
+                    try {
+                        setMouseEvent(data, chart);
+                    } catch (Exception ex) {
+                        ;
+                    }
+                });
+                break;
+            }
+        }
+    }
+
+    /**
+     *
+     * @param data
+     * @param chart
+     * @throws IOException
+     */
     public void setMouseEvent(XYChart.Data<Number, Number> data, ScatterChart<Number, Number> chart) throws IOException {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IndividualDetails.fxml"));
@@ -453,12 +494,9 @@ public class PCAGraph extends Graph {
             String yAxisLabel = chart.getYAxis().getLabel();
             individualDetailsController.setPcaLabel(xAxisLabel + ": " + xValue + "\n" + yAxisLabel + ": " + yValue);
 
-            // get pheno data using x & y co-ordinates
-            for(String [] s: pcasWithPhenoList ){
-                // if an array in pcasWithPhenoList has both x & y
-                if(Arrays.asList(s).contains(xValue) && Arrays.asList(s).contains(yValue)){
-                    // get pheno data: [MKK, AFR, pc1, pc2, pc3, ..., FID IID]
-                    ObservableList<String> phenos = FXCollections.<String>observableArrayList(s[s.length-1], s[0], s[1]);
+            for(Subject s: graphDetailsList){
+                if(s.getPcs()!=null && Arrays.asList(s.getPcs()).contains(xValue) && Arrays.asList(s.getPcs()).contains(yValue)){
+                    ObservableList<String> phenos = FXCollections.<String>observableArrayList(s.getFid(), s.getIid(), s.getPhenotypeA(), s.getPhenotypeB());
                     individualDetailsController.setPhenoLabel(phenos);
                     break;
                 }
@@ -468,7 +506,7 @@ public class PCAGraph extends Graph {
             individualDetailsController.setIconDisplay(data.getNode().getStyle());
 
             // set values of groupName combo box
-            individualDetailsController.setGroupName(FXCollections.observableArrayList(groupNames));
+            individualDetailsController.setGroupName(FXCollections.observableArrayList(project.getGroupNames()));
             dialogStage.showAndWait();
 
         } catch (Exception ex) {
@@ -476,10 +514,10 @@ public class PCAGraph extends Graph {
         }
     }
 
-    public HashMap<String, String[]> getHiddenIndividual() {
-        return hiddenIndividual;
-    }
-
+    /**
+     *
+     * @param data
+     */
     private void setTooltip(XYChart.Data<Number, Number> data){
         // manage tooltip delay
         Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
@@ -493,7 +531,6 @@ public class PCAGraph extends Graph {
         public int compare(Label o1, Label o2) {
             String s1 = o1.getText();
             String s2 = o2.getText();
-
             return s1.compareTo(s2);
         }
     }

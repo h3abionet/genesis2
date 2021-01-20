@@ -31,14 +31,15 @@ import org.h3abionet.genesis.model.PCAGraph;
  */
 public class PCADataInputController implements Initializable {
 
-    private static PCAGraph pcaGraph;
+    private static
+    PCAGraph pcaGraph;
 
     private static String pcaFilePath = "";
     private static String pcaFileName = "";
 
     private static String pcaComboButton1Value = "";
     private static String pcaComboButton2Value = "";
-    public static ScatterChart<Number, Number> pcaChart;
+//    public static ScatterChart<Number, Number> pcaChart;
     private boolean firstPcaSuccessful = false;
 
     @FXML
@@ -122,7 +123,8 @@ public class PCADataInputController implements Initializable {
         if (!pcaComboButton1Value.equals("") && !pcaComboButton2Value.equals("")) {
             if (pcaGraph != null) {
                 // set the chart
-                pcaChart = pcaGraph.createGraph(pcaComboButton1Value, pcaComboButton2Value);
+//                pcaChart =
+                pcaGraph.createGraph(pcaComboButton1Value, pcaComboButton2Value);
 
                 firstPcaSuccessful = true;
             }

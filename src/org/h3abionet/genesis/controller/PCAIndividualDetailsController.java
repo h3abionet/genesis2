@@ -112,7 +112,7 @@ public class PCAIndividualDetailsController implements Initializable {
         getShape(iconType);
     }
 
-    // display pc/pheno values on labels  
+    // display pc/pheno values on labels
     public void setPcaLabel(String coordinates) {
         pcaLabel.setText(coordinates);
     }
@@ -167,7 +167,6 @@ public class PCAIndividualDetailsController implements Initializable {
             topRadioBtnClicked = false;
             seriesRadioBtnClicked = false;
             clearRadioBtnClicked = false;
-            System.out.println("hide is: "+hideRadioBtnClicked);
         }else if (topRadioBtn.isSelected()) {
             topRadioBtnClicked = true;
             hideRadioBtnClicked = false;
@@ -203,14 +202,14 @@ public class PCAIndividualDetailsController implements Initializable {
                 String y = String.valueOf(data.getYValue());
                 if((x.equals(xValueOfClickedPoint) & y.equals(yValueOfClickedPoint))){
                     if(hideRadioBtnClicked){
-                        pcaGraph.hideIndividual(series, data, true);
+                        pcaGraph.hideIndividual(series, data);
                         break;
                     }else if(topRadioBtnClicked){
                         data.getNode().toFront();
                         break;
                     }else if (clearRadioBtnClicked) {
-                            data.getNode().setStyle(null);
-                            // TODO - update the colors and icons to default settings
+                        data.getNode().setStyle(null);
+                        // TODO - update the colors and icons to default settings
                     }else {
                         ;
                     }
