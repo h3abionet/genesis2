@@ -1,9 +1,6 @@
 package org.h3abionet.genesis.controller;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -196,7 +193,7 @@ public class MainController implements Initializable {
 
         try {
             if(pcaDataInputController.isFirstPcaSuccessful()){
-                setPCAChart(pcaGraph.getPcaChart()); // change this static
+                setPCAChart(pcaGraph.getPcaChart());
                 // disable the pca button after first import
                 // then use the data load button
                 newpca.setDisable(true);
@@ -248,6 +245,7 @@ public class MainController implements Initializable {
         Parent root = fxmlLoader.load();
         PCADataInputController controller = fxmlLoader.getController();
         controller.enableOK();
+        controller.setPcaGraph(pcaGraph);
         controller.setButtons();
         Stage dialogStage = new Stage();
         dialogStage.setScene(new Scene(root));
@@ -267,7 +265,7 @@ public class MainController implements Initializable {
      *
      * @param pcaChart
      */
-    private void setPCAChart(ScatterChart<Number, Number> pcaChart) {
+    public void setPCAChart(ScatterChart<Number, Number> pcaChart) {
         this.pcaChart = pcaChart;
         try {
             // pc acquires the pcaChart for additional features

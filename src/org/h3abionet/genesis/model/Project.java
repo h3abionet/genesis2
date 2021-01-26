@@ -20,6 +20,8 @@ import org.h3abionet.genesis.Genesis;
  */
 public class Project implements java.io.Serializable {
 
+    private static final long serialVersionUID = 2L;
+
     private String[] colors = new String[]{"#800000", "#000080", "#808000", "#FFFF00", "#860061", "#ff8000", "#008000", "#800080", "#004C4C", "#ff00ff"};
     private String[] icons = new String[]{"M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z",
             "M0 -3.5 v7 l 4 -3.5z",
@@ -34,32 +36,35 @@ public class Project implements java.io.Serializable {
             "M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,10 L0,10 L0,8 L4,5 L0,2 L0,0 Z" // repeated
     };
 
-    //TODO Admiture Plot section to be modified
+    // creation of project variables
+    private static Project project;
+    private String projectName;
+    private String phenoFileName;
+    private String famFileName;
+    private PCAGraph pcaGraph;
+    private int phenoColumnNumber; // column with phenotype
+    private int currentTabIndex; // set index of the current tab
+    private List<String> groupNames = new ArrayList<>();
+
+    private int defaultIconSize = 10; //default icon size
+    private HashMap groupColors = new HashMap(); // default group colors e.g. mkk -> #800000
+    private ArrayList<HashMap> listOfGraphsGroupColors = new ArrayList<>(); // for every pc graph, create its group colors
+    private HashMap groupIcons =  new HashMap();  // default group icons e.g. mkk -> "M 2 2 L 6 2 L 4 6 z"
+    private ArrayList<HashMap> listOfGraphsGroupIcons = new ArrayList<>(); // for every pc graph, create its group icons
+
+    private HashMap iconTypes;
+    private ArrayList<String> selectedPCs = new ArrayList<>(); // for each graph, keep selected pcs
+
+    private ArrayList<ArrayList<String>> hiddenPoints = new ArrayList<>(); // store hidden ids of every pc graph in a separate list
+    private ArrayList<Subject> pcGraphSubjects; // list of every subject object created
+    private ArrayList<ArrayList<Subject> > pcGraphSubjectsList =  new ArrayList<>(); // every graph has it
+
+    // TODO Admiture Plot section to be modified
     static HashMap<String, String[]> famData; // [iid, [...]]
     static List<String[]> famIDsList;
     static HashMap<String, String[]> admixturePhenoData; // used to map pheno details to fam details
     public static HashMap<String, String[]> individualPhenoDetails; // Hashmap to store individual pheno details for searching
-
-    private int phenoColumnNumber; // store selected column with phenotype
-    private int currentTabIndex;
-
-    /**
-     * required to calculate column constraints in the main controller
-     * and other purposes
-     */
     private int numOfIndividuals;
-    private ArrayList<ArrayList<Subject> > pcGraphList =  new ArrayList<ArrayList<Subject>>();
-    private static Project project;
-
-    private String projectName;
-    private String phenoFileName;
-    private String famFileName;
-
-    private List<String> groupNames = new ArrayList<>();
-    private HashMap groupColors = new HashMap(); // mkk -> #800000
-    private HashMap groupIcons =  new HashMap();
-    private ArrayList<ArrayList<String>> hiddenPoints = new ArrayList<>();
-    private ArrayList<Subject> subjectArrayList;
 
     public Project(String proj_name, String pheno_fname_s, int phenoColumnNumber) throws IOException {
         this.projectName = proj_name;
@@ -67,8 +72,9 @@ public class Project implements java.io.Serializable {
         this.phenoColumnNumber = phenoColumnNumber;
 
         project = this;
-        subjectArrayList = new ArrayList<Subject>();
+        pcGraphSubjects = new ArrayList<Subject>();
         readPhenotypeFile(pheno_fname_s);
+        setIconTypes();
     }
 
     /**
@@ -79,12 +85,15 @@ public class Project implements java.io.Serializable {
      */
     public Project(String proj_name, String fam_fname_s, String pheno_fname_s, int phenoColumnNumber) throws IOException {
         this.projectName = proj_name;
+        this.famFileName = fam_fname_s;
+        this.phenoFileName = pheno_fname_s;
         this.phenoColumnNumber = phenoColumnNumber;
-        subjectArrayList = new ArrayList<>();
+        pcGraphSubjects = new ArrayList<>();
 
         project = this;
         readPhenotypeFile(pheno_fname_s);
         readFamFile(fam_fname_s);
+        setIconTypes();
     }
 
     /**
@@ -117,7 +126,7 @@ public class Project implements java.io.Serializable {
             phe = fields[5];
 
             // add fam details to subjects
-            for(Subject sub : subjectArrayList){
+            for(Subject sub : pcGraphSubjects){
                 if (sub.getFid().equals(fid) && sub.getIid().equals(iid)){
                     sub.setPat(pat);
                     sub.setMat(mat);
@@ -182,7 +191,7 @@ public class Project implements java.io.Serializable {
             String icon = (String) groupIcons.get(chosenPheno);
 
             // store this individual
-            subjectArrayList.add(new Subject(fid, iid, phenotypeA, phenotypeB, color, icon, false));
+            pcGraphSubjects.add(new Subject(fid, iid, phenotypeA, phenotypeB, color, icon, defaultIconSize, false));
 
             // provide details when individual is clicked or searched
             individualPhenoDetails.put(fields[1], fields);
@@ -196,6 +205,14 @@ public class Project implements java.io.Serializable {
 //        for (int i = 0; i < listOfRows.size(); i++){
 //            System.out.println(Arrays.asList(listOfRows.get(i)));
 //        }
+    }
+
+    public PCAGraph getPcaGraph() {
+        return pcaGraph;
+    }
+
+    public void setPcaGraph(PCAGraph pcaGraph) {
+        this.pcaGraph = pcaGraph;
     }
 
     public String getProjectName() {
@@ -227,12 +244,20 @@ public class Project implements java.io.Serializable {
         return groupIcons;
     }
 
-    public ArrayList<Subject> getSubjectArrayList() {
-        return subjectArrayList;
+    public ArrayList<HashMap> getListOfGraphsGroupColors() {
+        return listOfGraphsGroupColors;
     }
 
-    public ArrayList<ArrayList<Subject>> getPcGraphList() {
-        return pcGraphList;
+    public ArrayList<HashMap> getListOfGraphsGroupIcons() {
+        return listOfGraphsGroupIcons;
+    }
+
+    public ArrayList<Subject> getPcGraphSubjects() {
+        return pcGraphSubjects;
+    }
+
+    public ArrayList<ArrayList<Subject>> getPcGraphSubjectsList() {
+        return pcGraphSubjectsList;
     }
 
     public void setCurrentTabIndex(int tabIndex) {
@@ -245,7 +270,7 @@ public class Project implements java.io.Serializable {
 
     public ObservableList<String> getHiddenIndvsOfCurrentGraph(){
         ObservableList<String> hiddenIndividualsList = FXCollections.observableArrayList();
-        for(Subject s: pcGraphList.get(currentTabIndex)){
+        for(Subject s: pcGraphSubjectsList.get(currentTabIndex)){
             if(s.isHidden()){
                 String fid_iid = s.getFid()+" "+s.getIid();
 
@@ -261,5 +286,30 @@ public class Project implements java.io.Serializable {
 
     public ArrayList<ArrayList<String>> getHiddenPoints() {
         return hiddenPoints;
+    }
+
+    public void setIconTypes() {
+        // name the shapes
+        iconTypes = new HashMap<String, String>();
+        iconTypes.put("M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z", "star");
+        iconTypes.put("M0 -3.5 v7 l 4 -3.5z", "arrow");
+        iconTypes.put("M5,0 L10,9 L5,18 L0,9 Z", "kite");
+        iconTypes.put("M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,10 L0,10 L0,8 L4,5 L0,2 L0,0 Z", "cross");
+        iconTypes.put("M 20.0 20.0  v24.0 h 10.0  v-24   Z", "rectangle");
+        iconTypes.put("M0,4 L2,4 L4,8 L7,0 L9,0 L4,11 Z", "tick");
+        iconTypes.put("M 2 2 L 6 2 L 4 6 z", "triangle");
+        iconTypes.put("M 10 10 H 90 V 90 H 10 L 10 10", "square");
+    }
+
+    public HashMap getIconTypes() {
+        return iconTypes;
+    }
+
+    public int getDefaultIconSize() {
+        return defaultIconSize;
+    }
+
+    public ArrayList<String> getSelectedPCs() {
+        return selectedPCs;
     }
 }

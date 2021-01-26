@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.Project;
 
 import java.io.*;
@@ -53,13 +54,13 @@ public class ImportProjectController {
             mainController.setProject(proj);
             in.close();
             fileIn.close();
+            readGraphs();
 
 //        } catch (IOException i) {
 //            Genesis.throwErrorException("Failed to import the project");
 //        } catch (ClassNotFoundException c) {
 //            Genesis.throwErrorException("Project class not found");
 //        }
-
         Genesis.closeOpenStage(event);
     }
 
@@ -79,12 +80,28 @@ public class ImportProjectController {
         return wanted;
     }
 
-
-    public void setMainController(MainController mainCtl) {
-        this.mainController = mainCtl;
+    public void setMainController(MainController mainCtrl) {
+        this.mainController = mainCtrl;
     }
 
     public void disableDoneBtn(boolean b) {
         doneBtn.setDisable(b);
     }
+
+    public void readGraphs() throws IOException {
+        String pcs[] = proj.getSelectedPCs().get(0).split("\\s+");
+        String firstPC = pcs[0];
+        String secondPC = pcs[1];
+
+        System.out.println(firstPC +" "+secondPC);
+        System.out.println(proj.getPcaGraph());
+        PCAGraph pcaGraph = proj.getPcaGraph();
+        pcaGraph.setProject(proj);
+
+        for(int i=0; i<proj.getPcGraphSubjectsList().size();i++){
+            mainController.setPCAChart(pcaGraph.recreateGraph(firstPC, secondPC, i));
+        }
+
+    }
+
 }

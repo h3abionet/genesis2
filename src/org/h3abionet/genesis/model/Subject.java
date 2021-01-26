@@ -1,6 +1,9 @@
 package org.h3abionet.genesis.model;
 
 public class Subject implements java.io.Serializable{
+
+    private static final long serialVersionUID = 2L;
+
     // phenotype fields
     private String fid;
     private String iid;
@@ -20,9 +23,10 @@ public class Subject implements java.io.Serializable{
     private String[] pcs;
     private Float hiddenXValue;
     private Float hiddenYValue;
+    private int iconSize;
 
     // constructor for pheno file - mostly provided
-    public Subject(String fid, String iid, String phenotypeA, String phenotypeB, String color, String icon, boolean isHidden) {
+    public Subject(String fid, String iid, String phenotypeA, String phenotypeB, String color, String icon, int iconSize, boolean isHidden) {
         this.fid = fid;
         this.iid = iid;
         this.phenotypeA = phenotypeA;
@@ -30,6 +34,7 @@ public class Subject implements java.io.Serializable{
         this.color = color;
         this.icon = icon;
         this.hidden = isHidden;
+        this.iconSize = iconSize;
     }
 
     // if fam file is provided, set the following fields
@@ -74,6 +79,14 @@ public class Subject implements java.io.Serializable{
         return icon;
     }
 
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
     }
@@ -105,4 +118,11 @@ public class Subject implements java.io.Serializable{
         this.pcs = pcs;
     }
 
+    public int getIconSize() {
+        return iconSize;
+    }
+
+    public void setIconSize(int iconSize) {
+        this.iconSize = iconSize;
+    }
 }

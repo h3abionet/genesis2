@@ -5,23 +5,17 @@
  */
 package org.h3abionet.genesis.controller;
 
-import java.net.URL;
-import java.util.HashMap;
-import java.util.ResourceBundle;
-
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.ScatterChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCAGraph;
-import org.h3abionet.genesis.model.Project;
-import org.h3abionet.genesis.model.Subject;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  *

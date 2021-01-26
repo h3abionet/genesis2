@@ -18,6 +18,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.model.PCAGraph;
 
 /**
  *
@@ -26,8 +27,6 @@ import org.h3abionet.genesis.Genesis;
 public class IconOptionsController implements Initializable {
 
     private PCAIndividualDetailsController individualDetailsController;
-
-    private ObservableList<String> shapesList;
 
     @FXML
     private ComboBox<String> iconTypeCombo;
@@ -48,16 +47,18 @@ public class IconOptionsController implements Initializable {
     private Button btnCancel;
     
     private String iconTypeValue;
-    private int iconSizeValue = 5; // default
+    private int iconSizeValue;
     private String iconColorValue;
     private String iconSVG;
+    private PCAGraph pcaGraph;
 
     @FXML
     private void entryOKBtn(ActionEvent event) {
         individualDetailsController.setIconSize(this.iconSizeValue);
         individualDetailsController.setIconType(this.iconTypeValue);
         individualDetailsController.setIconColor(this.iconColorValue);
-        individualDetailsController.setChosenIconDisplay(getStyle(iconSVG, iconSizeValue, iconColorValue));
+        individualDetailsController.setClickedIconStyle(iconDisplay.getStyle());
+        individualDetailsController.setChosenIconDisplay(pcaGraph.getStyle(iconColorValue, iconSVG, iconSizeValue));
         individualDetailsController.enableOK();
         Genesis.closeOpenStage(event);
     }
@@ -73,7 +74,7 @@ public class IconOptionsController implements Initializable {
     @FXML
     private void setIconSizeComboPressed(ActionEvent event){
         iconSizeValue = iconSizeCombo.getValue();
-        iconDisplay.setStyle(getStyle(iconSVG, iconSizeValue, iconColorValue));
+        iconDisplay.setStyle(pcaGraph.getStyle(iconColorValue, iconSVG, iconSizeValue));
     }
 
     @FXML
@@ -81,62 +82,67 @@ public class IconOptionsController implements Initializable {
         // get new selected icon type
         iconTypeValue = iconTypeCombo.getValue();
         // get svg of selected icon
-        iconSVG = individualDetailsController.getShape(iconTypeValue);
+        iconSVG = individualDetailsController.getSVGShape(iconTypeValue);
         // show new icon shape
-        iconDisplay.setStyle(getStyle(iconSVG, iconSizeValue, iconColorValue));
+        iconDisplay.setStyle(pcaGraph.getStyle(iconColorValue, iconSVG, iconSizeValue));
     }
 
     @FXML
     private void colorPickerPressed(ActionEvent event){
         // set icon new selected icon color
-        iconColorValue = Integer.toHexString(colorPicker.getValue().hashCode());
+        iconColorValue = toHexString(colorPicker.getValue());
+
         // display new color
-        iconDisplay.setStyle(getStyle(iconSVG, iconSizeValue, iconColorValue));
+        iconDisplay.setStyle(pcaGraph.getStyle(iconColorValue, iconSVG, iconSizeValue));
     }
 
-    private String getStyle(String icon, int size, String color){
-        String s = "-fx-background-color: "+color+", white;"
-                + "-fx-shape: \""+icon+"\";"
-                + "-fx-background-insets: 0, 2;"
-                + "-fx-background-radius: 5px;"
-                + "-fx-padding: "+size+"px;"
-                + "-fx-pref-width: "+size+"px;"
-                + "fx-pref-height: "+size+"px;";
-        return s;
-    }
-
-    public void setShapesList(ObservableList<String> shapesList) {
-        this.shapesList = shapesList;
+    public void setIconTypeComboValues(ObservableList<String> iconTypes) {
         // set a list of icon names
-        iconTypeCombo.getItems().addAll(shapesList);
+        iconTypeCombo.getItems().addAll(iconTypes);
         // set default value
         iconTypeCombo.setValue(iconTypeValue);
+    }
+
+    public void setPcaGraph(PCAGraph pcaGraph) {
+        this.pcaGraph = pcaGraph;
     }
 
     public void setPCAController(PCAIndividualDetailsController caller) {
         individualDetailsController = caller;
     }
 
-    // set default icon on the display
+    /**
+     * set default icon on the display
+     * @param style
+     */
     public void setIconDisplay(String style) {
         iconDisplay.setStyle(style);
     }
 
-    // set default color
+    /**
+     *  set default color
+     * @param color
+     */
     public void setIconColorValue(String color) {
         this.iconColorValue = color;
         // set default value of color picker
         colorPicker.setValue(Color.web(color));
     }
 
-    // set default icon type
+    /**
+     * set default icon type
+     * @param iconTypeValue
+     */
     public void setIconTypeValue(String iconTypeValue) {
         this.iconTypeValue = iconTypeValue;
         // set svg of icon
-        iconSVG = individualDetailsController.getShape(iconTypeValue);
+        iconSVG = individualDetailsController.getSVGShape(iconTypeValue);
     }
 
-    // set default icon size
+    /**
+     * set default icon size
+     * @param iconSizeValue
+     */
     public void setIconSizeValue(Integer iconSizeValue) {
         // get value form pca individual ctrl
         this.iconSizeValue = iconSizeValue;
@@ -147,4 +153,18 @@ public class IconOptionsController implements Initializable {
         // set default value
         iconSizeCombo.setValue(iconSizeValue);
     }
+
+    /**
+     * Converting Color to Hex String
+     * @param color
+     * @return
+     */
+    private String toHexString(Color color) {
+        int r = ((int) Math.round(color.getRed()     * 255)) << 24;
+        int g = ((int) Math.round(color.getGreen()   * 255)) << 16;
+        int b = ((int) Math.round(color.getBlue()    * 255)) << 8;
+        int a = ((int) Math.round(color.getOpacity() * 255));
+        return String.format("#%08X", (r + g + b + a));
+    }
+
 }

@@ -55,7 +55,7 @@
                   </Label>
                   <AnchorPane prefHeight="97.0" prefWidth="220.0">
                      <children>
-                        <ListView fx:id="phenoLabel" prefHeight="79.0" prefWidth="240.0" />
+                        <ListView fx:id="phenoListView" prefHeight="79.0" prefWidth="240.0" />
                      </children>
                      <VBox.margin>
                         <Insets left="30.0" right="50.0" />
@@ -78,7 +78,7 @@
                               <HBox prefHeight="27.0" prefWidth="226.0">
                                  <children>
                                     <RadioButton fx:id="seriesRadioBtn" mnemonicParsing="false" onAction="#getClickedRadioBtn" prefHeight="18.0" prefWidth="184.0" text="Group icon data" toggleGroup="$individualGroup" />
-                                    <ComboBox fx:id="groupName" prefWidth="150.0" />
+                                    <ComboBox fx:id="phenotypeComboBox" prefWidth="150.0" />
                                  </children>
                               </HBox>
                            </children>

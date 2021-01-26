@@ -9,6 +9,8 @@ package org.h3abionet.genesis.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
@@ -33,6 +35,8 @@ import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCAGraph;
+import org.h3abionet.genesis.model.Project;
+import org.h3abionet.genesis.model.Subject;
 
 /**
  *
@@ -44,7 +48,7 @@ public class PCAIndividualDetailsController implements Initializable {
     private Label pcaLabel;
 
     @FXML
-    private ListView<String> phenoLabel;
+    private ListView<String> phenoListView;
 
     @FXML
     private RadioButton hideRadioBtn;
@@ -68,7 +72,7 @@ public class PCAIndividualDetailsController implements Initializable {
     private AnchorPane chosenIconDisplay;
 
     @FXML
-    private ComboBox<String> groupName;
+    private ComboBox<String> phenotypeComboBox;
 
     @FXML
     private Button btnChangeIcon;
@@ -82,12 +86,13 @@ public class PCAIndividualDetailsController implements Initializable {
     private ScatterChart<Number, Number> chart;
 
     private String iconSVGShape;
-    private int iconSize = 5; // default value
+    private int iconSize;
     private String iconColor;
     private String iconType;
     private String clickedIconStyle;
     private String xValueOfClickedPoint;
     private String yValueOfClickedPoint;
+    private String phenotypeGroup;
 
     private boolean hideRadioBtnClicked = false;
     private boolean topRadioBtnClicked = false;
@@ -95,7 +100,7 @@ public class PCAIndividualDetailsController implements Initializable {
     private boolean seriesRadioBtnClicked = false;
 
     private PCAGraph pcaGraph;
-    private ObservableList<String> pheno_data;
+    private Project project;
 
     // set icon properties from the iconOptionsController
     public void setIconSize(int iconSize) {
@@ -109,7 +114,7 @@ public class PCAIndividualDetailsController implements Initializable {
     public void setIconType(String iconType) {
         this.iconType = iconType;
         // set the svg shape
-        getShape(iconType);
+        getSVGShape(iconType);
     }
 
     // display pc/pheno values on labels
@@ -117,46 +122,49 @@ public class PCAIndividualDetailsController implements Initializable {
         pcaLabel.setText(coordinates);
     }
 
-    public void setPhenoLabel(ObservableList<String> pheno_data) {
-        this.pheno_data = pheno_data;
-        phenoLabel.getItems().addAll(pheno_data);
+    public void setPhenoListView(ObservableList<String> phenoDetails) {
+        phenoListView.getItems().addAll(phenoDetails);
     }
 
-    // display icon
+    /**
+     * display icon of the clicked point
+     * @param style
+     */
     public void setIconDisplay(String style) {
-        clickedIconStyle = style;
+        setClickedIconStyle(style);
         iconDisplay.setStyle(clickedIconStyle);
+    }
+
+    /**
+     * set the data node style
+     * @param clickedIconStyle
+     */
+    public void setClickedIconStyle(String clickedIconStyle) {
+        this.clickedIconStyle = clickedIconStyle;
     }
 
     // load iconOptionsController upon request
     @FXML
     private void changeIcon(ActionEvent event) throws IOException {
-        if(seriesRadioBtnClicked) {
             FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IconOptions.fxml"));
             Stage iconStage = new Stage();
             iconStage.initOwner(iconDisplay.getScene().getWindow());
             Scene icon_root = new Scene((Parent) fxmlLoader.load());
             IconOptionsController iconCtrlr = fxmlLoader.getController();
             iconCtrlr.setPCAController(this);
+            iconCtrlr.setPcaGraph(pcaGraph);
 
             // set default variables
-            iconColor = (String) pcaGraph.getGroupColors().get(pheno_data.get(1));
-            iconType = (String) pcaGraph.getIconsHashmap().get(pcaGraph.getGroupIcons().get(pheno_data.get(1)));
-
             iconCtrlr.setIconDisplay(clickedIconStyle); // show clicked icon
             iconCtrlr.setIconColorValue(iconColor);
             iconCtrlr.setIconTypeValue(iconType);
             iconCtrlr.setIconSizeValue(iconSize);
 
-            iconCtrlr.setShapesList(FXCollections.observableArrayList(new ArrayList<>(pcaGraph.getIconsHashmap().values())));
+            iconCtrlr.setIconTypeComboValues(FXCollections.observableArrayList(new ArrayList<>(project.getIconTypes().values()))); // star, kite, ...
 
             iconStage.setScene(icon_root);
             iconStage.setResizable(false);
             iconStage.showAndWait();
-        }else {
-            Genesis.throwInformationException("Please first check the group icon radio button");
-        }
-
     }
 
     // get radio selections (only one selection at a time)
@@ -167,26 +175,31 @@ public class PCAIndividualDetailsController implements Initializable {
             topRadioBtnClicked = false;
             seriesRadioBtnClicked = false;
             clearRadioBtnClicked = false;
+            btnOK.setDisable(false);
         }else if (topRadioBtn.isSelected()) {
             topRadioBtnClicked = true;
             hideRadioBtnClicked = false;
             seriesRadioBtnClicked = false;
             clearRadioBtnClicked = false;
+            btnOK.setDisable(false);
         }else if (clearRadioBtn.isSelected()) {
             clearRadioBtnClicked = true;
             hideRadioBtnClicked = false;
             topRadioBtnClicked = false;
             seriesRadioBtnClicked = false;
+            btnOK.setDisable(false);
         }else if (seriesRadioBtn.isSelected()) {
             seriesRadioBtnClicked = true;
             hideRadioBtnClicked = false;
             topRadioBtnClicked = false;
             clearRadioBtnClicked = false;
+            btnOK.setDisable(false);
 
             // set default group - if group is not null
-            if(pheno_data.get(1) != null){ // LWK
-                groupName.getSelectionModel().select(pheno_data.get(1));
+            if(phenotypeGroup!= null){ // LWK
+                phenotypeComboBox.getSelectionModel().select(phenotypeGroup);
             }else {;}
+
         }else{
             ;
         }
@@ -198,9 +211,11 @@ public class PCAIndividualDetailsController implements Initializable {
         // hide or place the point on top
         for (XYChart.Series<Number, Number> series : chart.getData()) {
             for (XYChart.Data<Number, Number> data : series.getData()) {
-                String x = String.valueOf(data.getXValue());
-                String y = String.valueOf(data.getYValue());
-                if((x.equals(xValueOfClickedPoint) & y.equals(yValueOfClickedPoint))){
+
+                String xValue = String.valueOf(data.getXValue());
+                String yValue = String.valueOf(data.getYValue());
+
+                if((xValue.equals(xValueOfClickedPoint) & yValue.equals(yValueOfClickedPoint))){
                     if(hideRadioBtnClicked){
                         pcaGraph.hideIndividual(series, data);
                         break;
@@ -208,43 +223,95 @@ public class PCAIndividualDetailsController implements Initializable {
                         data.getNode().toFront();
                         break;
                     }else if (clearRadioBtnClicked) {
-                        data.getNode().setStyle(null);
-                        // TODO - update the colors and icons to default settings
-                    }else {
-                        ;
-                    }
-                }
-            }
-        }
+                        for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
+                            if(s.getPcs() != null && Arrays.asList(s.getPcs()).contains(xValue) && Arrays.asList(s.getPcs()).contains(yValue)){
+                                int currentTab = project.getCurrentTabIndex();
+                                // get group / phenotype color for graph in this tab
+                                HashMap groupColors = project.getListOfGraphsGroupColors().get(currentTab);
+                                HashMap groupIcon = project.getListOfGraphsGroupIcons().get(currentTab);
+                                if(project.getPhenoColumnNumber()==3) {
 
-        if(seriesRadioBtnClicked){
-            for (XYChart.Series<Number, Number> series : chart.getData()) {
-                if (series.getName().equals(groupName.getValue())) {
-                    // change the color and icon in the graph class
-                    pcaGraph.getGroupIcons().put(series.getName(), iconType);
-                    pcaGraph.getGroupColors().put(series.getName(), iconColor);
+                                    // get the color and icon of the chart in this position
+                                    String color = (String) groupColors.get(s.getPhenotypeA());
+                                    String icon = (String) groupIcon.get(s.getPhenotypeA());
 
-                    // change population group color and icon on the chart
-                    for (XYChart.Data<Number, Number> dt : series.getData()) {
-                        dt.getNode().lookup(".chart-symbol").setStyle(pcaGraph.getStyle(iconColor, iconSVGShape, iconSize));
-                    }
+                                    // set back the subject properties
+                                    s.setIcon(icon);
+                                    s.setColor(color);
 
-                    // change population group color and icon the legend
-                    for (Node n : chart.getChildrenUnmodifiable()) {
-                        if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
-                            TilePane tn = (TilePane) n;
-                            ObservableList<Node> children = tn.getChildren();
-                            for(int i=0;i<children.size();i++){
-                                Label lab = (Label) children.get(i).lookup(".chart-legend-item");
-                                if(lab.getText().equals(groupName.getValue())){
-                                    lab.getGraphic().setStyle(pcaGraph.getStyle(iconColor, iconSVGShape, iconSize));
-                                    break;
+                                    // set the style to default
+                                    data.getNode().lookup(".chart-symbol").setStyle(pcaGraph.getStyle(color, icon, iconSize));
+                                }else{
+                                    // get the color and icon of the chart in this position based on column 4 of the pheno file
+                                    String color = (String) groupColors.get(s.getPhenotypeB());
+                                    String icon = (String) groupIcon.get(s.getPhenotypeB());
+
+                                    // set back the subject properties
+                                    s.setIcon(icon);
+                                    s.setColor(color);
+
+                                    // set the style
+                                    data.getNode().lookup(".chart-symbol").setStyle(pcaGraph.getStyle(color, icon, iconSize));
                                 }
+                                break;
+                            }
+                        }
+                        break;
+                    }else if(seriesRadioBtnClicked){
+                        if (series.getName().equals(phenotypeComboBox.getValue())) {
+                            // change the color and icon of this phenotype category
+                            project.getListOfGraphsGroupColors().get(project.getCurrentTabIndex()).put(series.getName(), iconColor);
+                            project.getListOfGraphsGroupIcons().get(project.getCurrentTabIndex()).put(series.getName(), iconSVGShape);
 
+                            // set icons and colors for all subjects of this group
+                            for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
+                                if(project.getPhenoColumnNumber()==3){
+                                    if(s.getPhenotypeA().equals(phenotypeComboBox.getValue())){
+                                        s.setColor(iconColor);
+                                        s.setIcon(iconSVGShape);
+                                    }
+                                }else{
+                                    if(s.getPhenotypeB().equals(phenotypeComboBox.getValue())){
+                                        s.setColor(iconColor);
+                                        s.setIcon(iconSVGShape);
+                                    }
+                                }
                             }
 
-                        }
+                            // change population group color and icon on the chart
+                            for (XYChart.Data<Number, Number> dt : series.getData()) {
+                                dt.getNode().lookup(".chart-symbol").setStyle(pcaGraph.getStyle(iconColor, iconSVGShape, iconSize));
+                            }
 
+                            // change population group color and icon the legend
+                            for (Node n : chart.getChildrenUnmodifiable()) {
+                                if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+                                    TilePane tn = (TilePane) n;
+                                    ObservableList<Node> children = tn.getChildren();
+                                    for(int i=0;i<children.size();i++){
+                                        Label lab = (Label) children.get(i).lookup(".chart-legend-item");
+                                        if(lab.getText().equals(phenotypeComboBox.getValue())){
+                                            // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
+                                            lab.getGraphic().setStyle(pcaGraph.getStyle(iconColor, iconSVGShape, iconSize/2));
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+
+                        }
+                    }else {
+                        // set icons and colors for all subjects of this group
+                        for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
+                            if(s.getPcs() != null && Arrays.asList(s.getPcs()).contains(xValue) && Arrays.asList(s.getPcs()).contains(yValue)){
+                                s.setColor(iconColor);
+                                s.setIcon(iconSVGShape);
+                                s.setIconSize(iconSize);
+                                data.getNode().lookup(".chart-symbol").setStyle(pcaGraph.getStyle(iconColor, iconSVGShape, iconSize));
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -266,6 +333,10 @@ public class PCAIndividualDetailsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // disable ok button if no radio button is selected
+        if(!hideRadioBtnClicked || !topRadioBtnClicked || !seriesRadioBtnClicked || !clearRadioBtnClicked){
+            btnOK.setDisable(true);
+        }
         chart = MainController.getPcaChart();
     }
 
@@ -277,17 +348,32 @@ public class PCAIndividualDetailsController implements Initializable {
         this.pcaGraph = pcaGraph;
     }
 
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
     public void setClickedPoint(String xValue, String yValue) {
         this.xValueOfClickedPoint = xValue;
         this.yValueOfClickedPoint = yValue;
     }
 
-    public void setGroupName(ObservableList<String> groups) {
-        groupName.setItems(groups);
+    public void setPhenotypeComboBox(ObservableList<String> phenoGroups) {
+        phenotypeComboBox.setItems(phenoGroups);
     }
 
-    public String getShape(String iconTypeValue) {
-        pcaGraph.getIconsHashmap().forEach((key, value) -> {
+    public void setPhenotypeGroup(String phenotypeGroup) {
+        this.phenotypeGroup = phenotypeGroup;
+    }
+
+
+
+    /**
+     * return icon svg shape for every selected icon type
+     * @param iconTypeValue
+     * @return
+     */
+    public String getSVGShape(String iconTypeValue) {
+        project.getIconTypes().forEach((key, value) -> {
             if (value.equals(iconTypeValue)) {
                 iconSVGShape = (String) key;
             }
@@ -296,4 +382,18 @@ public class PCAIndividualDetailsController implements Initializable {
     }
 
     public void setChosenIconDisplay(String style) { chosenIconDisplay.setStyle(style); }
+
+    /**
+     * default icon shape
+     * @param icon
+     */
+    public void setIconSVGShape(String icon) {
+        // set svg shape of clicked subject
+        this.iconSVGShape = icon;
+        // then set the type of its svg shape
+        this.iconType = (String) project.getIconTypes().get(icon);
+    }
+
+
+
 }

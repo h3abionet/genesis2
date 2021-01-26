@@ -5,24 +5,20 @@
  */
 package org.h3abionet.genesis.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.chart.ScatterChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCAGraph;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  * FXML Controller class
@@ -31,15 +27,13 @@ import org.h3abionet.genesis.model.PCAGraph;
  */
 public class PCADataInputController implements Initializable {
 
-    private static
-    PCAGraph pcaGraph;
+    private PCAGraph pcaGraph;
 
     private static String pcaFilePath = "";
     private static String pcaFileName = "";
 
     private static String pcaComboButton1Value = "";
     private static String pcaComboButton2Value = "";
-//    public static ScatterChart<Number, Number> pcaChart;
     private boolean firstPcaSuccessful = false;
 
     @FXML
@@ -58,7 +52,7 @@ public class PCADataInputController implements Initializable {
     private Button entryCancelButton;
     private MainController mainController;
 
-    void setButtons(){
+    public void setButtons(){
         pcaEvecFileBtn.setText(pcaFileName);
         pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
         pcaComboButton1.setItems(pcaGraph.getPCAcolumns());
@@ -123,13 +117,10 @@ public class PCADataInputController implements Initializable {
         if (!pcaComboButton1Value.equals("") && !pcaComboButton2Value.equals("")) {
             if (pcaGraph != null) {
                 // set the chart
-//                pcaChart =
                 pcaGraph.createGraph(pcaComboButton1Value, pcaComboButton2Value);
-
                 firstPcaSuccessful = true;
             }
             Genesis.closeOpenStage(event);
-
         } else {
             Genesis.throwInformationException("Please import the file or select the PCAs to plot");
         }
@@ -173,6 +164,9 @@ public class PCADataInputController implements Initializable {
         entryOKButton.setDisable(false);
     }
 
+    public void setPcaGraph(PCAGraph pcaGraph) {
+        this.pcaGraph = pcaGraph;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
