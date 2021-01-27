@@ -2,8 +2,6 @@ package org.h3abionet.genesis.model;
 
 public class Subject implements java.io.Serializable{
 
-    private static final long serialVersionUID = 2L;
-
     // phenotype fields
     private String fid;
     private String iid;
@@ -25,7 +23,18 @@ public class Subject implements java.io.Serializable{
     private Float hiddenYValue;
     private int iconSize;
 
-    // constructor for pheno file - mostly provided
+    /**
+     * constructor for pheno file - mostly provided
+     * for every subject, set their default color, icon, visibility, icon size and associated phenotype details
+     * @param fid
+     * @param iid
+     * @param phenotypeA
+     * @param phenotypeB
+     * @param color
+     * @param icon
+     * @param iconSize
+     * @param isHidden
+     */
     public Subject(String fid, String iid, String phenotypeA, String phenotypeB, String color, String icon, int iconSize, boolean isHidden) {
         this.fid = fid;
         this.iid = iid;
@@ -54,7 +63,7 @@ public class Subject implements java.io.Serializable{
         this.phen = phen;
     }
 
-    // getters for properties
+    // getters for subject properties
     public String getFid() {
         return fid;
     }
@@ -79,6 +88,7 @@ public class Subject implements java.io.Serializable{
         return icon;
     }
 
+    // called when default subject color/icon is being changed
     public void setColor(String color) {
         this.color = color;
     }
@@ -87,9 +97,11 @@ public class Subject implements java.io.Serializable{
         this.icon = icon;
     }
 
+    // hide or show subject methods
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
     }
+
     public boolean isHidden() {
         return hidden;
     }
@@ -110,10 +122,12 @@ public class Subject implements java.io.Serializable{
         this.hiddenYValue = hiddenYValue;
     }
 
+    // return all pcs for the subject
     public String[] getPcs() {
         return pcs;
     }
 
+    // set all pcs for the subject
     public void setPcs(String[] pcs) {
         this.pcs = pcs;
     }

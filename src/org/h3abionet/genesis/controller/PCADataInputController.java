@@ -55,8 +55,8 @@ public class PCADataInputController implements Initializable {
     public void setButtons(){
         pcaEvecFileBtn.setText(pcaFileName);
         pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
-        pcaComboButton1.setItems(pcaGraph.getPCAcolumns());
-        pcaComboButton2.setItems(pcaGraph.getPCAcolumns());
+        pcaComboButton1.setItems(pcaGraph.getPcaColumnLabels());
+        pcaComboButton2.setItems(pcaGraph.getPcaColumnLabels());
 
         // show current PCAs being displayed - user changes them
         pcaComboButton1.setValue(pcaComboButton1Value);
@@ -81,12 +81,12 @@ public class PCADataInputController implements Initializable {
             pcaGraph = new PCAGraph(pcaFilePath);
             mainController.setPcaGraph(pcaGraph); // set pca graph in the main controller
 
-            pcaComboButton1.setItems(pcaGraph.getPCAcolumns());
-            pcaComboButton2.setItems(pcaGraph.getPCAcolumns());
+            pcaComboButton1.setItems(pcaGraph.getPcaColumnLabels());
+            pcaComboButton2.setItems(pcaGraph.getPcaColumnLabels());
 
             // set default pcas
-            pcaComboButton1.setValue(pcaGraph.getPCAcolumns().get(0)); // set to PCA1
-            pcaComboButton2.setValue(pcaGraph.getPCAcolumns().get(1)); // set to PCA2
+            pcaComboButton1.setValue(pcaGraph.getPcaColumnLabels().get(0)); // set to PCA1
+            pcaComboButton2.setValue(pcaGraph.getPcaColumnLabels().get(1)); // set to PCA2
 
             entryOKButton.setDisable(false);
 

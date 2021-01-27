@@ -20,7 +20,7 @@ import org.h3abionet.genesis.Genesis;
  */
 public class Project implements java.io.Serializable {
 
-    private static final long serialVersionUID = 2L;
+//    private static final long serialVersionUID = 2L;
 
     private String[] colors = new String[]{"#800000", "#000080", "#808000", "#FFFF00", "#860061", "#ff8000", "#008000", "#800080", "#004C4C", "#ff00ff"};
     private String[] icons = new String[]{"M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z",

@@ -89,17 +89,24 @@ public class ImportProjectController {
     }
 
     public void readGraphs() throws IOException {
-        String pcs[] = proj.getSelectedPCs().get(0).split("\\s+");
-        String firstPC = pcs[0];
-        String secondPC = pcs[1];
-
-        System.out.println(firstPC +" "+secondPC);
-        System.out.println(proj.getPcaGraph());
+        // call saved pcaGraph object from projects
         PCAGraph pcaGraph = proj.getPcaGraph();
+        // set project
         pcaGraph.setProject(proj);
 
-        for(int i=0; i<proj.getPcGraphSubjectsList().size();i++){
-            mainController.setPCAChart(pcaGraph.recreateGraph(firstPC, secondPC, i));
+        // remove genesis logo from every tabPane
+        mainController.setTabPaneStyle();
+
+        // get arrayList of subjects for every pc graph
+        for(int subjectsListPosition=0; subjectsListPosition<proj.getPcGraphSubjectsList().size(); subjectsListPosition++){
+
+            // get list of selected pc columns for every pc graph
+            String pcs[] = proj.getSelectedPCs().get(subjectsListPosition).split("\\s+"); // ["1 2", "4 10", ...]
+            String firstPC = pcs[0]; // x column index
+            String secondPC = pcs[1]; // y column index
+
+            // set every pca graph on a new tab. recreateGraph - returns a graph given the x,y pc columns
+            mainController.setPCAChart(pcaGraph.recreatePcaGraph(firstPC, secondPC, subjectsListPosition));
         }
 
     }

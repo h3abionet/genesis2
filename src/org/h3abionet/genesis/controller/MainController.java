@@ -158,7 +158,8 @@ public class MainController implements Initializable {
     @FXML
     private void newProject(ActionEvent event) throws IOException {
         // remove background image
-        tabPane.setStyle("-fx-background-image: null");
+        setTabPaneStyle();
+
         // load data input scene
         FXMLLoader projLoader = new FXMLLoader(Genesis.class.getResource("view/ProjDialogEntry.fxml"));
         Parent projParent = projLoader.load();
@@ -176,6 +177,13 @@ public class MainController implements Initializable {
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    /**
+     * remove the genesis logo from the tabPane
+     */
+    public void setTabPaneStyle(){
+        tabPane.setStyle("-fx-background-image: null");
     }
 
     @FXML

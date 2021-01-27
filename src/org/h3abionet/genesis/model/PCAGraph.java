@@ -180,6 +180,11 @@ public class PCAGraph extends Graph implements Serializable {
 
     }
 
+    /***
+     * list of column labels is used by the user to select which pcs to be viewed
+     * @param fields
+     * @param unwantedCols
+     */
     private void setPcaColumnLabels(String fields[], int unwantedCols) {
         // remove first id and control column
         int num_of_pcs = fields.length - unwantedCols; // get number of pcs
@@ -194,12 +199,16 @@ public class PCAGraph extends Graph implements Serializable {
      *
      * @return
      */
-    public ObservableList<String> getPCAcolumns() {
-        ObservableList<String> pca_list = FXCollections.observableArrayList();
-        pca_list.addAll(Arrays.asList(pcaColumnLabels));
-        return pca_list;
+    public ObservableList<String> getPcaColumnLabels() {
+        ObservableList<String> pcLabelsList = FXCollections.observableArrayList();
+        pcLabelsList.addAll(Arrays.asList(pcaColumnLabels));
+        return pcLabelsList;
     }
 
+    /**
+     * set project if reading it as a saved object
+     * @param project
+     */
     public void setProject(Project project) {
         this.project = project;
     }
@@ -212,7 +221,14 @@ public class PCAGraph extends Graph implements Serializable {
         return eigenValues;
     }
 
-    public ScatterChart<Number, Number> recreateGraph(String x, String y, int graphIndex){
+    /**
+     * recreate pca graphs when reading a saved project
+     * @param x
+     * @param y
+     * @param graphIndex
+     * @return
+     */
+    public ScatterChart<Number, Number> recreatePcaGraph(String x, String y, int graphIndex){
 
         String xAxisLabel = "PCA "+x;
         String yAxisLabel = "PCA "+y;
@@ -220,19 +236,7 @@ public class PCAGraph extends Graph implements Serializable {
         int xPcaIndex = Integer.parseInt(x) - 1; // position in the pcs array
         int yPcaIndex =  Integer.parseInt(y) - 1; // position in the pcs array
 
-        NumberAxis xAxis = new NumberAxis();
-        xAxis.setSide(Side.BOTTOM);
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setSide(Side.LEFT);
-
-        ScatterChart<Number, Number> sc = new ScatterChart<>(xAxis, yAxis);
-
-        // setup chart
-        xAxis.setLabel(xAxisLabel);
-        yAxis.setLabel(yAxisLabel);
-        sc.setTitle(xAxisLabel + " Vs " + yAxisLabel + " Chart"); // set as default value
-
-        System.out.println(project.getGroupNames().toString() + " size is "+project.getGroupNames().size());
+        ScatterChart<Number, Number> sc = createScatterChart(xAxisLabel, yAxisLabel);
 
         // create series
         for (int i= 0; i<project.getGroupNames().size(); i++){
@@ -242,15 +246,7 @@ public class PCAGraph extends Graph implements Serializable {
             series.setName(serieName);
 
             for (Subject s: project.getPcGraphSubjectsList().get(graphIndex)){
-                if(project.getPhenoColumnNumber() == 3){ // get the 3rd column in subject pheno details
-                    if(s.getPhenotypeA().equals(serieName) && s.getPcs() != null){
-                        series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
-                    }
-                }else {
-                    if(s.getPhenotypeB().equals(serieName) && s.getPcs() != null){ // get 4th column in subject pheno details
-                        series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
-                    }
-                }
+                setSeriesData(xPcaIndex, yPcaIndex, serieName, s);
             }
             // do not add empty series (pheno groups with no data) to the chart
             if(series.getData().size()>0){
@@ -260,14 +256,11 @@ public class PCAGraph extends Graph implements Serializable {
 
         for(int i=0; i<sc.getData().size(); i++) {
             setSerieColorsAndIcons(sc, i);
-            setSubjetMouseHandler(sc, i);
+            setSubjectMouseEvent(sc, i);
             setLegend(sc, i);
         }
-        // sort Legend
-        sortLegendItems(sc);
 
         return sc;
-
     }
 
     /**
@@ -279,27 +272,19 @@ public class PCAGraph extends Graph implements Serializable {
      */
     @Override
     public void createGraph(String x, String y) throws IOException {
-        String xAxisPca = x; // PCA 1
-        String yAxisPca = y; // PCA 2
+        String xAxisPca = x; // xAxisLabel e.g PCA 1
+        String yAxisPca = y; // yAxisLabel e.g PCA 2
 
         int xPcaNumber = Integer.parseInt(xAxisPca.substring(4, xAxisPca.length())); //1
         int xPcaIndex = xPcaNumber-1; // position in the pcs array
+        
         int yPcaNumber = Integer.parseInt(yAxisPca.substring(4, yAxisPca.length())); //2
         int yPcaIndex = yPcaNumber-1; // position in the pcs array
 
+        // store the pc column numbers for every chart created
         project.getSelectedPCs().add(xPcaNumber+" "+yPcaNumber); // "1 2"
 
-        NumberAxis xAxis = new NumberAxis();
-        xAxis.setSide(Side.BOTTOM);
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setSide(Side.LEFT);
-
-        ScatterChart<Number, Number> sc = new ScatterChart<>(xAxis, yAxis);
-
-        // setup chart
-        xAxis.setLabel(xAxisPca);
-        yAxis.setLabel(yAxisPca);
-        sc.setTitle(xAxisPca + " Vs " + yAxisPca + " Chart"); // set as default value
+        ScatterChart<Number, Number> sc = createScatterChart(xAxisPca, yAxisPca);
 
         // create a new subjects list for every pc graph
         subjects = (ArrayList)project.getPcGraphSubjects().clone();
@@ -323,15 +308,7 @@ public class PCAGraph extends Graph implements Serializable {
             series.setName(serieName);
 
             for (Subject s: subjects){
-                if(project.getPhenoColumnNumber() == 3){ // get the 3rd column in subject pheno details
-                    if(s.getPhenotypeA().equals(serieName) && s.getPcs() != null){
-                        series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
-                    }
-                }else {
-                    if(s.getPhenotypeB().equals(serieName) && s.getPcs() != null){ // get 4th column in subject pheno details
-                        series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
-                    }
-                }
+                setSeriesData(xPcaIndex, yPcaIndex, serieName, s);
             }
             // do not add empty series (pheno groups with no data) to the chart
             if(series.getData().size()>0){
@@ -342,115 +319,65 @@ public class PCAGraph extends Graph implements Serializable {
         // set colors and icons
         for(int i=0; i<sc.getData().size(); i++) {
              setSerieColorsAndIcons(sc, i);
-//            XYChart.Series<Number, Number> serie = sc.getData().get(i);
-//            Set<Node> nodes = sc.lookupAll(".series" + i);
-//
-//            if(project.getPhenoColumnNumber() == 3){
-//                for(Subject s : subjects){
-//                    if(s.getPhenotypeA().equals(serie.getName())){
-//                        for (Node n : nodes) {
-//                            n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
-//                        }
-//                        break;
-//                    }
-//                }
-//            }
-
             // set mouse event and tooltip
-            setSubjetMouseHandler(sc, i);
-
-//            for(XYChart.Data<Number, Number> data : sc.getData().get(i).getData()){
-//                setTooltip(data); // set tool tip
-//
-//                data.getNode().setOnMouseClicked(e -> {
-//                    try {
-//                        // set the event
-//                        setMouseEvent(data, sc);
-//                    } catch (Exception ex) {
-//                        ;
-//                    }
-//                });
-//            }
-
+            setSubjectMouseEvent(sc, i);
             // set the legend
             setLegend(sc, i);
-//            for (Node n : sc.getChildrenUnmodifiable()) {
-//                if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
-//                    TilePane tn = (TilePane) n;
-//                    ObservableList<Node> children = tn.getChildren();
-//
-//                    Label lab = (Label) children.get(i).lookup(".chart-legend-item");
-//
-//                    // get color and shape of the group for this lab
-//                    String bgColor = (String) groupColors.get(lab.getText());
-//                    String shape = (String) groupIcons.get(lab.getText());
-//
-//                    // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
-//                    // set the legend icons (graphics)
-//                    lab.getGraphic().setStyle(getStyle(bgColor, shape, project.getDefaultIconSize()/2));
-//
-//                    // legend mouse click events for left and right click
-//                    for (XYChart.Series<Number, Number> s : sc.getData()) {
-//                        if (s.getName().equals(lab.getText())) {
-//                            lab.setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
-//                            lab.setOnMouseClicked(me -> {
-//                                // Toggle group (phenotype) visibility on left click
-//                                if (me.getButton() == MouseButton.PRIMARY) {
-//                                    for (XYChart.Data<Number, Number> d : s.getData()) {
-//                                        if (d.getNode() != null) {
-//                                            d.getNode().setVisible(!d.getNode().isVisible()); // Toggle visibility of every node in the series
-//                                        }
-//                                    }
-//                                }else{ // right click
-//                                    // show dialog for legend position and hiding phenotype
-//                                    List<String> choices = new ArrayList<>();
-//                                    choices.add("bottom");
-//                                    choices.add("right");
-//
-//                                    ChoiceDialog<String> dialog = new ChoiceDialog<>("right", choices);
-//                                    dialog.setTitle("Legend");
-//                                    dialog.setHeaderText("Select legend position");
-//                                    dialog.setContentText("Position:");
-//
-//                                    Optional<String> result = dialog.showAndWait();
-//                                    result.ifPresent(position -> sc.lookup(".chart").setStyle("-fx-legend-side: " + position + ";"));
-//
-//                                }
-//                            });
-//                            break;
-//                        }
-//                    }
-//
-//
-//                }
-//
-//            }
-
         }
 
-        // sort legend items
-        sortLegendItems(sc);
-//        for (Node n : sc.getChildrenUnmodifiable()) {
-//            if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
-//                TilePane tn = (TilePane) n;
-//                ObservableList<Node> children = tn.getChildren();
-//                ObservableList<Label> labels = FXCollections.observableArrayList();
-//
-//                for(int i=0;i<children.size();i++){
-//                    labels.add((Label)children.get(i).lookup(".chart-legend-item"));
-//                }
-//                Collections.sort(labels, new LabelComparator());
-//                tn.getChildren().setAll(labels);
-//            }
-//        }
         pcaChart =  sc;
     }
 
+    /***
+     * create a scatter chart and define its labels
+     * @param xAxisLabel
+     * @param yAxisLabel
+     * @return
+     */
+    private ScatterChart<Number, Number> createScatterChart(String xAxisLabel, String yAxisLabel){
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setSide(Side.BOTTOM);
+        xAxis.setLabel(xAxisLabel);  // set its label
+        
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setSide(Side.LEFT); 
+        yAxis.setLabel(yAxisLabel);  // set its label
+
+        ScatterChart<Number, Number> sc = new ScatterChart<>(xAxis, yAxis);
+        sc.setTitle(yAxisLabel + " Vs " + yAxisLabel + " Chart"); // set as default value
+        
+        return sc;
+    }
+
+    /**
+     * set data for every series
+     * @param xPcaIndex
+     * @param yPcaIndex
+     * @param serieName
+     * @param s
+     */
+    private void setSeriesData(int xPcaIndex, int yPcaIndex, String serieName, Subject s) {
+        if(project.getPhenoColumnNumber() == 3){ // get the 3rd column in subject pheno details
+            if(s.getPhenotypeA().equals(serieName) && s.getPcs() != null){
+                series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
+            }
+        }else {
+            if(s.getPhenotypeB().equals(serieName) && s.getPcs() != null){ // get 4th column in subject pheno details
+                series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
+            }
+        }
+    }
+
+    /**
+     * set the color and icon for every fa
+     * @param sc
+     * @param serieIndex
+     */
     private void setSerieColorsAndIcons(ScatterChart<Number, Number> sc, int serieIndex){
         XYChart.Series<Number, Number> serie = sc.getData().get(serieIndex);
         Set<Node> nodes = sc.lookupAll(".series" + serieIndex);
 
-        if(project.getPhenoColumnNumber() == 3){
+        if(project.getPhenoColumnNumber() == 3){ // get phenotype A
             for(Subject s : subjects){
                 if(s.getPhenotypeA().equals(serie.getName())){
                     for (Node n : nodes) {
@@ -460,16 +387,35 @@ public class PCAGraph extends Graph implements Serializable {
                 }
             }
         }
+
+        if(project.getPhenoColumnNumber() == 4){  // get phenotype B
+            for(Subject s : subjects){
+                if(s.getPhenotypeB().equals(serie.getName())){
+                    for (Node n : nodes) {
+                        n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
+                    }
+                    break;
+                }
+            }
+        }
+
     }
 
-    private void setSubjetMouseHandler(ScatterChart<Number, Number> sc, int serieIndex){
+    /**
+     * add tool tip and click event on every pca graph data point
+     * @param sc
+     * @param serieIndex
+     */
+    private void setSubjectMouseEvent(ScatterChart<Number, Number> sc, int serieIndex){
         for(XYChart.Data<Number, Number> data : sc.getData().get(serieIndex).getData()){
-            setTooltip(data); // set tool tip
+
+            // display tooltip to show x and y pc values of every subject/individual
+            Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
 
             data.getNode().setOnMouseClicked(e -> {
                 try {
-                    // set the event
-                    setMouseEvent(data, sc);
+                    // launch individual details window
+                    showIndividualDetails(data, sc);
                 } catch (Exception ex) {
                     ;
                 }
@@ -477,6 +423,11 @@ public class PCAGraph extends Graph implements Serializable {
         }
     }
 
+    /**
+     * set Legend Items and add left/right click events on every legend item
+     * @param sc
+     * @param serieIndex
+     */
     private void setLegend(ScatterChart<Number, Number> sc, int serieIndex){
         for (Node n : sc.getChildrenUnmodifiable()) {
             if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
@@ -530,8 +481,15 @@ public class PCAGraph extends Graph implements Serializable {
 
         }
 
+        // sort legend items
+        sortLegendItems(sc);
+
     }
 
+    /**
+     * sort legend items alphabetically
+     * @param sc
+     */
     private void sortLegendItems(ScatterChart<Number, Number> sc){
         for (Node n : sc.getChildrenUnmodifiable()) {
             if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
@@ -548,30 +506,16 @@ public class PCAGraph extends Graph implements Serializable {
         }
     }
 
-    public ScatterChart<Number, Number> getPcaChart() {
-        return pcaChart;
-    }
-
-    /*
-     * This method is not used by pca
+    /**
+     * Sort legend items
      */
-    @Override
-    public ArrayList<StackedBarChart<String, Number>> createGraph() {
-        return null;
-    }
-    @Override
-
-    protected void setPopulationGroups() {}
-
-    public String getStyle(String color, String icon, int iconSize){
-        String s = "-fx-background-color: "+color+", white;"
-                + "-fx-shape: \""+icon+"\";"
-                + "-fx-background-insets: 0, 2;"
-                + "-fx-background-radius:"+iconSize+"px;"
-                + "-fx-padding: "+iconSize+"px;"
-                + "-fx-pref-width: "+iconSize+"px;"
-                + "-fx-pref-height: "+iconSize+"px;";
-        return s;
+    private static class LabelComparator implements Comparator<Label> {
+        @Override
+        public int compare(Label o1, Label o2) {
+            String s1 = o1.getText();
+            String s2 = o2.getText();
+            return s1.compareTo(s2);
+        }
     }
 
     /**
@@ -617,16 +561,15 @@ public class PCAGraph extends Graph implements Serializable {
         String fid = ids[0];
         String iid = ids[1];
 
-        Float x = null, y = null;
-        String groupName = null;
+        // retrieve subject properties
+        Float hiddenXValue = null, hiddenYValue = null;
+        String groupName = null, iconColor = null, iconsvg  = null;
         int iconSize = 0;
-        String iconColor = null;
-        String iconsvg = null;
 
         for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
             if(s.getFid().equals(fid) && s.getIid().equals(iid) && project.getPhenoColumnNumber()==3){
-                x = s.getHiddenXValue();
-                y = s.getHiddenYValue();
+                hiddenXValue = s.getHiddenXValue();
+                hiddenYValue = s.getHiddenYValue();
                 iconSize = s.getIconSize();
                 groupName = s.getPhenotypeA();
                 iconColor = s.getColor();
@@ -634,9 +577,10 @@ public class PCAGraph extends Graph implements Serializable {
                 s.setHidden(false); // activate visibility of a point
                 break;
             }
+            
             if(s.getFid().equals(fid) && s.getIid().equals(iid) && project.getPhenoColumnNumber()==4){
-                x = s.getHiddenXValue();
-                y = s.getHiddenYValue();
+                hiddenXValue = s.getHiddenXValue();
+                hiddenYValue = s.getHiddenYValue();
                 iconSize = s.getIconSize();
                 groupName = s.getPhenotypeB();
                 iconColor = s.getColor();
@@ -648,7 +592,7 @@ public class PCAGraph extends Graph implements Serializable {
 
         for(XYChart.Series<Number, Number> s: chart.getData()){
             if(s.getName().equals(groupName)){
-                XYChart.Data<Number, Number> data = new XYChart.Data(x, y);
+                XYChart.Data<Number, Number> data = new XYChart.Data(hiddenXValue, hiddenYValue);
                 s.getData().add(data); // add point to graph
 
                 // set the style of icon
@@ -656,7 +600,7 @@ public class PCAGraph extends Graph implements Serializable {
 
                 data.getNode().setOnMouseClicked(e ->{
                     try {
-                        setMouseEvent(data, chart);
+                        showIndividualDetails(data, chart);
                     } catch (Exception ex) {
                         ;
                     }
@@ -667,12 +611,12 @@ public class PCAGraph extends Graph implements Serializable {
     }
 
     /**
-     *
+     * show every individuals/subject details when clicked
      * @param data
      * @param chart
      * @throws IOException
      */
-    public void setMouseEvent(XYChart.Data<Number, Number> data, ScatterChart<Number, Number> chart) throws IOException {
+    public void showIndividualDetails(XYChart.Data<Number, Number> data, ScatterChart<Number, Number> chart) throws IOException {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IndividualDetails.fxml"));
             Parent parent = (Parent) fxmlLoader.load();
@@ -723,23 +667,36 @@ public class PCAGraph extends Graph implements Serializable {
     }
 
     /**
-     *
-     * @param data
+     * return a string of style
+     * @param color
+     * @param icon
+     * @param iconSize
+     * @return
      */
-    private void setTooltip(XYChart.Data<Number, Number> data){
-        // manage tooltip delay
-        Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
+    public String getStyle(String color, String icon, int iconSize){
+        String s = "-fx-background-color: "+color+", white;"
+                + "-fx-shape: \""+icon+"\";"
+                + "-fx-background-insets: 0, 2;"
+                + "-fx-background-radius:"+iconSize+"px;"
+                + "-fx-padding: "+iconSize+"px;"
+                + "-fx-pref-width: "+iconSize+"px;"
+                + "-fx-pref-height: "+iconSize+"px;";
+        return s;
     }
 
     /**
-     * Sort legend items
+     * get created graph - called by the setPCAGraph method in main controller
+     * @return
      */
-    private static class LabelComparator implements Comparator<Label> {
-        @Override
-        public int compare(Label o1, Label o2) {
-            String s1 = o1.getText();
-            String s2 = o2.getText();
-            return s1.compareTo(s2);
-        }
+    public ScatterChart<Number, Number> getPcaChart() {
+        return pcaChart;
     }
+
+    @Override
+    public ArrayList<StackedBarChart<String, Number>> createGraph() {
+        return null;
+    }
+    @Override
+    protected void setPopulationGroups() {}
+
 }

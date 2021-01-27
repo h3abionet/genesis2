@@ -175,25 +175,25 @@ public class PCAIndividualDetailsController implements Initializable {
             topRadioBtnClicked = false;
             seriesRadioBtnClicked = false;
             clearRadioBtnClicked = false;
-            btnOK.setDisable(false);
+            enableOK();
         }else if (topRadioBtn.isSelected()) {
             topRadioBtnClicked = true;
             hideRadioBtnClicked = false;
             seriesRadioBtnClicked = false;
             clearRadioBtnClicked = false;
-            btnOK.setDisable(false);
+            enableOK();
         }else if (clearRadioBtn.isSelected()) {
             clearRadioBtnClicked = true;
             hideRadioBtnClicked = false;
             topRadioBtnClicked = false;
             seriesRadioBtnClicked = false;
-            btnOK.setDisable(false);
+            enableOK();
         }else if (seriesRadioBtn.isSelected()) {
             seriesRadioBtnClicked = true;
             hideRadioBtnClicked = false;
             topRadioBtnClicked = false;
             clearRadioBtnClicked = false;
-            btnOK.setDisable(false);
+            enableOK();
 
             // set default group - if group is not null
             if(phenotypeGroup!= null){ // LWK
@@ -365,8 +365,6 @@ public class PCAIndividualDetailsController implements Initializable {
         this.phenotypeGroup = phenotypeGroup;
     }
 
-
-
     /**
      * return icon svg shape for every selected icon type
      * @param iconTypeValue
@@ -393,7 +391,5 @@ public class PCAIndividualDetailsController implements Initializable {
         // then set the type of its svg shape
         this.iconType = (String) project.getIconTypes().get(icon);
     }
-
-
 
 }
