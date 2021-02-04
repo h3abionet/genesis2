@@ -47,7 +47,7 @@ public class ImportProjectController {
 
     @FXML
     void Done(ActionEvent event) throws IOException, ClassNotFoundException {
-//        try {
+        try {
             FileInputStream fileIn = new FileInputStream(projFile);
             ObjectInputStream in = new ObjectInputStream(fileIn);
             proj = (Project) in.readObject();
@@ -56,11 +56,11 @@ public class ImportProjectController {
             fileIn.close();
             readGraphs();
 
-//        } catch (IOException i) {
-//            Genesis.throwErrorException("Failed to import the project");
-//        } catch (ClassNotFoundException c) {
-//            Genesis.throwErrorException("Project class not found");
-//        }
+        } catch (IOException i) {
+            Genesis.throwErrorException("Failed to import the project");
+        } catch (ClassNotFoundException c) {
+            Genesis.throwErrorException("Project class not found");
+        }
         Genesis.closeOpenStage(event);
     }
 
@@ -91,22 +91,25 @@ public class ImportProjectController {
     public void readGraphs() throws IOException {
         // call saved pcaGraph object from projects
         PCAGraph pcaGraph = proj.getPcaGraph();
-        // set project
+
+        // set project and mainCtrler in pcaGraph class
         pcaGraph.setProject(proj);
+        pcaGraph.setMainController(mainController);
 
         // remove genesis logo from every tabPane
         mainController.setTabPaneStyle();
+        mainController.setPcaGraph(pcaGraph);
 
         // get arrayList of subjects for every pc graph
-        for(int subjectsListPosition=0; subjectsListPosition<proj.getPcGraphSubjectsList().size(); subjectsListPosition++){
+        for(int listIndex=0; listIndex<proj.getPcGraphSubjectsList().size(); listIndex++){
 
             // get list of selected pc columns for every pc graph
-            String pcs[] = proj.getSelectedPCs().get(subjectsListPosition).split("\\s+"); // ["1 2", "4 10", ...]
+            String pcs[] = proj.getSelectedPCs().get(listIndex).split("\\s+"); // ["1 2", "4 10", ...]
             String firstPC = pcs[0]; // x column index
             String secondPC = pcs[1]; // y column index
 
             // set every pca graph on a new tab. recreateGraph - returns a graph given the x,y pc columns
-            mainController.setPCAChart(pcaGraph.recreatePcaGraph(firstPC, secondPC, subjectsListPosition));
+            mainController.setPCAChart(pcaGraph.recreatePcaGraph(firstPC, secondPC, listIndex));
         }
 
     }

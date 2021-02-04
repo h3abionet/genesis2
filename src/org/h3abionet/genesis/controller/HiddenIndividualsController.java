@@ -8,20 +8,16 @@ package org.h3abionet.genesis.controller;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCAGraph;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 /**
  *
  * @author henry
  */
-public class HiddenIndividualsController implements Initializable{
+public class HiddenIndividualsController{
 
     @FXML
     private ComboBox<String> hiddenIndividualCombo;
@@ -37,11 +33,15 @@ public class HiddenIndividualsController implements Initializable{
 
     @FXML
     private void entryUnhideBtn(ActionEvent event) {
-        // get ids
-        String ids[] = hiddenIndividualCombo.getValue().split("\\s+");
-        pcaGraph.unhideIndividual(mainController.getPcaChart(), ids);
+        try{
+            // get ids
+            String ids[] = hiddenIndividualCombo.getValue().split("\\s+");
+            pcaGraph.unhideIndividual(mainController.getPcaChart(), ids);
 
-        Genesis.closeOpenStage(event);
+            Genesis.closeOpenStage(event);
+        }catch (Exception e){
+            Genesis.throwInformationException("Select the individual to unhide");
+        }
     }
 
     @FXML
@@ -49,10 +49,10 @@ public class HiddenIndividualsController implements Initializable{
         Genesis.closeOpenStage(event);
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {}
-
     public void setHiddenIndividualCombo (ObservableList<String> hiddenIndividualsList){
+        if(hiddenIndividualsList.size()==0){
+            unhideBtn.setDisable(true);
+        }
         hiddenIndividualCombo.getItems().addAll(hiddenIndividualsList);
     }
 
@@ -63,5 +63,4 @@ public class HiddenIndividualsController implements Initializable{
     public void setPcaGraph(PCAGraph pcaGraph) {
         this.pcaGraph = pcaGraph;
     }
-
 }

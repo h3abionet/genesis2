@@ -87,8 +87,7 @@ public class FontSelectorController implements Initializable{
     private Button btnCancel;
     
     private ScatterChart<Number, Number> chart;
-    private MainController open0Controller;
-    
+
     // default chosen values -- changed by event handlers 
     private String chosenFont = "System";
     private String chosenFontStyle = "NORMAL";
@@ -192,10 +191,12 @@ public class FontSelectorController implements Initializable{
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        open0Controller = new MainController();
-        chart = MainController.getPcaChart();
+    public void initialize(URL location, ResourceBundle resources) {}
 
+    /**
+     * set all variables
+     */
+    public void setControls(){
         // set default values
         titleLabel.setText(chart.getTitle());
         xLabel.setText(chart.getXAxis().getLabel());
@@ -205,38 +206,43 @@ public class FontSelectorController implements Initializable{
         fontList.setItems(FXCollections.observableArrayList(Font.getFamilies()));
         postureList.setItems(FXCollections.observableArrayList(posture));
         sizeList.setItems(FXCollections.observableList(list));
-        
+
         styleList.setOnMouseClicked((MouseEvent event) -> {
             chosenFontStyle = styleList.getSelectionModel().getSelectedItem();
             updateSampleLabel();
         });
-        
+
         postureList.setOnMouseClicked((MouseEvent event) -> {
             chosenPosture = postureList.getSelectionModel().getSelectedItem();
             updateSampleLabel();
         });
-        
+
         fontList.setOnMouseClicked((MouseEvent event) -> {
             chosenFont = fontList.getSelectionModel().getSelectedItem();
             updateSampleLabel();
 
         });
-        
+
         sizeList.setOnMouseClicked((MouseEvent event) -> {
             chosenFontSize = sizeList.getSelectionModel().getSelectedItem();
             updateSampleLabel();
 
         });
-        
+
         colorPicker.setOnAction((ActionEvent event) -> {
-        updateSampleLabel();
-        
+            updateSampleLabel();
+
         });
-        
-        
-        
     }
-    
+
+    /**
+     * set chart
+     * @param scatterChart
+     */
+    public void setScatterChart(ScatterChart<Number, Number> scatterChart) {
+        chart = scatterChart;
+    }
+
     // get chosen properties and update the label
     private void updateSampleLabel(){
         chosenFontColor = Integer.toHexString(colorPicker.getValue().hashCode());

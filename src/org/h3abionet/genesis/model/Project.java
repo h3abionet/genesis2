@@ -20,7 +20,7 @@ import org.h3abionet.genesis.Genesis;
  */
 public class Project implements java.io.Serializable {
 
-//    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 2L;
 
     private String[] colors = new String[]{"#800000", "#000080", "#808000", "#FFFF00", "#860061", "#ff8000", "#008000", "#800080", "#004C4C", "#ff00ff"};
     private String[] icons = new String[]{"M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z",
@@ -72,7 +72,7 @@ public class Project implements java.io.Serializable {
         this.phenoColumnNumber = phenoColumnNumber;
 
         project = this;
-        pcGraphSubjects = new ArrayList<Subject>();
+        pcGraphSubjects = new ArrayList<>();
         readPhenotypeFile(pheno_fname_s);
         setIconTypes();
     }
@@ -154,25 +154,8 @@ public class Project implements java.io.Serializable {
         individualPhenoDetails = new HashMap<>(); // key is IID
         admixturePhenoData = new HashMap<>(); // key is "FID IID"
 
-        BufferedReader r = Genesis.openFile(phenoFilePath);
-
         // get phenotype groups and assign colors and icons
-        String row = r.readLine();
-        String rowValues[];
-        while (row != null) {
-            rowValues = row.split("\\s+");
-            // keep track of unique phenotypes
-            if (!groupNames.contains(rowValues[phenoColumnNumber-1])) {
-                groupNames.add(rowValues[phenoColumnNumber-1]);
-            }
-            row = r.readLine();
-        }
-
-        // set colors and icons for every phenotype
-        for (int i = 0; i < groupNames.size(); i++){
-            groupColors.put(groupNames.get(i), colors[i]);  // mkk -> #800000
-            groupIcons.put(groupNames.get(i), icons[i]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
-        }
+        setPhenotypeGroups(Genesis.openFile(phenoFilePath));
 
         BufferedReader secBuf = Genesis.openFile(phenoFilePath);
         String line = secBuf.readLine();
@@ -205,6 +188,30 @@ public class Project implements java.io.Serializable {
 //        for (int i = 0; i < listOfRows.size(); i++){
 //            System.out.println(Arrays.asList(listOfRows.get(i)));
 //        }
+    }
+
+    /**
+     * create phenotype groups and assign colors and icons
+     * @param r
+     * @throws IOException
+     */
+    private void setPhenotypeGroups(BufferedReader r) throws IOException {
+        String row = r.readLine();
+        String rowValues[];
+        while (row != null) {
+            rowValues = row.split("\\s+");
+            // keep track of unique phenotypes
+            if (!groupNames.contains(rowValues[phenoColumnNumber-1])) {
+                groupNames.add(rowValues[phenoColumnNumber-1]);
+            }
+            row = r.readLine();
+        }
+
+        // set colors and icons for every phenotype
+        for (int i = 0; i < groupNames.size(); i++){
+            groupColors.put(groupNames.get(i), colors[i]);  // mkk -> #800000
+            groupIcons.put(groupNames.get(i), icons[i]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
+        }
     }
 
     public PCAGraph getPcaGraph() {
@@ -268,8 +275,14 @@ public class Project implements java.io.Serializable {
         return currentTabIndex;
     }
 
+    /**
+     * return a list of hidden ids/individuals
+     * @return
+     */
     public ObservableList<String> getHiddenIndvsOfCurrentGraph(){
+
         ObservableList<String> hiddenIndividualsList = FXCollections.observableArrayList();
+
         for(Subject s: pcGraphSubjectsList.get(currentTabIndex)){
             if(s.isHidden()){
                 String fid_iid = s.getFid()+" "+s.getIid();

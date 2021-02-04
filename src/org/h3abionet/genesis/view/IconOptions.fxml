@@ -75,8 +75,8 @@
                <children>
                   <HBox prefHeight="100.0" prefWidth="200.0" spacing="40.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
                      <children>
-                        <Button fx:id="btnOK" mnemonicParsing="false" onAction="#entryOKBtn" prefHeight="25.0" prefWidth="56.0" text="OK" />
                         <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#entryCancelBtn" prefHeight="27.0" prefWidth="84.0" text="Cancel" />
+                        <Button fx:id="btnOK" mnemonicParsing="false" onAction="#entryOKBtn" prefHeight="27.0" prefWidth="81.0" text="OK" />
                      </children>
                   </HBox>
                </children>

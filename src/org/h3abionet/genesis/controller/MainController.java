@@ -153,7 +153,7 @@ public class MainController implements Initializable {
     private ImportProjectController importProjectController;
     private PCAGraph pcaGraph;
     private Project project;
-    private static ArrayList<ScatterChart> pcaChartsList;
+    private ArrayList<ScatterChart> pcaChartsList;
 
     @FXML
     private void newProject(ActionEvent event) throws IOException {
@@ -379,7 +379,16 @@ public class MainController implements Initializable {
         try{
             if (selectedTab.getId().contains("tab")) {
                 // show pca settings
-                Genesis.loadFxmlView("view/FontSelector.fxml");
+                FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/FontSelector.fxml"));
+                Parent root = loader.load();
+                FontSelectorController fontCtrler = loader.getController();
+                fontCtrler.setScatterChart(pcaChartsList.get(currentTabIndex));
+                fontCtrler.setControls();
+                Stage dialogStage = new Stage();
+                dialogStage.setScene(new Scene(root));
+                dialogStage.setResizable(false);
+                dialogStage.showAndWait();
+
             }else if(selectedTab.getId().contains("admix")){
                 // show admixture settings
                 Genesis.loadFxmlView("view/AdmixtureSettings.fxml");
@@ -432,16 +441,12 @@ public class MainController implements Initializable {
         dialogStage.showAndWait();
     }
 
-    public HiddenIndividualsController getHiddenIndividualsController() {
-        return hiddenIndividualsController;
-    }
-
     /**
      * return PCA based on their index in the list
      *
      * @return PCA pcaChart
      */
-    public static ScatterChart<Number, Number> getPcaChart() {
+    public ScatterChart<Number, Number> getPcaChart() {
         return pcaChartsList.get(currentTabIndex);
     }
 
@@ -688,7 +693,6 @@ public class MainController implements Initializable {
         dialogStage.setResizable(false);
 
         dialogStage.showAndWait();
-
     }
 
     @FXML
@@ -699,15 +703,18 @@ public class MainController implements Initializable {
         fileChooser.getExtensionFilters().addAll(genFilter);
         fileChooser.setInitialFileName(project.getProjectName()+".ggf");
         File projFile = fileChooser.showSaveDialog(null);
-
-        try {
-            FileOutputStream fileOut =  new FileOutputStream(projFile);
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(project);
-            out.close();
-            fileOut.close();
-        } catch (IOException i) {
-            i.printStackTrace();
+        if(projFile.equals(null)){
+            ;
+        }else {
+            try {
+                FileOutputStream fileOut =  new FileOutputStream(projFile);
+                ObjectOutputStream out = new ObjectOutputStream(fileOut);
+                out.writeObject(project);
+                out.close();
+                fileOut.close();
+            } catch (IOException i) {
+                ;
+            }
         }
     }
 

@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 public class PCADataInputController implements Initializable {
 
     private PCAGraph pcaGraph;
+    private MainController mainController;
 
     private static String pcaFilePath = "";
     private static String pcaFileName = "";
@@ -50,7 +51,6 @@ public class PCADataInputController implements Initializable {
 
     @FXML
     private Button entryCancelButton;
-    private MainController mainController;
 
     public void setButtons(){
         pcaEvecFileBtn.setText(pcaFileName);
@@ -67,10 +67,9 @@ public class PCADataInputController implements Initializable {
      * Read the pcaFile file using the PCA
      *
      * @param event
-     * @throws IOException
      */
     @FXML
-    private void handlePCAEvecFileBtn(ActionEvent event) throws IOException {
+    private void handlePCAEvecFileBtn(ActionEvent event) {
         File pcaFile = getFile("Choose PCA file");
         try{
             pcaFilePath = pcaFile.getAbsolutePath();
@@ -79,6 +78,7 @@ public class PCADataInputController implements Initializable {
             pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
 
             pcaGraph = new PCAGraph(pcaFilePath);
+            pcaGraph.setMainController(mainController);
             mainController.setPcaGraph(pcaGraph); // set pca graph in the main controller
 
             pcaComboButton1.setItems(pcaGraph.getPcaColumnLabels());

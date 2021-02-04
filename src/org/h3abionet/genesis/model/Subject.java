@@ -2,6 +2,8 @@ package org.h3abionet.genesis.model;
 
 public class Subject implements java.io.Serializable{
 
+    private static final long serialVersionUID = 2L;
+
     // phenotype fields
     private String fid;
     private String iid;
@@ -44,6 +46,19 @@ public class Subject implements java.io.Serializable{
         this.icon = icon;
         this.hidden = isHidden;
         this.iconSize = iconSize;
+    }
+
+    // copy constructor
+    public Subject(Subject subject){
+        this.fid = subject.fid;
+        this.iid = subject.iid;
+        this.phenotypeA = subject.phenotypeA;
+        this.phenotypeB = subject.phenotypeB;
+        this.color = subject.color;
+        this.icon = subject.icon;
+        this.hidden = subject.hidden;
+        this.iconSize = subject.iconSize;
+        this.pcs = subject.pcs;
     }
 
     // if fam file is provided, set the following fields

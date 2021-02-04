@@ -24,6 +24,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.controller.MainController;
 import org.h3abionet.genesis.controller.PCAIndividualDetailsController;
 
 import java.io.BufferedReader;
@@ -47,9 +48,9 @@ public class PCAGraph extends Graph implements Serializable {
     private transient BufferedReader bufferReader;
     private transient ScatterChart<Number, Number> pcaChart;
     private String line;
-    private ArrayList<Subject> subjects;
     private HashMap groupColors;
     private HashMap groupIcons;
+    private transient MainController mainController;
 
     /**
      *
@@ -228,7 +229,7 @@ public class PCAGraph extends Graph implements Serializable {
      * @param graphIndex
      * @return
      */
-    public ScatterChart<Number, Number> recreatePcaGraph(String x, String y, int graphIndex){
+    public ScatterChart<Number, Number> recreatePcaGraph(String x, String y, int graphIndex) throws IOException {
 
         String xAxisLabel = "PCA "+x;
         String yAxisLabel = "PCA "+y;
@@ -236,30 +237,20 @@ public class PCAGraph extends Graph implements Serializable {
         int xPcaIndex = Integer.parseInt(x) - 1; // position in the pcs array
         int yPcaIndex =  Integer.parseInt(y) - 1; // position in the pcs array
 
+        ArrayList<Subject> subjectsList = project.getPcGraphSubjectsList().get(graphIndex);
+
         ScatterChart<Number, Number> sc = createScatterChart(xAxisLabel, yAxisLabel);
 
         // create series
-        for (int i= 0; i<project.getGroupNames().size(); i++){
-            series = new XYChart.Series<>();
+        createSeries(xPcaIndex, yPcaIndex, subjectsList, sc);
 
-            String serieName = project.getGroupNames().get(i);
-            series.setName(serieName);
-
-            for (Subject s: project.getPcGraphSubjectsList().get(graphIndex)){
-                setSeriesData(xPcaIndex, yPcaIndex, serieName, s);
-            }
-            // do not add empty series (pheno groups with no data) to the chart
-            if(series.getData().size()>0){
-                sc.getData().add(series);
-            }
-        }
-
+        // set color, icon, click event and legend for this chart
         for(int i=0; i<sc.getData().size(); i++) {
-            setSerieColorsAndIcons(sc, i);
+            setSeriesColorsAndIcons(sc, i, subjectsList);
             setSubjectMouseEvent(sc, i);
-            setLegend(sc, i);
+            // set legend
+            setLegend(sc, i, project.getListOfGraphsGroupColors().get(graphIndex), project.getListOfGraphsGroupIcons().get(graphIndex));
         }
-
         return sc;
     }
 
@@ -286,8 +277,13 @@ public class PCAGraph extends Graph implements Serializable {
 
         ScatterChart<Number, Number> sc = createScatterChart(xAxisPca, yAxisPca);
 
+        ArrayList<Subject> subjects = new ArrayList<>();
+
         // create a new subjects list for every pc graph
-        subjects = (ArrayList)project.getPcGraphSubjects().clone();
+        for(Subject sub: project.getPcGraphSubjects()){
+            Subject s = new Subject(sub); // use copy constructor
+            subjects.add(s);
+        }
 
         // add subjects to the list of all subjects
         project.getPcGraphSubjectsList().add(subjects);
@@ -301,30 +297,17 @@ public class PCAGraph extends Graph implements Serializable {
         project.getListOfGraphsGroupIcons().add(groupIcons);
 
         // create series
-        for (int i= 0; i<project.getGroupNames().size(); i++){
-            series = new XYChart.Series<>();
-
-            String serieName = project.getGroupNames().get(i);
-            series.setName(serieName);
-
-            for (Subject s: subjects){
-                setSeriesData(xPcaIndex, yPcaIndex, serieName, s);
-            }
-            // do not add empty series (pheno groups with no data) to the chart
-            if(series.getData().size()>0){
-                sc.getData().add(series);
-            }
-        }
+        createSeries(xPcaIndex, yPcaIndex, subjects, sc);
 
         // set colors and icons
         for(int i=0; i<sc.getData().size(); i++) {
-             setSerieColorsAndIcons(sc, i);
+            setSeriesColorsAndIcons(sc, i, subjects);
             // set mouse event and tooltip
             setSubjectMouseEvent(sc, i);
-            // set the legend
-            setLegend(sc, i);
-        }
 
+            // set the legend
+            setLegend(sc, i, groupColors, groupIcons);
+        }
         pcaChart =  sc;
     }
 
@@ -350,6 +333,31 @@ public class PCAGraph extends Graph implements Serializable {
     }
 
     /**
+     * create series (phenotype groups)
+     * @param xPcaIndex
+     * @param yPcaIndex
+     * @param subjectsList
+     * @param sc
+     */
+    private void createSeries(int xPcaIndex, int yPcaIndex, ArrayList<Subject> subjectsList, ScatterChart<Number, Number> sc) {
+        for (int i= 0; i<project.getGroupNames().size(); i++){
+            series = new XYChart.Series<>();
+
+            String serieName = project.getGroupNames().get(i);
+            series.setName(serieName);
+
+            for (Subject s: subjectsList){
+                setSeriesData(xPcaIndex, yPcaIndex, serieName, s);
+            }
+
+            // do not add empty series (pheno groups with no data) to the chart
+            if(series.getData().size()>0){
+                sc.getData().add(series);
+            }
+        }
+    }
+
+    /**
      * set data for every series
      * @param xPcaIndex
      * @param yPcaIndex
@@ -358,11 +366,11 @@ public class PCAGraph extends Graph implements Serializable {
      */
     private void setSeriesData(int xPcaIndex, int yPcaIndex, String serieName, Subject s) {
         if(project.getPhenoColumnNumber() == 3){ // get the 3rd column in subject pheno details
-            if(s.getPhenotypeA().equals(serieName) && s.getPcs() != null){
+            if(s.getPhenotypeA().equals(serieName) && s.getPcs() != null && s.isHidden()==false){
                 series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
             }
         }else {
-            if(s.getPhenotypeB().equals(serieName) && s.getPcs() != null){ // get 4th column in subject pheno details
+            if(s.getPhenotypeB().equals(serieName) && s.getPcs() != null && s.isHidden()==false){ // get 4th column in subject pheno details
                 series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
             }
         }
@@ -373,12 +381,12 @@ public class PCAGraph extends Graph implements Serializable {
      * @param sc
      * @param serieIndex
      */
-    private void setSerieColorsAndIcons(ScatterChart<Number, Number> sc, int serieIndex){
+    private void setSeriesColorsAndIcons(ScatterChart<Number, Number> sc, int serieIndex, ArrayList<Subject> sub){
         XYChart.Series<Number, Number> serie = sc.getData().get(serieIndex);
         Set<Node> nodes = sc.lookupAll(".series" + serieIndex);
-
+        
         if(project.getPhenoColumnNumber() == 3){ // get phenotype A
-            for(Subject s : subjects){
+            for(Subject s : sub){
                 if(s.getPhenotypeA().equals(serie.getName())){
                     for (Node n : nodes) {
                         n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
@@ -388,17 +396,29 @@ public class PCAGraph extends Graph implements Serializable {
             }
         }
 
-        if(project.getPhenoColumnNumber() == 4){  // get phenotype B
-            for(Subject s : subjects){
-                if(s.getPhenotypeB().equals(serie.getName())){
-                    for (Node n : nodes) {
-                        n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
-                    }
-                    break;
-                }
-            }
-        }
 
+//            for(XYChart.Data<Number, Number> data : sc.getData().get(serieIndex).getData()){
+//                for(Subject s : sub){
+//                    if(s.getPcs() != null && Arrays.asList(s.getPcs()).contains(data.getXValue().toString()) && Arrays.asList(s.getPcs()).contains(data.getYValue().toString())){
+//                        for (Node n : nodes) {
+//                            if(data.getNode().equals(n)){
+//                                n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+
+//        if(project.getPhenoColumnNumber() == 4){  // get phenotype B
+//            for(Subject s : sub){
+//                if(s.getPhenotypeB().equals(serie.getName())){
+//                    for (Node n : nodes) {
+//                        n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
+//                    }
+//                    break;
+//                }
+//            }
+//        }
     }
 
     /**
@@ -406,19 +426,16 @@ public class PCAGraph extends Graph implements Serializable {
      * @param sc
      * @param serieIndex
      */
-    private void setSubjectMouseEvent(ScatterChart<Number, Number> sc, int serieIndex){
+    private void setSubjectMouseEvent(ScatterChart<Number, Number> sc, int serieIndex) throws IOException{
         for(XYChart.Data<Number, Number> data : sc.getData().get(serieIndex).getData()){
 
             // display tooltip to show x and y pc values of every subject/individual
             Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + "\n" + data.getYValue()));
-
             data.getNode().setOnMouseClicked(e -> {
                 try {
                     // launch individual details window
                     showIndividualDetails(data, sc);
-                } catch (Exception ex) {
-                    ;
-                }
+                } catch (Exception ex) {}
             });
         }
     }
@@ -428,7 +445,7 @@ public class PCAGraph extends Graph implements Serializable {
      * @param sc
      * @param serieIndex
      */
-    private void setLegend(ScatterChart<Number, Number> sc, int serieIndex){
+    private void setLegend(ScatterChart<Number, Number> sc, int serieIndex,  HashMap iconColors, HashMap iconShapes){
         for (Node n : sc.getChildrenUnmodifiable()) {
             if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                 TilePane tn = (TilePane) n;
@@ -437,12 +454,12 @@ public class PCAGraph extends Graph implements Serializable {
                 Label lab = (Label) children.get(serieIndex).lookup(".chart-legend-item");
 
                 // get color and shape of the group for this lab
-                String bgColor = (String) groupColors.get(lab.getText());
-                String shape = (String) groupIcons.get(lab.getText());
+                String iconColor = (String) iconColors.get(lab.getText());
+                String iconShape = (String) iconShapes.get(lab.getText());
 
                 // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
                 // set the legend icons (graphics)
-                lab.getGraphic().setStyle(getStyle(bgColor, shape, project.getDefaultIconSize()/2));
+                lab.getGraphic().setStyle(getStyle(iconColor, iconShape, project.getDefaultIconSize()/2));
 
                 // legend mouse click events for left and right click
                 for (XYChart.Series<Number, Number> s : sc.getData()) {
@@ -475,7 +492,6 @@ public class PCAGraph extends Graph implements Serializable {
                         break;
                     }
                 }
-
 
             }
 
@@ -541,6 +557,7 @@ public class PCAGraph extends Graph implements Serializable {
                 if(project.getCurrentTabIndex()>=0 && project.getCurrentTabIndex()<project.getHiddenPoints().size()){
                     project.getHiddenPoints().get(project.getCurrentTabIndex()).add(s.getFid()+" "+s.getIid());
                 }else {
+                    // if a list of hidden ids for this graph does not exist,
                     // add a new list to store hidden ids of a graph in the position of the current tab index
                     ArrayList<String> hiddenIndvList = new ArrayList<>();
                     hiddenIndvList.add(s.getFid()+" "+s.getIid());
@@ -560,12 +577,17 @@ public class PCAGraph extends Graph implements Serializable {
     public void unhideIndividual(ScatterChart<Number, Number> chart, String ids[]){
         String fid = ids[0];
         String iid = ids[1];
+        String fid_iid = fid+" "+iid;
 
         // retrieve subject properties
         Float hiddenXValue = null, hiddenYValue = null;
         String groupName = null, iconColor = null, iconsvg  = null;
         int iconSize = 0;
 
+        // remove this individual from the list of hidden ids
+        project.getHiddenPoints().get(project.getCurrentTabIndex()).remove(fid_iid);
+
+        // get properties of this individual / subject
         for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
             if(s.getFid().equals(fid) && s.getIid().equals(iid) && project.getPhenoColumnNumber()==3){
                 hiddenXValue = s.getHiddenXValue();
@@ -590,6 +612,7 @@ public class PCAGraph extends Graph implements Serializable {
             }
         }
 
+        // add coordinate to the graph
         for(XYChart.Series<Number, Number> s: chart.getData()){
             if(s.getName().equals(groupName)){
                 XYChart.Data<Number, Number> data = new XYChart.Data(hiddenXValue, hiddenYValue);
@@ -619,14 +642,17 @@ public class PCAGraph extends Graph implements Serializable {
     public void showIndividualDetails(XYChart.Data<Number, Number> data, ScatterChart<Number, Number> chart) throws IOException {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IndividualDetails.fxml"));
-            Parent parent = (Parent) fxmlLoader.load();
+            Parent parent = fxmlLoader.load();
             Stage dialogStage = new Stage();
             dialogStage.setScene(new Scene(parent));
             dialogStage.setResizable(false);
 
             PCAIndividualDetailsController individualDetailsController = fxmlLoader.getController();
+            individualDetailsController.disableOK();
             individualDetailsController.setPCAGraph(this);
             individualDetailsController.setProject(project);
+
+            individualDetailsController.setChart(mainController.getPcaChart());
 
             // set values of clicked pca point
             String xValue = String.valueOf(data.getXValue());
@@ -638,7 +664,8 @@ public class PCAGraph extends Graph implements Serializable {
             String yAxisLabel = chart.getYAxis().getLabel();
             individualDetailsController.setPcaLabel(xAxisLabel + ": " + xValue + "\n" + yAxisLabel + ": " + yValue);
 
-            for(Subject s: subjects){
+            for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
+                System.out.println();
                 if(s.getPcs()!=null && Arrays.asList(s.getPcs()).contains(xValue) && Arrays.asList(s.getPcs()).contains(yValue)){
                     ObservableList<String> phenoDetails = FXCollections.<String>observableArrayList(s.getFid(), s.getIid(), s.getPhenotypeA(), s.getPhenotypeB());
                     individualDetailsController.setPhenoListView(phenoDetails);
@@ -667,6 +694,131 @@ public class PCAGraph extends Graph implements Serializable {
     }
 
     /**
+     * modify the series/phenotype group
+     * @param serieName
+     * @param iconColor
+     * @param iconSVGShape
+     * @param iconSize
+     */
+    public void changeSeriesProperties(ScatterChart<Number, Number> graph, String serieName, String iconColor, String iconSVGShape, int iconSize){
+
+        for(XYChart.Series<Number, Number> series: graph.getData()){
+            if(series.getName().equals(serieName)){
+
+                // change population group color and icon on the chart
+                for (XYChart.Data<Number, Number> dt : series.getData()) {
+                    dt.getNode().lookup(".chart-symbol").setStyle(getStyle(iconColor, iconSVGShape, iconSize));
+                }
+
+                // change population group color and icon the legend
+                for (Node n : graph.getChildrenUnmodifiable()) {
+                    if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+                        TilePane tn = (TilePane) n;
+                        ObservableList<Node> children = tn.getChildren();
+                        for(int i=0;i<children.size();i++){
+                            Label lab = (Label) children.get(i).lookup(".chart-legend-item");
+                            if(lab.getText().equals(serieName)){
+                                // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
+                                lab.getGraphic().setStyle(getStyle(iconColor, iconSVGShape, iconSize/2));
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // change the color and icon of this phenotype category
+                project.getListOfGraphsGroupColors().get(project.getCurrentTabIndex()).put(serieName, iconColor);
+                project.getListOfGraphsGroupIcons().get(project.getCurrentTabIndex()).put(serieName, iconSVGShape);
+
+
+                // change icon and color properties of every individual belonging to this group
+                for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
+                    if(project.getPhenoColumnNumber()==3){
+                        if(s.getPhenotypeA().equals(serieName)){
+                            s.setColor(iconColor);
+                            s.setIcon(iconSVGShape);
+                        }
+                    }else{
+                        if(s.getPhenotypeB().equals(serieName)){
+                            s.setColor(iconColor);
+                            s.setIcon(iconSVGShape);
+                        }
+                    }
+                }
+
+//                for(Subject s: project.getPcGraphSubjects()){
+//                    System.out.println(s.getPhenotypeA()+" is "+s.getColor()+" "+s.getIcon());
+//                }
+
+            }
+        }
+    }
+
+    /**
+     * change properties of clicked individual
+     * @param data
+     * @param xValue
+     * @param yValue
+     * @param iconColor
+     * @param iconSVGShape
+     * @param iconSize
+     */
+    public void changeSubjectProperties(XYChart.Data<Number, Number> data, String xValue, String yValue, String iconColor, String iconSVGShape, int iconSize){
+        for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
+            if(s.getPcs() != null && Arrays.asList(s.getPcs()).contains(xValue) && Arrays.asList(s.getPcs()).contains(yValue)){
+                //change properties
+                s.setColor(iconColor);
+                s.setIcon(iconSVGShape);
+                s.setIconSize(iconSize);
+
+                // show changes
+                data.getNode().lookup(".chart-symbol").setStyle(getStyle(iconColor, iconSVGShape, iconSize));
+                break;
+            }
+        }
+    }
+
+    /**
+     * reset subject properties
+     * @param data
+     * @param xValue
+     * @param yValue
+     */
+    public void resetSubjectProperties(XYChart.Data<Number, Number> data, String xValue, String yValue) {
+        for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
+            if(s.getPcs() != null && Arrays.asList(s.getPcs()).contains(xValue) && Arrays.asList(s.getPcs()).contains(yValue)){
+                // get group / phenotype color for graph in this tab
+                HashMap groupColors = project.getListOfGraphsGroupColors().get(project.getCurrentTabIndex());
+                HashMap groupIcon = project.getListOfGraphsGroupIcons().get(project.getCurrentTabIndex());
+                if(project.getPhenoColumnNumber()==3) {
+                    // get the color and icon of the chart in this position
+                    String color = (String) groupColors.get(s.getPhenotypeA());
+                    String icon = (String) groupIcon.get(s.getPhenotypeA());
+
+                    // reset the subject properties
+                    s.setIcon(icon);
+                    s.setColor(color);
+
+                    // set the style to default
+                    data.getNode().lookup(".chart-symbol").setStyle(getStyle(color, icon, s.getIconSize()));
+                }else{
+                    // get the color and icon of the chart in this position based on column 4 of the pheno file
+                    String color = (String) groupColors.get(s.getPhenotypeB());
+                    String icon = (String) groupIcon.get(s.getPhenotypeB());
+
+                    // set back the subject properties
+                    s.setIcon(icon);
+                    s.setColor(color);
+
+                    // set the style
+                    data.getNode().lookup(".chart-symbol").setStyle(getStyle(color, icon, s.getIconSize()));
+                }
+                break;
+            }
+        }
+    }
+
+    /**
      * return a string of style
      * @param color
      * @param icon
@@ -682,6 +834,10 @@ public class PCAGraph extends Graph implements Serializable {
                 + "-fx-pref-width: "+iconSize+"px;"
                 + "-fx-pref-height: "+iconSize+"px;";
         return s;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 
     /**
