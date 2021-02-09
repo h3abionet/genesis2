@@ -239,7 +239,7 @@ public class AdmixtureGraph extends Graph{
     
     // not necessary
     @Override
-    public void createGraph(String PCA1, String PCA2){ ; }
+    public void createGraph(int pcaX, int pcaY){ ; }
 
     private String[] combine(String[] a, String[] b) {
         int length = a.length + b.length;

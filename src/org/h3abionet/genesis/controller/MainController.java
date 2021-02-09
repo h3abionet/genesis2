@@ -127,7 +127,7 @@ public class MainController implements Initializable {
     private static Tab pcaChartTab;
     private static int tabCount = 0;
     private static int currentTabIndex; // changed by clicking on tabs
-    private static ScatterChart<Number, Number> pcaChart;
+    private ScatterChart<Number, Number> pcaChart;
 
     // admixture variables
     /**
@@ -282,8 +282,8 @@ public class MainController implements Initializable {
             // get axis labels
             String xAxisLabel = pcaChart.getXAxis().getLabel();
             String yAxisLabel = pcaChart.getYAxis().getLabel();
-            String x = xAxisLabel.substring(4, xAxisLabel.length());
-            String y = yAxisLabel.substring(4, yAxisLabel.length());
+            String x = xAxisLabel.substring(4);
+            String y = yAxisLabel.substring(4);
 
             // create new tab for the pca chart
             tabCount++;
@@ -432,7 +432,7 @@ public class MainController implements Initializable {
         hiddenIndividualsController.setMainController(this);
         hiddenIndividualsController.setPcaGraph(pcaGraph);
         // get all hidden points for the current pca graph
-        hiddenIndividualsController.setHiddenIndividualCombo(project.getHiddenIndvsOfCurrentGraph());
+        hiddenIndividualsController.setHiddenIndividualCombo(project.getHiddenPoints());
         // show stage
         Stage dialogStage = new Stage();
         dialogStage.setScene(new Scene(parent));
@@ -448,6 +448,14 @@ public class MainController implements Initializable {
      */
     public ScatterChart<Number, Number> getPcaChart() {
         return pcaChartsList.get(currentTabIndex);
+    }
+
+    /**
+     * get list of all displayed pc graphs
+     * @return
+     */
+    public ArrayList<ScatterChart> getPcaChartsList() {
+        return pcaChartsList;
     }
 
     /*

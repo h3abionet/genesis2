@@ -104,9 +104,9 @@ public class ImportProjectController {
         for(int listIndex=0; listIndex<proj.getPcGraphSubjectsList().size(); listIndex++){
 
             // get list of selected pc columns for every pc graph
-            String pcs[] = proj.getSelectedPCs().get(listIndex).split("\\s+"); // ["1 2", "4 10", ...]
-            String firstPC = pcs[0]; // x column index
-            String secondPC = pcs[1]; // y column index
+            int pcIndex[] = proj.getSelectedPCs().get(listIndex); // [[1,2], [4,10], ...]
+            int firstPC = pcIndex[0]; // e.g 1 - x column index
+            int secondPC = pcIndex[1]; // e,g 2 - y column index
 
             // set every pca graph on a new tab. recreateGraph - returns a graph given the x,y pc columns
             mainController.setPCAChart(pcaGraph.recreatePcaGraph(firstPC, secondPC, listIndex));

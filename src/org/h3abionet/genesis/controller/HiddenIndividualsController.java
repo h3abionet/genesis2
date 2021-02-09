@@ -5,6 +5,7 @@
  */
 package org.h3abionet.genesis.controller;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +13,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCAGraph;
+
+import java.util.ArrayList;
 
 /**
  *
@@ -49,11 +52,11 @@ public class HiddenIndividualsController{
         Genesis.closeOpenStage(event);
     }
 
-    public void setHiddenIndividualCombo (ObservableList<String> hiddenIndividualsList){
+    public void setHiddenIndividualCombo (ArrayList<String> hiddenIndividualsList){
         if(hiddenIndividualsList.size()==0){
             unhideBtn.setDisable(true);
         }
-        hiddenIndividualCombo.getItems().addAll(hiddenIndividualsList);
+        hiddenIndividualCombo.getItems().addAll(FXCollections.observableArrayList(hiddenIndividualsList));
     }
 
     public void setMainController(MainController mainController) {

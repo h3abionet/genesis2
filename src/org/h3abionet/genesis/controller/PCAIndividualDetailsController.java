@@ -215,7 +215,7 @@ public class PCAIndividualDetailsController {
                         break;
                     }else if(seriesRadioBtnClicked){
                         if (series.getName().equals(phenotypeComboBox.getValue())) {
-                            pcaGraph.changeSeriesProperties(chart, series.getName(), iconColor, iconSVGShape, iconSize);
+                            pcaGraph.changeSeriesProperties(series.getName(), iconColor, iconSVGShape, iconSize);
                         }
                     }else {
                         // set icons and colors for all subjects of this group

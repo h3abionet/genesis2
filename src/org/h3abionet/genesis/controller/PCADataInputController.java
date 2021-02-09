@@ -116,8 +116,11 @@ public class PCADataInputController implements Initializable {
 
         if (!pcaComboButton1Value.equals("") && !pcaComboButton2Value.equals("")) {
             if (pcaGraph != null) {
-                // set the chart
-                pcaGraph.createGraph(pcaComboButton1Value, pcaComboButton2Value);
+                // extract pca column index from the combo selection e.g "PCA 1" to 1
+                int pcaX = Integer.parseInt(pcaComboButton1Value.substring(4)); // e.g  1
+                int pcaY = Integer.parseInt(pcaComboButton2Value.substring(4)); // e.g  2
+                // create the chart
+                pcaGraph.createGraph(pcaX, pcaY);
                 firstPcaSuccessful = true;
             }
             Genesis.closeOpenStage(event);

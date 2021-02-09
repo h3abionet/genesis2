@@ -48,18 +48,19 @@ public class Project implements java.io.Serializable {
 
     private int defaultIconSize = 10; //default icon size
     private HashMap groupColors = new HashMap(); // default group colors e.g. mkk -> #800000
-    private ArrayList<HashMap> listOfGraphsGroupColors = new ArrayList<>(); // for every pc graph, create its group colors
     private HashMap groupIcons =  new HashMap();  // default group icons e.g. mkk -> "M 2 2 L 6 2 L 4 6 z"
-    private ArrayList<HashMap> listOfGraphsGroupIcons = new ArrayList<>(); // for every pc graph, create its group icons
+
+    //    private ArrayList<HashMap> listOfGraphsGroupColors = new ArrayList<>(); // for every pc graph, create its group colors
+    //    private ArrayList<HashMap> listOfGraphsGroupIcons = new ArrayList<>(); // for every pc graph, create its group icons
 
     private HashMap iconTypes;
-    private ArrayList<String> selectedPCs = new ArrayList<>(); // for each graph, keep selected pcs
+    private ArrayList<int []> selectedPCs = new ArrayList<>(); // for each graph, keep selected pcs
 
-    private ArrayList<ArrayList<String>> hiddenPoints = new ArrayList<>(); // store hidden ids of every pc graph in a separate list
+    private ArrayList<String> hiddenPoints = new ArrayList<>(); // store hidden ids of every pc graph in a separate list
     private ArrayList<Subject> pcGraphSubjects; // list of every subject object created
-    private ArrayList<ArrayList<Subject> > pcGraphSubjectsList =  new ArrayList<>(); // every graph has it
+    private ArrayList<ArrayList<Subject>> pcGraphSubjectsList =  new ArrayList<>(); // every graph has it
 
-    // TODO Admiture Plot section to be modified
+    // TODO Admixture Plot section to be modified
     static HashMap<String, String[]> famData; // [iid, [...]]
     static List<String[]> famIDsList;
     static HashMap<String, String[]> admixturePhenoData; // used to map pheno details to fam details
@@ -251,14 +252,6 @@ public class Project implements java.io.Serializable {
         return groupIcons;
     }
 
-    public ArrayList<HashMap> getListOfGraphsGroupColors() {
-        return listOfGraphsGroupColors;
-    }
-
-    public ArrayList<HashMap> getListOfGraphsGroupIcons() {
-        return listOfGraphsGroupIcons;
-    }
-
     public ArrayList<Subject> getPcGraphSubjects() {
         return pcGraphSubjects;
     }
@@ -275,29 +268,7 @@ public class Project implements java.io.Serializable {
         return currentTabIndex;
     }
 
-    /**
-     * return a list of hidden ids/individuals
-     * @return
-     */
-    public ObservableList<String> getHiddenIndvsOfCurrentGraph(){
-
-        ObservableList<String> hiddenIndividualsList = FXCollections.observableArrayList();
-
-        for(Subject s: pcGraphSubjectsList.get(currentTabIndex)){
-            if(s.isHidden()){
-                String fid_iid = s.getFid()+" "+s.getIid();
-
-                // check if a list of hidden points exists
-                if (currentTabIndex >= 0 && currentTabIndex < hiddenPoints.size() && hiddenPoints.get(currentTabIndex).contains(fid_iid)) {
-                    // An entry exists; add ids to the obsList
-                    hiddenIndividualsList.add(fid_iid);
-                }
-            }
-        }
-        return hiddenIndividualsList;
-    }
-
-    public ArrayList<ArrayList<String>> getHiddenPoints() {
+    public ArrayList<String> getHiddenPoints() {
         return hiddenPoints;
     }
 
@@ -322,7 +293,7 @@ public class Project implements java.io.Serializable {
         return defaultIconSize;
     }
 
-    public ArrayList<String> getSelectedPCs() {
+    public ArrayList<int []> getSelectedPCs() {
         return selectedPCs;
     }
 }

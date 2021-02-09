@@ -40,7 +40,7 @@ public abstract class Graph {
     protected abstract void readGraphData(String filePath) throws FileNotFoundException, IOException;
     protected abstract void setPopulationGroups();
     abstract ArrayList<StackedBarChart<String, Number>> createGraph(); // used by admixture
-    abstract void createGraph(String PCA1, String PCA2) throws IOException; // used by pca
+    abstract void createGraph(int pcaX, int pcaY) throws IOException; // used by pca
 
     public Graph() {
         project = Project.getProject();
