@@ -166,8 +166,6 @@ public class Project implements java.io.Serializable {
 
             String fid = fields[0];
             String iid = fields[1];
-            String phenotypeA = fields[2];
-            String phenotypeB = fields[3];
 
             // get color and icon for selected pheno group or column
             String chosenPheno = fields[phenoColumnNumber-1];
@@ -175,7 +173,9 @@ public class Project implements java.io.Serializable {
             String icon = (String) groupIcons.get(chosenPheno);
 
             // store this individual
-            pcGraphSubjects.add(new Subject(fid, iid, phenotypeA, phenotypeB, color, icon, defaultIconSize, false));
+            Subject sub = new Subject(fid, iid, color, icon, defaultIconSize, false);
+            sub.setPhenos(fields);
+            pcGraphSubjects.add(sub);
 
             // provide details when individual is clicked or searched
             individualPhenoDetails.put(fields[1], fields);

@@ -7,8 +7,6 @@ public class Subject implements java.io.Serializable{
     // phenotype fields
     private String fid;
     private String iid;
-    private String phenotypeA;
-    private String phenotypeB;
 
     // fam fields
     private String pat;
@@ -21,6 +19,7 @@ public class Subject implements java.io.Serializable{
     private String icon;
     private boolean hidden;
     private String[] pcs;
+    private String[] phenos;
     private Float hiddenXValue;
     private Float hiddenYValue;
     private int iconSize;
@@ -30,22 +29,26 @@ public class Subject implements java.io.Serializable{
      * for every subject, set their default color, icon, visibility, icon size and associated phenotype details
      * @param fid
      * @param iid
-     * @param phenotypeA
-     * @param phenotypeB
      * @param color
      * @param icon
      * @param iconSize
      * @param isHidden
      */
-    public Subject(String fid, String iid, String phenotypeA, String phenotypeB, String color, String icon, int iconSize, boolean isHidden) {
+    public Subject(String fid, String iid, String color, String icon, int iconSize, boolean isHidden) {
         this.fid = fid;
         this.iid = iid;
-        this.phenotypeA = phenotypeA;
-        this.phenotypeB = phenotypeB;
         this.color = color;
         this.icon = icon;
         this.hidden = isHidden;
         this.iconSize = iconSize;
+    }
+
+    public void setPhenos(String[] phenos) {
+        this.phenos = phenos;
+    }
+
+    public String[] getPhenos() {
+        return phenos;
     }
 
     // if fam file is provided, set the following fields
@@ -65,6 +68,10 @@ public class Subject implements java.io.Serializable{
         this.phen = phen;
     }
 
+    public String getSex() {
+        return sex;
+    }
+
     // getters for subject properties
     public String getFid() {
         return fid;
@@ -72,14 +79,6 @@ public class Subject implements java.io.Serializable{
 
     public String getIid() {
         return iid;
-    }
-
-    public String getPhenotypeA() {
-        return phenotypeA;
-    }
-
-    public String getPhenotypeB() {
-        return phenotypeB;
     }
 
     public String getColor() {

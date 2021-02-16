@@ -78,6 +78,7 @@ public class PCAIndividualDetailsController {
     private String xValueOfClickedPoint;
     private String yValueOfClickedPoint;
     private String phenotypeGroup;
+    private String[] idsOfClickedPoint;
 
     private boolean hideRadioBtnClicked = false;
     private boolean topRadioBtnClicked = false;
@@ -87,6 +88,10 @@ public class PCAIndividualDetailsController {
     private PCAGraph pcaGraph;
     private Project project;
     private MainController mainController;
+
+    public void setIdsOfClickedPoint(String idsOfClickedPoint[]) {
+        this.idsOfClickedPoint = idsOfClickedPoint;
+    }
 
     public void setChart(ScatterChart<Number, Number> chart) { this.chart = chart; }
 
@@ -205,7 +210,7 @@ public class PCAIndividualDetailsController {
 
                 if((xValue.equals(xValueOfClickedPoint) & yValue.equals(yValueOfClickedPoint))){
                     if(hideRadioBtnClicked){
-                        pcaGraph.hideIndividual(series, data);
+                        pcaGraph.hideIndividual(series, idsOfClickedPoint);
                         break;
                     }else if(topRadioBtnClicked){
                         data.getNode().toFront();
@@ -255,7 +260,6 @@ public class PCAIndividualDetailsController {
     public void setClickedPoint(String xValue, String yValue) {
         this.xValueOfClickedPoint = xValue;
         this.yValueOfClickedPoint = yValue;
-        System.out.println(xValue + " and " + yValue);
     }
 
     public void setPhenotypeComboBox(ObservableList<String> phenoGroups) {

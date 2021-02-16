@@ -277,11 +277,9 @@ public class PCAGraph extends Graph implements Serializable {
 
         // get a copy of default colors and add them to a list for this particular graph
         groupColors = project.getGroupColors();
-//        project.getListOfGraphsGroupColors().add(groupColors);
 
         // get a copy of default icons and add them to a list for this particular graph
         groupIcons = project.getGroupIcons();
-//        project.getListOfGraphsGroupIcons().add(groupIcons);
 
         // create series
         createSeries(xPcaIndex, yPcaIndex, subjects, sc);
@@ -355,14 +353,8 @@ public class PCAGraph extends Graph implements Serializable {
      * @param s
      */
     private void setSeriesData(int xPcaIndex, int yPcaIndex, String serieName, Subject s) {
-        if(project.getPhenoColumnNumber() == 3){ // get the 3rd column in subject pheno details
-            if(s.getPhenotypeA().equals(serieName) && s.getPcs() != null && s.isHidden()==false){
-                series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
-            }
-        }else {
-            if(s.getPhenotypeB().equals(serieName) && s.getPcs() != null && s.isHidden()==false){ // get 4th column in subject pheno details
-                series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
-            }
+        if(s.getPhenos()[project.getPhenoColumnNumber()-1].equals(serieName) && s.getPcs() != null && s.isHidden()==false){
+            series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
         }
     }
 
@@ -375,40 +367,14 @@ public class PCAGraph extends Graph implements Serializable {
         XYChart.Series<Number, Number> serie = sc.getData().get(serieIndex);
         Set<Node> nodes = sc.lookupAll(".series" + serieIndex);
 
-        if(project.getPhenoColumnNumber() == 3){ // get phenotype A
-            for(Subject s : sub){
-                if(s.getPhenotypeA().equals(serie.getName())){
+        for(Subject s : sub){
+                if(s.getPhenos()[project.getPhenoColumnNumber()-1].equals(serie.getName())){
                     for (Node n : nodes) {
                         n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
                     }
                     break;
                 }
             }
-        }
-
-
-//            for(XYChart.Data<Number, Number> data : sc.getData().get(serieIndex).getData()){
-//                for(Subject s : sub){
-//                    if(s.getPcs() != null && Arrays.asList(s.getPcs()).contains(data.getXValue().toString()) && Arrays.asList(s.getPcs()).contains(data.getYValue().toString())){
-//                        for (Node n : nodes) {
-//                            if(data.getNode().equals(n)){
-//                                n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-
-//        if(project.getPhenoColumnNumber() == 4){  // get phenotype B
-//            for(Subject s : sub){
-//                if(s.getPhenotypeB().equals(serie.getName())){
-//                    for (Node n : nodes) {
-//                        n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
-//                    }
-//                    break;
-//                }
-//            }
-//        }
     }
 
     /**
@@ -527,35 +493,53 @@ public class PCAGraph extends Graph implements Serializable {
     /**
      *
      * @param series
-     * @param data
      */
-    public void hideIndividual(XYChart.Series<Number, Number> series, XYChart.Data<Number, Number> data){
-        //remove the point
-        series.getData().remove(data);
+    public void hideIndividual(XYChart.Series<Number, Number> series, String ids[]){
 
-        // get its coordinates
-        String xValue = data.getXValue().toString();
-        String yValue = data.getYValue().toString();
+        // add this individual to a list of hidden individuals
+        project.getHiddenPoints().add(ids[0]+" "+ids[1]); // ids of the individual
 
-        // get the chart index
-        for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
-            if(s.getPcs() != null && Arrays.asList(s.getPcs()).contains(xValue) && Arrays.asList(s.getPcs()).contains(yValue)){
-                s.setHiddenXValue(Float.parseFloat(xValue));
-                s.setHiddenYValue(Float.parseFloat(yValue));
+        // for every displayed graph, hide this individual
+        for(int i=0;i< mainController.getPcaChartsList().size();i++){
 
-                project.getHiddenPoints().add(s.getFid()+" "+s.getIid());
-                s.setHidden(true);
-                break;
+            ScatterChart<Number, Number> graph = mainController.getPcaChartsList().get(i);
+
+            // get pc labels of the graph
+            int pcCols[] = project.getSelectedPCs().get(i); // e.g [1, 2] for pca 1 vs pca 2 graph
+
+            // get the correct serie to remove the individual from
+            for (XYChart.Series<Number, Number> sss : graph.getData()){
+                if(sss.getName().equals(series.getName())){
+
+                    // get individual with these ids
+                    for(Subject s: project.getPcGraphSubjectsList().get(i)){
+                        if(s.getPcs() != null && s.getFid().equals(ids[0]) && s.getIid().equals(ids[1])){
+                            s.setHidden(true);
+                            // get x and y values in the position of the pc columns
+                            Float xValue = Float.parseFloat(s.getPcs()[pcCols[0]-1]); // reduce position by 1
+                            Float yValue = Float.parseFloat(s.getPcs()[pcCols[1]-1]);
+
+                            // if the data point has same x y value, remove it from the series
+                            for(XYChart.Data<Number, Number> d: sss.getData()){
+                                if(d.getXValue().equals(xValue) && d.getYValue().equals(yValue)){
+                                    sss.getData().remove(d);
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
             }
         }
     }
 
     /**
      *
-     * @param chart
      * @param ids
      */
-    public void unhideIndividual(ScatterChart<Number, Number> chart, String ids[]){
+    public void unhideIndividual(String ids[]){
         String fid = ids[0];
         String iid = ids[1];
         String fid_iid = fid+" "+iid;
@@ -568,38 +552,44 @@ public class PCAGraph extends Graph implements Serializable {
         // remove this individual from the list of hidden ids
         project.getHiddenPoints().remove(fid_iid);
 
-        // get properties of this individual / subject
-        for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
+        for(int i=0;i< mainController.getPcaChartsList().size();i++){
 
-            if(s.getFid().equals(fid) && s.getIid().equals(iid) && project.getPhenoColumnNumber()==3){
-                hiddenXValue = s.getHiddenXValue();
-                hiddenYValue = s.getHiddenYValue();
-                iconSize = s.getIconSize();
-                groupName = s.getPhenotypeA();
-                iconColor = s.getColor();
-                iconsvg = s.getIcon();
-                s.setHidden(false); // activate visibility of a point
-                break;
+            // get pc labels of the graph
+            int pcCols[] = project.getSelectedPCs().get(i); // e.g [1, 2] for pca 1 vs pca 2 graph
+
+            // get properties of this individual / subject
+            for(Subject s: project.getPcGraphSubjectsList().get(i)){
+                if(s.getPcs()!=null && s.getFid().equals(fid) && s.getIid().equals(iid)){
+                    hiddenXValue = Float.parseFloat(s.getPcs()[pcCols[0]-1]);
+                    hiddenYValue =  Float.parseFloat(s.getPcs()[pcCols[1]-1]);
+                    iconSize = s.getIconSize();
+                    groupName = s.getPhenos()[project.getPhenoColumnNumber()-1];
+                    iconColor = s.getColor();
+                    iconsvg = s.getIcon();
+                    s.setHidden(false); // activate visibility of a point
+                    break;
+                }
             }
-        }
 
-        // add coordinate to the graph
-        for(XYChart.Series<Number, Number> s: chart.getData()){
-            if(s.getName().equals(groupName)){
-                XYChart.Data<Number, Number> data = new XYChart.Data(hiddenXValue, hiddenYValue);
-                s.getData().add(data); // add point to graph
+            ScatterChart<Number, Number> graph = mainController.getPcaChartsList().get(i);
 
-                // set the style of icon
-                data.getNode().setStyle(getStyle(iconColor, iconsvg, iconSize));
+            for(XYChart.Series<Number, Number> s: graph.getData()){
+                if(s.getName().equals(groupName)){
+                    XYChart.Data<Number, Number> data = new XYChart.Data(hiddenXValue, hiddenYValue);
+                    s.getData().add(data); // add point to graph
 
-                data.getNode().setOnMouseClicked(e ->{
-                    try {
-                        showIndividualDetails(data, chart);
-                    } catch (Exception ex) {
-                        ;
-                    }
-                });
-                break;
+                    // set the style of icon
+                    data.getNode().setStyle(getStyle(iconColor, iconsvg, iconSize));
+
+                    data.getNode().setOnMouseClicked(e ->{
+                        try {
+                            showIndividualDetails(data, graph);
+                        } catch (Exception ex) {
+                            ;
+                        }
+                    });
+                    break;
+                }
             }
         }
     }
@@ -636,14 +626,15 @@ public class PCAGraph extends Graph implements Serializable {
             individualDetailsController.setPcaLabel(xAxisLabel + ": " + xValue + "\n" + yAxisLabel + ": " + yValue);
 
             for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
-                System.out.println();
                 if(s.getPcs()!=null && Arrays.asList(s.getPcs()).contains(xValue) && Arrays.asList(s.getPcs()).contains(yValue)){
-                    ObservableList<String> phenoDetails = FXCollections.<String>observableArrayList(s.getFid(), s.getIid(), s.getPhenotypeA(), s.getPhenotypeB());
+                    ObservableList<String> phenoDetails = FXCollections.<String>observableArrayList(s.getPhenos());
+                    phenoDetails.add(s.getSex());
                     individualDetailsController.setPhenoListView(phenoDetails);
                     individualDetailsController.setPhenotypeGroup(phenoDetails.get(project.getPhenoColumnNumber()-1)); // MKK, LWK if column is 3 (index 2)
                     individualDetailsController.setIconColor(s.getColor());
                     individualDetailsController.setIconSVGShape(s.getIcon());
                     individualDetailsController.setIconSize(s.getIconSize());
+                    individualDetailsController.setIdsOfClickedPoint(new String[]{s.getFid(), s.getFid()});
                     break;
                 }
             }
@@ -704,16 +695,9 @@ public class PCAGraph extends Graph implements Serializable {
             }
 
             for(Subject s: project.getPcGraphSubjectsList().get(g)){
-                if(project.getPhenoColumnNumber()==3){
-                    if(s.getPhenotypeA().equals(serieName)){
-                        s.setColor(iconColor);
-                        s.setIcon(iconSVGShape);
-                    }
-                }else{
-                    if(s.getPhenotypeB().equals(serieName)){
-                        s.setColor(iconColor);
-                        s.setIcon(iconSVGShape);
-                    }
+                if(s.getPhenos()[project.getPhenoColumnNumber()-1].equals(serieName)){
+                    s.setColor(iconColor);
+                    s.setIcon(iconSVGShape);
                 }
             }
         }
@@ -760,29 +744,17 @@ public class PCAGraph extends Graph implements Serializable {
                 HashMap groupColors = project.getGroupColors();
                 HashMap groupIcon = project.getGroupIcons();
 
-                if(project.getPhenoColumnNumber()==3) {
-                    // get the color and icon of the chart in this position
-                    String color = (String) groupColors.get(s.getPhenotypeA());
-                    String icon = (String) groupIcon.get(s.getPhenotypeA());
+                // get the color and icon of the chart in this position
+                String color = (String) groupColors.get(s.getPhenos()[project.getPhenoColumnNumber()-1]);
+                String icon = (String) groupIcon.get(s.getPhenos()[project.getPhenoColumnNumber()-1]);
 
-                    // reset the subject properties
-                    s.setIcon(icon);
-                    s.setColor(color);
+                // reset the subject properties
+                s.setIcon(icon);
+                s.setColor(color);
 
-                    // set the style to default
-                    data.getNode().lookup(".chart-symbol").setStyle(getStyle(color, icon, s.getIconSize()));
-                }else{
-                    // get the color and icon of the chart in this position based on column 4 of the pheno file
-                    String color = (String) groupColors.get(s.getPhenotypeB());
-                    String icon = (String) groupIcon.get(s.getPhenotypeB());
+                // set the style to default
+                data.getNode().lookup(".chart-symbol").setStyle(getStyle(color, icon, s.getIconSize()));
 
-                    // set back the subject properties
-                    s.setIcon(icon);
-                    s.setColor(color);
-
-                    // set the style
-                    data.getNode().lookup(".chart-symbol").setStyle(getStyle(color, icon, s.getIconSize()));
-                }
                 break;
             }
         }
