@@ -16,6 +16,7 @@ module genesis2 {
     requires jfxtras.labs;
     requires org.apache.pdfbox;
     requires OpenViewerFX;
+    requires AnimateFX;
 //    requires pdfbox.app;
 //    requires jfxtras.common;
 //    requires jfxtras.fxml;

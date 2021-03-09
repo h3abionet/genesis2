@@ -5,6 +5,7 @@
  */
 package org.h3abionet.genesis.controller;
 
+import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -29,20 +30,22 @@ import javafx.util.Callback;
  *
  * @author Henry
  */
-public class CircleOptions {
-    
-    Circle circle;
-    GridPane grid;
+public class CircleOptions implements Serializable{
+
+    private static final long serialVersionUID = 2L;
+
+    transient Circle circle;
+    transient GridPane grid;
     
     // grid components or controllers
-    Label StrokeWidthLabel;
-    Label radiusSizeLabel;
-    Label cpStrokeLabel;
-    Label cpFillLabel;
-    ColorPicker cpStroke;
-    ColorPicker cpFill;
-    Slider slider;
-    ComboBox stkWidth;
+    transient Label StrokeWidthLabel;
+    transient Label radiusSizeLabel;
+    transient Label cpStrokeLabel;
+    transient Label cpFillLabel;
+    transient ColorPicker cpStroke;
+    transient ColorPicker cpFill;
+    transient Slider slider;
+    transient ComboBox stkWidth;
 
     public CircleOptions(Circle circle) {
         this.circle = circle;
@@ -118,17 +121,13 @@ public class CircleOptions {
         ButtonType doneBtn = new ButtonType("Done", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().setAll(doneBtn, deleteBtn);
 
-        dialog.setResultConverter(new Callback<ButtonType, Options>() {
-            @Override
-            public Options call(ButtonType b) {                      
-                if (b == doneBtn) {        
-                    return new Options((int)slider.getValue(), (int) stkWidth.getValue(), cpStroke.getValue(), cpFill.getValue());
-                }else{
-                    circle.setVisible(false);
-                }
-
-                return null;
+        dialog.setResultConverter(b -> {
+            if (b == doneBtn) {
+                return new Options((int) slider.getValue(), (int) stkWidth.getValue(), cpStroke.getValue(), cpFill.getValue());
+            } else {
+                circle.setVisible(false);
             }
+            return null;
         });
         
         Optional<Options> results = dialog.showAndWait();
@@ -137,7 +136,6 @@ public class CircleOptions {
             circle.setStrokeWidth(options.strokeWidth);
             circle.setStroke(options.strokeColor);
             circle.setFill(options.fillColor);
-
         });
 
     }

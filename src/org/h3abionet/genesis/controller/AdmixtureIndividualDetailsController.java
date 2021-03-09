@@ -5,24 +5,24 @@
  */
 package org.h3abionet.genesis.controller;
 
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.model.Project;
+
+import java.util.List;
 
 /**
  * FXML Controller class
  *
  * @author henry
  */
-public class AdmixtureIndividualDetailsController implements Initializable {
+public class AdmixtureIndividualDetailsController{
     
     @FXML
     private Label valuesLabel;
@@ -38,7 +38,8 @@ public class AdmixtureIndividualDetailsController implements Initializable {
 
     @FXML
     private Button btnCancel;
-    
+    private Project project;
+
     /**
      * set proportion values
      * @param proportions
@@ -51,30 +52,15 @@ public class AdmixtureIndividualDetailsController implements Initializable {
      * set phenotype details
      * @param phenoDetails
      */
-    public void setPhenoList(String[] phenoDetails) {
-        phenoList.setItems(FXCollections.observableArrayList (phenoDetails));
-    }
+    public void setPhenoList(List<String> phenoDetails) { phenoList.setItems(FXCollections.observableArrayList (phenoDetails)); }
 
     @FXML
-    private void entryBtnCancel(ActionEvent event) {
-        Genesis.closeOpenStage(event);
-
-    }
+    private void entryBtnCancel(ActionEvent event) { Genesis.closeOpenStage(event); }
 
     @FXML
-    private void entryBtnOK(ActionEvent event) {
-        Genesis.closeOpenStage(event);
+    private void entryBtnOK(ActionEvent event) { Genesis.closeOpenStage(event); }
 
+    public void setProject(Project project) {
+        this.project = project;
     }
-    
-    /**
-     * Initializes the controller class.
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-       
-        //TODO
-        
-    }    
-    
 }

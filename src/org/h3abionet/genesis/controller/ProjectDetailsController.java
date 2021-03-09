@@ -76,6 +76,7 @@ public class ProjectDetailsController implements Initializable{
             fam_fname_s = famFile.getAbsolutePath();
             fam_fname.setText(famFile.getName());
             fam_fname.setStyle("-fx-text-fill: #06587F");
+            entryOKButton.setDisable(false); // disable the ok button if the fam is provided
         }
     }
 
@@ -102,7 +103,6 @@ public class ProjectDetailsController implements Initializable{
             // display seletion for a column with phenotype
             colWithPhenoComboBox.setItems(FXCollections.observableArrayList(phenoColNames));
             colWithPhenoComboBox.setValue("Column 3"); // default
-            entryOKButton.setDisable(false); // disable the ok button if the pheno is provided
         }
     }
 
@@ -116,21 +116,24 @@ public class ProjectDetailsController implements Initializable{
     @FXML
     private void handlePcaEntryOK(ActionEvent event) throws IOException {
         proj_name_s = proj_name.getText();
+
         String colWithPhenoValue = colWithPhenoComboBox.getValue(); // get combox string value e.g. Column 1
 
         if (!proj_name_s.matches(".*\\w.*")) { //check alphanumerics in the title
-            proj_name_s = "Project"; // set project name - this will be changed at runtime (can be a combination of file names)
+            proj_name_s = "Project"; // set project name
         }
 
-        //check if files have been provided (can be only one or both), else display an alert message.
-        int phenoColumnNumber = Integer.parseInt(colWithPhenoValue.substring(7, colWithPhenoValue.length()));
-
         if (fam_fname_s.length() != 0 && pheno_fname_s.length() != 0) {
+            //check if files have been provided (can be only one or both), else display an alert message.
+            int phenoColumnNumber = Integer.parseInt(colWithPhenoValue.substring(7));
+
             project = new Project(proj_name_s, fam_fname_s, pheno_fname_s, phenoColumnNumber);
             mainController.setProject(project);
+            mainController.disablePcaBtn(false);
+            mainController.disableAdmixtureBtn(false);
 
-        } else if (pheno_fname_s.length() != 0) {
-            project = new Project(proj_name_s, pheno_fname_s, phenoColumnNumber);
+        } else if (fam_fname_s.length() != 0) {
+            project = new Project(proj_name_s, fam_fname_s);
             mainController.setProject(project);
 
         } else {

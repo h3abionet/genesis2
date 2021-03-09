@@ -15,7 +15,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
-import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
@@ -30,7 +29,6 @@ import org.h3abionet.genesis.controller.PCAIndividualDetailsController;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import java.io.Serializable;
 import java.util.*;
 
@@ -328,20 +326,28 @@ public class PCAGraph extends Graph implements Serializable {
      * @param sc
      */
     private void createSeries(int xPcaIndex, int yPcaIndex, ArrayList<Subject> subjectsList, ScatterChart<Number, Number> sc) {
-        for (int i= 0; i<project.getGroupNames().size(); i++){
+        if(project.isPhenoFileProvided()){
+            for (int i= 0; i<project.getGroupNames().size(); i++){
+                series = new XYChart.Series<>();
+
+                String serieName = project.getGroupNames().get(i);
+                series.setName(serieName);
+
+                for (Subject s: subjectsList){
+                    setSeriesData(xPcaIndex, yPcaIndex, serieName, s);
+                }
+                // do not add empty series (pheno groups with no data) to the chart
+                if(series.getData().size()>0){
+                    sc.getData().add(series);
+                }
+            }
+        }else { // only fam file
             series = new XYChart.Series<>();
-
-            String serieName = project.getGroupNames().get(i);
-            series.setName(serieName);
-
+            series.setName(project.getGroupNames().get(0));
             for (Subject s: subjectsList){
-                setSeriesData(xPcaIndex, yPcaIndex, serieName, s);
+                setSeriesData(xPcaIndex, yPcaIndex, project.getGroupNames().get(0), s);
             }
-
-            // do not add empty series (pheno groups with no data) to the chart
-            if(series.getData().size()>0){
-                sc.getData().add(series);
-            }
+            sc.getData().add(series);
         }
     }
 
@@ -353,8 +359,15 @@ public class PCAGraph extends Graph implements Serializable {
      * @param s
      */
     private void setSeriesData(int xPcaIndex, int yPcaIndex, String serieName, Subject s) {
-        if(s.getPhenos()[project.getPhenoColumnNumber()-1].equals(serieName) && s.getPcs() != null && s.isHidden()==false){
-            series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
+        if(project.isPhenoFileProvided()){
+            if(s.getPhenos()[project.getPhenoColumnNumber()-1].equals(serieName) && s.getPcs() != null && s.isHidden()==false){
+                series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
+            }
+        }else{ // if only fam file is provided
+            if(s.getPcs() != null && s.isHidden()==false){
+                series.getData().add(new XYChart.Data(Float.parseFloat(s.getPcs()[xPcaIndex]), Float.parseFloat(s.getPcs()[yPcaIndex])));
+
+            }
         }
     }
 
@@ -367,14 +380,23 @@ public class PCAGraph extends Graph implements Serializable {
         XYChart.Series<Number, Number> serie = sc.getData().get(serieIndex);
         Set<Node> nodes = sc.lookupAll(".series" + serieIndex);
 
-        for(Subject s : sub){
-                if(s.getPhenos()[project.getPhenoColumnNumber()-1].equals(serie.getName())){
+        if (project.isPhenoFileProvided()) {
+            for(Subject s : sub) {
+                if (s.getPhenos()[project.getPhenoColumnNumber() - 1].equals(serie.getName())) {
                     for (Node n : nodes) {
                         n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
                     }
                     break;
                 }
             }
+        }else{
+            for(Subject s : sub) {
+                for (Node n : nodes) {
+                    n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
+                }
+                break;
+            }
+        }
     }
 
     /**
@@ -382,7 +404,7 @@ public class PCAGraph extends Graph implements Serializable {
      * @param sc
      * @param serieIndex
      */
-    private void setSubjectMouseEvent(ScatterChart<Number, Number> sc, int serieIndex) throws IOException{
+    private void setSubjectMouseEvent(ScatterChart<Number, Number> sc, int serieIndex) {
         for(XYChart.Data<Number, Number> data : sc.getData().get(serieIndex).getData()){
 
             // display tooltip to show x and y pc values of every subject/individual
@@ -626,11 +648,18 @@ public class PCAGraph extends Graph implements Serializable {
             individualDetailsController.setPcaLabel(xAxisLabel + ": " + xValue + "\n" + yAxisLabel + ": " + yValue);
 
             for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
+                ObservableList<String> phenoDetails;
                 if(s.getPcs()!=null && Arrays.asList(s.getPcs()).contains(xValue) && Arrays.asList(s.getPcs()).contains(yValue)){
-                    ObservableList<String> phenoDetails = FXCollections.<String>observableArrayList(s.getPhenos());
-                    phenoDetails.add(s.getSex());
+                    if(project.isPhenoFileProvided()){
+                        phenoDetails = FXCollections.<String>observableArrayList(s.getPhenos());
+                        phenoDetails.add(s.getSex());
+                        individualDetailsController.setPhenotypeGroup(phenoDetails.get(project.getPhenoColumnNumber()-1)); // MKK, LWK if column is 3 (index 2)
+                    }else {
+                        phenoDetails = FXCollections.observableArrayList(new String[]{s.getFid(), s.getIid(), s.getSex()});
+                        individualDetailsController.setPhenotypeGroup(project.getGroupNames().get(0));
+                    }
+
                     individualDetailsController.setPhenoListView(phenoDetails);
-                    individualDetailsController.setPhenotypeGroup(phenoDetails.get(project.getPhenoColumnNumber()-1)); // MKK, LWK if column is 3 (index 2)
                     individualDetailsController.setIconColor(s.getColor());
                     individualDetailsController.setIconSVGShape(s.getIcon());
                     individualDetailsController.setIconSize(s.getIconSize());
@@ -695,7 +724,12 @@ public class PCAGraph extends Graph implements Serializable {
             }
 
             for(Subject s: project.getPcGraphSubjectsList().get(g)){
-                if(s.getPhenos()[project.getPhenoColumnNumber()-1].equals(serieName)){
+                if(project.isPhenoFileProvided()){
+                    if(s.getPhenos()[project.getPhenoColumnNumber()-1].equals(serieName)){
+                        s.setColor(iconColor);
+                        s.setIcon(iconSVGShape);
+                    }
+                }else{
                     s.setColor(iconColor);
                     s.setIcon(iconSVGShape);
                 }
@@ -791,10 +825,6 @@ public class PCAGraph extends Graph implements Serializable {
     }
 
     @Override
-    public ArrayList<StackedBarChart<String, Number>> createGraph() {
-        return null;
-    }
-    @Override
-    protected void setPopulationGroups() {}
+    public void createAdmixGraph() {}
 
 }

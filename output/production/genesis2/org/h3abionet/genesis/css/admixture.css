@@ -16,6 +16,14 @@ and open the template in the editor.
     -fx-padding: 0px;
 }
 
+.chart-legend {
+    -fx-background-color:  transparent;
+    -fx-padding: 0px;
+    -fx-pref-width: 0;
+    -fx-opacity: 0;
+}
+
+
 .axis{
     -fx-padding: 0;
     -fx-start-margin: 0;

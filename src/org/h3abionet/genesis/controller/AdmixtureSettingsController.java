@@ -186,7 +186,9 @@ public class AdmixtureSettingsController implements Initializable {
     
 
     private static final double extraSpace = 50; // change
-    
+    private AdmixtureGraph admixtureGraph;
+    private MainController mainController;
+
     /**
      * check if plot was rotated from vertical back to horizontal orientation
      * this helps to restore the v-grow of the VBox when importing other -
@@ -607,7 +609,7 @@ public class AdmixtureSettingsController implements Initializable {
 
 
         // heading
-        chartHeading = MainController.getChartHeading();
+        chartHeading = mainController.getChartHeading();
         titleField.setText(chartHeading.getText());
         headingFontCombo.setItems(FXCollections.observableArrayList(Font.getFamilies()));
         headingFontCombo.setValue(chartHeading.getFont().getFamily());
@@ -671,7 +673,7 @@ public class AdmixtureSettingsController implements Initializable {
         });
 
         // graph height
-        defaultGraphHeight = AdmixtureGraph.getCHART_HEIGHT();
+        defaultGraphHeight = admixtureGraph.getCHART_HEIGHT();
         setSpinner(heightSpinner, 0, 50, heightSpinnerValue);
         heightSpinner.setOnMouseClicked(event -> {
             for (Node node : gridPaneChildren) {
@@ -700,4 +702,11 @@ public class AdmixtureSettingsController implements Initializable {
 
     }
 
+    public void setAdmixtureGraph(AdmixtureGraph admixtureGraph) {
+        this.admixtureGraph = admixtureGraph;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
 }

@@ -35,6 +35,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.h3abionet.genesis.controller.MainController;
 
 /**
  * This is the main class of the program
@@ -53,7 +54,7 @@ public class Genesis extends Application {
         
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.H) {
-                System.out.println("Please help");
+                System.out.println("Please Help");
             }
         });
         
@@ -75,7 +76,7 @@ public class Genesis extends Application {
         stage.setScene(scene);
         stage.show();
     }
-    
+
     /**
      * This displays a dialog for closing the program
      * @param mainStage The stage to be closed

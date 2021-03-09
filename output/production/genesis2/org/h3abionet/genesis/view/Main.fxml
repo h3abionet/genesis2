@@ -60,7 +60,7 @@
                <children>
                   <VBox layoutX="5.0" layoutY="3.0" prefHeight="936.0" prefWidth="70.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                      <children>
-                        <Button fx:id="newproject" mnemonicParsing="false" onAction="#newProject" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;" text="New">
+                        <Button fx:id="newProjBtn" mnemonicParsing="false" onAction="#newProject" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;" text="New">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
@@ -72,7 +72,7 @@
                               </Tooltip>
                            </tooltip>
                         </Button>
-                        <Button fx:id="newpca" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newPCA" prefHeight="50.0" prefWidth="156.0" style="-fx-text-fill: white;" text="PCA">
+                        <Button fx:id="pcaBtn" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newPCA" prefHeight="50.0" prefWidth="156.0" style="-fx-text-fill: white;" text="PCA">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
@@ -80,7 +80,7 @@
                               <Tooltip text="Import PCA File" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="newadmixture" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newAdmixture" prefHeight="50.0" prefWidth="100.0" style="-fx-text-fill: white;" text="Admix">
+                        <Button fx:id="admixtureBtn" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newAdmixture" prefHeight="50.0" prefWidth="100.0" style="-fx-text-fill: white;" text="Admix">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
@@ -88,7 +88,7 @@
                               <Tooltip text="Import Admixture File" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="settingsButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#settingsSelector" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="settingsBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#settingsSelector" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -100,7 +100,7 @@
                               <Tooltip text="Settings" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="dataButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#loadData" prefHeight="50.0" prefWidth="119.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="dataBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#loadData" prefHeight="50.0" prefWidth="119.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -112,7 +112,7 @@
                               <Tooltip text="Load Data" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="downloadButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#saveChart" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="downloadBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#saveChart" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
                               <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -124,7 +124,7 @@
                               <Tooltip text="Save Graph" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="drawingButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#drawingTool" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="drawingBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#drawingTool" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -136,7 +136,7 @@
                               <Tooltip text="Annotate Graph" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="individualButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#showHiddenIndividuals" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="individualBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#showHiddenIndividuals" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -148,7 +148,7 @@
                               <Tooltip text="Show Hidden Individuals" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="searchButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="searchBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#searchIndividual" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -160,7 +160,7 @@
                               <Tooltip text="Search Individual" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="threeDButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="50.0" prefWidth="109.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="threeDBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="50.0" prefWidth="109.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -196,7 +196,7 @@
                               <Tooltip text="Open Project" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="helpButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" layoutX="10.0" layoutY="415.0" mnemonicParsing="false" onAction="#help" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="helpBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" layoutX="10.0" layoutY="415.0" mnemonicParsing="false" onAction="#help" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -208,7 +208,7 @@
                               <Tooltip text="Help Me" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="cancelButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#closeProgram" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="cancelBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#closeProgram" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>

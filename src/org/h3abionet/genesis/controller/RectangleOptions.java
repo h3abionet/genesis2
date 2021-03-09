@@ -5,6 +5,7 @@
  */
 package org.h3abionet.genesis.controller;
 
+import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -29,8 +30,7 @@ import javafx.util.Callback;
  *
  * @author Henry
  */
-public class RectangleOptions {
-    
+public class RectangleOptions{
     Rectangle rectangle;
     GridPane grid;
     

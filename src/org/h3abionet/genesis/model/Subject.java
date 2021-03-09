@@ -1,5 +1,7 @@
 package org.h3abionet.genesis.model;
 
+import java.util.ArrayList;
+
 public class Subject implements java.io.Serializable{
 
     private static final long serialVersionUID = 2L;
@@ -20,9 +22,8 @@ public class Subject implements java.io.Serializable{
     private boolean hidden;
     private String[] pcs;
     private String[] phenos;
-    private Float hiddenXValue;
-    private Float hiddenYValue;
     private int iconSize;
+    private ArrayList<ArrayList<String>> qValuesList = new ArrayList<>(); // {{1,2}, {1,2, 3}, ...}
 
     /**
      * constructor for pheno file - mostly provided
@@ -34,13 +35,25 @@ public class Subject implements java.io.Serializable{
      * @param iconSize
      * @param isHidden
      */
-    public Subject(String fid, String iid, String color, String icon, int iconSize, boolean isHidden) {
+    public Subject(String fid, String iid, String pat, String mat, String sex, String phen, String color, String icon, int iconSize, boolean isHidden) {
         this.fid = fid;
         this.iid = iid;
+        this.pat = pat;
+        this.mat = mat;
+        this.sex = sex;
+        this.phen = phen;
         this.color = color;
         this.icon = icon;
         this.hidden = isHidden;
         this.iconSize = iconSize;
+    }
+
+    public void setQs(ArrayList qValues ){
+        qValuesList.add(qValues);
+    }
+
+    public ArrayList<ArrayList<String>> getqValuesList() {
+        return qValuesList;
     }
 
     public void setPhenos(String[] phenos) {
@@ -51,25 +64,14 @@ public class Subject implements java.io.Serializable{
         return phenos;
     }
 
-    // if fam file is provided, set the following fields
-    public void setPat(String pat) {
-        this.pat = pat;
-    }
-
-    public void setMat(String mat) {
-        this.mat = mat;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public void setPhen(String phen) {
-        this.phen = phen;
-    }
-
     public String getSex() {
-        return sex;
+        if(sex.equals("1")){
+            return "Male";
+        }else if(sex.equals("2")){
+            return "Female";
+        }else{
+            return "Unkown Sex";
+        }
     }
 
     // getters for subject properties
@@ -105,22 +107,6 @@ public class Subject implements java.io.Serializable{
 
     public boolean isHidden() {
         return hidden;
-    }
-
-    public Float getHiddenXValue() {
-        return hiddenXValue;
-    }
-
-    public void setHiddenXValue(Float hiddenXValue) {
-        this.hiddenXValue = hiddenXValue;
-    }
-
-    public Float getHiddenYValue() {
-        return hiddenYValue;
-    }
-
-    public void setHiddenYValue(Float hiddenYValue) {
-        this.hiddenYValue = hiddenYValue;
     }
 
     // return all pcs for the subject

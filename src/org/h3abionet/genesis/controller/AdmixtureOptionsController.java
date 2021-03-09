@@ -40,6 +40,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.AdmixtureGraph;
+import org.h3abionet.genesis.model.Project;
 
 /**
  * FXML Controller class
@@ -84,6 +85,7 @@ public class AdmixtureOptionsController implements Initializable {
     private Stage optionsStage;
     private Scene sceneForPopulationGroupBtn;
     private int rowIndexOfClickedAdmixChart;
+    private Project project;
 
     @FXML
     private void deleteGraph(ActionEvent event) {
@@ -306,7 +308,8 @@ public class AdmixtureOptionsController implements Initializable {
         ObservableList<String> sorted_iids = xAxis.getCategories();
 
         // get fam order iids for this chart (population group) using its id as the key
-        List<String> fam_order_iids = AdmixtureGraph.famOrder.get(s.getId());
+//        List<String> fam_order_iids = AdmixtureGraph.famOrder.get(s.getId());
+        List<String> fam_order_iids = project.getFamOrder().get(s.getId());
 
         // for loop run this number of times
         int numOfIndividuals = s.getData().get(0).getData().size();
@@ -374,4 +377,7 @@ public class AdmixtureOptionsController implements Initializable {
                 "Shift Graph Down", "Shift Graph to Bottom");
     }
 
+    public void setProject(Project project) {
+        this.project = project;
+    }
 }

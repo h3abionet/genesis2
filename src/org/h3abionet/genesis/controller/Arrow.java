@@ -10,11 +10,13 @@ import javafx.beans.property.DoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.shape.Line;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Henry
  */
-public class Arrow extends Group{
+public class Arrow extends Group {
     private final Line line;
 
     public Arrow() {

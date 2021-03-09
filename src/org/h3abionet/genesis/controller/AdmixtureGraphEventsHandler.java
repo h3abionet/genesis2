@@ -5,21 +5,12 @@
  */
 package org.h3abionet.genesis.controller;
 
-//import com.sun.javafx.charts.Legend;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
+import javafx.scene.*;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.control.Alert;
 import javafx.scene.image.WritableImage;
@@ -33,7 +24,6 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javax.imageio.ImageIO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -43,6 +33,14 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.AdmixtureGraph;
 import org.h3abionet.genesis.model.Project;
+import org.h3abionet.genesis.model.Subject;
+
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  *
@@ -56,8 +54,7 @@ public class AdmixtureGraphEventsHandler {
     // pointer to the gridpane defined in the main controller 
     private GridPane gridPane;
 
-    private String[] iidDetails;
-    private int numOfAncestries = AdmixtureGraph.currentNumOfAncestries; // number of series;
+    private ArrayList<String> iidDetails;
     private int rowPointer; // defines the correct row with the cells for keeping charts
 
     /**
@@ -76,6 +73,9 @@ public class AdmixtureGraphEventsHandler {
     private StackPane firstGroupLabel, secondGroupLabel;
     private static StackPane firstKLabel, secondKLabel;
     private Node firstChart, secondChart;
+    private Project project;
+    private AdmixtureGraph admixtureGraph;
+
     /**
      *
      * @param listOfCharts
@@ -95,7 +95,7 @@ public class AdmixtureGraphEventsHandler {
     @SuppressWarnings("empty-statement")
     public GridPane getGridPane() {
         try {
-            Text kValue = new Text("K = " + numOfAncestries);
+            Text kValue = new Text("K = " + admixtureGraph.getCurrentNumOfAncestries());
             StackPane kValuePane = new StackPane(kValue);
             kValuePane.setAlignment(Pos.CENTER);
             kValuePane.setMargin(kValue, new Insets(5));
@@ -120,9 +120,6 @@ public class AdmixtureGraphEventsHandler {
                 admixChart.setMinWidth(Double.MIN_VALUE);
                 admixChart.setMaxWidth(Double.MAX_VALUE);
 
-                // clear legend items
-//                Legend legend = (Legend) admixChart.lookup(".chart-legend");
-//                legend.getItems().clear();
 
                 // set the margins of the chart
                 GridPane.setMargin(admixChart, new Insets(0, 0, -3, -3)); // TODO remove the chart content margins on axes
@@ -177,10 +174,17 @@ public class AdmixtureGraphEventsHandler {
                                     dialogStage.setResizable(false);
                                     
                                     // show subject details when clicked
-                                    AdmixtureIndividualDetailsController admixtureIndividualDetailsController = fxmlLoader.getController();
-                                    iidDetails = Project.individualPhenoDetails.get(item.getXValue()); // get pheno details of clicked individual
-                                    admixtureIndividualDetailsController.setPhenoList(iidDetails);
-                                    admixtureIndividualDetailsController.setValuesLabel(item.getYValue().toString()); // get Y value
+                                    AdmixtureIndividualDetailsController admixIndivDetailsCtrler = fxmlLoader.getController();
+                                    admixIndivDetailsCtrler.setProject(project);
+                                    for(Subject sub: project.getPcGraphSubjects()){
+                                        if(sub.getIid().equals(item.getXValue())){
+                                            iidDetails = new ArrayList<>(Arrays.asList(sub.getPhenos()));
+                                            iidDetails.add(sub.getSex());
+                                            break;
+                                        }
+                                    }
+                                    admixIndivDetailsCtrler.setPhenoList(iidDetails);
+                                    admixIndivDetailsCtrler.setValuesLabel(item.getYValue().toString()); // get Y value
                                     dialogStage.showAndWait();
 
                                 } catch (IOException ex) {
@@ -204,6 +208,7 @@ public class AdmixtureGraphEventsHandler {
                             dialogStage.setScene(new Scene(p));
                             dialogStage.setResizable(false);
                             AdmixtureOptionsController aop = loader.getController();
+                            aop.setProject(project);
                             aop.setAdmixChart(admixChart);
                             dialogStage.show();
 
@@ -331,11 +336,9 @@ public class AdmixtureGraphEventsHandler {
     private void swapPlots() {
         int firstRow = GridPane.getRowIndex(firstKLabel);
         int firstCol = GridPane.getColumnIndex(firstKLabel);
-        System.out.println(firstRow);
         int secondRow = GridPane.getRowIndex(secondKLabel);
         int secondCol = GridPane.getColumnIndex(secondKLabel);
-        System.out.println(secondRow);
-        
+
         // swap the plot lists
         Collections.swap(MainController.getAllAdmixtureCharts(), firstRow, secondRow);
         
@@ -451,4 +454,11 @@ public class AdmixtureGraphEventsHandler {
 
     }
 
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public void setAdmixtureGraph(AdmixtureGraph admixtureGraph) {
+        this.admixtureGraph = admixtureGraph;
+    }
 }

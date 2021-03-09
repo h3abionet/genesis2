@@ -15,13 +15,7 @@
  */
 package org.h3abionet.genesis.model;
 
-import javafx.scene.chart.StackedBarChart;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -29,24 +23,13 @@ import java.util.Map;
  */
 public abstract class Graph {
 
-    public List<String> groupNames;
     public Project project;
-    public String label;
-    public String caption;
-    protected int margin[];
-    protected int size[];
-    protected Map<String, List<String []>> populationGroups; // based on the phenoColumnNumber
-    
-    protected abstract void readGraphData(String filePath) throws FileNotFoundException, IOException;
-    protected abstract void setPopulationGroups();
-    abstract ArrayList<StackedBarChart<String, Number>> createGraph(); // used by admixture
+
+    protected abstract void readGraphData(String filePath) throws IOException;
+    abstract void createAdmixGraph(); // used by admixture
     abstract void createGraph(int pcaX, int pcaY) throws IOException; // used by pca
 
     public Graph() {
         project = Project.getProject();
     }
-
-    // TODO - expand method for saving charts
-    public void saveChart(){;}
-
 }
