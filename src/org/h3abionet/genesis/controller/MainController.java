@@ -478,10 +478,11 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void settingsSelector(ActionEvent event) {
+    private void settingsSelector(ActionEvent event) throws IOException {
 
         // get selected tab
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
+
         try{
             if (selectedTab.getId().contains("tab")) {
                 // show pca settings
@@ -495,7 +496,8 @@ public class MainController implements Initializable {
                 dialogStage.setResizable(false);
                 dialogStage.showAndWait();
 
-            }else if(selectedTab.getId().contains("admix")){
+            }
+            else if(selectedTab.getId().contains("admix")){
                 // show admixture settings
                 FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureSettings.fxml"));
                 Parent root = loader.load();
@@ -881,24 +883,24 @@ public class MainController implements Initializable {
 
     @FXML
     private void help(ActionEvent event) {
-                try {
-                    // if internet connection is available, load docsify github pages
-                    URL url = new URL("https://henry-jerry.github.io/DocifyDemo/#/./");
-                    URLConnection connection = url.openConnection();
-                    connection.connect();
-                    Tab tab = setHelpTab(String.valueOf(url));
-                    tabPane.getTabs().add(tab);
-                    closeTab(tab);
-                    helpBtn.setDisable(true);
-                } catch (MalformedURLException e) {
+//                try {
+//                    // if internet connection is available, load docsify github pages
+//                    URL url = new URL("https://henry-jerry.github.io/DocifyDemo/#/./");
+//                    URLConnection connection = url.openConnection();
+//                    connection.connect();
+//                    Tab tab = setHelpTab(String.valueOf(url));
+//                    tabPane.getTabs().add(tab);
+//                    closeTab(tab);
+//                    helpBtn.setDisable(true);
+//                } catch (MalformedURLException e) {
                     ;
-                } catch (IOException e) {
+//                } catch (IOException e) {
                     // if no internet connection, load local html files
                     Tab tab = setHelpTab(Genesis.class.getResource("help/home.html").toExternalForm());
                     tabPane.getTabs().add(tab);
                     closeTab(tab);
                     helpBtn.setDisable(true);
-                }
+//                }
     }
 
     /**

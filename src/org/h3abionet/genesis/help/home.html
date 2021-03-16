@@ -15,10 +15,6 @@
     <li><a href="install.html">Install</a></li>
 </ul>
 
-<!--<div class="header">-->
-<!--    <?php include('header.php'); ?>-->
-<!--</div>-->
-
 <h1 id="welcome-to-genesis-page-">Welcome to Genesis Page</h1>
 <p>Genesis is a program created for scientists to generate PCA (Principal Component Analysis) and structure/admixture
     graphs from data outputted by common tools such as eigenstrat [Pritchard et al. 2000] and the SNPRelate [Zheng et al 2012]
@@ -37,6 +33,59 @@
 
 <p><img src="../image/genesis-screen.png" class="center" alt="screen"></p>
 <p><img src="../image/pca-example.png" class="center" alt="pca graph"></p>
+<p><img src="../image/structureplot.png" class="center" alt="admixture graph"></p>
+
+
+<h1>Menu structure</h1>
+<p>When Genesis runs, a menu appears on the left. The menu items are New, PCA, Admix, and other buttons as shown in the
+    image below. If the cursor is placed over the icon, a brief description of the menu item is given.</p>
+
+<p><img src="../image/menu-structure.png" class="center" alt="screen"></p>
+
+<p>The <b>New</b> button allows you to create a project by defining the project name, providing the fam file, phenotype file, and stating
+    the phenotype column number. You MUST create a project with the fam file. The phenotype file and phenotype column
+    are not mandatory. The PCA and Admix buttons will be activated after creating the project to enable you to import
+    either the pcs or q files.</p>
+
+<p>The <b>PCA</b> button allows you to import the pc file and select which pcs to be used in creating the graph.
+    This button will be disabled after successfully importing the first PCA graph. Use the Data button to
+    import other pcs. Every PCA graph is displayed on a separate tab which can be closed. The graph is deleted
+    from the project whenever you close its tab.
+</p>
+
+
+<p>The <b>Admix</b> button assists you to import every q file with k values that you would like to add to your
+    structure plot. Graphs for these k values are stacked and displayed on the same tab.</p>
+
+<p>The <b>Download</b> button with the red arrow pointing down is used to save the current graph displayed on the tab.
+    The program allows saving using multiple file types such as pdf, jpg, png, and tiff.</p>
+
+<p>The <b>settings</b> button allows you to change the text, headings, and orientations of the graphs. The settings window will
+    automatically detect which graph is displayed on the current tab and will launch the settings for that specific graph.</p>
+
+<p>The <b>Drawing</b> button allows you to annotate graphs with text and other shapes. A menu with the list of shapes is
+    displayed/toggled at the bottom of the main window whenever the drawing button is clicked. Each shape can be
+    dragged to a different location on the graph. You can modify shape properties by right-clicking it.
+    The properties include size, color, and outlines.</p>
+
+
+<p><b>Individuals:</b> The icon with 3 individuals is the hidden individuals' button which allows you to see or unhide
+    hidden individuals.</p>
+
+<p>The <b>Search</b> button helps you to locate the position of an individual on the graph. It accepts the fid or iid of an
+    individual before performing a search. For PCA graphs, the icon representing the individual was animated to grow or zoom in and out.</p>
+
+<p>The <b>3D</b>> button with a cube and 3-arrow icon is currently not implemented but will allow you to view your graphs in a 3D representation.</p>
+
+<p>The <b>Save</b> button helps you to save your project in a .g2f format. These files can be shared and opened with colleagues
+    using this current version of genesis.</p>
+
+<p>The <b>Import</b> button is used to input existing or share projects. There is no need for importing the fam or phenotype
+    file again since they are already stored in the project.</p>
+
+<p><b>Help</b> The manual is available under the help button which has an icon with the question mark</p>
+
+<p>The <b>Close</b> button prompts you to close the program.</p>
 
 </body>
 </html>

@@ -673,7 +673,8 @@ public class AdmixtureSettingsController implements Initializable {
         });
 
         // graph height
-        defaultGraphHeight = admixtureGraph.getCHART_HEIGHT();
+//        defaultGraphHeight = admixtureGraph.getCHART_HEIGHT();
+
         setSpinner(heightSpinner, 0, 50, heightSpinnerValue);
         heightSpinner.setOnMouseClicked(event -> {
             for (Node node : gridPaneChildren) {
@@ -704,6 +705,7 @@ public class AdmixtureSettingsController implements Initializable {
 
     public void setAdmixtureGraph(AdmixtureGraph admixtureGraph) {
         this.admixtureGraph = admixtureGraph;
+        defaultGraphHeight = admixtureGraph.getCHART_HEIGHT();
     }
 
     public void setMainController(MainController mainController) {

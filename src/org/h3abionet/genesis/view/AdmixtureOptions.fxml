@@ -19,7 +19,7 @@
                </font>
             </Button>
             <Button fx:id="populationGroupOptionsBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#loadPopulationGroupOptions" prefHeight="27.0" prefWidth="420.0" text="Population Group Options (Colours)" />
-            <Button fx:id="previousGraphColourBtn" layoutX="10.0" layoutY="37.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="385.0" text="Colour this graph similar to previous " />
+            <Button fx:id="previousGraphColourBtn" layoutX="10.0" layoutY="37.0" mnemonicParsing="false" onAction="#colourLikePrevious" prefHeight="27.0" prefWidth="385.0" text="Colour this graph similar to previous " />
             <Button fx:id="nextGraphColourBtn" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="398.0" text="Colour this graph similar to next" />
             <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                <children>

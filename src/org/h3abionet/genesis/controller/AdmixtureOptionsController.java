@@ -5,18 +5,11 @@
  */
 package org.h3abionet.genesis.controller;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ResourceBundle;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -30,17 +23,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.model.AdmixtureGraph;
 import org.h3abionet.genesis.model.Project;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
 
 /**
  * FXML Controller class
@@ -71,7 +63,7 @@ public class AdmixtureOptionsController implements Initializable {
     private Button cancelBtn;
 
     // list of admixture charts
-    private ArrayList<StackedBarChart<String, Number>> listOfCharts;
+    private ArrayList<StackedBarChart<String, Number>> currChart;
 
     // clicked admixture chart
     private StackedBarChart<String, Number> admixChart;
@@ -98,12 +90,128 @@ public class AdmixtureOptionsController implements Initializable {
         // remove a list of all charts in that index
         MainController.getAllAdmixtureCharts().remove(rowIndexOfClickedAdmixChart);
         MainController.setRowPointer(MainController.getRowPointer()-1);
+
         // close stage
         Genesis.closeOpenStage(event);
         } else {
             Genesis.closeOpenStage(event);
         }
     }
+
+    @FXML
+    private void colourLikePrevious(ActionEvent event){
+        int K = currChart.get(0).getData().size();
+        ArrayList<String> ancestryOrder = new ArrayList<String>();
+        ArrayList<String> currAncestries =  new ArrayList<>();
+        boolean used [] = new boolean [K];
+        ArrayList<String> curColourCodes = new ArrayList<>();
+
+        Stage stage = (Stage) previousGraphColourBtn.getScene().getWindow();
+        stage.close();
+
+        if (rowIndexOfClickedAdmixChart == 0 ) return; // There isn't a previous chart
+        ArrayList<StackedBarChart<String,Number>> prev =  MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart-1);
+
+        int Kp = prev.get(0).getData().size();
+        int ancestry_match[][]  = new int [Kp][2];
+
+        // work out which series in the prevous match the current
+        getMatch(currChart, prev, ancestry_match);
+        // get the hex colour codes that we currently use
+        getCurrentColours(K, currAncestries, curColourCodes);
+        //  Recolour appropriately and get the correct order for the series (currAncestries)
+        matchToPrevious(Kp, ancestry_match, used, prev, currAncestries, curColourCodes);
+        // there may be series not used
+        handleUnmatchedColours(K, used, curColourCodes, currAncestries);
+        Comparator<XYChart.Series<String, Number>> mycomp
+                = (s1, s2)
+                -> currAncestries.indexOf(s1.getName()) - currAncestries.indexOf(s2.getName());
+        for (StackedBarChart<String,Number> segment : currChart)
+            segment.setData(segment.getData().sorted(mycomp));
+    }
+
+    private void handleUnmatchedColours(int K, boolean[] used, ArrayList<String> curColourCodes, ArrayList<String> currAncestries) {
+        for (int i=0; i<K; i++) {  // There may be at least one colour in the previous chart not used
+            if (!used[i]) {
+                String style = curColourCodes.remove(0);
+                currAncestries.add(currChart.get(0).getData().get(i).getName());
+                for (StackedBarChart<String,Number> currSeg: currChart )  {
+                    XYChart.Series<String,Number> series = currSeg.getData().get(i);
+                    for (XYChart.Data<String,Number> item : series.getData())
+                        item.getNode().setStyle(style);
+                }
+            }
+        }
+    }
+
+    private void matchToPrevious(int Kp, int[][] ancestry_match, boolean[] used, ArrayList<StackedBarChart<String, Number>> prev, ArrayList<String> currAncestries, ArrayList<String> curColourCodes) {
+        for (int i=0; i<Kp; i++) {
+            if (ancestry_match[i][1]>0) {// There was a match
+                int curr_ind = ancestry_match[i][0];
+                if (used[curr_ind]) continue; // due to odd colouring we already have this
+                used[curr_ind]=true;
+                String curr_anc = currChart.get(0).getData().get(curr_ind).getName();  // name of ancestry
+                XYChart.Series<String, Number> other_hue = prev.get(0).getData().get(i);
+                String style = other_hue.getData().get(0).getNode().lookup(".default-color"+i+".chart-bar").getStyle();
+                currAncestries.add(curr_anc);
+                for (StackedBarChart<String,Number> currSeg: currChart )  {
+                    XYChart.Series<String,Number> series = currSeg.getData().get(curr_ind);
+                    for (XYChart.Data<String,Number> item : series.getData())
+                        item.getNode().setStyle(style);
+                }
+                curColourCodes.remove(style); // We've used this colour
+            }
+        }
+    }
+
+    private void getCurrentColours(int K, ArrayList<String> currAncestries, ArrayList<String> curColourCodes) {
+        for (int i=0; i<K; i++)  {
+            XYChart.Series<String, Number> firstSegI = currChart.get(0).getData().get(i);
+            currAncestries.add(firstSegI.getName());
+            curColourCodes.add(firstSegI.getData().get(0).getNode().lookup(".default-color"+i+".chart-bar").getStyle());
+        }
+    }
+
+    private void getMatch(ArrayList<StackedBarChart<String, Number>> currChart, ArrayList<StackedBarChart<String, Number>> prev,
+                          int[][] colour_match) {
+        // For every ancestry in the previous chart find the best match in the currer one
+        int K = currChart.get(0).getData().size();
+        XYChart.Series<String,Number> c, p;
+        float curr_usage [], prev_usage [];
+
+        // go through each group
+        for (int i=0; i<currChart.size(); i++) {
+            ObservableList<XYChart.Series<String, Number>> currChartSeg = currChart.get(i).getData();
+            curr_usage = getColourUsage(currChartSeg);
+            prev_usage = getColourUsage(prev.get(i).getData());
+            for(int colour=0; colour<K; colour++) {
+                int curr_size = currChartSeg.get(0).getData().size();
+                for(int other_colour=0; other_colour<prev_usage.length; other_colour++) {
+                    if (((curr_usage[colour]>=0.5) && (prev_usage[other_colour]>=0.5)) ||
+                            ((curr_usage[colour]>=0.4) && (prev_usage[other_colour]>=0.4))) {
+                        if (curr_size>colour_match[other_colour][1]) {
+                            colour_match[other_colour][0] = colour;
+                            colour_match[other_colour][1] = curr_size;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private float[] getColourUsage(ObservableList<XYChart.Series<String, Number>> data) {
+        float usage [] = new float[data.size()];
+        int i=0;
+        for (XYChart.Series<String,Number> series : data) {
+            for (XYChart.Data<String, Number> x : series.getData()) {
+                usage[i]=usage[i]+x.getYValue().floatValue();
+            }
+            usage[i]=usage[i]/series.getData().size();
+            i=i+1;
+        }
+        return usage;
+    }
+
 
     @FXML
     private void loadPopulationGroupOptions(ActionEvent event) {
@@ -123,7 +231,7 @@ public class AdmixtureOptionsController implements Initializable {
         // fam sort button
         Button famOrderBtn = new Button("Fam order");
         famOrderBtn.setOnMouseClicked((MouseEvent famOrderEvent) -> {
-            listOfCharts.forEach((s) -> {
+            currChart.forEach((s) -> {
                 sortToFamOrder(s);
             });
         });
@@ -131,7 +239,7 @@ public class AdmixtureOptionsController implements Initializable {
         // dominant sort button
         Button dominantColourBtn = new Button("Dominant colour");
         dominantColourBtn.setOnMouseClicked((MouseEvent devt) -> {
-            for (StackedBarChart<String, Number> stackedBarChart : listOfCharts) {
+            for (StackedBarChart<String, Number> stackedBarChart : currChart) {
                 // store totals of yvalue elements in every serie                                            
                 ArrayList<Double> sumList = new ArrayList<>();
 
@@ -235,7 +343,7 @@ public class AdmixtureOptionsController implements Initializable {
             // create a sort individuals button
             Button colorSortBtn = new Button("Sort Ancestry " + ancestorName.substring(ancestorName.length() - 1));
             colorSortBtn.setOnMouseClicked((MouseEvent devt) -> {
-                for (StackedBarChart<String, Number> stackedBarChart : listOfCharts) {
+                for (StackedBarChart<String, Number> stackedBarChart : currChart) {
                     // get last character on a btn and use it use it as the index of the ancestry
                     String ancestryNumber = colorSortBtn.getText().substring(colorSortBtn.getText().length() - 1);
                     // sort
@@ -363,10 +471,9 @@ public class AdmixtureOptionsController implements Initializable {
         
         // get row index of clicked chart - starts from 0
         rowIndexOfClickedAdmixChart = AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart();
-        System.out.println("Row index is"+rowIndexOfClickedAdmixChart);
-        
+
         // get list of charts in this position of row index
-        listOfCharts = MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
+        currChart = MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
 
         listOfAncenstorHBox = new ArrayList<>();
         

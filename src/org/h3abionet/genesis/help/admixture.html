@@ -14,8 +14,139 @@
     <li><a href="data.html">Data</a></li>
     <li><a href="install.html">Install</a></li>
 </ul>
-</body>
 
-<h1>Admixture</h1>
+
+<h1>Structure Plots</h1>
+
+<p><img src="../image/structureplot.png" alt="admixture graph"></p>
+
+<h2>Data input format</h2>
+<p>Genesis requires two input files and an optional third file as explained below</p>
+
+<ol>
+    <li>An admixture file which contains on each line the estimated ancestral proportions of
+        each individual. Typically, this would be produced by a program like Admixture (e.g,
+        and admixture Q file), or CLUMPP, the output formats of which Genesis supports
+        natively. For example, an Admixture Q file for K=4 contains four columns. Provided
+        the input is a legal format, Genesis will automatically work out what input file it is,
+        and what the K value is. Instructions on using the structure2CLUMPP script which
+        can be used for Structure input files is described later.</li>
+
+    <li>A plink-style fam file. The first two columns must uniquely identify the individuals
+        (the first column is usually the family identifier, the second the individual identifier).
+        See the plink manual for further description. The j-th line of this fam file describes the
+        j-th individual in the admixture file. This all that Genesis requires, although fam files
+        typically have other columns as well.</li>
+
+    <li>Optionally, a phenotype file: again, the first two columns identify the individual, and
+        subsequent columns label the individuals (e.g., case/control, male/female, population
+        group, language, etc). The individual identifiers should be the same as in the fam file:
+        each individual in the fam file should also be in the phenotype file, but there is no
+        problem in having individuals in the phenotype file who are not in the fam file. The
+        order of entries in the phenotype file need not be the same as in the fam file. You could
+        use the same file as the fam and the phenotype file.</li>
+</ol>
+
+
+<h2>Inputting Data</h2>
+<p>Genesis produces structure charts by taking input from Admixture or CLUMPP tools,
+together with a PLINK-style fam and optionally a phenotype file which would contain population labels.</p>
+
+<h2>Create a project </h2>
+
+<p>To input project files, click New to add the fam and phenotype file. The New button is used to create a project where all
+    the individual details and charts are stored. When the file input screen opens,</p>
+
+<ol>
+    <li>Provide name of the project</li>
+
+    <li>Click the Fam file button and navigate to the fam data file. The fam file is compulsory.</li>
+
+    <li>Click Pheno file button and navigate to the phenotype data file. After successfully adding the phenotype file,
+        you will be prompted to select the column with the phenotype to be used in grouping individuals in your project.</li>
+</ol>
+
+<p><img src="../image/create-project.png" alt="create project screen"></p>
+
+<h2>Importing Data Files </h2>
+
+    <p>
+        Click the Admixture button on the menu list. On the screen that opens, click Import Data File and navigate to
+        the admixture data file outputted by the Admixture/CLUMPP tools. If a graph has already been plotted, and you wish
+        to import multiple data files, you can click the Admixture button to import the files into the same project.
+    </p>
+
+<p><img src="../image/admix-input.png" alt="admixture input file"></p>
+
+<h3>Step 3: Settings Options</h3>
+<p>The Settings menu can be accessed by clicking the settings button.</p>
+
+<p><img src="../image/admix-settings.png" alt="admixture settings"></p>
+
+<dl>
+    <dt><b>Heading</b></dt>
+        <dd>To set/change the heading, open the settings menu and type the graph heading into the text box.
+        The default heading is "Admixture plot" To change its font, click the buttons and checkboxes and font color of choice.</dd>
+</dl>
+
+<dl>
+    <dt><b>Population Group Labels</b></dt>
+        <dd>To show/hide the population group labels, open the setting options menu and (un)check the Hide Population
+            Group Labels checkbox. To change the labels' fonts, (un)check the font modifiers in the labels section.</dd>
+
+        <dd>The angle of the labels can also be changed by spinning the Rotate Labels button in the labels section</dd>
+
+        <dd>You can also swap the position of population groups left/right by clicking the two population group labels to be swapped.</dd>
+</dl>
+
+<dl>
+    <dt><b>Margins.</b></dt>
+    <dd>To change the margins of the graphs, spin the values of the selectors to create space around the graphs.</dd>
+</dl>
+
+<dl>
+    <dt><b>Border</b></dt>
+        <dd>To show/hide the borders, open the setting options menu and (un)check the Show borders checkbox.
+        You can also increase the border size and set its color.</dd>
+</dl>
+
+<dl>
+    <dt><b>Graph Size and Spacing</b></dt>
+    <dd>To change the size and spacing of the structure plot, open the settings menu. You can select the values for the
+        graph height, set the thickness of each subject, and set the distance between graphs (graph spacing) at the bottom of the screen.</dd>
+</dl>
+
+<dl>
+    <dt><b>Horizontal/Vertical Orientation</b></dt>
+        <dd>To set the orientation of the structure plot, select the horizontal or vertical orientations from the bottom linear layout menu.</dd>
+</dl>
+
+
+<h2>Interacting with the Graph</h2>
+<p>Other settings and options can be changed by interacting with the graph. Certain elements
+    can be clicked to view or modify their options.</p>
+
+<dl>
+    <dt><b>Selecting Subjects</b></dt>
+        <dd>To select an individual subject on the structure plot, click on the subject on the plot.
+        This will bring up a subject menu where you can view the data about the subject (from
+        the phenotype data file) and gives the option to hide the subject from the plot.</dd>
+</dl>
+
+<dl>
+    <dt><b>Changing the colours and order of colours and individuals</b></dt>
+         <dd>
+             Right click anywhere on a graph and select Population Group Options. The menu below shows:
+             <img src="../image/populationgroupoptions.png" alt="population group options">
+         </dd>
+
+    <dt><b>This option allows you to:</b></dt>
+    <dd>Change colours (e.g., change red to blue)</dd>
+    <dd>Change the order of the colours (e.g., on a horizontal chart, move the red segments
+        from below the blue segments to above the red segments</dd>
+    <dd>Order the individuals within a population group by an ancestral group.</dd>
+</dl>
+
+</body>
 
 </html>
