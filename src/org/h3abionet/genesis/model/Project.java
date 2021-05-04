@@ -10,6 +10,7 @@ import org.h3abionet.genesis.Genesis;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
  *
  * @author scott
  */
-public class Project implements java.io.Serializable {
+public class Project implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
@@ -65,6 +66,7 @@ public class Project implements java.io.Serializable {
     private ArrayList<Integer> importedKs = new ArrayList<>(); // store Ks e.g {1, 2, 3, ...}
     private ArrayList<String> iidsList = new ArrayList<>();
     private HashMap<String, ArrayList<String>> famOrder = new HashMap<>();
+    private ArrayList<PCAGraphLayout> pcaGraphLayoutList = new ArrayList<>();
 
     public Project(String proj_name, String fam_fname_s) {
         this.projectName = proj_name;
@@ -332,5 +334,9 @@ public class Project implements java.io.Serializable {
 
     public boolean isProjIsImported() {
         return projIsImported;
+    }
+
+    public ArrayList<PCAGraphLayout> getPCAGraphLayouts() {
+        return pcaGraphLayoutList;
     }
 }

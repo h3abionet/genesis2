@@ -43,9 +43,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
 
 /*
@@ -478,7 +475,7 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void settingsSelector(ActionEvent event) throws IOException {
+    private void settingsSelector(ActionEvent event) {
 
         // get selected tab
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
@@ -486,11 +483,12 @@ public class MainController implements Initializable {
         try{
             if (selectedTab.getId().contains("tab")) {
                 // show pca settings
-                FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/FontSelector.fxml"));
+                FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/PCASettings.fxml"));
                 Parent root = loader.load();
-                FontSelectorController fontCtrler = loader.getController();
-                fontCtrler.setScatterChart(pcaChartsList.get(currentTabIndex));
-                fontCtrler.setControls();
+                PCASettingsController pcSettingsCtlr = loader.getController();
+                pcSettingsCtlr.setScatterChart(pcaChartsList.get(currentTabIndex));
+                pcSettingsCtlr.setPCAGraphLayout(project.getPCAGraphLayouts().get(currentTabIndex));
+                pcSettingsCtlr.setControls();
                 Stage dialogStage = new Stage();
                 dialogStage.setScene(new Scene(root));
                 dialogStage.setResizable(false);
@@ -508,7 +506,6 @@ public class MainController implements Initializable {
                 dialogStage.setScene(new Scene(root));
                 dialogStage.setResizable(false);
                 dialogStage.showAndWait();
-
             }
         }catch(Exception e){
             //TODO disable setting button if no chart

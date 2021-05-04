@@ -27,29 +27,31 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.FontPosture;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.model.PCAGraphLayout;
+
 /**
  *
  * @author Henry
  */
-public class FontSelectorController implements Initializable{
+public class PCASettingsController implements Initializable{
     @FXML
     private TextField titleLabel;
 
     @FXML
-    private CheckBox titleFormat;
+    private CheckBox titleCheckbox;
     
     @FXML
     private TextField xLabel;
 
     @FXML
-    private CheckBox xFormat;
+    private CheckBox axisLabelCheckbox;
 
     @FXML
     private TextField yLabel;
-
-    @FXML
-    private CheckBox yFormat;
     
+    @FXML
+    private CheckBox hideAxisMarks;
+
     @FXML
     private CheckBox hideAxes;
 
@@ -91,10 +93,16 @@ public class FontSelectorController implements Initializable{
     // default chosen values -- changed by event handlers 
     private String chosenFont = "System";
     private String chosenFontStyle = "NORMAL";
-    private String chosenFontColor = "ffffff";
+    private String chosenFontColor = "000000";
     private String chosenPosture = "REGULAR";
     private int chosenFontSize = 12;
-    private String chosenAxis;
+
+    // default chosen values -- changed by event handlers
+    private String axesFont = "System";
+    private String axesFontStyle = "NORMAL";
+    private String axesFontColor = "000000";
+    private String axesPosture = "REGULAR";
+    private int axesFontSize = 12;
 
     // font weight names 
     String weights[] = {"BOLD", "NORMAL"};
@@ -104,61 +112,88 @@ public class FontSelectorController implements Initializable{
     
     // list of font sizes from 8 to 72
     List<Integer> list = IntStream.range(8, 73).boxed().collect(Collectors.toList());
-    
+    private PCAGraphLayout pcaGraphLayout;
+
+    public void setAxesProperties(String axesFont, String axesFontStyle, String axesFontColor, String axesPosture, int axesFontSize) {
+        this.axesFont = axesFont;
+        this.axesFontStyle = axesFontStyle;
+        this.axesFontColor = axesFontColor;
+        this.axesPosture = axesPosture;
+        this.axesFontSize = axesFontSize;
+    }
+
     @FXML
     private void entryOkButton(ActionEvent event) {
          
         // only format selected axis
-        if(xFormat.isSelected()){
+        if(axisLabelCheckbox.isSelected()){
           chart.getXAxis().setLabel(xLabel.getText());
+          pcaGraphLayout.setxAxisLabel(xLabel.getText());
+
+          // set x-axis label
           chart.getXAxis().lookup(".axis-label").setStyle("-fx-fill: #"+chosenFontColor+";"+
                                   "-fx-font-size: "+chosenFontSize+"pt;"+
                                   "-fx-font-weight: "+chosenFontStyle+";"+
                                   "-fx-font-family: \"" + chosenFont + "\";"+
                                   "-fx-text-fill: #"+chosenFontColor+";" );
-          
+
+          // set y-axis label
+            chart.getYAxis().setLabel(yLabel.getText());
+            pcaGraphLayout.setyAxisLabel(yLabel.getText());
+            chart.getYAxis().lookup(".axis-label").setStyle("-fx-fill: #"+chosenFontColor+";"+
+                    "-fx-font-size: "+chosenFontSize+"pt;"+
+                    "-fx-font-weight: "+chosenFontStyle+";"+
+                    "-fx-font-family: \"" + chosenFont + "\";"+
+                    "-fx-text-fill: #"+chosenFontColor+";" );
+
+          // set axes values
+          setAxesProperties(chosenFont, chosenFontStyle, chosenFontColor, chosenPosture, chosenFontSize);
         }
         
-        if(yFormat.isSelected()){
-          chart.getYAxis().setLabel(yLabel.getText());
-          chart.getYAxis().lookup(".axis-label").setStyle("-fx-fill: #"+chosenFontColor+";"+
-                                  "-fx-font-size: "+chosenFontSize+"pt;"+
-                                  "-fx-font-weight: "+chosenFontStyle+";"+
-                                  "-fx-font-family: \"" + chosenFont + "\";"+
-                                  "-fx-text-fill: #"+chosenFontColor+";" );
-          
-        }
-        
-        if(titleFormat.isSelected()){
+        if(titleCheckbox.isSelected()){
             chart.setTitle(titleLabel.getText());
+            pcaGraphLayout.setGraphTitle(titleLabel.getText());
             chart.lookup(".chart-title").setStyle("-fx-fill: #"+chosenFontColor+";"+
                                   "-fx-font-size: "+chosenFontSize+"pt;"+
                                   "-fx-font-weight: "+chosenFontStyle+";"+
                                   "-fx-font-family: \"" + chosenFont + "\";"+
                                   "-fx-text-fill: #"+chosenFontColor+";" );
-            
-            
         }
+
         if(hideAxes.isSelected()){
+            pcaGraphLayout.setShowAxes(false);
+            chart.lookup(".chart-vertical-zero-line").setStyle("-fx-stroke: transparent;");
+            chart.lookup(".chart-horizontal-zero-line").setStyle("-fx-stroke: transparent;");
+        }else {
+            chart.lookup(".chart-vertical-zero-line").setStyle(null);
+            chart.lookup(".chart-horizontal-zero-line").setStyle(null);
+        }
+
+        if(hideAxisLabels.isSelected()){
+            pcaGraphLayout.setShowAxisLabels(false);
             chart.getXAxis().lookup(".axis-label").setVisible(false);
             chart.getYAxis().lookup(".axis-label").setVisible(false);
-        
         }else{
             chart.getXAxis().lookup(".axis-label").setVisible(true);
             chart.getYAxis().lookup(".axis-label").setVisible(true);
-        
         }
         
-         if(hideAxisLabels.isSelected()){
+         if(hideAxisMarks.isSelected()){
+             pcaGraphLayout.setShowAxisMarks(false);
              chart.getXAxis().setTickLabelsVisible(false);
              chart.getYAxis().setTickLabelsVisible(false);
+             chart.getXAxis().setTickMarkVisible(false);
+             chart.getYAxis().setTickMarkVisible(false);
          }else{
              chart.getXAxis().setTickLabelsVisible(true);
              chart.getYAxis().setTickLabelsVisible(true);
+             chart.getXAxis().setTickMarkVisible(true);
+             chart.getYAxis().setTickMarkVisible(true);
          }
          
          // these are hard coded values -- should be changed
          if(showBorder.isSelected()){
+             pcaGraphLayout.setShowBorders(true);
              chart.lookup(".chart-plot-background").setStyle("-fx-border-color: #918f8e;"+ 
                                                                 "-fx-border-style: solid;"+ 
                                                                 "-fx-border-width: 2px;"+
@@ -168,6 +203,7 @@ public class FontSelectorController implements Initializable{
          }
          
          if(hideGrid.isSelected()){
+             pcaGraphLayout.setShowGrid(false);
              chart.lookup(".chart-vertical-grid-lines").setStyle(
              "-fx-stroke: transparent;"
              );
@@ -181,7 +217,14 @@ public class FontSelectorController implements Initializable{
              chart.lookup(".chart-horizontal-grid-lines").setStyle(null);
          
          }
-        
+
+         // store font properties
+         pcaGraphLayout.setFont(chosenFont);
+         pcaGraphLayout.setFontColor(chosenFontColor);
+         pcaGraphLayout.setFontPosture(chosenPosture);
+         pcaGraphLayout.setFontSize(chosenFontSize);
+         pcaGraphLayout.setFontStyle(chosenFontStyle);
+
         Genesis.closeOpenStage(event);
     }
     
@@ -197,11 +240,11 @@ public class FontSelectorController implements Initializable{
      * set all variables
      */
     public void setControls(){
-        // set default values
-        titleLabel.setText(chart.getTitle());
-        xLabel.setText(chart.getXAxis().getLabel());
-        yLabel.setText(chart.getYAxis().getLabel());
+        titleLabel.setText(pcaGraphLayout.getGraphTitle());
+        xLabel.setText(pcaGraphLayout.getxAxisLabel());
+        yLabel.setText(pcaGraphLayout.getyAxisLabel());
         colorPicker.setValue(Color.BLACK);
+
         styleList.setItems(FXCollections.observableArrayList(weights));
         fontList.setItems(FXCollections.observableArrayList(Font.getFamilies()));
         postureList.setItems(FXCollections.observableArrayList(posture));
@@ -233,6 +276,13 @@ public class FontSelectorController implements Initializable{
             updateSampleLabel();
 
         });
+
+        // set checkboxes
+        hideAxes.setSelected(!pcaGraphLayout.isShowAxes());
+        hideAxisLabels.setSelected(!pcaGraphLayout.isShowAxisLabels());
+        hideAxisMarks.setSelected(!pcaGraphLayout.isShowAxisMarks());
+        hideGrid.setSelected(!pcaGraphLayout.isShowGrid());
+        showBorder.setSelected(pcaGraphLayout.isShowBorders());
     }
 
     /**
@@ -241,6 +291,10 @@ public class FontSelectorController implements Initializable{
      */
     public void setScatterChart(ScatterChart<Number, Number> scatterChart) {
         chart = scatterChart;
+    }
+
+    public void setPCAGraphLayout(PCAGraphLayout pcaGraphLayout){
+        this.pcaGraphLayout = pcaGraphLayout;
     }
 
     // get chosen properties and update the label

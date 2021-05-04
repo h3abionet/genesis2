@@ -58,3 +58,27 @@ img{
     font-family: verdana;
     font-size: 15px;
 }
+
+.content {
+    max-width: 1000px;
+    margin: auto;
+}
+
+.images{
+    text-align:center;
+    margin:50px auto;
+}
+
+table{
+    margin:50px auto;
+    text-align:left;
+}
+
+.tab { margin-left: 40px; }
+
+.code{
+    text-align:left;
+    margin:50px auto;
+    font-size: 15px;
+    font-weight: bold;
+}

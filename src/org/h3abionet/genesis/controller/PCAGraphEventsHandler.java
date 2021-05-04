@@ -59,8 +59,8 @@ public class PCAGraphEventsHandler {
         if (chart != null) {
             String xAxisLabel = chart.getXAxis().getLabel();
             String yAxisLabel = chart.getYAxis().getLabel();
-            String x = xAxisLabel.substring(4, xAxisLabel.length());
-            String y = yAxisLabel.substring(4, yAxisLabel.length());
+            String x = xAxisLabel.substring(4);
+            String y = yAxisLabel.substring(4);
 
             // Set chart container and its anchors to 0 to make the parent 
             // AnchorPane resize the child to fill it's whole area:
@@ -75,7 +75,6 @@ public class PCAGraphEventsHandler {
             Zoom zoom = new Zoom(chart, chartContainer);
 
         } else {
-            ;
         }
         return chartContainer;
     }
@@ -155,7 +154,7 @@ public class PCAGraphEventsHandler {
                     alert.showAndWait();
                 }
             } else {
-                ; // do nothing
+                // do nothing
             }
         }
 

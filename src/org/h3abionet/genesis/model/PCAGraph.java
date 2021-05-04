@@ -190,7 +190,7 @@ public class PCAGraph extends Graph implements Serializable {
         pcaColumnLabels = new String[num_of_pcs];
         for (int i = 0; i < num_of_pcs; i++) {
             // store every pca: [PCA 1, PCA 2, ...]
-            pcaColumnLabels[i] = "PCA " + Integer.toString(i + 1);
+            pcaColumnLabels[i] = "PCA " + (i + 1);
         }
     }
 
@@ -233,9 +233,11 @@ public class PCAGraph extends Graph implements Serializable {
         int yPcaIndex =  pcaY - 1; // position in the pcs array
 
         // retrieve subjects in the graphIndex position
+        PCAGraphLayout pcaGraphLayout = project.getPCAGraphLayouts().get(graphIndex);
         ArrayList<Subject> subjectsList = project.getPcGraphSubjectsList().get(graphIndex);
 
-        ScatterChart<Number, Number> sc = createScatterChart(pcaX, pcaY); // create a chart
+        ScatterChart<Number, Number> sc = recreateScatterChart(pcaGraphLayout); // create a chart
+        pcaGraphLayout.setGraphProperties(sc);
 
         // create series
         createSeries(xPcaIndex, yPcaIndex, subjectsList, sc);
@@ -304,18 +306,46 @@ public class PCAGraph extends Graph implements Serializable {
         String xAxisLabel = "PCA "+pcaX;
         String yAxisLabel = "PCA "+pcaY;
 
+        PCAGraphLayout pcaGraphLayout = new PCAGraphLayout();
+        pcaGraphLayout.setxAxisLabel(xAxisLabel);
+        pcaGraphLayout.setyAxisLabel(yAxisLabel);
+
         NumberAxis xAxis = new NumberAxis();
         xAxis.setSide(Side.BOTTOM);
         xAxis.setLabel(xAxisLabel);  // set its label
+        xAxis.setMinorTickVisible(false);
         
         NumberAxis yAxis = new NumberAxis();
         yAxis.setSide(Side.LEFT); 
         yAxis.setLabel(yAxisLabel);  // set its label
+        yAxis.setMinorTickVisible(false);
+
 
         ScatterChart<Number, Number> sc = new ScatterChart<>(xAxis, yAxis);
-        sc.setTitle(yAxisLabel + " Vs " + yAxisLabel + " Chart"); // set as default value
+        String title = xAxisLabel + " Vs " + yAxisLabel + " Chart";
+        sc.setTitle(title); // set as default value
+        pcaGraphLayout.setGraphTitle(title);
+
+        project.getPCAGraphLayouts().add(pcaGraphLayout); // keep this graph's layout
         
         return sc;
+    }
+
+    private ScatterChart<Number, Number> recreateScatterChart(PCAGraphLayout pcaGraphLayout){
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setSide(Side.BOTTOM);
+        xAxis.setLabel(pcaGraphLayout.getxAxisLabel());  // set its label
+        xAxis.setMinorTickVisible(pcaGraphLayout.isShowAxisMarks());
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setSide(Side.LEFT);
+        yAxis.setLabel(pcaGraphLayout.getyAxisLabel());  // set its label
+        yAxis.setMinorTickVisible(pcaGraphLayout.isShowAxisMarks());
+
+        ScatterChart<Number, Number> sc = new ScatterChart<>(xAxis, yAxis);
+        sc.setTitle(pcaGraphLayout.getGraphTitle()); // set as default value
+        return sc;
+
     }
 
     /**

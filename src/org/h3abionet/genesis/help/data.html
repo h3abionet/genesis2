@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<body>
 
 <head>
     <link rel="stylesheet" href="styles.css">
@@ -14,8 +14,98 @@
     <li><a href="data.html">Data</a></li>
     <li><a href="install.html">Install</a></li>
 </ul>
+
+<h1>Data input format</h1>
+<p>Genesis requires two input files and an optional third file as explained below</p>
+
+<ol>
+    <li>An admixture file which contains on each line the estimated ancestral proportions of
+        each individual. Typically, this would be produced by a program like Admixture (e.g,
+        and admixture Q file), or CLUMPP, the output formats of which Genesis supports
+        natively. For example, an Admixture Q file for K=4 contains four columns. Provided
+        the input is a legal format, Genesis will automatically work out what input file it is,
+        and what the K value is. Instructions on using the structure2CLUMPP script which
+        can be used for Structure input files is described later.</li>
+
+    <li>A plink-style fam file. The first two columns must uniquely identify the individuals
+        (the first column is usually the family identifier, the second the individual identifier).
+        See the plink manual for further description. The j-th line of this fam file describes the
+        j-th individual in the admixture file. This all that Genesis requires, although fam files
+        typically have other columns as well.</li>
+
+    <li>Optionally, a phenotype file: again, the first two columns identify the individual, and
+        subsequent columns label the individuals (e.g., case/control, male/female, population
+        group, language, etc). The individual identifiers should be the same as in the fam file:
+        each individual in the fam file should also be in the phenotype file, but there is no
+        problem in having individuals in the phenotype file who are not in the fam file. The
+        order of entries in the phenotype file need not be the same as in the fam file. You could
+        use the same file as the fam and the phenotype file.</li>
+</ol>
+
+<h1>Advice on data formats</h1>
+<p>Eigenstrat is directly supported by the Genesis.</p>
+
+<h3>SNPRelate</h3>
+<p>The SNPRelate R package of Zheng et al [2012] can be used to do PC-analysis. However,
+    since it is an R-package there is no SNPRelate default format since output is fully programmable
+    in R. We support the following output: a file that contains the eigenvalues,
+    followed by the eigenvectors, produced using the following R commands.</p>
+
+<div class="code">
+<code>pca <- snpgdsPCA(genofile,snp.id=snpset) <br>
+    write.table(pca$eigenval,"pca.rel",sep="\t",quote=FALSE) <br>
+    tab1 <- data.frame(sample.id = pca$sample.id, <br>
+    pop = factor(pop_code)[match(pca$sample.id, sample.id)], <br>
+    EV1 = pca$eigenvect[,1],<br>
+    EV2 = pca$eigenvect[,2],<br>
+    EV3 = pca$eigenvect[,3],<br>
+    EV4 = pca$eigenvect[,4],<br>
+    EV5 = pca$eigenvect[,5],<br>
+    EV6 = pca$eigenvect[,6],<br>
+    EV7 = pca$eigenvect[,7],<br>
+    EV8 = pca$eigenvect[,8],<br>
+    EV9 = pca$eigenvect[,9],<br>
+    EV10 = pca$eigenvect[,10],<br>
+    stringsAsFactors = FALSE)<br>
+    write.table(tab1,"pca.rel",sep="\t",quote=FALSE,append=TRUE)</code>
+</div>
+
+<h3>flashpca</h3>
+<p>FlashPCA is designed to perform PCA on very large data set. It takes as input a plink
+    BED and BIM file and produces eigenvectors or principal components. We have a script
+    <em>flashpca2evec</em> which converts the data into a format that Genesis can read. Because the
+    flashpca output has no information about the sample IDs, <em>flashpca2evec</em> also needs the fam
+    file as input. This script requires Python 2.7.</p>
+
+<p>By default, flashpca calls its output files <em>eigenvalues.txt</em> and <em>eigenvectors.txt</em> and this is
+        (by default) what flash2pca expects. For example:</p>
+
+<code class="code">flashpca2evec --fam data.fam --out data.evec</code>
+
+<p>However, if the files have other names, the appropriate flags can be used</p>
+<code class="code">flashpca2evec --fam data.fam --eigenval file1.evals --eigenvec sample.csv --out data.evec</code>
+
+<h3>plink2evec</h3>
+<p>PLINK 2 [Purcell and Chang 2014] (and its alpha release plink 1.9) supports PCA directly.
+    Genesis can handle these files natively but assumes that the default plink's default naming
+    convention is used (e.g., a <em>.eigenvec</em> suffix). If this is not followed, Genesis will not be able
+    to recognise the file type. Thus plink2evec is bundled for that purpose. <em>plink2evec</em> converts the plink
+    output files into the format that Genesis can read.</p>
+
+<p>By default PLINK calls its output files <em>plink.eigenval</em> and <em>plink.eigenvec</em> and this is (by
+    default) what <em>plink2evec</em> expects. For exmaple:</p>
+
+<code class="code">plink2evec --out result.pca.evec</code>
+
+<p>However, if the files have other names, the appropriate flags can be used</p>
+
+<code class="code">plink2evec --eigenval file1.evals --eigenvec sample.csv --out data.evec</code>
+
+<p>And if as is common in plink usage, the eigenvectors and eigenvalues file was specified by
+    using the plink <em>--out</em> flag, then plink2evec can use its <em>--bfile</em> flag</p>
+
+<code class="code">plink --bfile sample --pca --out sample</code>
+<code class="code">plink2evec --bfile sample --out sample.pca.evec</code>
+
 </body>
-
-<h1>Data</h1>
-
 </html>
