@@ -88,6 +88,11 @@ public class AdmixtureDataInputController{
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Q file", "*.Q");
         fileChooser.setTitle(which);
+
+        File validator = new File(Genesis.getPreviouslyOpenedPath());
+        if (validator.exists() && validator.isDirectory())
+            fileChooser.setInitialDirectory(validator);
+
         wanted = fileChooser.showOpenDialog(dialogStage);
         return wanted;
     }

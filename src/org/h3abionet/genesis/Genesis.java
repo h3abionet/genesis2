@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Optional;
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -35,13 +34,14 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.h3abionet.genesis.controller.MainController;
 
 /**
  * This is the main class of the program
  * @author scott
  */
 public class Genesis extends Application {
+
+    private static String previouslyOpenedPath;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -156,7 +156,6 @@ public class Genesis extends Application {
         alert.setTitle("Error Dialog");
         alert.setContentText(message);
         alert.showAndWait();
-    
     }
     
     // throw information dialog box
@@ -166,9 +165,16 @@ public class Genesis extends Application {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-        
     }
-  
+
+    public static String getPreviouslyOpenedPath() {
+        return previouslyOpenedPath;
+    }
+
+    public static void setPreviouslyOpenedPath(String previouslyOpenedPath) {
+        Genesis.previouslyOpenedPath = previouslyOpenedPath;
+    }
+
     /**
      * @param args the command line arguments
      */

@@ -68,6 +68,7 @@ public class ProjectDetailsController implements Initializable{
     private static String fam_fname_s = ""; // fam file absolute path
     private static String pheno_fname_s = ""; // phenotype file absolute path
     private static String proj_name_s = ""; // project name
+    private boolean projCreated;
 
     @FXML
     private void handleFamFname() {
@@ -129,8 +130,8 @@ public class ProjectDetailsController implements Initializable{
 
             project = new Project(proj_name_s, fam_fname_s, pheno_fname_s, phenoColumnNumber);
             mainController.setProject(project);
-            mainController.disablePcaBtn(false);
-            mainController.disableAdmixtureBtn(false);
+//            mainController.disablePcaBtn(false);
+//            mainController.disableAdmixtureBtn(false);
 
         } else if (fam_fname_s.length() != 0) {
             project = new Project(proj_name_s, fam_fname_s);
@@ -158,13 +159,14 @@ public class ProjectDetailsController implements Initializable{
     private File getFile(String which) {
         File wanted;
         FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("project files", "*.phe", "*.fam");
-        fileChooser.getExtensionFilters().add(extFilter);
+//        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("project files", "*.phe", "*.fam");
+
+//        fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setTitle(which);
         Stage stage = new Stage();
         wanted = fileChooser.showOpenDialog(stage);
+        Genesis.setPreviouslyOpenedPath(wanted.getParent());
         return wanted;
-
     }
 
     public void setMainController(MainController mainController) {
@@ -175,5 +177,4 @@ public class ProjectDetailsController implements Initializable{
     public void initialize(URL location, ResourceBundle resources) {
         entryOKButton.setDisable(true); // disable OK button
     }
-
 }

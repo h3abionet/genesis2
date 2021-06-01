@@ -140,7 +140,13 @@ public class PCADataInputController implements Initializable {
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("pca file", "*.eigenvec", "*.evec");
         fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setTitle(which);
+
+        File validator = new File(Genesis.getPreviouslyOpenedPath());
+        if (validator.exists() && validator.isDirectory())
+            fileChooser.setInitialDirectory(validator);
+
         wanted = fileChooser.showOpenDialog(new Stage());
+
         return wanted;
     }
 

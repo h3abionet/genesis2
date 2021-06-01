@@ -169,12 +169,31 @@ public class MainController implements Initializable {
         dialogStage.setResizable(false);
         dialogStage.showAndWait();
 
-        // enable btns
-        disableImportProjBtn(true);
-        disableNewProjBtn(true);
-        disablePcaBtn(false);
-        disableAdmixtureBtn(false);
-
+        if(project.isFamCreated() & project.isPhenoCreated()){
+            // if both fam and phenotype file are correct, launch project
+            disableImportProjBtn(true);
+            disableNewProjBtn(true);
+            disablePcaBtn(false);
+            disableAdmixtureBtn(false);
+            disableControlBtns(false);
+            disableDataBtn(false);
+        }else if(project.isFamCreated() && project.isPhenoFileProvided()==false) {
+            // if only the fam file is provided and is correct, launch project
+            disableImportProjBtn(true);
+            disableNewProjBtn(true);
+            disablePcaBtn(false);
+            disableAdmixtureBtn(false);
+            disableControlBtns(false);
+            disableDataBtn(false);
+        }else {
+            // otherwise don't launch the project
+            disableImportProjBtn(false);
+            disableNewProjBtn(false);
+            disablePcaBtn(true);
+            disableAdmixtureBtn(true);
+            disableControlBtns(true);
+            disableSettingsBtn(true);
+        }
     }
 
     public void setAdmixCreationSuccessful(boolean isAdmixCreationSuccessful) {
@@ -974,7 +993,7 @@ public class MainController implements Initializable {
         importProjBtn.setDisable(b);
      }
 
-    private void disableControlBtns(boolean enable){
+    public void disableControlBtns(boolean enable){
         disableSaveBtn(enable);
         disableSettingsBtn(false);
         disableDrawingBtn(enable);

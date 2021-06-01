@@ -5,6 +5,8 @@
  */
 package org.h3abionet.genesis.model;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.h3abionet.genesis.Genesis;
 
 import java.io.BufferedReader;
@@ -23,7 +25,7 @@ public class Project implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
-    private String[] colors = new String[]{"#800000", "#000080", "#808000", "#FFFF00", "#860061", "#ff8000", "#008000", "#800080", "#004C4C", "#ff00ff"};
+    private String[] colors = new String[]{"#800000", "#000080", "#808000", "#07AB99", "#860061", "#ff8000", "#008000", "#800080", "#004C4C", "#ff00ff"};
     private String[] icons = new String[]{"M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z",
             "M0 -3.5 v7 l 4 -3.5z",
             "M5,0 L10,9 L5,18 L0,9 Z",
@@ -50,7 +52,7 @@ public class Project implements Serializable {
     private int currentTabIndex; // set index of the current tab
     private List<String> groupNames = new ArrayList<>();
 
-    private int defaultIconSize = 10; //default icon size
+    private int defaultIconSize = 15; //default icon size
     private HashMap groupColors = new HashMap(); // default group colors e.g. mkk -> #800000
     private HashMap groupIcons =  new HashMap();  // default group icons e.g. mkk -> "M 2 2 L 6 2 L 4 6 z"
 
@@ -67,6 +69,8 @@ public class Project implements Serializable {
     private ArrayList<String> iidsList = new ArrayList<>();
     private HashMap<String, ArrayList<String>> famOrder = new HashMap<>();
     private ArrayList<PCAGraphLayout> pcaGraphLayoutList = new ArrayList<>();
+    private boolean famCreated;
+    private boolean phenoCreated;
 
     public Project(String proj_name, String fam_fname_s) {
         this.projectName = proj_name;
@@ -87,7 +91,7 @@ public class Project implements Serializable {
      * Create a new project
      * @param proj_name
      */
-    public Project(String proj_name, String fam_fname_s, String pheno_fname_s, int phenoColumnNumber) {
+    public Project(String proj_name, String fam_fname_s, String pheno_fname_s, int phenoColumnNumber) throws IOException {
         this.projectName = proj_name;
         this.famFileName = fam_fname_s;
         this.phenoFileName = pheno_fname_s;
@@ -96,13 +100,9 @@ public class Project implements Serializable {
         pcGraphSubjects = new ArrayList<>();
 
         project = this;
-        try {
-            readFamFile(fam_fname_s);
-            readPhenotypeFile(pheno_fname_s);
-            setIconTypes();
-        } catch (Exception e){
-            Genesis.throwInformationException("Wrong files provided");
-        }
+        readFamFile(fam_fname_s);
+        readPhenotypeFile(pheno_fname_s);
+        setIconTypes();
     }
 
     public boolean isPhenoFileProvided() {
@@ -123,77 +123,113 @@ public class Project implements Serializable {
         String sex;
         String phe;
 
-        BufferedReader r = Genesis.openFile(famFilePath);
-        String l = r.readLine();
-        String fields[];
-        while (l != null) {
-            fields = l.split("\\s+");
-            fid = fields[0];
-            iid = fields[1];
-            pat = fields[2];
-            mat = fields[3];
-            sex = fields[4];
-            phe = fields[5];
+        String fileExtension = getExtension(famFilePath);
 
-            // set subjects
-            pcGraphSubjects.add(new Subject(fid, iid, pat, mat, sex, phe, colors[0], icons[0], defaultIconSize, false));
-            iidsList.add(iid); // keep order of iids
+        if (fileExtension.equals("fam")){
+            try {
+                BufferedReader r = Genesis.openFile(famFilePath);
+                String l = r.readLine();
+                String fields[];
 
-            l = r.readLine();
+                while (l != null) {
+                    fields = l.split("\\s+");
+                    fid = fields[0];
+                    iid = fields[1];
+                    pat = fields[2];
+                    mat = fields[3];
+                    sex = fields[4];
+                    phe = fields[5];
+
+                    // set subjects
+                    pcGraphSubjects.add(new Subject(fid, iid, pat, mat, sex, phe, colors[0], icons[0], defaultIconSize, false));
+                    iidsList.add(iid); // keep order of iids
+
+                    l = r.readLine();
+                }
+
+                famCreated = true; // fam file successfully imported
+
+                numOfIndividuals = pcGraphSubjects.size();
+
+                // set group name, icons and color if only fam file is provided
+                groupNames.add("All"); // if no pheno column, name the group All
+                famOrder.put("All", iidsList);
+                groupColors.put(groupNames.get(0), colors[0]);  // mkk -> #800000
+                groupIcons.put(groupNames.get(0), icons[0]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
+            }catch (Exception e){
+                famCreated = false;
+                String famError = "There was a problem in reading the fam file. " +
+                        "Make sure the file is in this format \"RYCS149 WITS149 1 2 1 1\" - starting with individual iids in the first line";
+                Alert dialog = new Alert(Alert.AlertType.ERROR, famError, ButtonType.OK);
+                dialog.show();
+            }
+        }else {
+            Alert dialog = new Alert(Alert.AlertType.ERROR, "Wrong fam file provided. Provide a file with .fam extension", ButtonType.OK);
+            dialog.show();
         }
-
-        numOfIndividuals = pcGraphSubjects.size();
-
-        // set group name, icons and color if only fam file is provided
-        groupNames.add("All"); // if no pheno column, name the group All
-        famOrder.put("All", iidsList);
-        groupColors.put(groupNames.get(0), colors[0]);  // mkk -> #800000
-        groupIcons.put(groupNames.get(0), icons[0]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
     }
 
     private void readPhenotypeFile(String phenoFilePath) throws FileNotFoundException, IOException {
 
-        // get phenotype groups and assign colors and icons
-        setPhenotypeGroups(Genesis.openFile(phenoFilePath));
+        String fileExtension = getExtension(phenoFilePath);
 
-        BufferedReader secBuf = Genesis.openFile(phenoFilePath);
-        String line = secBuf.readLine();
-        String fields[];
-        while (line != null) {
-            fields = line.split("\\s+");
+        if (fileExtension.equals("phe")){
+            try {
+                // get phenotype groups and assign colors and icons
+                setPhenotypeGroups(Genesis.openFile(phenoFilePath));
 
-            String fid = fields[0];
-            String iid = fields[1];
+                BufferedReader secBuf = Genesis.openFile(phenoFilePath);
+                String line = secBuf.readLine();
+                String fields[];
+                while (line != null) {
+                    fields = line.split("\\s+");
 
-            // get color and icon for selected pheno group or column
-            String chosenPheno = fields[phenoColumnNumber-1];
-            String color = (String) groupColors.get(chosenPheno);
-            String icon = (String) groupIcons.get(chosenPheno);
+                    String fid = fields[0];
+                    String iid = fields[1];
 
-            // add pheno details to every subject
-            for(Subject sub : pcGraphSubjects){
-                if (sub.getFid().equals(fid) && sub.getIid().equals(iid)){
-                    sub.setPhenos(fields);
-                    sub.setColor(color);
-                    sub.setIcon(icon);
+                    // get color and icon for selected pheno group or column
+                    String chosenPheno = fields[phenoColumnNumber - 1];
+                    String color = (String) groupColors.get(chosenPheno);
+                    String icon = (String) groupIcons.get(chosenPheno);
+
+                    // add pheno details to every subject
+                    for (Subject sub : pcGraphSubjects) {
+                        if (sub.getFid().equals(fid) && sub.getIid().equals(iid)) {
+                            sub.setPhenos(fields);
+                            sub.setColor(color);
+                            sub.setIcon(icon);
+                        }
+                    }
+
+                    line = secBuf.readLine();
                 }
-            }
 
-            line = secBuf.readLine();
-        }
+                phenoCreated = true; // phenotype file successfully imported
 
-        // categorize fam iids according to phenotype column
-        for (Subject subject: pcGraphSubjects){
-            String phenoGroupName = subject.getPhenos()[phenoColumnNumber-1];
-            if(famOrder.containsKey(phenoGroupName)){
-                famOrder.get(phenoGroupName).add(subject.getIid());
-            }else {
-                ArrayList<String> ls = new ArrayList<>(); // define new list
-                ls.add(subject.getIid());
-                famOrder.put(phenoGroupName, ls);
+                // categorize fam iids according to phenotype column
+                for (Subject subject : pcGraphSubjects) {
+                    String phenoGroupName = subject.getPhenos()[phenoColumnNumber - 1];
+                    if (famOrder.containsKey(phenoGroupName)) {
+                        famOrder.get(phenoGroupName).add(subject.getIid());
+                    } else {
+                        ArrayList<String> ls = new ArrayList<>(); // define new list
+                        ls.add(subject.getIid());
+                        famOrder.put(phenoGroupName, ls);
+                    }
+                }
+
+            }catch (Exception e){
+                phenoCreated = false;
+                String phenoError = "There was a problem in reading the phenotype file. " +
+                        "Make sure the file is in this format \"NA06984 NA06984 CEU EUR\" - starting with individual iids in the fam file";
+                Genesis.throwInformationException(phenoError);
             }
+        }else {
+            Genesis.throwInformationException("Wrong phenotype file provided. Provide a file with .phe extension");
         }
     }
+
+
 
     /**
      * create phenotype groups and assign colors and icons
@@ -339,4 +375,23 @@ public class Project implements Serializable {
     public ArrayList<PCAGraphLayout> getPCAGraphLayouts() {
         return pcaGraphLayoutList;
     }
+
+    public boolean isFamCreated() {
+        return famCreated;
+    }
+
+    public boolean isPhenoCreated() {
+        return phenoCreated;
+    }
+
+    private String getExtension(String filePath) {
+        String extension = "";
+
+        int i = filePath.lastIndexOf('.');
+        if (i > 0) {
+            extension = filePath.substring(i + 1);
+        }
+        return extension;
+    }
+
 }
