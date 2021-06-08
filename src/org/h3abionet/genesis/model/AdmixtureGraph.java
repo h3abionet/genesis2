@@ -6,14 +6,19 @@
 package org.h3abionet.genesis.model;
 
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.StackedBarChart;
-import javafx.scene.chart.XYChart;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.chart.*;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.TilePane;
+import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.controller.AdmixtureIndividualDetailsController;
 import org.h3abionet.genesis.controller.MainController;
+import org.h3abionet.genesis.controller.PCAIndividualDetailsController;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,6 +55,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
     private static int chartIndex = 0;
     private MainController mainController;
+    private ArrayList<String> iidDetails;
 
     /**
      * Constructor
@@ -87,7 +93,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 fields = line.split("\\s+");
                 ArrayList<String> qValues = new ArrayList<>(Arrays.asList(fields));
                 String iid = sub.getIid();
-                qValues.add(0, iid);
+                qValues.add(0, iid); // add qs
                 sub.setQs(qValues);
                 line = r.readLine();
             }
@@ -145,7 +151,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 }
             }
 
-
             // create data series for every ancestry
             for(int i = 0; i< ancestryLabels.length; i++){
                 ancestryValues = new XYChart.Series<>();
@@ -181,8 +186,9 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     tn.getChildren().remove(0, children.size()); // remove all items in range 0 to size
                 }
             }
-
+            // only add charts with data
             if(populationGroupChart.getData().get(0).getData().size()>0){
+                showIndividualDetails(populationGroupChart);
                 charts.add(populationGroupChart);
             }
         }
@@ -190,6 +196,94 @@ public class AdmixtureGraph extends Graph implements Serializable {
         listOfStackedBarCharts =  charts;
         chartIndex += 1;
     }
+
+    private void showIndividualDetails(StackedBarChart<String, Number> admixChart){
+        // add listeners to chart
+        // on left click mouse event handler
+        admixChart.getData().forEach((serie) -> {
+            serie.getData().forEach((item) -> {
+                item.getNode().setOnMousePressed((MouseEvent event) -> {
+                    MouseButton button = event.getButton();
+                    if (button == MouseButton.PRIMARY) {
+                        try {
+                            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureIndividualDetails.fxml"));
+                            Parent parent = (Parent) fxmlLoader.load();
+                            Stage dialogStage = new Stage();
+                            dialogStage.setScene(new Scene(parent));
+                            dialogStage.setResizable(false);
+
+                            // show subject details when clicked
+                            AdmixtureIndividualDetailsController admixIndivDetailsCtrler = fxmlLoader.getController();
+                            admixIndivDetailsCtrler.setProject(project);
+                            admixIndivDetailsCtrler.setAdmixtureGraph(this);
+                            admixIndivDetailsCtrler.setAdmixtureChart(admixChart);
+                            admixIndivDetailsCtrler.setClickedId(item.getXValue());
+
+                            for(Subject sub: project.getPcGraphSubjects()){
+                                if(sub.getIid().equals(item.getXValue())){
+                                    iidDetails = new ArrayList<>(Arrays.asList(sub.getPhenos()));
+                                    iidDetails.add(sub.getSex());
+                                    break;
+                                }
+                            }
+                            admixIndivDetailsCtrler.setPhenoList(iidDetails);
+                            admixIndivDetailsCtrler.setValuesLabel(item.getYValue().toString()); // get Y value
+                            dialogStage.showAndWait();
+
+                        } catch (IOException ex) {
+                            ;
+                        }
+                    }
+                });
+            });
+        });
+    }
+
+    /**
+     *
+     * @param series
+     */
+    public void hideIndividual(XYChart.Series<String, Number> series, String ids[]){
+
+        // add this individual to a list of hidden individuals
+//        project.getHiddenPoints().add(ids[0]+" "+ids[1]); // ids of the individual
+//
+//        // for every displayed graph, hide this individual
+//        for(int i=0;i< mainController.getPcaChartsList().size();i++){
+//
+//            ScatterChart<Number, Number> graph = mainController.getPcaChartsList().get(i);
+//
+//            // get pc labels of the graph
+//            int pcCols[] = project.getSelectedPCs().get(i); // e.g [1, 2] for pca 1 vs pca 2 graph
+//
+//            // get the correct serie to remove the individual from
+//            for (XYChart.Series<Number, Number> sss : graph.getData()){
+//                if(sss.getName().equals(series.getName())){
+//
+//                    // get individual with these ids
+//                    for(Subject s: project.getPcGraphSubjectsList().get(i)){
+//                        if(s.getPcs() != null && s.getFid().equals(ids[0]) && s.getIid().equals(ids[1])){
+//                            s.setHidden(true);
+//                            // get x and y values in the position of the pc columns
+//                            Float xValue = Float.parseFloat(s.getPcs()[pcCols[0]-1]); // reduce position by 1
+//                            Float yValue = Float.parseFloat(s.getPcs()[pcCols[1]-1]);
+//
+//                            // if the data point has same x y value, remove it from the series
+//                            for(XYChart.Data<Number, Number> d: sss.getData()){
+//                                if(d.getXValue().equals(xValue) && d.getYValue().equals(yValue)){
+//                                    sss.getData().remove(d);
+//                                    break;
+//                                }
+//                            }
+//                            break;
+//                        }
+//                    }
+//                    break;
+//                }
+//            }
+//        }
+    }
+
 
     public ArrayList<StackedBarChart<String, Number>> getListOfStackedBarCharts() {
         return listOfStackedBarCharts;

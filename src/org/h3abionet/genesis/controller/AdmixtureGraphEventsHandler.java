@@ -161,39 +161,39 @@ public class AdmixtureGraphEventsHandler {
 
                 // add listeners to chart
                 // on left click mouse event handler
-                admixChart.getData().forEach((serie) -> {
-                    serie.getData().forEach((item) -> {
-                        item.getNode().setOnMousePressed((MouseEvent event) -> {
-                            MouseButton button = event.getButton();
-                            if (button == MouseButton.PRIMARY) {
-                                try {
-                                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureIndividualDetails.fxml"));
-                                    Parent parent = (Parent) fxmlLoader.load();
-                                    Stage dialogStage = new Stage();
-                                    dialogStage.setScene(new Scene(parent));
-                                    dialogStage.setResizable(false);
-                                    
-                                    // show subject details when clicked
-                                    AdmixtureIndividualDetailsController admixIndivDetailsCtrler = fxmlLoader.getController();
-                                    admixIndivDetailsCtrler.setProject(project);
-                                    for(Subject sub: project.getPcGraphSubjects()){
-                                        if(sub.getIid().equals(item.getXValue())){
-                                            iidDetails = new ArrayList<>(Arrays.asList(sub.getPhenos()));
-                                            iidDetails.add(sub.getSex());
-                                            break;
-                                        }
-                                    }
-                                    admixIndivDetailsCtrler.setPhenoList(iidDetails);
-                                    admixIndivDetailsCtrler.setValuesLabel(item.getYValue().toString()); // get Y value
-                                    dialogStage.showAndWait();
-
-                                } catch (IOException ex) {
-                                    ;
-                                }
-                            }
-                        });
-                    });
-                });
+//                admixChart.getData().forEach((serie) -> {
+//                    serie.getData().forEach((item) -> {
+//                        item.getNode().setOnMousePressed((MouseEvent event) -> {
+//                            MouseButton button = event.getButton();
+//                            if (button == MouseButton.PRIMARY) {
+//                                try {
+//                                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureIndividualDetails.fxml"));
+//                                    Parent parent = (Parent) fxmlLoader.load();
+//                                    Stage dialogStage = new Stage();
+//                                    dialogStage.setScene(new Scene(parent));
+//                                    dialogStage.setResizable(false);
+//
+//                                    // show subject details when clicked
+//                                    AdmixtureIndividualDetailsController admixIndivDetailsCtrler = fxmlLoader.getController();
+//                                    admixIndivDetailsCtrler.setProject(project);
+//                                    for(Subject sub: project.getPcGraphSubjects()){
+//                                        if(sub.getIid().equals(item.getXValue())){
+//                                            iidDetails = new ArrayList<>(Arrays.asList(sub.getPhenos()));
+//                                            iidDetails.add(sub.getSex());
+//                                            break;
+//                                        }
+//                                    }
+//                                    admixIndivDetailsCtrler.setPhenoList(iidDetails);
+//                                    admixIndivDetailsCtrler.setValuesLabel(item.getYValue().toString()); // get Y value
+//                                    dialogStage.showAndWait();
+//
+//                                } catch (IOException ex) {
+//                                    ;
+//                                }
+//                            }
+//                        });
+//                    });
+//                });
                 
                 // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {

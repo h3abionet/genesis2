@@ -8,11 +8,14 @@ package org.h3abionet.genesis.controller;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.StackedBarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.model.AdmixtureGraph;
 import org.h3abionet.genesis.model.Project;
 
 import java.util.List;
@@ -39,6 +42,9 @@ public class AdmixtureIndividualDetailsController{
     @FXML
     private Button btnCancel;
     private Project project;
+    private AdmixtureGraph admixtureGraph;
+    private StackedBarChart<String, Number> admixChart;
+    private String clickedId;
 
     /**
      * set proportion values
@@ -58,9 +64,36 @@ public class AdmixtureIndividualDetailsController{
     private void entryBtnCancel(ActionEvent event) { Genesis.closeOpenStage(event); }
 
     @FXML
-    private void entryBtnOK(ActionEvent event) { Genesis.closeOpenStage(event); }
+    private void entryBtnOK(ActionEvent event) {
+
+        if (hideCheckBox.isSelected()) {
+            for (XYChart.Series<String, Number> series : admixChart.getData()) {
+                for (XYChart.Data<String, Number> data : series.getData()) {
+                    String xValue = String.valueOf(data.getXValue());
+                    String yValue = String.valueOf(data.getYValue());
+                    if(xValue.equals(clickedId)) {
+                        admixtureGraph.hideIndividual(series, new String[]{xValue, yValue});
+                        System.out.println("I was clicked"+ clickedId);
+                    }
+                }
+            }
+        }
+        Genesis.closeOpenStage(event);
+    }
+
+    public void setAdmixtureGraph(AdmixtureGraph admixtureGraph) {
+        this.admixtureGraph = admixtureGraph;
+    }
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    public void setAdmixtureChart(StackedBarChart<String, Number> admixChart) {
+        this.admixChart = admixChart;
+    }
+
+    public void setClickedId(String fid) {
+        this.clickedId = fid;
     }
 }
