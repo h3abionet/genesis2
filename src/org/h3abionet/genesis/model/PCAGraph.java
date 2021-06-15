@@ -100,7 +100,7 @@ public class PCAGraph extends Graph implements Serializable {
                     String pcs[] = Arrays.copyOfRange(fields, 1, fields.length - 1);
 
                     // set pcs for every subject
-                    for(Subject s: project.getPcGraphSubjects()){
+                    for(Subject s: project.getSubjectsList()){
                         if(s.getFid().equals(fid) && s.getIid().equals(iid)){
                             s.setPcs(pcs);
                         }
@@ -121,7 +121,7 @@ public class PCAGraph extends Graph implements Serializable {
                     String pcs[] = Arrays.copyOfRange(fields, 1, fields.length);
 
                     // set pcs for every subject
-                    for(Subject s: project.getPcGraphSubjects()){
+                    for(Subject s: project.getSubjectsList()){
                         if(s.getFid().equals(fid) && s.getIid().equals(iid)){
                             s.setPcs(pcs);
                         }
@@ -145,7 +145,7 @@ public class PCAGraph extends Graph implements Serializable {
                     String[] pcs = Arrays.copyOfRange(fields, 2, fields.length - 1);
 
                     // set pcs for every subject
-                    for(Subject s: project.getPcGraphSubjects()){
+                    for(Subject s: project.getSubjectsList()){
                         if(s.getFid().equals(fid) && s.getIid().equals(iid)){
                             s.setPcs(pcs);
                         }
@@ -165,7 +165,7 @@ public class PCAGraph extends Graph implements Serializable {
                     String pcs[] = Arrays.copyOfRange(fields, 2, fields.length);
 
                     // set pcs for every subject
-                    for(Subject s: project.getPcGraphSubjects()){
+                    for(Subject s: project.getSubjectsList()){
                         // note: some ids in pheno are not in the evec file
                         if(s.getFid().equals(fid) && s.getIid().equals(iid)){
                             s.setPcs(pcs);
@@ -270,7 +270,7 @@ public class PCAGraph extends Graph implements Serializable {
 
         ScatterChart<Number, Number> sc = createScatterChart(pcaX, pcaY);
 
-        ArrayList<Subject> subjects = (ArrayList<Subject>) project.getPcGraphSubjects().clone();
+        ArrayList<Subject> subjects = (ArrayList<Subject>) project.getSubjectsList().clone();
 
         // add subjects to the list of all subjects
         project.getPcGraphSubjectsList().add(subjects);
@@ -591,7 +591,7 @@ public class PCAGraph extends Graph implements Serializable {
      *
      * @param ids
      */
-    public void unhideIndividual(String ids[]){
+    public void showIndividual(String ids[]){
         String fid = ids[0];
         String iid = ids[1];
         String fid_iid = fid+" "+iid;

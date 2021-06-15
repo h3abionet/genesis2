@@ -277,12 +277,13 @@ public class AdmixtureSettingsController implements Initializable {
         if ("Vertical".equals(linearLayoutBox.getValue()) && admixVertical == false) {
             verticalRotation();
         }
-
+        mainController.disableSettingsBtn(false);
         Genesis.closeOpenStage(event);
     }
 
     @FXML
     private void entryCancelButton(ActionEvent event) {
+        mainController.disableSettingsBtn(false);
         Genesis.closeOpenStage(event);
     }
 
@@ -521,39 +522,32 @@ public class AdmixtureSettingsController implements Initializable {
      * @param defaultValue 
      */
     private void setSpinner(Spinner sp, double startValue, double endValue, double defaultValue){
-	SpinnerValueFactory<Double> spValues = new SpinnerValueFactory.DoubleSpinnerValueFactory(startValue, endValue);
-	sp.setEditable(true);
-	sp.setValueFactory(spValues);
-	sp.getValueFactory().setValue(defaultValue);
-	TextFormatter textFormatter = new TextFormatter(spValues.getConverter(),
-	spValues.getValue());
-	sp.getEditor().setTextFormatter(textFormatter);
-	spValues.valueProperty().bindBidirectional(textFormatter.valueProperty());
+        SpinnerValueFactory<Double> spValues = new SpinnerValueFactory.DoubleSpinnerValueFactory(startValue, endValue);
+        sp.setEditable(true);
+        sp.setValueFactory(spValues);
+        sp.getValueFactory().setValue(defaultValue);
+        TextFormatter textFormatter = new TextFormatter(spValues.getConverter(),
+        spValues.getValue());
+        sp.getEditor().setTextFormatter(textFormatter);
+        spValues.valueProperty().bindBidirectional(textFormatter.valueProperty());
     }
 
-    /**
-     * Initializes the controller class.
-     * @param url
-     * @param rb
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        
+    public void setControls(){
         vBox = MainController.getAdmixVbox();
-        
+
         // get default admixPane size everytime the setting button is clicked
         admixPane = MainController.getAdmixPane();
 //        initalAdmixPaneHeight = admixPane.getHeight();
 //        initalAdmixPaneWidth = admixPane.getWidth();
-        
+
         // get gridpane
-        gridPane = MainController.getGridPane();
+        gridPane = mainController.getGridPane();
         gridPaneChildren = gridPane.getChildren();
         numOfCols = gridPane.getColumnConstraints().size();
 
         double lblFontSize = 0;
-        Paint lblDefaultColor = null; 
-        String lblFontFamily = null; 
+        Paint lblDefaultColor = null;
+        String lblFontFamily = null;
         groupNameWidthList = new ArrayList();
         for (Node node : gridPaneChildren) {
             if (GridPane.getRowIndex(node) == MainController.getRowPointer() + 1 && GridPane.getColumnIndex(node) < numOfCols) {
@@ -565,6 +559,7 @@ public class AdmixtureSettingsController implements Initializable {
                 groupNameWidthList.add(lbl.getLayoutBounds().getWidth()); // keep all the width of labels
             }
         }
+
         labelColorPicker.setValue((Color) lblDefaultColor); // default lblDefaultColor of picker
 
         // labels
@@ -579,7 +574,7 @@ public class AdmixtureSettingsController implements Initializable {
                 }
             }
         });
-        
+
         // update the groupNameWidthList everytime you spin the label size
         // prefSize of pane (Text parent) increases by default
         setSpinner(labelFontSizeSpinner, 0, 72, lblFontSize);
@@ -629,7 +624,7 @@ public class AdmixtureSettingsController implements Initializable {
         headingFontCombo.setOnAction(event -> {
             chartHeading.setFont(Font.font(headingFontCombo.getValue()));
         });
-        
+
         setSpinner(headingFontSizeSpinner, 0, 100, chartHeading.getFont().getSize());
         headingFontSizeSpinner.setOnMouseClicked(event -> {
             chartHeading.setFont(Font.font(headingFontSizeSpinner.getValue()));
@@ -667,8 +662,8 @@ public class AdmixtureSettingsController implements Initializable {
             gridPane.setMaxWidth(newGridpaneWidth);
             MainController.getAdmixVbox().setPrefWidth(gridPane.getMinWidth() + 50);
             if(admixRotated){
-               MainController.getAdmixVbox().setMinWidth(newGridpaneWidth+extraSpace);
-               MainController.getAdmixVbox().setMaxWidth(newGridpaneWidth+extraSpace);
+                MainController.getAdmixVbox().setMinWidth(newGridpaneWidth+extraSpace);
+                MainController.getAdmixVbox().setMaxWidth(newGridpaneWidth+extraSpace);
             }
         });
 
@@ -692,7 +687,7 @@ public class AdmixtureSettingsController implements Initializable {
         } else {
             linearLayoutBox.getSelectionModel().select(1);
         }
-        
+
         // disable these spinners - they affect the width and height of the vbox
         // TODO - increase the size of vbox everytime you spin these boxes
         if(admixVertical){
@@ -700,8 +695,15 @@ public class AdmixtureSettingsController implements Initializable {
             thicknessSpinner.setDisable(true);
             heightSpinner.setDisable(true);
         }
-
     }
+
+    /**
+     * Initializes the controller class.
+     * @param url
+     * @param rb
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {}
 
     public void setAdmixtureGraph(AdmixtureGraph admixtureGraph) {
         this.admixtureGraph = admixtureGraph;

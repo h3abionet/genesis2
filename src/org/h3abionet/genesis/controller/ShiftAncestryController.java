@@ -27,7 +27,7 @@ import javafx.scene.layout.GridPane;
  *
  * @author henry
  */
-public class ShiftAncestryController implements Initializable {
+public class ShiftAncestryController{
 
     @FXML
     private Label ancestorNameLabel;
@@ -52,6 +52,7 @@ public class ShiftAncestryController implements Initializable {
     private String[] ancestries;
     private static int numOfSeries;
     private ArrayList<String> ancestryOrder = new ArrayList<String>();
+    private MainController mainController;
 
     /**
      * set name of ancestor when loading this interface
@@ -83,8 +84,6 @@ public class ShiftAncestryController implements Initializable {
 
     /**
      * performs the job of moving series
-     *
-     * @param newPosition
      */
     public void verticalMove(int pos_removed, int pos_added) {
         Comparator<XYChart.Series<String, Number>> mycomp
@@ -127,24 +126,30 @@ public class ShiftAncestryController implements Initializable {
         for (String l:ancestries)
             ancestryOrder.add(l);
     }
-    /**
-     * Initializes the controller class.
-     *
-     * @param url
-     * @param rb
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        
+
+//    @Override
+//    public void initialize(URL url, ResourceBundle rb) {
         // get row index of clicked chart
-        rowIndexOfClickedAdmixChart = AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart();
+//        rowIndexOfClickedAdmixChart = AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart();
 
         // get the list of the current staked bar charts being displayed
-        listOfAdmixtureCharts = MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
+//        listOfAdmixtureCharts = mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
 
         // set the current gridpane - to get the row index of any clicked chart
-        gridPane = MainController.getGridPane();
-              
+//        gridPane = MainController.getGridPane();
+//    }
+    public void setListOfAdmixtureCharts(ArrayList<StackedBarChart<String, Number>> listOfAdmixtureCharts) {
+        this.listOfAdmixtureCharts = listOfAdmixtureCharts;
     }
 
+    public void setRowIndexOfClickedAdmixChart(int rowIndexOfClickedAdmixChart) {
+        this.rowIndexOfClickedAdmixChart = rowIndexOfClickedAdmixChart;
+    }
+
+    public void setGridPane(GridPane gridPane) {
+        this.gridPane = gridPane;
+    }
+    //    public void setMainController(MainController mainController) {
+//        this.mainController = mainController;
+//    }
 }

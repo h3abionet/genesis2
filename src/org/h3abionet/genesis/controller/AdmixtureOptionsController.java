@@ -78,17 +78,20 @@ public class AdmixtureOptionsController implements Initializable {
     private Scene sceneForPopulationGroupBtn;
     private int rowIndexOfClickedAdmixChart;
     private Project project;
+    private MainController mainController;
+    private AdmixtureGraphEventsHandler admixtureGraphEventsHandler;
+    private GridPane gridPane;
 
     @FXML
     private void deleteGraph(ActionEvent event) {
         // remove all nodes in clicked row
         String result = Genesis.confirmAction("Are you sure you want to delete this plot?");
         if (result.equals("yesBtnPressed")) {
-            MainController.getGridPane().getChildren().removeIf(
+            gridPane.getChildren().removeIf(
                     node -> GridPane.getRowIndex(node) == rowIndexOfClickedAdmixChart);
             
         // remove a list of all charts in that index
-        MainController.getAllAdmixtureCharts().remove(rowIndexOfClickedAdmixChart);
+        mainController.getAllAdmixtureCharts().remove(rowIndexOfClickedAdmixChart);
         MainController.setRowPointer(MainController.getRowPointer()-1);
 
         // close stage
@@ -110,7 +113,7 @@ public class AdmixtureOptionsController implements Initializable {
         stage.close();
 
         if (rowIndexOfClickedAdmixChart == 0 ) return; // There isn't a previous chart
-        ArrayList<StackedBarChart<String,Number>> prev =  MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart-1);
+        ArrayList<StackedBarChart<String,Number>> prev =  mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart-1);
 
         int Kp = prev.get(0).getData().size();
         int ancestry_match[][]  = new int [Kp][2];
@@ -305,6 +308,10 @@ public class AdmixtureOptionsController implements Initializable {
                     AncestryColorController acc = colorLoader.getController();
                     acc.setAncestryColor(ancestorColorDisplay.getFill());
                     acc.setAncestryIndex(ancestorIndex);
+                    acc.setGridPane(mainController.getGridPane());
+                    acc.setRowIndexOfClickedAdmixChart(rowIndexOfClickedAdmixChart);
+                    acc.setListOfAdmixtureCharts(mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart));
+                    acc.setAllAdmixtureCharts(mainController.getAllAdmixtureCharts());
                     colorStage.showAndWait();
                     
                     if (acc.isColorSelected()) {
@@ -333,6 +340,10 @@ public class AdmixtureOptionsController implements Initializable {
                     ShiftAncestryController sac = fxmlLoader.getController();
                     sac.setAncestorNumberLabel(ancestorName); // set the ancestry name
                     sac.setNumOfAncestry(admixChart.getData().size());
+                    sac.setListOfAdmixtureCharts(mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart));
+                    sac.setRowIndexOfClickedAdmixChart(rowIndexOfClickedAdmixChart);
+                    sac.setGridPane(mainController.getGridPane());
+//                    sac.setMainController(mainController);
                     dialogStage.showAndWait();
 
                 } catch (IOException e) {
@@ -460,7 +471,6 @@ public class AdmixtureOptionsController implements Initializable {
             iids.add(j, temp);
             xAxis.setCategories(iids);
         }
-
     }
 
     /**
@@ -469,11 +479,11 @@ public class AdmixtureOptionsController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
-        // get row index of clicked chart - starts from 0
-        rowIndexOfClickedAdmixChart = AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart();
-
-        // get list of charts in this position of row index
-        currChart = MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
+//        // get row index of clicked chart - starts from 0
+//        rowIndexOfClickedAdmixChart = AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart();
+//
+//        // get list of charts in this position of row index
+//        currChart = mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
 
         listOfAncenstorHBox = new ArrayList<>();
         
@@ -486,5 +496,25 @@ public class AdmixtureOptionsController implements Initializable {
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+//    public void setMainController(MainController mainController) {
+//        this.mainController = mainController;
+//    }
+//
+//    public void setAdmixtureGraphEventsHandler(AdmixtureGraphEventsHandler admixtureGraphEventsHandler) {
+//        this.admixtureGraphEventsHandler = admixtureGraphEventsHandler;
+//    }
+
+    public void setCurrChart(ArrayList<StackedBarChart<String, Number>> currChart) {
+        this.currChart = currChart;
+    }
+
+    public void setRowIndexOfClickedAdmixChart(int rowIndexOfClickedAdmixChart) {
+        this.rowIndexOfClickedAdmixChart = rowIndexOfClickedAdmixChart;
+    }
+
+    public void setGridPane(GridPane gridPane) {
+        this.gridPane = gridPane;
     }
 }

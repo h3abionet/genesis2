@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.model.AdmixtureGraph;
 import org.h3abionet.genesis.model.PCAGraph;
 
 import java.util.ArrayList;
@@ -32,17 +33,26 @@ public class HiddenIndividualsController{
 
     private MainController mainController;
     private PCAGraph pcaGraph;
+    private String currentGraphType;
+    private AdmixtureGraph admixtureGraph;
 
     @FXML
     private void entryUnhideBtn(ActionEvent event) {
         try{
             // get ids
             String ids[] = hiddenIndividualCombo.getValue().split("\\s+");
-            pcaGraph.unhideIndividual(ids);
-
+            
+            if(currentGraphType.equals("pca")){
+                pcaGraph.showIndividual(ids);
+            }
+            
+            if(currentGraphType.equals("admixture")){
+                admixtureGraph.showIndividual(ids);
+            }
             Genesis.closeOpenStage(event);
+            
         }catch (Exception e){
-            Genesis.throwInformationException("Select the individual to unhide");
+            Genesis.throwInformationException("Select the individual to show");
         }
     }
 
@@ -64,5 +74,13 @@ public class HiddenIndividualsController{
 
     public void setPcaGraph(PCAGraph pcaGraph) {
         this.pcaGraph = pcaGraph;
+    }
+
+    public void setCurrentGraphType(String currentGraphType) {
+        this.currentGraphType = currentGraphType;
+    }
+
+    public void setAdmixtureGraph(AdmixtureGraph admixtureGraph) {
+        this.admixtureGraph = admixtureGraph;
     }
 }

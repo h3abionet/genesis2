@@ -60,7 +60,7 @@ public class Project implements Serializable {
     private ArrayList<int []> selectedPCs = new ArrayList<>(); // for each graph, keep selected pcs
 
     private ArrayList<String> hiddenPoints = new ArrayList<>(); // store hidden ids of every pc graph in a separate list
-    private ArrayList<Subject> pcGraphSubjects; // list of every subject object created
+    private ArrayList<Subject> subjectsList; // list of every subject object created
     private ArrayList<ArrayList<Subject>> pcGraphSubjectsList =  new ArrayList<>(); // every graph has it
 
     private int numOfIndividuals;
@@ -78,7 +78,7 @@ public class Project implements Serializable {
         this.phenoFileProvided = false;
 
         project = this;
-        pcGraphSubjects = new ArrayList<>();
+        subjectsList = new ArrayList<>();
         try {
             readFamFile(fam_fname_s);
             setIconTypes();
@@ -97,7 +97,7 @@ public class Project implements Serializable {
         this.phenoFileName = pheno_fname_s;
         this.phenoColumnNumber = phenoColumnNumber;
         this.phenoFileProvided = true;
-        pcGraphSubjects = new ArrayList<>();
+        subjectsList = new ArrayList<>();
 
         project = this;
         readFamFile(fam_fname_s);
@@ -141,7 +141,8 @@ public class Project implements Serializable {
                     phe = fields[5];
 
                     // set subjects
-                    pcGraphSubjects.add(new Subject(fid, iid, pat, mat, sex, phe, colors[0], icons[0], defaultIconSize, false));
+                    subjectsList.add(new Subject(fid, iid, pat, mat, sex, phe, colors[0], icons[0], defaultIconSize, false));
+
                     iidsList.add(iid); // keep order of iids
 
                     l = r.readLine();
@@ -149,7 +150,7 @@ public class Project implements Serializable {
 
                 famCreated = true; // fam file successfully imported
 
-                numOfIndividuals = pcGraphSubjects.size();
+                numOfIndividuals = subjectsList.size();
 
                 // set group name, icons and color if only fam file is provided
                 groupNames.add("All"); // if no pheno column, name the group All
@@ -193,7 +194,7 @@ public class Project implements Serializable {
                     String icon = (String) groupIcons.get(chosenPheno);
 
                     // add pheno details to every subject
-                    for (Subject sub : pcGraphSubjects) {
+                    for (Subject sub : subjectsList) {
                         if (sub.getFid().equals(fid) && sub.getIid().equals(iid)) {
                             sub.setPhenos(fields);
                             sub.setColor(color);
@@ -207,7 +208,7 @@ public class Project implements Serializable {
                 phenoCreated = true; // phenotype file successfully imported
 
                 // categorize fam iids according to phenotype column
-                for (Subject subject : pcGraphSubjects) {
+                for (Subject subject : subjectsList) {
                     String phenoGroupName = subject.getPhenos()[phenoColumnNumber - 1];
                     if (famOrder.containsKey(phenoGroupName)) {
                         famOrder.get(phenoGroupName).add(subject.getIid());
@@ -307,8 +308,8 @@ public class Project implements Serializable {
         return groupIcons;
     }
 
-    public ArrayList<Subject> getPcGraphSubjects() {
-        return pcGraphSubjects;
+    public ArrayList<Subject> getSubjectsList() {
+        return subjectsList;
     }
 
     public ArrayList<ArrayList<Subject>> getPcGraphSubjectsList() {

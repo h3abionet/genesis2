@@ -33,13 +33,11 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.AdmixtureGraph;
 import org.h3abionet.genesis.model.Project;
-import org.h3abionet.genesis.model.Subject;
 
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -75,6 +73,7 @@ public class AdmixtureGraphEventsHandler {
     private Node firstChart, secondChart;
     private Project project;
     private AdmixtureGraph admixtureGraph;
+    private MainController mainController;
 
     /**
      *
@@ -141,7 +140,6 @@ public class AdmixtureGraphEventsHandler {
                         pane.setStyle(paneCssStyle+"-fx-background-color: #e1f3f7;");
                     } else {
                         pane.setStyle(paneCssStyle+"-fx-background-color: transparent;");
-
                     }
                 });
                 
@@ -152,55 +150,20 @@ public class AdmixtureGraphEventsHandler {
                 // add event to the label
                 pane.setOnMouseClicked((MouseEvent e) -> chartGroupNameClicked(e.getSource()));
 
-                // remove the x-axis label from the stackedbar chart
+                // remove the x-axis label from the stacked bar chart
                 admixChart.setId(admixChart.getXAxis().getLabel()); // set chart id
                 admixChart.getXAxis().setLabel(null);
 
                 // add chart to a specific cell
                 gridPane.add(admixChart, colIndex, rowPointer);
 
-                // add listeners to chart
-                // on left click mouse event handler
-//                admixChart.getData().forEach((serie) -> {
-//                    serie.getData().forEach((item) -> {
-//                        item.getNode().setOnMousePressed((MouseEvent event) -> {
-//                            MouseButton button = event.getButton();
-//                            if (button == MouseButton.PRIMARY) {
-//                                try {
-//                                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureIndividualDetails.fxml"));
-//                                    Parent parent = (Parent) fxmlLoader.load();
-//                                    Stage dialogStage = new Stage();
-//                                    dialogStage.setScene(new Scene(parent));
-//                                    dialogStage.setResizable(false);
-//
-//                                    // show subject details when clicked
-//                                    AdmixtureIndividualDetailsController admixIndivDetailsCtrler = fxmlLoader.getController();
-//                                    admixIndivDetailsCtrler.setProject(project);
-//                                    for(Subject sub: project.getPcGraphSubjects()){
-//                                        if(sub.getIid().equals(item.getXValue())){
-//                                            iidDetails = new ArrayList<>(Arrays.asList(sub.getPhenos()));
-//                                            iidDetails.add(sub.getSex());
-//                                            break;
-//                                        }
-//                                    }
-//                                    admixIndivDetailsCtrler.setPhenoList(iidDetails);
-//                                    admixIndivDetailsCtrler.setValuesLabel(item.getYValue().toString()); // get Y value
-//                                    dialogStage.showAndWait();
-//
-//                                } catch (IOException ex) {
-//                                    ;
-//                                }
-//                            }
-//                        });
-//                    });
-//                });
-                
                 // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
                     MouseButton button = event.getButton();
                     if (button == MouseButton.SECONDARY) {
                         // set the rowIndex of the clicked chart
                         rowIndexOfClickedAdmixChart = GridPane.getRowIndex(admixChart);
+                        admixtureGraph.setRowIndexOfClickedAdmixChart(rowIndexOfClickedAdmixChart);
                         try {
                             FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureOptions.fxml"));
                             Parent p = (Parent) loader.load();
@@ -208,6 +171,11 @@ public class AdmixtureGraphEventsHandler {
                             dialogStage.setScene(new Scene(p));
                             dialogStage.setResizable(false);
                             AdmixtureOptionsController aop = loader.getController();
+                            aop.setRowIndexOfClickedAdmixChart(rowIndexOfClickedAdmixChart);
+                            aop.setCurrChart(mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart));
+                            aop.setGridPane(mainController.getGridPane());
+//                            aop.setAdmixtureGraphEventsHandler(this);
+//                            aop.setMainController(mainController);
                             aop.setProject(project);
                             aop.setAdmixChart(admixChart);
                             dialogStage.show();
@@ -218,7 +186,7 @@ public class AdmixtureGraphEventsHandler {
                     }
                 });
 
-                // incremement the column index
+                // increment the column index
                 colIndex++;
             }
 
@@ -340,7 +308,7 @@ public class AdmixtureGraphEventsHandler {
         int secondCol = GridPane.getColumnIndex(secondKLabel);
 
         // swap the plot lists
-        Collections.swap(MainController.getAllAdmixtureCharts(), firstRow, secondRow);
+        Collections.swap(mainController.getAllAdmixtureCharts(), firstRow, secondRow);
         
         // remove group existing labels
         gridPane.getChildren().removeAll(firstKLabel, secondKLabel);
@@ -460,5 +428,9 @@ public class AdmixtureGraphEventsHandler {
 
     public void setAdmixtureGraph(AdmixtureGraph admixtureGraph) {
         this.admixtureGraph = admixtureGraph;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 }

@@ -67,7 +67,9 @@ public class AdmixtureDataInputController{
             btnAdmixtureData.setText(admixtureFileName);
             btnAdmixtureData.setStyle("-fx-text-fill: #06587F");
             admixtureGraph = new AdmixtureGraph(admixtureFilePath); // read the file using module class
+            admixtureGraph.setMainController(mainController);
             mainController.setAdmixtureGraph(admixtureGraph);
+
         }catch(Exception ex){
             Genesis.throwErrorException("No file imported");
         }   

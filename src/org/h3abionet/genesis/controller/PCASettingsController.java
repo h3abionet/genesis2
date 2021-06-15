@@ -113,6 +113,7 @@ public class PCASettingsController implements Initializable{
     // list of font sizes from 8 to 72
     List<Integer> list = IntStream.range(8, 73).boxed().collect(Collectors.toList());
     private PCAGraphLayout pcaGraphLayout;
+    private MainController mainController;
 
     public void setAxesProperties(String axesFont, String axesFontStyle, String axesFontColor, String axesPosture, int axesFontSize) {
         this.axesFont = axesFont;
@@ -224,12 +225,13 @@ public class PCASettingsController implements Initializable{
          pcaGraphLayout.setFontPosture(chosenPosture);
          pcaGraphLayout.setFontSize(chosenFontSize);
          pcaGraphLayout.setFontStyle(chosenFontStyle);
-
+         mainController.disableSettingsBtn(false);
         Genesis.closeOpenStage(event);
     }
     
     @FXML
     private void entryCancelButton(ActionEvent event) {
+        mainController.disableSettingsBtn(false);
         Genesis.closeOpenStage(event);
     }
 
@@ -304,4 +306,7 @@ public class PCASettingsController implements Initializable{
         sample.setTextFill(colorPicker.getValue());
     }
 
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
 }

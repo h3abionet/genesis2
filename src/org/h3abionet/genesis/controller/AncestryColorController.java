@@ -7,6 +7,7 @@ package org.h3abionet.genesis.controller;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
@@ -21,7 +22,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import org.h3abionet.genesis.Genesis;
 
-public class AncestryColorController implements Initializable{
+public class AncestryColorController {
 
     @FXML
     private Rectangle selectedColorDisplay;
@@ -39,9 +40,10 @@ public class AncestryColorController implements Initializable{
     private Button doneBtn;
     private int rowIndexOfClickedAdmixChart;
     private ArrayList<StackedBarChart<String, Number>> listOfAdmixtureCharts;
+    private List<ArrayList<StackedBarChart<String, Number>>> allAdmixtureCharts;
     private GridPane gridPane;
     private int serieIndex;
-    private static Color chosenColor; // Color
+    private Color chosenColor; // Color
     private String selectedColor; //Hex to string code
     private boolean colorSelected = false;
 
@@ -55,7 +57,7 @@ public class AncestryColorController implements Initializable{
         // change colors of all plots 
         if(allPlotsCheckBox.isSelected()){
             try{
-                for(ArrayList<StackedBarChart<String, Number>> a: MainController.getAllAdmixtureCharts()){
+                for(ArrayList<StackedBarChart<String, Number>> a: allAdmixtureCharts){
                     for (StackedBarChart<String, Number> stackedbarChart : a) {
                         stackedbarChart.getData().forEach((series) -> {
                             series.getData().forEach((bar) -> {
@@ -127,18 +129,32 @@ public class AncestryColorController implements Initializable{
         return colorPicker.getValue();
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        // get row index of clicked chart
-        rowIndexOfClickedAdmixChart = AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart();
-        System.out.println(rowIndexOfClickedAdmixChart);
+//    @Override
+//    public void initialize(URL location, ResourceBundle resources) {
+//        // get row index of clicked chart
+//        rowIndexOfClickedAdmixChart = AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart();
+//
+//        // get the list of the current staked bar charts being displayed
+//        listOfAdmixtureCharts = MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
+//
+//        // set the current gridpane - to get the row index of any clicked chart
+//        gridPane = MainController.getGridPane();
+//
+//    }
 
-        // get the list of the current staked bar charts being displayed
-        listOfAdmixtureCharts = MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
-
-        // set the current gridpane - to get the row index of any clicked chart
-        gridPane = MainController.getGridPane();
-              
+    public void setRowIndexOfClickedAdmixChart(int rowIndexOfClickedAdmixChart) {
+        this.rowIndexOfClickedAdmixChart = rowIndexOfClickedAdmixChart;
     }
-    
+
+    public void setListOfAdmixtureCharts(ArrayList<StackedBarChart<String, Number>> listOfAdmixtureCharts) {
+        this.listOfAdmixtureCharts = listOfAdmixtureCharts;
+    }
+
+    public void setGridPane(GridPane gridPane) {
+        this.gridPane = gridPane;
+    }
+
+    public void setAllAdmixtureCharts(List<ArrayList<StackedBarChart<String, Number>>> allAdmixtureCharts) {
+        this.allAdmixtureCharts = allAdmixtureCharts;
+    }
 }

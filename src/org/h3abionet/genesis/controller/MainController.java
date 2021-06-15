@@ -131,10 +131,10 @@ public class MainController implements Initializable {
      * e.g. [chart1, chart2, chart3, chart4, ... ] every chart represents a
      * population group e.g. MKK, ASW, etc.
      */
-    private static ArrayList<StackedBarChart<String, Number>> listOfAdmixtureCharts;
-    private static List<ArrayList<StackedBarChart<String, Number>>> allAdmixtureCharts = new ArrayList<>();
+    private ArrayList<StackedBarChart<String, Number>> listOfAdmixtureCharts; // current admixture charts (1 graph)
+    private List<ArrayList<StackedBarChart<String, Number>>> allAdmixtureCharts = new ArrayList<>(); // all graphs
     private Tab admixtureTab;
-    private static GridPane gridPane; // gridpane for keeping list of admixture charts
+    private GridPane gridPane; // gridpane for keeping list of admixture charts
     private static int rowPointer = 0; // points to a new row for every new admix charts or K value
     private static VBox admixVbox; // has only 2 nodes : chart title & gridPane
     private static ScrollPane scrollPane; // its content = admixVbox
@@ -153,6 +153,7 @@ public class MainController implements Initializable {
     private AdmixtureGraph admixtureGraph;
     private Project project;
     private ArrayList<ScatterChart> pcaChartsList = new ArrayList<>();
+//    private ArrayList<ScatterChart> pcaChartsList = new ArrayList<>();
 
     @FXML
     private void newProject(ActionEvent event) throws IOException {
@@ -403,7 +404,7 @@ public class MainController implements Initializable {
                     if(tab.getId().contains("tab")){ // pca tab
                         tab.getTabPane().getTabs().remove(tab); // remove the tab
                         pcaChartsList.remove(currentTabIndex);
-                        project.getPcGraphSubjects().remove(currentTabIndex);
+                        project.getSubjectsList().remove(currentTabIndex);
                     }
 
                     // remove help tab
@@ -452,6 +453,7 @@ public class MainController implements Initializable {
             admixGraphEventHandler = new AdmixtureGraphEventsHandler(listOfAdmixtureCharts, gridPane, rowPointer);
             admixGraphEventHandler.setProject(project);
             admixGraphEventHandler.setAdmixtureGraph(admixtureGraph);
+            admixGraphEventHandler.setMainController(this);
 
             // if first chart, add gridpane to index 1 of vbox else reset index 1 with new gridpane
             if (rowPointer == 0) {
@@ -494,12 +496,12 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void settingsSelector(ActionEvent event) {
+    private void settingsSelector(ActionEvent event) throws IOException {
 
         // get selected tab
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
 
-        try{
+//        try{
             if (selectedTab.getId().contains("tab")) {
                 // show pca settings
                 FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/PCASettings.fxml"));
@@ -508,6 +510,8 @@ public class MainController implements Initializable {
                 pcSettingsCtlr.setScatterChart(pcaChartsList.get(currentTabIndex));
                 pcSettingsCtlr.setPCAGraphLayout(project.getPCAGraphLayouts().get(currentTabIndex));
                 pcSettingsCtlr.setControls();
+                pcSettingsCtlr.setMainController(this);
+                disableSettingsBtn(true);
                 Stage dialogStage = new Stage();
                 dialogStage.setScene(new Scene(root));
                 dialogStage.setResizable(false);
@@ -521,15 +525,17 @@ public class MainController implements Initializable {
                 AdmixtureSettingsController admixSettingsCtlr =  loader.getController();
                 admixSettingsCtlr.setAdmixtureGraph(admixtureGraph);
                 admixSettingsCtlr.setMainController(this);
+                admixSettingsCtlr.setControls();
+                disableSettingsBtn(true);
                 Stage dialogStage = new Stage();
                 dialogStage.setScene(new Scene(root));
                 dialogStage.setResizable(false);
                 dialogStage.showAndWait();
             }
-        }catch(Exception e){
-            //TODO disable setting button if no chart
-            Genesis.throwInformationException("No chart to format");
-        }
+//        }catch(Exception e){
+//            //TODO disable setting button if no chart
+//            Genesis.throwInformationException("No chart to format");
+//        }
     }
 
     /**
@@ -564,8 +570,21 @@ public class MainController implements Initializable {
         hiddenIndividualsController = loader.getController();
         hiddenIndividualsController.setMainController(this);
         hiddenIndividualsController.setPcaGraph(pcaGraph);
+        hiddenIndividualsController.setAdmixtureGraph(admixtureGraph);
+
         // get all hidden points for the current pca graph
         hiddenIndividualsController.setHiddenIndividualCombo(project.getHiddenPoints());
+
+        // is current graph admixture
+        Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
+        if (selectedTab.getId().contains("admix")){
+            hiddenIndividualsController.setCurrentGraphType("admixture");
+        }
+        // is current graph pca?
+        if (selectedTab.getId().contains("tab")) {
+            hiddenIndividualsController.setCurrentGraphType("pca");
+        }
+
         // show stage
         Stage dialogStage = new Stage();
         dialogStage.setScene(new Scene(parent));
@@ -585,7 +604,7 @@ public class MainController implements Initializable {
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()){
             String id = result.get();
-            for(Subject s: project.getPcGraphSubjects()){
+            for(Subject s: project.getSubjectsList()){
                 if(s.getFid().equals(id) || s.getIid().equals(id)){
                     idFound = true; // id is found
                     ScatterChart<Number, Number> graph = pcaChartsList.get(currentTabIndex);
@@ -635,7 +654,7 @@ public class MainController implements Initializable {
     /*
      * @return list of admix charts
      */
-    public static ArrayList<StackedBarChart<String, Number>> getListOfAdmixtureCharts() {
+    public ArrayList<StackedBarChart<String, Number>> getListOfAdmixtureCharts() {
         return listOfAdmixtureCharts;
     }
 
@@ -644,7 +663,7 @@ public class MainController implements Initializable {
      *
      * @return
      */
-    public static GridPane getGridPane() {
+    public GridPane getGridPane() {
         return gridPane;
     }
 
@@ -858,7 +877,7 @@ public class MainController implements Initializable {
         return defaultAdmixPlotWidth;
     }
 
-    public static List<ArrayList<StackedBarChart<String, Number>>> getAllAdmixtureCharts() {
+    public List<ArrayList<StackedBarChart<String, Number>>> getAllAdmixtureCharts() {
         return allAdmixtureCharts;
     }
 
