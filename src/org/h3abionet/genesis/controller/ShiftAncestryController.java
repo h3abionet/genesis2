@@ -116,11 +116,11 @@ public class ShiftAncestryController{
     }
 
     public void setNumOfAncestry(int size) {
-        this.numOfSeries = size;
+        numOfSeries = size;
         // set ancestries and their order
         ancestries = new String[numOfSeries];
         for (int i = 0; i < numOfSeries; i++) {
-            ancestries[i] = "Ancestry " + Integer.toString(i + 1);
+            ancestries[i] = "Ancestry " + (i + 1);
         }
         
         for (String l:ancestries)
@@ -149,7 +149,4 @@ public class ShiftAncestryController{
     public void setGridPane(GridPane gridPane) {
         this.gridPane = gridPane;
     }
-    //    public void setMainController(MainController mainController) {
-//        this.mainController = mainController;
-//    }
 }

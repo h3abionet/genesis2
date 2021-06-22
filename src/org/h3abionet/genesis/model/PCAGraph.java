@@ -530,6 +530,9 @@ public class PCAGraph extends Graph implements Serializable {
         }
     }
 
+    public void showHiddenGroup(String group) {
+    }
+
     /**
      * Sort legend items
      */

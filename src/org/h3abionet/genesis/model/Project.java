@@ -71,6 +71,7 @@ public class Project implements Serializable {
     private ArrayList<PCAGraphLayout> pcaGraphLayoutList = new ArrayList<>();
     private boolean famCreated;
     private boolean phenoCreated;
+    private ArrayList<String> hiddenGroups = new ArrayList<>(); // [CEU, MKK, ...]
 
     public Project(String proj_name, String fam_fname_s) {
         this.projectName = proj_name;
@@ -395,4 +396,7 @@ public class Project implements Serializable {
         return extension;
     }
 
+    public ArrayList<String> getHiddenGroups() {
+        return hiddenGroups;
+    }
 }

@@ -501,7 +501,7 @@ public class MainController implements Initializable {
         // get selected tab
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
 
-//        try{
+        try{
             if (selectedTab.getId().contains("tab")) {
                 // show pca settings
                 FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/PCASettings.fxml"));
@@ -532,10 +532,10 @@ public class MainController implements Initializable {
                 dialogStage.setResizable(false);
                 dialogStage.showAndWait();
             }
-//        }catch(Exception e){
-//            //TODO disable setting button if no chart
-//            Genesis.throwInformationException("No chart to format");
-//        }
+        }catch(Exception e){
+            //TODO disable setting button if no chart
+            Genesis.throwInformationException("No chart to format");
+        }
     }
 
     /**
@@ -572,8 +572,9 @@ public class MainController implements Initializable {
         hiddenIndividualsController.setPcaGraph(pcaGraph);
         hiddenIndividualsController.setAdmixtureGraph(admixtureGraph);
 
-        // get all hidden points for the current pca graph
+        // get all hidden points for the current graph
         hiddenIndividualsController.setHiddenIndividualCombo(project.getHiddenPoints());
+        hiddenIndividualsController.setHiddenGroupComboCombo(project.getHiddenGroups());
 
         // is current graph admixture
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
@@ -918,24 +919,10 @@ public class MainController implements Initializable {
 
     @FXML
     private void help(ActionEvent event) {
-//                try {
-//                    // if internet connection is available, load docsify github pages
-//                    URL url = new URL("https://henry-jerry.github.io/DocifyDemo/#/./");
-//                    URLConnection connection = url.openConnection();
-//                    connection.connect();
-//                    Tab tab = setHelpTab(String.valueOf(url));
-//                    tabPane.getTabs().add(tab);
-//                    closeTab(tab);
-//                    helpBtn.setDisable(true);
-//                } catch (MalformedURLException e) {
-                    ;
-//                } catch (IOException e) {
-                    // if no internet connection, load local html files
                     Tab tab = setHelpTab(Genesis.class.getResource("help/home.html").toExternalForm());
                     tabPane.getTabs().add(tab);
                     closeTab(tab);
                     helpBtn.setDisable(true);
-//                }
     }
 
     /**

@@ -26,6 +26,9 @@ public class HiddenIndividualsController{
     private ComboBox<String> hiddenIndividualCombo;
 
     @FXML
+    private ComboBox<String> hiddenGroupCombo;
+
+    @FXML
     private Button cancelBtn;
 
     @FXML
@@ -35,25 +38,53 @@ public class HiddenIndividualsController{
     private PCAGraph pcaGraph;
     private String currentGraphType;
     private AdmixtureGraph admixtureGraph;
+//    private ArrayList<String> hiddenIndividualsList;
+//    private ArrayList<String> hiddenGroupsList;
 
     @FXML
     private void entryUnhideBtn(ActionEvent event) {
-        try{
-            // get ids
-            String ids[] = hiddenIndividualCombo.getValue().split("\\s+");
-            
-            if(currentGraphType.equals("pca")){
-                pcaGraph.showIndividual(ids);
-            }
-            
-            if(currentGraphType.equals("admixture")){
-                admixtureGraph.showIndividual(ids);
-            }
-            Genesis.closeOpenStage(event);
-            
-        }catch (Exception e){
-            Genesis.throwInformationException("Select the individual to show");
+        if(hiddenIndividualCombo.getValue()==null && hiddenGroupCombo.getValue()==null){
+            Genesis.throwInformationException("Select either individual or group to unhide NOT both");
         }
+
+        if(hiddenIndividualCombo.getValue()!=null){
+            try{
+                // get ids
+                String ids[] = hiddenIndividualCombo.getValue().split("\\s+");
+
+                if(currentGraphType.equals("pca")){
+                    pcaGraph.showIndividual(ids);
+                }
+
+                if(currentGraphType.equals("admixture")){
+                    admixtureGraph.showIndividual(ids);
+                }
+                Genesis.closeOpenStage(event);
+
+            }catch (Exception e){
+                Genesis.throwInformationException("Select the individual to show");
+            }
+        }
+
+        if(hiddenGroupCombo.getValue()!=null){
+//            try{
+                // get group
+                String group = hiddenGroupCombo.getValue();
+
+                if(currentGraphType.equals("pca")){
+                    pcaGraph.showHiddenGroup(group);
+                }
+
+                if(currentGraphType.equals("admixture")){
+                    admixtureGraph.showHiddenGroup(group);
+                }
+
+                Genesis.closeOpenStage(event);
+//            }catch (Exception e){
+//                Genesis.throwInformationException("Select the group to show");
+//            }
+        }
+
     }
 
     @FXML
@@ -62,11 +93,21 @@ public class HiddenIndividualsController{
     }
 
     public void setHiddenIndividualCombo (ArrayList<String> hiddenIndividualsList){
-        if(hiddenIndividualsList.size()==0){
-            unhideBtn.setDisable(true);
-        }
+//        this.hiddenIndividualsList = hiddenIndividualsList;
+//        if(hiddenGroupsList.size()==0 && hiddenIndividualsList.size()==0){
+//            unhideBtn.setDisable(true);
+//        }
         hiddenIndividualCombo.getItems().addAll(FXCollections.observableArrayList(hiddenIndividualsList));
     }
+
+    public void setHiddenGroupComboCombo (ArrayList<String> hiddenGroupsList){
+//        this.hiddenGroupsList = hiddenGroupsList;
+//        if(hiddenGroupsList.size()==0 && hiddenIndividualsList.size()==0){
+//            unhideBtn.setDisable(true);
+//        }
+        hiddenGroupCombo.getItems().addAll(FXCollections.observableArrayList(hiddenGroupsList));
+    }
+
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;

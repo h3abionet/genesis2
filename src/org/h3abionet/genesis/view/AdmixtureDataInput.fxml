@@ -36,8 +36,8 @@
             </AnchorPane>
             <HBox alignment="CENTER" prefHeight="6.0" prefWidth="300.0" spacing="100.0">
                <children>
-                  <Button fx:id="entryOkButton" mnemonicParsing="false" onAction="#handleAdmixEntryOK" prefHeight="27.0" prefWidth="82.0" text="OK" />
                   <Button fx:id="entryCancelButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleAdmixEntryCancel" prefHeight="27.0" prefWidth="82.0" text="Cancel" />
+                  <Button fx:id="entryOkButton" mnemonicParsing="false" onAction="#handleAdmixEntryOK" prefHeight="27.0" prefWidth="82.0" text="Done" />
                </children>
                <VBox.margin>
                   <Insets />

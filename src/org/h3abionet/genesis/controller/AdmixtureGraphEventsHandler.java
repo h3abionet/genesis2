@@ -58,7 +58,7 @@ public class AdmixtureGraphEventsHandler {
     /**
      * To store all ancestor HBoxes which will be added the leftVBox
      */
-    private static ArrayList<HBox> listOfAncenstorHBox;
+//    private static ArrayList<HBox> listOfAncenstorHBox;
 
     /**
      * before swapping the series, it is important to know which row contains
@@ -85,7 +85,7 @@ public class AdmixtureGraphEventsHandler {
         this.listOfCharts = listOfCharts;
         this.gridPane = gridPane;
         this.rowPointer = rowPointer;
-        listOfAncenstorHBox = new ArrayList<>();
+//        listOfAncenstorHBox = new ArrayList<>();
     }
 
     /**
@@ -119,12 +119,19 @@ public class AdmixtureGraphEventsHandler {
                 admixChart.setMinWidth(Double.MIN_VALUE);
                 admixChart.setMaxWidth(Double.MAX_VALUE);
 
-
                 // set the margins of the chart
                 GridPane.setMargin(admixChart, new Insets(0, 0, -3, -3)); // TODO remove the chart content margins on axes
 
                 // remove last rowPointer - population group labels
-                gridPane.getChildren().removeIf(node -> GridPane.getRowIndex(node) == rowPointer+1);
+                // remove previous group labels - cell will be replaced with new graph
+                ObservableList<Node> children = gridPane.getChildren();
+                for(Node node : children) {
+                    if(node instanceof StackPane && gridPane.getRowIndex(node) == rowPointer && gridPane.getColumnIndex(node) == colIndex) {
+                        StackPane stackPane = (StackPane)node; // use what you want to remove
+                        gridPane.getChildren().remove(stackPane);
+                        break;
+                    }
+                }
                 
                 // define Group names for individuals
                 Text chartGroupName = new Text(admixChart.getXAxis().getLabel());
@@ -142,10 +149,11 @@ public class AdmixtureGraphEventsHandler {
                         pane.setStyle(paneCssStyle+"-fx-background-color: transparent;");
                     }
                 });
-                
-                gridPane.add(pane, colIndex, rowPointer + 2);
-                
-                gridPane.getChildren().removeIf(node -> GridPane.getRowIndex(node) == rowPointer + 1);
+
+                // add group label to last row
+                GridPane.setColumnIndex(pane, colIndex);
+                GridPane.setRowIndex(pane, rowPointer+1);
+                gridPane.getChildren().add(pane);
 
                 // add event to the label
                 pane.setOnMouseClicked((MouseEvent e) -> chartGroupNameClicked(e.getSource()));
@@ -155,7 +163,9 @@ public class AdmixtureGraphEventsHandler {
                 admixChart.getXAxis().setLabel(null);
 
                 // add chart to a specific cell
-                gridPane.add(admixChart, colIndex, rowPointer);
+                GridPane.setColumnIndex(admixChart, colIndex);
+                GridPane.setRowIndex(admixChart, rowPointer);
+                gridPane.getChildren().add(admixChart);
 
                 // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
@@ -175,7 +185,7 @@ public class AdmixtureGraphEventsHandler {
                             aop.setCurrChart(mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart));
                             aop.setGridPane(mainController.getGridPane());
 //                            aop.setAdmixtureGraphEventsHandler(this);
-//                            aop.setMainController(mainController);
+                            aop.setMainController(mainController);
                             aop.setProject(project);
                             aop.setAdmixChart(admixChart);
                             dialogStage.show();

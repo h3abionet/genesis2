@@ -498,9 +498,9 @@ public class AdmixtureOptionsController implements Initializable {
         this.project = project;
     }
 
-//    public void setMainController(MainController mainController) {
-//        this.mainController = mainController;
-//    }
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
 //
 //    public void setAdmixtureGraphEventsHandler(AdmixtureGraphEventsHandler admixtureGraphEventsHandler) {
 //        this.admixtureGraphEventsHandler = admixtureGraphEventsHandler;
