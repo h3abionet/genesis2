@@ -358,7 +358,7 @@ public class AdmixtureOptionsController implements Initializable {
                     // get last character on a btn and use it use it as the index of the ancestry
                     String ancestryNumber = colorSortBtn.getText().substring(colorSortBtn.getText().length() - 1);
                     // sort
-                    sortChartByColor(stackedBarChart, Integer.valueOf(ancestryNumber) - 1);
+                    sortChartByColor(stackedBarChart, Integer.parseInt(ancestryNumber) - 1);
                 }
             });
             
@@ -453,6 +453,7 @@ public class AdmixtureOptionsController implements Initializable {
 
         XYChart.Series<String, Number> chosenAncestry = stackedBarChart.getData().get(ancestryNumber);
         int numOfIndividuals = chosenAncestry.getData().size();
+        System.out.println("the number of individuals to sort is "+numOfIndividuals);
 
         ObservableList<String> iids = xAxis.getCategories();
 
@@ -478,12 +479,6 @@ public class AdmixtureOptionsController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
-//        // get row index of clicked chart - starts from 0
-//        rowIndexOfClickedAdmixChart = AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart();
-//
-//        // get list of charts in this position of row index
-//        currChart = mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
 
         listOfAncenstorHBox = new ArrayList<>();
         
@@ -501,10 +496,6 @@ public class AdmixtureOptionsController implements Initializable {
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
-//
-//    public void setAdmixtureGraphEventsHandler(AdmixtureGraphEventsHandler admixtureGraphEventsHandler) {
-//        this.admixtureGraphEventsHandler = admixtureGraphEventsHandler;
-//    }
 
     public void setCurrChart(ArrayList<StackedBarChart<String, Number>> currChart) {
         this.currChart = currChart;

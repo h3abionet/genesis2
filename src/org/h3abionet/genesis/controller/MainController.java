@@ -450,19 +450,19 @@ public class MainController implements Initializable {
 
         try {
             // use this class for additional Chart features: add event handlers and group labels
-            admixGraphEventHandler = new AdmixtureGraphEventsHandler(listOfAdmixtureCharts, gridPane, rowPointer);
-            admixGraphEventHandler.setProject(project);
-            admixGraphEventHandler.setAdmixtureGraph(admixtureGraph);
-            admixGraphEventHandler.setMainController(this);
+//            admixGraphEventHandler = new AdmixtureGraphEventsHandler(listOfAdmixtureCharts, gridPane, rowPointer);
+//            admixGraphEventHandler.setProject(project);
+//            admixGraphEventHandler.setAdmixtureGraph(admixtureGraph);
+//            admixGraphEventHandler.setMainController(this);
 
             // if first chart, add gridpane to index 1 of vbox else reset index 1 with new gridpane
             if (rowPointer == 0) {
-                admixPane.getChildren().add(admixGraphEventHandler.getGridPane());
+                admixPane.getChildren().add(admixtureGraph.getGridPane(gridPane, rowPointer));
                 AnchorPane name = (AnchorPane) admixVbox.getChildren().get(1);
                 name.getChildren().add(admixPane);
                 scrollPane.setContent(admixVbox);
             } else {
-                admixPane.getChildren().set(0, admixGraphEventHandler.getGridPane());
+                admixPane.getChildren().set(0, admixtureGraph.getGridPane(gridPane, rowPointer));
                 AnchorPane name = (AnchorPane) admixVbox.getChildren().get(1);
                 name.getChildren().set(0, admixPane);
                 scrollPane.setContent(admixVbox);
