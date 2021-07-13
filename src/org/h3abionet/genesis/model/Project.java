@@ -25,19 +25,10 @@ public class Project implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
-    private String[] colors = new String[]{"#800000", "#000080", "#808000", "#07AB99", "#860061", "#ff8000", "#008000", "#800080", "#004C4C", "#ff00ff"};
-    private String[] icons = new String[]{"M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z",
-            "M0 -3.5 v7 l 4 -3.5z",
-            "M5,0 L10,9 L5,18 L0,9 Z",
-            "M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,10 L0,10 L0,8 L4,5 L0,2 L0,0 Z",
-            "M 20.0 20.0  v24.0 h 10.0  v-24   Z",
-            "M0,4 L2,4 L4,8 L7,0 L9,0 L4,11 Z",
-            "M 2 2 L 6 2 L 4 6 z",
-            "M 10 10 H 90 V 90 H 10 L 10 10",
-            "M0 -3.5 v7 l 4 -3.5z", // repeated
-            "M5,0 L10,9 L5,18 L0,9 Z", // repeated
-            "M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,10 L0,10 L0,8 L4,5 L0,2 L0,0 Z" // repeated
-    };
+    IconsAndColors iconsAndColors = new IconsAndColors();
+
+    private String[] colors = iconsAndColors.getListOfColors();
+    private String[] icons = iconsAndColors.getListOfIcons();
 
     private boolean projIsImported;
 
@@ -130,7 +121,7 @@ public class Project implements Serializable {
             try {
                 BufferedReader r = Genesis.openFile(famFilePath);
                 String l = r.readLine();
-                String fields[];
+                String[] fields;
 
                 while (l != null) {
                     fields = l.split("\\s+");
@@ -171,7 +162,7 @@ public class Project implements Serializable {
         }
     }
 
-    private void readPhenotypeFile(String phenoFilePath) throws FileNotFoundException, IOException {
+    private void readPhenotypeFile(String phenoFilePath) {
 
         String fileExtension = getExtension(phenoFilePath);
 
@@ -180,9 +171,10 @@ public class Project implements Serializable {
                 // get phenotype groups and assign colors and icons
                 setPhenotypeGroups(Genesis.openFile(phenoFilePath));
 
+
                 BufferedReader secBuf = Genesis.openFile(phenoFilePath);
                 String line = secBuf.readLine();
-                String fields[];
+                String[] fields;
                 while (line != null) {
                     fields = line.split("\\s+");
 
@@ -222,9 +214,7 @@ public class Project implements Serializable {
 
             }catch (Exception e){
                 phenoCreated = false;
-                String phenoError = "There was a problem in reading the phenotype file. " +
-                        "Make sure the file is in this format \"NA06984 NA06984 CEU EUR\" - starting with individual iids in the fam file";
-                Genesis.throwInformationException(phenoError);
+                Genesis.throwInformationException(e.getMessage());
             }
         }else {
             Genesis.throwInformationException("Wrong phenotype file provided. Provide a file with .phe extension");
@@ -247,12 +237,13 @@ public class Project implements Serializable {
         famOrder.clear();
 
         String row = r.readLine();
-        String rowValues[];
+        String[] rowValues;
         while (row != null) {
             rowValues = row.split("\\s+");
             // keep track of unique phenotypes
             if (!groupNames.contains(rowValues[phenoColumnNumber-1])) {
                 groupNames.add(rowValues[phenoColumnNumber-1]);
+
             }
             row = r.readLine();
         }
@@ -262,6 +253,7 @@ public class Project implements Serializable {
             groupColors.put(groupNames.get(i), colors[i]);  // mkk -> #800000
             groupIcons.put(groupNames.get(i), icons[i]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
         }
+
     }
 
     public void setAdmixtureGraph(AdmixtureGraph admixtureGraph) {
@@ -331,15 +323,7 @@ public class Project implements Serializable {
 
     public void setIconTypes() {
         // name the shapes
-        iconTypes = new HashMap<String, String>();
-        iconTypes.put("M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z", "star");
-        iconTypes.put("M0 -3.5 v7 l 4 -3.5z", "arrow");
-        iconTypes.put("M5,0 L10,9 L5,18 L0,9 Z", "kite");
-        iconTypes.put("M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2,10 L0,10 L0,8 L4,5 L0,2 L0,0 Z", "cross");
-        iconTypes.put("M 20.0 20.0  v24.0 h 10.0  v-24   Z", "rectangle");
-        iconTypes.put("M0,4 L2,4 L4,8 L7,0 L9,0 L4,11 Z", "tick");
-        iconTypes.put("M 2 2 L 6 2 L 4 6 z", "triangle");
-        iconTypes.put("M 10 10 H 90 V 90 H 10 L 10 10", "square");
+        iconTypes = iconsAndColors.getIconTypes(); // in a HashMap
     }
 
     public HashMap getIconTypes() {

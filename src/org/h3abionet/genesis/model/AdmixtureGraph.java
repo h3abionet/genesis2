@@ -38,12 +38,13 @@ public class AdmixtureGraph extends Graph implements Serializable {
     public int currentNumOfAncestries = 0; // number of series
     private final double CHART_HEIGHT = 100; // default height for every chart
     private String defaultHeading = "Admixture plot";
+    IconsAndColors iconsAndColors = new IconsAndColors();
 
     // admixture plot colors -- add more depending on the number of ancestries
-    private String[] hexCodes = {"#FF8C00", "#32CD32", "#fffb00", "#055ff0", "#ff0d00"};
+    private String[] hexCodes = iconsAndColors.getListOfColors();
     public ArrayList<String> ancestryColors = new ArrayList<>(Arrays.asList(hexCodes));
 
-    public ArrayList<String> ancestryOrder = new ArrayList<>();  // to order colour
+//    public ArrayList<String> ancestryOrder = new ArrayList<>();  // to order colour
 
     private transient ArrayList<StackedBarChart<String, Number>> listOfStackedBarCharts;
     private int numOfAncestries;
@@ -68,6 +69,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
     private static int kClickCounter = 0;
     private static StackPane firstKLabel, secondKLabel;
 
+    private ArrayList<String> orderOfAdmixGraphs = (ArrayList<String>) project.getGroupNames(); // store graph names here
 
     /**
      * Constructor
@@ -254,6 +256,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
      * @param groupName
      */
     public void hideGroup(String groupName){ // groupName = a stacked bar chart
+        orderOfAdmixGraphs.remove(groupName); //  remove group from order
+
         ArrayList<StackedBarChart<String, Number>> groupCharts = new ArrayList<>(); // for various Ks
         ArrayList<Node> deleteNodes = new ArrayList<>();
         GridPane gridPane = mainController.getGridPane();
@@ -375,7 +379,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
             rowCounter++;
         }
 
-        gridPane.setStyle("-fx-border-color: green; -fx-border-width: 3px 3px 3px 3px");
+//        gridPane.setStyle("-fx-border-color: green; -fx-border-width: 3px 3px 3px 3px");
 
         // remove group from the hidden list of all graphs in the project
         project.getHiddenGroups().remove(group);
@@ -584,10 +588,10 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 setChartGroupName(colIndex, rowPointer+1, admixChart.getXAxis().getLabel());
 
                 // remove the x-axis label from the stacked bar chart
-                admixChart.setId(admixChart.getXAxis().getLabel()); // set chart id
+                String xLabel = admixChart.getXAxis().getLabel();
+                admixChart.setId(xLabel); // set chart id
                 admixChart.getXAxis().setLabel(null);
 
-                // add chart to a specific cell
                 GridPane.setColumnIndex(admixChart, colIndex);
                 GridPane.setRowIndex(admixChart, rowPointer);
                 gridPane.getChildren().add(admixChart);

@@ -82,7 +82,7 @@ public class HiddenIndividualsController{
                 Genesis.closeOpenStage(event);
 //            }catch (Exception e){
 //                Genesis.throwInformationException("Select the group to show");
-//            }
+//            }o
         }
 
     }

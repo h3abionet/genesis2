@@ -449,12 +449,6 @@ public class MainController implements Initializable {
         }
 
         try {
-            // use this class for additional Chart features: add event handlers and group labels
-//            admixGraphEventHandler = new AdmixtureGraphEventsHandler(listOfAdmixtureCharts, gridPane, rowPointer);
-//            admixGraphEventHandler.setProject(project);
-//            admixGraphEventHandler.setAdmixtureGraph(admixtureGraph);
-//            admixGraphEventHandler.setMainController(this);
-
             // if first chart, add gridpane to index 1 of vbox else reset index 1 with new gridpane
             if (rowPointer == 0) {
                 admixPane.getChildren().add(admixtureGraph.getGridPane(gridPane, rowPointer));
