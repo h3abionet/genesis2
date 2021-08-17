@@ -69,7 +69,7 @@ public class PCADataInputController implements Initializable {
      * @param event
      */
     @FXML
-    private void handlePCAEvecFileBtn(ActionEvent event) {
+    private void handlePCAEvecFileBtn(ActionEvent event) throws IOException {
         File pcaFile = getFile("Choose PCA file");
         try{
             pcaFilePath = pcaFile.getAbsolutePath();
@@ -141,9 +141,13 @@ public class PCADataInputController implements Initializable {
         fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setTitle(which);
 
-        File validator = new File(Genesis.getPreviouslyOpenedPath());
-        if (validator.exists() && validator.isDirectory())
-            fileChooser.setInitialDirectory(validator);
+        if(Genesis.getPreviouslyOpenedPath()==null){
+            ;
+        }else{
+            File validator = new File(Genesis.getPreviouslyOpenedPath());
+            if (validator.exists() && validator.isDirectory())
+                fileChooser.setInitialDirectory(validator);
+        }
 
         wanted = fileChooser.showOpenDialog(new Stage());
 

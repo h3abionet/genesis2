@@ -21,7 +21,7 @@ public class Subject implements java.io.Serializable{
     private String icon;
     private boolean hidden;
     private String[] pcs;
-    private String[] phenos;
+    private String[] phenos = null;
     private int iconSize;
     private ArrayList<ArrayList<String>> qValuesList = new ArrayList<>(); // {{1,2}, {1,2, 3}, ...}
 

@@ -90,12 +90,21 @@ public class AdmixtureDataInputController{
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(which);
 
-        File validator = new File(Genesis.getPreviouslyOpenedPath());
-        if (validator.exists() && validator.isDirectory())
-            fileChooser.setInitialDirectory(validator);
+        if(Genesis.getPreviouslyOpenedPath()==null){
+            ;
+        }else{
+            File validator = new File(Genesis.getPreviouslyOpenedPath());
+            if (validator.exists() && validator.isDirectory())
+                fileChooser.setInitialDirectory(validator);
+        }
 
         wanted = fileChooser.showOpenDialog(dialogStage);
-        Genesis.setPreviouslyOpenedPath(wanted.getParent());
+        if(wanted.getParent()!=null){
+            Genesis.setPreviouslyOpenedPath(wanted.getParent());
+        }else {
+            ;
+        }
+
         return wanted;
     }
 }

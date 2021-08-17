@@ -25,10 +25,10 @@
                   <TextField fx:id="groupNameLbl" />
                </children>
             </HBox>
-            <HBox fx:id="hideGroupCheckbox" layoutX="10.0" layoutY="36.0" prefHeight="37.0" prefWidth="390.0" spacing="10.0">
+            <HBox layoutX="10.0" layoutY="36.0" prefHeight="37.0" prefWidth="390.0" spacing="10.0">
                <children>
                   <Label text="Hide Group Population" />
-                  <CheckBox mnemonicParsing="false" />
+                  <CheckBox fx:id="hideGroupCheckbox" mnemonicParsing="false" />
                </children>
             </HBox>
             <HBox layoutX="20.0" layoutY="94.0" prefHeight="37.0" prefWidth="390.0" spacing="50.0">

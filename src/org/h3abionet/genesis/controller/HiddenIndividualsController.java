@@ -67,7 +67,7 @@ public class HiddenIndividualsController{
         }
 
         if(hiddenGroupCombo.getValue()!=null){
-//            try{
+            try{
                 // get group
                 String group = hiddenGroupCombo.getValue();
 
@@ -80,9 +80,9 @@ public class HiddenIndividualsController{
                 }
 
                 Genesis.closeOpenStage(event);
-//            }catch (Exception e){
-//                Genesis.throwInformationException("Select the group to show");
-//            }o
+            }catch (Exception e){
+                Genesis.throwInformationException("Select the group to show");
+            }
         }
 
     }

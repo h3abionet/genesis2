@@ -20,7 +20,6 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -54,13 +53,23 @@ public class AdmixtureOptionsController implements Initializable {
     private Button nextGraphColourBtn;
 
     @FXML
-    private ComboBox<String> orderCombobox;
-
-    @FXML
     private Button deleteGraphBtn;
 
     @FXML
     private Button cancelBtn;
+
+    @FXML
+    private Button shiftUpBtn;
+
+    @FXML
+    private Button shiftDownBtn;
+
+    @FXML
+    private Button shiftTopBtn;
+
+    @FXML
+    private Button shiftBottomBtn;
+
 
     // list of admixture charts
     private ArrayList<StackedBarChart<String, Number>> currChart;
@@ -82,6 +91,71 @@ public class AdmixtureOptionsController implements Initializable {
     private AdmixtureGraphEventsHandler admixtureGraphEventsHandler;
     private GridPane gridPane;
 
+    private Node firstChart, secondChart;
+    private int numOfRows;
+
+    @FXML
+    void shiftGraphBottom(ActionEvent event) {
+        shiftPlots(rowIndexOfClickedAdmixChart, MainController.getRowPointer()-1);
+        Genesis.closeOpenStage(event);
+    }
+
+    @FXML
+    void shiftGraphDown(ActionEvent event) {
+        shiftPlots(rowIndexOfClickedAdmixChart, rowIndexOfClickedAdmixChart+1);
+        Genesis.closeOpenStage(event);
+    }
+
+    @FXML
+    void shiftGraphTop(ActionEvent event) {
+        shiftPlots(rowIndexOfClickedAdmixChart, 0);
+        Genesis.closeOpenStage(event);
+    }
+
+    @FXML
+    void shiftGraphUp(ActionEvent event) {
+        shiftPlots(rowIndexOfClickedAdmixChart, rowIndexOfClickedAdmixChart-1);
+        Genesis.closeOpenStage(event);
+
+    }
+
+    private void shiftPlots(int firstRow, int secondRow) {
+        // swap the plot lists
+        Collections.swap(mainController.getAllAdmixtureCharts(), firstRow, secondRow);
+
+        int columnIndex = 0; // swap all the plots from second column to last
+
+        ObservableList<Node> children = gridPane.getChildren();
+        while (columnIndex < children.size()) {
+            for (Node node : children) {
+                if (GridPane.getColumnIndex(node) == columnIndex && GridPane.getRowIndex(node) == firstRow) {
+                    firstChart = node;
+                }
+                if (GridPane.getColumnIndex(node) == columnIndex && GridPane.getRowIndex(node) == secondRow) {
+                    secondChart = node;
+                }
+            }
+
+            if (firstChart != null && secondChart != null) {
+                // remove nodes
+                gridPane.getChildren().removeAll(firstChart, secondChart);
+                // groupNameSwap nodes
+                gridPane.add(firstChart, columnIndex, secondRow);
+                gridPane.add(secondChart, columnIndex, firstRow);
+
+            } else {
+                ;
+            }
+
+            // reset nodes
+            firstChart = null;
+            secondChart = null;
+
+            columnIndex++;
+        }
+
+    }
+
     @FXML
     private void deleteGraph(ActionEvent event) {
         // remove all nodes in clicked row
@@ -89,10 +163,27 @@ public class AdmixtureOptionsController implements Initializable {
         if (result.equals("yesBtnPressed")) {
             gridPane.getChildren().removeIf(
                     node -> GridPane.getRowIndex(node) == rowIndexOfClickedAdmixChart);
-            
+
         // remove a list of all charts in that index
         mainController.getAllAdmixtureCharts().remove(rowIndexOfClickedAdmixChart);
+        // reduce the pointer
         MainController.setRowPointer(MainController.getRowPointer()-1);
+
+        // change the indexes of every child in the grid pane
+            // get nodes to delete and change column index for existing nodes
+            for (Node child : gridPane.getChildren()) {
+                // get index from child
+                int currentRowIndex = GridPane.getRowIndex(child);
+                // add this node to the list of nodes to be deleted
+                if(currentRowIndex==rowIndexOfClickedAdmixChart){
+                    gridPane.getChildren().remove(child);
+                    gridPane.getRowConstraints().remove(rowIndexOfClickedAdmixChart);
+                }
+                if (currentRowIndex > rowIndexOfClickedAdmixChart) {
+                    // decrement cols for cols after the deleted col
+                    GridPane.setRowIndex(child, currentRowIndex - 1);
+                }
+            }
 
         // close stage
         Genesis.closeOpenStage(event);
@@ -453,7 +544,6 @@ public class AdmixtureOptionsController implements Initializable {
 
         XYChart.Series<String, Number> chosenAncestry = stackedBarChart.getData().get(ancestryNumber);
         int numOfIndividuals = chosenAncestry.getData().size();
-        System.out.println("the number of individuals to sort is "+numOfIndividuals);
 
         ObservableList<String> iids = xAxis.getCategories();
 
@@ -479,14 +569,10 @@ public class AdmixtureOptionsController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
+        creatLabelBtn.setDisable(true);
         listOfAncenstorHBox = new ArrayList<>();
-        
         optionsStage = new Stage();
 
-        // TODO - change this item list based on the position of the graph
-        orderCombobox.getItems().addAll("Shift Graph Up", "Shift Graph to Top",
-                "Shift Graph Down", "Shift Graph to Bottom");
     }
 
     public void setProject(Project project) {
@@ -507,5 +593,29 @@ public class AdmixtureOptionsController implements Initializable {
 
     public void setGridPane(GridPane gridPane) {
         this.gridPane = gridPane;
+    }
+
+    public void upwardShiftMovement(){
+        if(rowIndexOfClickedAdmixChart>0){
+            shiftUpBtn.setDisable(false);
+            shiftTopBtn.setDisable(false);
+        }else {
+            shiftUpBtn.setDisable(true);
+            shiftTopBtn.setDisable(true);
+        }
+    }
+
+    public void downwardShiftMovement(){
+        if(rowIndexOfClickedAdmixChart<numOfRows-2){
+            shiftBottomBtn.setDisable(false);
+            shiftDownBtn.setDisable(false);
+        }else {
+            shiftBottomBtn.setDisable(true);
+            shiftDownBtn.setDisable(true);
+        }
+    }
+
+    public void setNumOfRows(int rowCount) {
+        this.numOfRows = rowCount;
     }
 }

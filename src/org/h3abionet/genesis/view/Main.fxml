@@ -58,7 +58,7 @@
          <left>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="923.0" prefWidth="90.0" style="-fx-background-color: #06587F; -fx-border-color: #bdbbbb; -fx-border-width: 0.5px;">
                <children>
-                  <VBox layoutX="5.0" layoutY="3.0" prefHeight="936.0" prefWidth="70.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                  <VBox layoutX="5.0" layoutY="3.0" prefHeight="936.0" prefWidth="70.0" spacing="2.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                      <children>
                         <Button fx:id="newProjBtn" mnemonicParsing="false" onAction="#newProject" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;" text="New">
                            <font>
@@ -88,11 +88,11 @@
                               <Tooltip text="Import Admixture File" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="settingsBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#settingsSelector" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                        <Button fx:id="settingsBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#settingsSelector" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Settings">
                            <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/settings.png" />
+                                    <Image url="@../image/settings1.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -102,9 +102,9 @@
                         </Button>
                         <Button fx:id="dataBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#loadData" prefHeight="50.0" prefWidth="119.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/database.png" />
+                                    <Image url="@../image/database1.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -116,7 +116,7 @@
                            <graphic>
                               <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/download.png" />
+                                    <Image url="@../image/download1.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -126,9 +126,9 @@
                         </Button>
                         <Button fx:id="drawingBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#drawingTool" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/paint.png" />
+                                    <Image url="@../image/paint1.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -138,9 +138,9 @@
                         </Button>
                         <Button fx:id="individualBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#showHiddenIndividuals" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/individual.png" />
+                                    <Image url="@../image/individual1.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -150,9 +150,9 @@
                         </Button>
                         <Button fx:id="searchBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#searchIndividual" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/search.png" />
+                                    <Image url="@../image/search1.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -162,9 +162,9 @@
                         </Button>
                         <Button fx:id="threeDBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="50.0" prefWidth="109.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/3d.png" />
+                                    <Image url="@../image/3d1.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -174,9 +174,9 @@
                         </Button>
                         <Button fx:id="saveProjBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#saveProject" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;">
                            <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/floppy-disk.png" />
+                                    <Image url="@../image/floppy-disk1.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -186,9 +186,9 @@
                         </Button>
                         <Button fx:id="importProjBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#importProject" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;">
                            <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/folder.png" />
+                                    <Image url="@../image/folder1.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -198,9 +198,9 @@
                         </Button>
                         <Button fx:id="helpBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" layoutX="10.0" layoutY="415.0" mnemonicParsing="false" onAction="#help" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/info.png" />
+                                    <Image url="@../image/info1.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -210,9 +210,9 @@
                         </Button>
                         <Button fx:id="cancelBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#closeProgram" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/cancel.png" />
+                                    <Image url="@../image/cancel1.png" />
                                  </image>
                               </ImageView>
                            </graphic>

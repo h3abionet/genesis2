@@ -39,10 +39,7 @@ import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.Project;
 import org.h3abionet.genesis.model.Subject;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.*;
 
 /*
@@ -66,7 +63,7 @@ import java.util.*;
  *
  * @author scott
  */
-public class MainController implements Initializable {
+public class MainController implements Initializable{
     // interface (view) variables
     @FXML
     private TabPane tabPane;
@@ -159,41 +156,44 @@ public class MainController implements Initializable {
     private void newProject(ActionEvent event) throws IOException {
         // remove background image
         setTabPaneStyle();
+        try {
+            // load data input scene
+            FXMLLoader projLoader = new FXMLLoader(Genesis.class.getResource("view/ProjDialogEntry.fxml"));
+            Parent projParent = projLoader.load();
+            projectDetailsController = projLoader.getController();
+            projectDetailsController.setMainController(this);
+            Stage dialogStage = new Stage();
+            dialogStage.setScene(new Scene(projParent));
+            dialogStage.setResizable(false);
+            dialogStage.showAndWait();
 
-        // load data input scene
-        FXMLLoader projLoader = new FXMLLoader(Genesis.class.getResource("view/ProjDialogEntry.fxml"));
-        Parent projParent = projLoader.load();
-        projectDetailsController =  projLoader.getController();
-        projectDetailsController.setMainController(this);
-        Stage dialogStage = new Stage();
-        dialogStage.setScene(new Scene(projParent));
-        dialogStage.setResizable(false);
-        dialogStage.showAndWait();
-
-        if(project.isFamCreated() & project.isPhenoCreated()){
-            // if both fam and phenotype file are correct, launch project
-            disableImportProjBtn(true);
-            disableNewProjBtn(true);
-            disablePcaBtn(false);
-            disableAdmixtureBtn(false);
-            disableControlBtns(false);
-            disableDataBtn(false);
-        }else if(project.isFamCreated() && project.isPhenoFileProvided()==false) {
-            // if only the fam file is provided and is correct, launch project
-            disableImportProjBtn(true);
-            disableNewProjBtn(true);
-            disablePcaBtn(false);
-            disableAdmixtureBtn(false);
-            disableControlBtns(false);
-            disableDataBtn(false);
-        }else {
-            // otherwise don't launch the project
-            disableImportProjBtn(false);
-            disableNewProjBtn(false);
-            disablePcaBtn(true);
-            disableAdmixtureBtn(true);
-            disableControlBtns(true);
-            disableSettingsBtn(true);
+            if (project.isFamCreated() & project.isPhenoCreated()) {
+                // if both fam and phenotype file are correct, launch project
+                disableImportProjBtn(true);
+                disableNewProjBtn(true);
+                disablePcaBtn(false);
+                disableAdmixtureBtn(false);
+                disableControlBtns(false);
+                disableDataBtn(false);
+            } else if (project.isFamCreated() && project.isPhenoFileProvided() == false) {
+                // if only the fam file is provided and is correct, launch project
+                disableImportProjBtn(true);
+                disableNewProjBtn(true);
+                disablePcaBtn(false);
+                disableAdmixtureBtn(false);
+                disableControlBtns(false);
+                disableDataBtn(false);
+            } else {
+                // otherwise don't launch the project
+                disableImportProjBtn(false);
+                disableNewProjBtn(false);
+                disablePcaBtn(true);
+                disableAdmixtureBtn(true);
+                disableControlBtns(true);
+                disableSettingsBtn(true);
+            }
+        }catch (Exception ex){
+            ;
         }
     }
 
@@ -906,6 +906,7 @@ public class MainController implements Initializable {
                 ObjectOutputStream out = new ObjectOutputStream(fileOut);
                 out.writeObject(project);
                 out.close();
+                out.close();
                 fileOut.close();
             }
         }catch(IOException e){;}
@@ -992,6 +993,7 @@ public class MainController implements Initializable {
      public void disableImportProjBtn(boolean b){
         importProjBtn.setDisable(b);
      }
+
 
     public void disableControlBtns(boolean enable){
         disableSaveBtn(enable);

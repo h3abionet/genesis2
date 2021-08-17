@@ -7,6 +7,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.AdmixtureGraph;
+import org.h3abionet.genesis.model.Graph;
 import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.Project;
 
@@ -14,7 +15,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.Socket;
 
 public class ImportProjectController {
 
@@ -61,10 +61,16 @@ public class ImportProjectController {
             fileIn.close();
             proj.setProjIsImported(true);
             readGraphs();
+            mainController.disableNewProjBtn(true);
+            mainController.disableControlBtns(false);
+            mainController.disablePcaBtn(false);
+            mainController.disableAdmixtureBtn(false);
         } catch (IOException i) {
             Genesis.throwErrorException("Failed to import the project");
         } catch (ClassNotFoundException c) {
             Genesis.throwErrorException("Project class not found");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         Genesis.closeOpenStage(event);
     }
@@ -93,7 +99,7 @@ public class ImportProjectController {
         doneBtn.setDisable(b);
     }
 
-    public void readGraphs() throws IOException {
+    public void readGraphs() throws IOException, InterruptedException {
 
         if(proj.getPcaGraph()!=null) {
 

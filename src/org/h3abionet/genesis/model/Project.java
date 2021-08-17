@@ -125,6 +125,7 @@ public class Project implements Serializable {
 
                 while (l != null) {
                     fields = l.split("\\s+");
+
                     fid = fields[0];
                     iid = fields[1];
                     pat = fields[2];
@@ -162,15 +163,13 @@ public class Project implements Serializable {
         }
     }
 
-    private void readPhenotypeFile(String phenoFilePath) {
-
+    private void readPhenotypeFile(String phenoFilePath) throws IOException {
         String fileExtension = getExtension(phenoFilePath);
 
         if (fileExtension.equals("phe")){
             try {
                 // get phenotype groups and assign colors and icons
                 setPhenotypeGroups(Genesis.openFile(phenoFilePath));
-
 
                 BufferedReader secBuf = Genesis.openFile(phenoFilePath);
                 String line = secBuf.readLine();
@@ -185,20 +184,32 @@ public class Project implements Serializable {
                     String chosenPheno = fields[phenoColumnNumber - 1];
                     String color = (String) groupColors.get(chosenPheno);
                     String icon = (String) groupIcons.get(chosenPheno);
-
                     // add pheno details to every subject
                     for (Subject sub : subjectsList) {
-                        if (sub.getFid().equals(fid) && sub.getIid().equals(iid)) {
-                            sub.setPhenos(fields);
-                            sub.setColor(color);
-                            sub.setIcon(icon);
+                        if (sub.getFid().equals(fid) && sub.getIid().equals(iid) && sub.getPhenos()==null) {
+                                sub.setPhenos(fields);
+                                sub.setColor(color);
+                                sub.setIcon(icon);
+                            break;
                         }
                     }
 
                     line = secBuf.readLine();
                 }
 
-                phenoCreated = true; // phenotype file successfully imported
+                // remove all the subjects with no phenos
+                ArrayList<Subject> deleteSubsList = new ArrayList<>();
+                for (Subject sub : subjectsList) {
+                    if (sub.getPhenos()==null) {
+                        deleteSubsList.add(sub);
+                    }
+                }
+                subjectsList.removeAll(deleteSubsList);
+
+            // change number of individuals
+            numOfIndividuals = subjectsList.size();
+
+            phenoCreated = true; // phenotype file successfully imported
 
                 // categorize fam iids according to phenotype column
                 for (Subject subject : subjectsList) {
@@ -382,5 +393,28 @@ public class Project implements Serializable {
 
     public ArrayList<String> getHiddenGroups() {
         return hiddenGroups;
+    }
+
+    /**
+     * save group names every time uses modifies them
+     * @param oldGroupName
+     * @param newGroupName
+     */
+    public void renameGroupName(String oldGroupName, String newGroupName) {
+        // change the group name in project
+        int index = groupNames.indexOf(oldGroupName);
+        project.getGroupNames().set(index, newGroupName);
+
+        // change subject pheno
+        int phenoIndex = phenoColumnNumber- 1;
+        for (Subject sub : subjectsList) {
+            if(sub.getPhenos()[phenoIndex].equals(oldGroupName)){
+                sub.getPhenos()[phenoIndex] = newGroupName;
+            }
+        }
+
+        // change the key for the icons and colors
+        groupIcons.put(newGroupName,groupIcons.remove(oldGroupName));
+        groupColors.put(newGroupName,groupColors.remove(oldGroupName));
     }
 }

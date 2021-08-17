@@ -16,7 +16,6 @@ import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
@@ -24,6 +23,7 @@ import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.controller.MainController;
+import org.h3abionet.genesis.controller.PCAGroupLabelController;
 import org.h3abionet.genesis.controller.PCAIndividualDetailsController;
 
 import java.io.BufferedReader;
@@ -49,6 +49,9 @@ public class PCAGraph extends Graph implements Serializable {
     private HashMap groupColors;
     private HashMap groupIcons;
     private transient MainController mainController;
+    // group name -> with all associated graphs for different values of k
+    private HashMap<String, ArrayList<XYChart.Series<Number, Number>>> hiddenPCAGroups = new HashMap<>();
+
 
     /**
      *
@@ -453,7 +456,7 @@ public class PCAGraph extends Graph implements Serializable {
      * @param sc
      * @param serieIndex
      */
-    private void setLegend(ScatterChart<Number, Number> sc, int serieIndex,  HashMap iconColors, HashMap iconShapes){
+    public void setLegend(ScatterChart<Number, Number> sc, int serieIndex,  HashMap iconColors, HashMap iconShapes){
         for (Node n : sc.getChildrenUnmodifiable()) {
             if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                 TilePane tn = (TilePane) n;
@@ -482,19 +485,27 @@ public class PCAGraph extends Graph implements Serializable {
                                     }
                                 }
                             }else{ // right click
-                                // show dialog for legend position and hiding phenotype
-                                List<String> choices = new ArrayList<>();
-                                choices.add("bottom");
-                                choices.add("right");
+                                try {
+                                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCAGroupLabel.fxml"));
+                                    Parent parent = (Parent) fxmlLoader.load();
+                                    Stage dialogStage = new Stage();
+                                    dialogStage.setScene(new Scene(parent));
+                                    dialogStage.setResizable(false);
 
-                                ChoiceDialog<String> dialog = new ChoiceDialog<>("right", choices);
-                                dialog.setTitle("Legend");
-                                dialog.setHeaderText("Select legend position");
-                                dialog.setContentText("Position:");
+                                    // show subject details when clicked
+                                    PCAGroupLabelController pglc = fxmlLoader.getController();
+                                    pglc.setComboBox();
+                                    pglc.setGroupNameLbl(lab.getText());
+                                    pglc.setProj(project);
+                                    pglc.setGroupNameNode(lab);
+                                    pglc.setChart(sc);
+                                    pglc.setPCAGraph(this);
 
-                                Optional<String> result = dialog.showAndWait();
-                                result.ifPresent(position -> sc.lookup(".chart").setStyle("-fx-legend-side: " + position + ";"));
+                                    dialogStage.showAndWait();
 
+                                }catch (IOException e){
+                                    ;
+                                }
                             }
                         });
                         break;
@@ -507,7 +518,6 @@ public class PCAGraph extends Graph implements Serializable {
 
         // sort legend items
         sortLegendItems(sc);
-
     }
 
     /**
@@ -531,6 +541,89 @@ public class PCAGraph extends Graph implements Serializable {
     }
 
     public void showHiddenGroup(String group) {
+
+        ArrayList<XYChart.Series<Number, Number>> seriesArrayList = hiddenPCAGroups.get(group);
+
+        int sizeOfHiddenGroups = seriesArrayList.size();
+        int numOfCharts = mainController.getPcaChartsList().size();
+
+        if(sizeOfHiddenGroups==numOfCharts){
+
+            // all pca charts
+            for (int i=0; i<mainController.getPcaChartsList().size();i++){
+
+                ScatterChart<Number, Number> chart = mainController.getPcaChartsList().get(i);
+
+                chart.getData().add(seriesArrayList.get(i));
+
+                // set color, icon, click event and legend for this chart
+                for(int k=0; k<chart.getData().size(); k++) {
+                    // set legend
+                    setLegend(chart, k, project.getGroupColors(), project.getGroupIcons());
+                }
+            }
+        }
+
+        // remove group from the hidden list of all graphs in the project
+        project.getHiddenGroups().remove(group);
+
+    }
+
+    public void renameLegendGroupNames(String oldGroupName, String newGroupName){
+        // rename group in all charts
+        for(int i=0; i<mainController.getPcaChartsList().size(); i++){ // every chart
+
+            ScatterChart<Number, Number> sc = mainController.getPcaChartsList().get(i);
+
+            for (Node n : sc.getChildrenUnmodifiable()) {
+                if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+                    TilePane tn = (TilePane) n;
+                    ObservableList<Node> children = tn.getChildren(); // get legend items
+
+                    for (int j=0;j<sc.getData().size();j++){ // get every serie
+                        Label lab = (Label) children.get(j).lookup(".chart-legend-item");
+                        if(lab.getText().equals(oldGroupName)){
+                            // change the node with group name on the chart
+                            lab.setText(newGroupName);
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * remove group from charts
+     * @param oldGroupName
+     */
+    public void hideGroup(String oldGroupName) {
+
+        ArrayList<XYChart.Series<Number, Number>> hiddenGroups = new ArrayList<>(); // for various Ks
+
+        // all pca charts
+        for (int i=0; i<mainController.getPcaChartsList().size();i++){
+            ScatterChart<Number, Number> chart = mainController.getPcaChartsList().get(i);
+
+            for(int j=0;j<chart.getData().size();j++){
+                XYChart.Series<Number, Number> serie = chart.getData().get(j);
+
+                if (serie.getName().equals(oldGroupName)) {
+                    hiddenGroups.add(serie); // save this serie
+                    chart.getData().remove(j); // remove it from the chart
+
+                    // set color, icon, click event and legend for this chart
+                    for(int k=0; k<chart.getData().size(); k++) {
+                        // set legend
+                        setLegend(chart, k, project.getGroupColors(), project.getGroupIcons());
+                    }
+                    break;
+                }
+            }
+        }
+
+        hiddenPCAGroups.put(oldGroupName, hiddenGroups);
     }
 
     /**

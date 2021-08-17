@@ -22,7 +22,6 @@ package org.h3abionet.genesis.controller;
  */
 import java.io.BufferedReader;
 
-import org.h3abionet.genesis.model.Graph;
 import org.h3abionet.genesis.model.Project;
 import java.io.File;
 import java.io.FileReader;
@@ -72,38 +71,46 @@ public class ProjectDetailsController implements Initializable{
 
     @FXML
     private void handleFamFname() {
-        File famFile = getFile("Choose FAM file");
-        if(famFile != null){
-            fam_fname_s = famFile.getAbsolutePath();
-            fam_fname.setText(famFile.getName());
-            fam_fname.setStyle("-fx-text-fill: #06587F");
-            entryOKButton.setDisable(false); // disable the ok button if the fam is provided
+        try{
+            File famFile = getFile("Choose FAM file");
+            if(famFile != null){
+                fam_fname_s = famFile.getAbsolutePath();
+                fam_fname.setText(famFile.getName());
+                fam_fname.setStyle("-fx-text-fill: #06587F");
+                entryOKButton.setDisable(false); // disable the ok button if the fam is provided
+        }
+        }catch (Exception  e){
+            ;
         }
     }
 
     @FXML
     private void handlePhenoFname() throws IOException {
-        File phen = getFile("Choose Pheno file");
-        if(phen != null){
-            pheno_fname_s = phen.getAbsolutePath();
-            pheno_fname.setText(phen.getName());
-            pheno_fname.setStyle("-fx-text-fill: #06587F");
+        try {
+            File phen = getFile("Choose Pheno file");
+            if (phen != null) {
+                pheno_fname_s = phen.getAbsolutePath();
+                pheno_fname.setText(phen.getName());
+                pheno_fname.setStyle("-fx-text-fill: #06587F");
 
-            // read first line of the pheno file to create column names
-            BufferedReader brTest = new BufferedReader(new FileReader(pheno_fname_s));
-            String brText = brTest .readLine();
-            String[] strArray = brText.split("\\s+");
+                // read first line of the pheno file to create column names
+                BufferedReader brTest = new BufferedReader(new FileReader(pheno_fname_s));
+                String brText = brTest.readLine();
+                String[] strArray = brText.split("\\s+");
 
-            // create column names
-            String [] phenoColNames = new String[strArray.length];
-            for(int i = 0; i< strArray.length; i++){
-                int phenoColNumber = i+1;
-                phenoColNames[i] = "Column "+phenoColNumber;
+                // create column names
+                String[] phenoColNames = new String[strArray.length];
+                for (int i = 0; i < strArray.length; i++) {
+                    int phenoColNumber = i + 1;
+                    phenoColNames[i] = "Column " + phenoColNumber;
+                }
+
+                // display seletion for a column with phenotype
+                colWithPhenoComboBox.setItems(FXCollections.observableArrayList(phenoColNames));
+                colWithPhenoComboBox.setValue("Column 3"); // default
             }
-
-            // display seletion for a column with phenotype
-            colWithPhenoComboBox.setItems(FXCollections.observableArrayList(phenoColNames));
-            colWithPhenoComboBox.setValue("Column 3"); // default
+        }catch (Exception e){
+            ;
         }
     }
 
@@ -157,14 +164,16 @@ public class ProjectDetailsController implements Initializable{
      * @return File object
      */
     private File getFile(String which) {
-        File wanted;
+        File wanted = null;
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("project files", "*.phe", "*.fam");
         fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setTitle(which);
         Stage stage = new Stage();
+
         wanted = fileChooser.showOpenDialog(stage);
         Genesis.setPreviouslyOpenedPath(wanted.getParent());
+
         return wanted;
     }
 

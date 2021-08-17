@@ -1,8 +1,9 @@
 package org.h3abionet.genesis.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class IconsAndColors {
+public class IconsAndColors implements Serializable {
 
     private static final long serialVersionUID = 2L;
 

@@ -277,6 +277,7 @@ public class AdmixtureSettingsController implements Initializable {
         if ("Vertical".equals(linearLayoutBox.getValue()) && admixVertical == false) {
             verticalRotation();
         }
+
         mainController.disableSettingsBtn(false);
         Genesis.closeOpenStage(event);
     }
@@ -330,7 +331,7 @@ public class AdmixtureSettingsController implements Initializable {
         admixPane.getTransforms().add(new Rotate(90, admixPane.getLayoutX(), initalAdmixPaneHeight));
 
         for (Node node : gridPaneChildren) {
-            if (GridPane.getRowIndex(node) == MainController.getRowPointer() + 1 && GridPane.getColumnIndex(node) < numOfCols) {
+            if (GridPane.getRowIndex(node) == MainController.getRowPointer() && GridPane.getColumnIndex(node) < numOfCols) {
                 StackPane pane = (StackPane) node;
                 Text lbl = (Text) pane.getChildren().get(0);
                 lbl.setRotate(-90);
@@ -393,7 +394,9 @@ public class AdmixtureSettingsController implements Initializable {
     private void setPopulationGroupLabels(){
         // format labels or group names
         for (Node node : gridPaneChildren) {
-            if (GridPane.getRowIndex(node) == MainController.getRowPointer() + 1 && GridPane.getColumnIndex(node) < numOfCols) {
+
+            if (GridPane.getRowIndex(node) == mainController.getRowPointer()) { //  && GridPane.getColumnIndex(node) > 0
+
                 StackPane pane = (StackPane) node;
                 Text lbl = (Text) pane.getChildren().get(0);
                 String lblFontFamily = labelFontCombo.getValue();
@@ -440,11 +443,10 @@ public class AdmixtureSettingsController implements Initializable {
                     pane.setVisible(true);
                     labelsHidden = false;
                 }
-
             }
         }
-        
     }
+
     private void setBorders(Color borderColor, double borderSize){
         String hex;
         // check if black
@@ -486,9 +488,14 @@ public class AdmixtureSettingsController implements Initializable {
             gridPane.getChildren().forEach((n) -> {
                 if (n instanceof StackPane || n instanceof Label) {
                     if(n instanceof StackPane){
-                        n.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); // restore default
+                        System.out.println("the id is "+n.getId());
+//                        if (n.getId().startsWith("K = ")) { // do not put borders on ks
+//                            ;
+//                        }else {
+//                            n.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); // restore default
+//                        }
                     }else{
-                        ; // donot add border
+                        ; // do not add border
                     }
                 } else {
                     GridPane.setMargin(n, new Insets(0, 0, -3, -3)); // this removes the white spaces
@@ -550,7 +557,7 @@ public class AdmixtureSettingsController implements Initializable {
         String lblFontFamily = null;
         groupNameWidthList = new ArrayList();
         for (Node node : gridPaneChildren) {
-            if (GridPane.getRowIndex(node) == MainController.getRowPointer() + 1 && GridPane.getColumnIndex(node) < numOfCols) {
+            if (GridPane.getRowIndex(node) == MainController.getRowPointer() && GridPane.getColumnIndex(node) < numOfCols) {
                 StackPane pane = (StackPane) node;
                 Text lbl = (Text) pane.getChildren().get(0);
                 lblFontSize = lbl.getFont().getSize(); // keep default or selected font color
@@ -567,7 +574,7 @@ public class AdmixtureSettingsController implements Initializable {
         labelFontCombo.setValue(lblFontFamily);
         labelFontCombo.setOnAction(event -> {
             for (Node node : gridPaneChildren) {
-                if (GridPane.getRowIndex(node) == MainController.getRowPointer() + 1 && GridPane.getColumnIndex(node) < numOfCols) {
+                if (GridPane.getRowIndex(node) == MainController.getRowPointer() && GridPane.getColumnIndex(node) < numOfCols) {
                     StackPane pane = (StackPane) node;
                     Text lbl = (Text) pane.getChildren().get(0);
                     lbl.setFont(Font.font(labelFontCombo.getValue(), labelFontSizeSpinner.getValue()));
@@ -581,7 +588,7 @@ public class AdmixtureSettingsController implements Initializable {
         labelFontSizeSpinner.setOnMouseClicked(event -> {
             groupNameWidthList.clear(); // remove exisiting label width
             for (Node node : gridPaneChildren) {
-                if (GridPane.getRowIndex(node) == MainController.getRowPointer() + 1 && GridPane.getColumnIndex(node) < numOfCols) {
+                if (GridPane.getRowIndex(node) == MainController.getRowPointer() && GridPane.getColumnIndex(node) < numOfCols) {
                     StackPane pane = (StackPane) node;
                     Text lbl = (Text) pane.getChildren().get(0);
                     lbl.setFont(Font.font(labelFontCombo.getValue(), labelFontSizeSpinner.getValue()));

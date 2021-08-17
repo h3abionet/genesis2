@@ -57,19 +57,21 @@ public class AdmixtureGraph extends Graph implements Serializable {
     }
 
     private static int chartIndex = 0;
-    private MainController mainController;
+    private transient MainController mainController;
     private ArrayList<String> iidDetails;
     // group name -> with all associated graphs for different values of k
-    private transient HashMap<String, ArrayList<StackedBarChart<String, Number>>> hiddenAdmixGraphs = new HashMap<>();
+    private  static HashMap<String, ArrayList<StackedBarChart<String, Number>>> hiddenAdmixGraphs = new HashMap<>();
 
     private static int labelClickCounter = 0;
     private StackPane firstGroupLabel, secondGroupLabel;
-    private GridPane gridPane;
+    private transient GridPane gridPane;
     private Node firstChart, secondChart;
     private static int kClickCounter = 0;
     private static StackPane firstKLabel, secondKLabel;
+    private static int clickedColIndex;
 
-    private ArrayList<String> orderOfAdmixGraphs = (ArrayList<String>) project.getGroupNames(); // store graph names here
+    //    private ArrayList<String> orderOfAdmixGraphs = (ArrayList<String>) project.getGroupNames(); // store graph names here
+    private HashMap<String, ColumnConstraints> constraintsHashMap = new HashMap<>();
 
     /**
      * Constructor
@@ -186,7 +188,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
             populationGroupChart.setLegendVisible(false);
 
             // set the css stylesheet
-            populationGroupChart.getStylesheets().add("css/admixture.css");
+            populationGroupChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
 
             // remove all legend items
             for (Node n : populationGroupChart.getChildrenUnmodifiable()) {
@@ -256,7 +258,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
      * @param groupName
      */
     public void hideGroup(String groupName){ // groupName = a stacked bar chart
-        orderOfAdmixGraphs.remove(groupName); //  remove group from order
+
+//        orderOfAdmixGraphs.remove(groupName); //  remove group from order
 
         ArrayList<StackedBarChart<String, Number>> groupCharts = new ArrayList<>(); // for various Ks
         ArrayList<Node> deleteNodes = new ArrayList<>();
@@ -272,7 +275,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     // add graph to list of hidden graphs for this particular group
                     groupCharts.add(admixGraph);
 
-                    chosenGraphColIndex = GridPane.getColumnIndex(admixGraph);
+//                    chosenGraphColIndex = clickedColIndex;
                     break;
                 }
             }
@@ -283,10 +286,10 @@ public class AdmixtureGraph extends Graph implements Serializable {
             // get index from child
             int currentColIndex = GridPane.getColumnIndex(child);
             // add this node to the list of nodes to be deleted
-            if(currentColIndex==chosenGraphColIndex){
+            if(currentColIndex==clickedColIndex){
                 deleteNodes.add(child);
             }
-            if (currentColIndex > chosenGraphColIndex) {
+            if (currentColIndex > clickedColIndex) {
                 // decrement cols for cols after the deleted col
                 GridPane.setColumnIndex(child, currentColIndex - 1);
             }
@@ -296,10 +299,12 @@ public class AdmixtureGraph extends Graph implements Serializable {
         gridPane.getChildren().removeAll(deleteNodes);
 
         // get column constraints
-        ColumnConstraints cc =  gridPane.getColumnConstraints().get(chosenGraphColIndex);
+        ColumnConstraints cc =  gridPane.getColumnConstraints().get(clickedColIndex);
         cc.setPercentWidth(0);
         cc.setHgrow(Priority.NEVER);
         gridPane.getColumnConstraints().remove(cc);
+
+        constraintsHashMap.put(groupName, cc); //  store this constraint
 
         // add group name to project
         if(!project.getHiddenGroups().contains(groupName)){
@@ -351,6 +356,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
         // get order of rows and k values - then use them to put back the graphs whose number of series,
         // is equal to the k value (in the order of the k values)
         ArrayList<Integer> kValueOrder = new ArrayList<>();
+
         while (rowIndex < numOfRows) {
             for (Node node : children) {
                 if(gridPane.getRowIndex(node) == rowIndex && gridPane.getColumnIndex(node) == 0) {
@@ -364,6 +370,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
         }
 
         int rowCounter = 0;
+        setChartGroupName(numOfCols-1, numOfRows-1, group);
+
         while (rowCounter < numOfRows-1) { // 1 is the row with the group name
             // loop through ks
             for (int kValue : kValueOrder) {
@@ -385,7 +393,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
         project.getHiddenGroups().remove(group);
 
         // define Group names for individuals
-        setChartGroupName(numOfCols-1, numOfRows-1, group);
     }
 
     /**
@@ -544,23 +551,35 @@ public class AdmixtureGraph extends Graph implements Serializable {
     @SuppressWarnings("empty-statement")
     public GridPane getGridPane(GridPane gridPane, int rowPointer) {
         this.gridPane = gridPane;
+
         try {
             Text kValue = new Text("K = " + numOfAncestries);
             StackPane kValuePane = new StackPane(kValue);
+            kValuePane.setId(String.valueOf(kValue));
             kValuePane.setAlignment(Pos.CENTER);
             kValuePane.setMargin(kValue, new Insets(5));
+
             kValuePane.hoverProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue) {
                     kValuePane.setCursor(Cursor.HAND);
                 }
             });
+
             // add event to the label
-            kValuePane.setOnMouseClicked((MouseEvent e) -> kValueClicked(e.getSource()));
+            kValuePane.setOnMouseClicked((MouseEvent e) -> {
+                MouseButton btn = e.getButton();
+                if (btn == MouseButton.PRIMARY) {
+                    kValueClicked(e.getSource());
+                }else if(btn == MouseButton.SECONDARY){
+                    ;
+                }
+            });
 
             gridPane.add(kValuePane, 0, rowPointer); // add K value.
 
             int colIndex = 1;
             for (StackedBarChart<String, Number> admixChart : listOfStackedBarCharts) {
+
                 // define chart properties
                 admixChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
                 admixChart.setCategoryGap(0); // remove gaps in iids
@@ -584,14 +603,15 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     }
                 }
 
-                // define Group names for individuals
-                setChartGroupName(colIndex, rowPointer+1, admixChart.getXAxis().getLabel());
-
                 // remove the x-axis label from the stacked bar chart
                 String xLabel = admixChart.getXAxis().getLabel();
                 admixChart.setId(xLabel); // set chart id
                 admixChart.getXAxis().setLabel(null);
 
+                // set the label at the bottom
+                setChartGroupName(colIndex, rowPointer+1, xLabel);
+
+                // add graph to grid pane
                 GridPane.setColumnIndex(admixChart, colIndex);
                 GridPane.setRowIndex(admixChart, rowPointer);
                 gridPane.getChildren().add(admixChart);
@@ -617,8 +637,10 @@ public class AdmixtureGraph extends Graph implements Serializable {
                             aop.setMainController(mainController);
                             aop.setProject(project);
                             aop.setAdmixChart(admixChart);
+                            aop.setNumOfRows(gridPane.getRowCount());
+                             aop.downwardShiftMovement();
+                             aop.upwardShiftMovement();
                             dialogStage.show();
-
                         } catch (IOException ex) {
                             Genesis.throwErrorException("Failed to load plot format options");
                         }
@@ -642,27 +664,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
     private void setChartGroupName(int colIndex, int rowIndex, String groupName){
         Text chartGroupName = new Text(groupName);
 
-        // add right click event on group name labels
-        chartGroupName.setOnMouseClicked(event ->
-        {
-            if (event.getButton() == MouseButton.SECONDARY)
-            {
-                try {
-                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PopulationGroupLabel.fxml"));
-                    Parent parent = (Parent) fxmlLoader.load();
-                    Stage dialogStage = new Stage();
-                    dialogStage.setScene(new Scene(parent));
-                    dialogStage.setResizable(false);
-
-                    PopulationGroupLabelController pglc = fxmlLoader.getController();
-                    pglc.setGroupNameLbl(groupName);
-                    pglc.setAdmixtureGraph(this);
-                    dialogStage.showAndWait();
-                } catch (IOException e) {
-                }
-            }
-        });
-
         StackPane pane = new StackPane(chartGroupName);
         pane.setAlignment(Pos.CENTER);
         pane.setMargin(chartGroupName, new Insets(5));
@@ -684,7 +685,29 @@ public class AdmixtureGraph extends Graph implements Serializable {
         gridPane.getChildren().add(pane);
 
         // add event to the label
-        pane.setOnMouseClicked((MouseEvent e) -> chartGroupNameClicked(e.getSource()));
+        pane.setOnMouseClicked(event ->
+        {
+            if (event.getButton() == MouseButton.SECONDARY)
+            {
+                try {
+                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PopulationGroupLabel.fxml"));
+                    Parent parent = (Parent) fxmlLoader.load();
+                    Stage dialogStage = new Stage();
+                    dialogStage.setScene(new Scene(parent));
+                    dialogStage.setResizable(false);
+                    PopulationGroupLabelController pglc = fxmlLoader.getController();
+                    clickedColIndex = GridPane.getColumnIndex(pane);
+                    pglc.setGroupNameLbl(groupName);
+                    pglc.setAdmixtureGraph(this);
+                    pglc.setProj(project);
+                    pglc.setStackedPane(pane);
+                    dialogStage.showAndWait();
+                } catch (IOException e) {
+                }
+            }else {
+                chartGroupNameClicked(event.getSource());
+            }
+        });
     }
 
     /**
@@ -807,6 +830,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
         gridPane.add(secondKLabel, firstCol, firstRow);
 
         int columnIndex = 1; // swap all the plots from second column to last
+
         ObservableList<Node> children = gridPane.getChildren();
         while (columnIndex < children.size()+1) {
             for (Node node : children) {
@@ -818,10 +842,9 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 }
             }
 
-            if (firstChart != null && secondChart != null && firstChart==secondChart) {
+            if (firstChart != null && secondChart != null) {
                 // remove nodes
                 gridPane.getChildren().removeAll(firstChart, secondChart);
-
                 // groupNameSwap nodes
                 gridPane.add(firstChart, columnIndex, secondRow);
                 gridPane.add(secondChart, columnIndex, firstRow);
