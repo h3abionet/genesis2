@@ -9,7 +9,7 @@
 
 <AnchorPane id="AnchorPane" prefHeight="210.0" prefWidth="350.0" stylesheets="@../css/AdmixtureOptions.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.AdmixtureOptionsController">
    <children>
-      <VBox prefHeight="203.0" prefWidth="299.0" spacing="5.0" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+      <VBox alignment="CENTER" prefHeight="203.0" prefWidth="299.0" spacing="5.0" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
             <Button fx:id="creatLabelBtn" mnemonicParsing="false" prefHeight="27.0" prefWidth="427.0" text="Create Label at Mouse Cursor">
                <font>
@@ -45,9 +45,9 @@
                </padding>
             </HBox>
             <Button fx:id="deleteGraphBtn" layoutX="10.0" layoutY="91.0" mnemonicParsing="false" onAction="#deleteGraph" prefHeight="27.0" prefWidth="426.0" text="Delete Graph" />
-            <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancelHandler" text="Cancel">
+            <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancelHandler" prefHeight="29.0" prefWidth="107.0" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5;" text="Cancel">
                <VBox.margin>
-                  <Insets left="120.0" right="50.0" />
+                  <Insets />
                </VBox.margin>
             </Button>
          </children>

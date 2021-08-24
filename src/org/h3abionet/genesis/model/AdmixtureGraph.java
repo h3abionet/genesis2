@@ -552,7 +552,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
     public GridPane getGridPane(GridPane gridPane, int rowPointer) {
         this.gridPane = gridPane;
 
-        try {
+
+//        try {
             Text kValue = new Text("K = " + numOfAncestries);
             StackPane kValuePane = new StackPane(kValue);
             kValuePane.setId(String.valueOf(kValue));
@@ -576,6 +577,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
             });
 
             gridPane.add(kValuePane, 0, rowPointer); // add K value.
+
+
 
             int colIndex = 1;
             for (StackedBarChart<String, Number> admixChart : listOfStackedBarCharts) {
@@ -611,10 +614,15 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 // set the label at the bottom
                 setChartGroupName(colIndex, rowPointer+1, xLabel);
 
+                long startTime = System.nanoTime();
                 // add graph to grid pane
-                GridPane.setColumnIndex(admixChart, colIndex);
-                GridPane.setRowIndex(admixChart, rowPointer);
-                gridPane.getChildren().add(admixChart);
+//                GridPane.setColumnIndex(admixChart, colIndex);
+//                GridPane.setRowIndex(admixChart, rowPointer);
+//                gridPane.getChildren().add(admixChart);
+                gridPane.add(admixChart, colIndex, rowPointer);
+                long endTime = System.nanoTime();
+                long duration = (endTime - startTime);
+                System.out.println("Execution time in milliseconds: " + duration / 1000000);
 
                 // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
@@ -647,13 +655,15 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     }
                 });
 
+
+
                 // increment the column index
                 colIndex++;
             }
 
-        } catch (Exception e) {
-            Genesis.throwErrorException("Sorry. Try Again"); //do nothing
-        }
+//        } catch (Exception e) {
+//            Genesis.throwErrorException("Sorry. Try Again"); //do nothing
+//        }
         return gridPane;
     }
 

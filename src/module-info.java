@@ -20,5 +20,4 @@ module genesis2 {
 //    requires pdfbox.app;
 //    requires jfxtras.common;
 //    requires jfxtras.fxml;
-
 }
