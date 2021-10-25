@@ -116,7 +116,7 @@
                            <graphic>
                               <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/download1.png" />
+                                    <Image url="@../image/download3.png" />
                                  </image>
                               </ImageView>
                            </graphic>

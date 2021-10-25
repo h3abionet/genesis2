@@ -111,7 +111,7 @@ public class PCASettingsController implements Initializable{
     String posture[] = {"REGULAR", "ITALIC"};
     
     // list of font sizes from 8 to 72
-    List<Integer> list = IntStream.range(8, 73).boxed().collect(Collectors.toList());
+    List<Integer> list = IntStream.range(8, 36).boxed().collect(Collectors.toList());
     private PCAGraphLayout pcaGraphLayout;
     private MainController mainController;
 
@@ -125,6 +125,10 @@ public class PCASettingsController implements Initializable{
 
     @FXML
     private void entryOkButton(ActionEvent event) {
+        System.out.println(chosenFontColor);
+        if(chosenFontColor.equals("ffff")){
+            chosenFontColor = "000000";
+        }
          
         // only format selected axis
         if(axisLabelCheckbox.isSelected()){

@@ -19,6 +19,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
@@ -51,6 +53,8 @@ public class PCAGraph extends Graph implements Serializable {
     private transient MainController mainController;
     // group name -> with all associated graphs for different values of k
     private HashMap<String, ArrayList<XYChart.Series<Number, Number>>> hiddenPCAGroups = new HashMap<>();
+    private int labelClickCounter;
+    private Label firstGroupLabel, secondGroupLabel;
 
 
     /**
@@ -479,6 +483,7 @@ public class PCAGraph extends Graph implements Serializable {
                         lab.setOnMouseClicked(me -> {
                             // Toggle group (phenotype) visibility on left click
                             if (me.getButton() == MouseButton.PRIMARY) {
+//                                chartGroupNameClicked(me.getSource());
                                 for (XYChart.Data<Number, Number> d : s.getData()) {
                                     if (d.getNode() != null) {
                                         d.getNode().setVisible(!d.getNode().isVisible()); // Toggle visibility of every node in the series
@@ -568,6 +573,60 @@ public class PCAGraph extends Graph implements Serializable {
         project.getHiddenGroups().remove(group);
 
     }
+
+    private void chartGroupNameClicked(Object source) {
+        if (!(source instanceof Label)) {
+            return;
+        }
+        Label lbl = (Label) source;
+
+        if (labelClickCounter == 0) {
+            firstGroupLabel = lbl;
+        } else {
+            secondGroupLabel = lbl;
+
+            // if the same label is clicked, do not swap
+            groupNameSwap();
+        }
+
+        labelClickCounter = ++labelClickCounter % 2;  // changes values between 0 1
+    }
+
+    private void groupNameSwap() {
+        // column and row index for clicked labels
+
+        for(int i=0; i<mainController.getPcaChartsList().size(); i++){ // every chart
+
+            ScatterChart<Number, Number> sc = mainController.getPcaChartsList().get(i);
+
+            for (Node n : sc.getChildrenUnmodifiable()) {
+                if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+                    TilePane tn = (TilePane) n;
+                    ObservableList<Node> children = tn.getChildren(); // get legend items
+
+                    int firstIndex = tn.getChildren().indexOf(firstGroupLabel);
+                    int secondIndex = tn.getChildren().indexOf(secondGroupLabel);
+
+                    tn.getChildren().remove(firstGroupLabel);
+                    tn.getChildren().remove(secondGroupLabel);
+
+                    children.add(firstIndex, firstGroupLabel);
+                    children.add(secondIndex, secondGroupLabel);
+
+//                    for (int j=0;j<sc.getData().size();j++){ // get every serie
+//                        Label lab = (Label) children.get(j).lookup(".chart-legend-item");
+//                        if(lab.getText().equals(oldGroupName)){
+//                            // change the node with group name on the chart
+//                            lab.setText(newGroupName);
+//                            break;
+//                        }
+//                    }
+//                    break;
+                }
+            }
+        }
+    }
+
 
     public void renameLegendGroupNames(String oldGroupName, String newGroupName){
         // rename group in all charts
@@ -928,13 +987,13 @@ public class PCAGraph extends Graph implements Serializable {
      * @return
      */
     public String getStyle(String color, String icon, int iconSize){
-        String s = "-fx-background-color: "+color+", white;"
-                + "-fx-shape: \""+icon+"\";"
+        String s = "-fx-shape: \""+icon+"\";"
                 + "-fx-background-insets: 0, 2;"
                 + "-fx-background-radius:"+iconSize+"px;"
                 + "-fx-padding: "+iconSize+"px;"
                 + "-fx-pref-width: "+iconSize+"px;"
-                + "-fx-pref-height: "+iconSize+"px;";
+                + "-fx-pref-height: "+iconSize+"px;"
+                + "-fx-background-color: "+color+", white;";
         return s;
     }
 
