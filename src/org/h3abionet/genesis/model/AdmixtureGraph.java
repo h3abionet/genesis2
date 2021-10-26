@@ -9,23 +9,24 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.chart.*;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.Lighting;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.Monitor;
 import org.h3abionet.genesis.controller.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author henry
@@ -552,6 +553,11 @@ public class AdmixtureGraph extends Graph implements Serializable {
     public GridPane getGridPane(GridPane gridPane, int rowPointer) {
         this.gridPane = gridPane;
 
+        Monitor monitor = new Monitor(Thread.currentThread(), 8);
+        Thread thread = new Thread(monitor, "MonitorThread");
+        thread.setDaemon(true);
+        thread.start();
+
 
 //        try {
             Text kValue = new Text("K = " + numOfAncestries);
@@ -582,6 +588,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
             int colIndex = 1;
             for (StackedBarChart<String, Number> admixChart : listOfStackedBarCharts) {
+                monitor.reset();
 
                 // define chart properties
                 admixChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
@@ -614,15 +621,20 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 // set the label at the bottom
                 setChartGroupName(colIndex, rowPointer+1, xLabel);
 
-                long startTime = System.nanoTime();
+//                long startTime = System.nanoTime();
                 // add graph to grid pane
 //                GridPane.setColumnIndex(admixChart, colIndex);
 //                GridPane.setRowIndex(admixChart, rowPointer);
 //                gridPane.getChildren().add(admixChart);
+                Effect lighting = new Lighting();
+                admixChart.setEffect(lighting);
+                admixChart.setCache(true);
+                admixChart.setCacheHint(CacheHint.SPEED);
+
                 gridPane.add(admixChart, colIndex, rowPointer);
-                long endTime = System.nanoTime();
-                long duration = (endTime - startTime);
-                System.out.println("Execution time in milliseconds: " + duration / 1000000);
+//                long endTime = System.nanoTime();
+//                long duration = (endTime - startTime);
+//                System.out.println("Execution time in seconds: " + TimeUnit.SECONDS.convert(duration, TimeUnit.NANOSECONDS));
 
                 // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {

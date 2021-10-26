@@ -1042,11 +1042,14 @@ public class MainController implements Initializable{
 
         // gridpane section for admixture plots
         gridPane = new GridPane();
+        gridPane.setCache(true);
+        gridPane.setCacheHint(CacheHint.SPEED);
         gridPane.setHgap(0); //horizontal gap
         gridPane.setVgap(0); //vertical gap
         gridPane.setGridLinesVisible(false);
         gridPane.setMinWidth(defaultAdmixPlotWidth); // TODO - change these hard coded values
         gridPane.setMaxWidth(defaultAdmixPlotWidth); // increase this value to increase the thickness of subjects
+
         AnchorPane.setRightAnchor(gridPane, 40.0);
 
         admixPane = new AnchorPane();
