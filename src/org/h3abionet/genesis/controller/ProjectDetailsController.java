@@ -72,7 +72,7 @@ public class ProjectDetailsController implements Initializable{
     @FXML
     private void handleFamFname() {
         try{
-            File famFile = getFile("Choose FAM file");
+            File famFile = getFile("Choose FAM file", "fam");
             if(famFile != null){
                 fam_fname_s = famFile.getAbsolutePath();
                 fam_fname.setText(famFile.getName());
@@ -87,7 +87,7 @@ public class ProjectDetailsController implements Initializable{
     @FXML
     private void handlePhenoFname() throws IOException {
         try {
-            File phen = getFile("Choose Pheno file");
+            File phen = getFile("Choose Pheno file","phe");
             if (phen != null) {
                 pheno_fname_s = phen.getAbsolutePath();
                 pheno_fname.setText(phen.getName());
@@ -108,6 +108,8 @@ public class ProjectDetailsController implements Initializable{
                 // display seletion for a column with phenotype
                 colWithPhenoComboBox.setItems(FXCollections.observableArrayList(phenoColNames));
                 colWithPhenoComboBox.setValue("Column 3"); // default
+
+                entryOKButton.setDisable(false); // disable the ok button if the fam is provided
             }
         }catch (Exception e){
             ;
@@ -126,6 +128,11 @@ public class ProjectDetailsController implements Initializable{
         proj_name_s = proj_name.getText();
 
         String colWithPhenoValue = colWithPhenoComboBox.getValue(); // get combox string value e.g. Column 1
+        int phenoColumnNumber= 0;
+
+        if(colWithPhenoValue != null){
+            phenoColumnNumber = Integer.parseInt(colWithPhenoValue.substring(7));
+        }
 
         if (!proj_name_s.matches(".*\\w.*")) { //check alphanumerics in the title
             proj_name_s = "Project"; // set project name
@@ -133,18 +140,24 @@ public class ProjectDetailsController implements Initializable{
 
         if (fam_fname_s.length() != 0 && pheno_fname_s.length() != 0) {
             //check if files have been provided (can be only one or both), else display an alert message.
-            int phenoColumnNumber = Integer.parseInt(colWithPhenoValue.substring(7));
-
             project = new Project(proj_name_s, fam_fname_s, pheno_fname_s, phenoColumnNumber);
             mainController.setProject(project);
-//            mainController.disablePcaBtn(false);
-//            mainController.disableAdmixtureBtn(false);
+            mainController.disablePcaBtn(false);
+            mainController.disableAdmixtureBtn(false);
 
-        } else if (fam_fname_s.length() != 0) {
+        } else if (fam_fname_s.length() != 0 && pheno_fname_s.length() == 0) {
             project = new Project(proj_name_s, fam_fname_s);
             mainController.setProject(project);
+            mainController.disablePcaBtn(false);
+            mainController.disableAdmixtureBtn(false);
 
-        } else {
+        } else if (pheno_fname_s.length() != 0 && fam_fname_s.length() == 0) {
+            project = new Project(proj_name_s, null, pheno_fname_s, phenoColumnNumber);
+            mainController.setProject(project);
+            mainController.disablePcaBtn(false);
+            mainController.disableAdmixtureBtn(false);
+        }
+        else {
             Genesis.throwInformationException("No files provided");
         }
         Genesis.closeOpenStage(event);
@@ -163,10 +176,10 @@ public class ProjectDetailsController implements Initializable{
      * @param which This is the title of the dialog box
      * @return File object
      */
-    private File getFile(String which) {
+    private File getFile(String which,String fileType) {
         File wanted = null;
         FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("project files", "*.phe", "*.fam");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("project files", "*."+fileType);
         fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setTitle(which);
         Stage stage = new Stage();

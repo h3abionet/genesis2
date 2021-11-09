@@ -64,6 +64,10 @@ public class Project implements Serializable {
     private boolean phenoCreated;
     private ArrayList<String> hiddenGroups = new ArrayList<>(); // [CEU, MKK, ...]
 
+    HashMap<String, String> capitalCities = new HashMap<String, String>();
+    // chart groups with subjects
+    HashMap<String, ArrayList<Subject>> subjectGroups = new HashMap<>();
+
     public Project(String proj_name, String fam_fname_s) {
         this.projectName = proj_name;
         this.famFileName = fam_fname_s;
@@ -74,6 +78,7 @@ public class Project implements Serializable {
         try {
             readFamFile(fam_fname_s);
             setIconTypes();
+            createGroups();
         }catch (Exception e){
             Genesis.throwInformationException("Wrong fam file provided");
         }
@@ -95,6 +100,23 @@ public class Project implements Serializable {
         readFamFile(fam_fname_s);
         readPhenotypeFile(pheno_fname_s);
         setIconTypes();
+        createGroups();
+    }
+
+    private void createGroups(){
+        // add groups to the map
+        for(String group: groupNames){
+            subjectGroups.put(group, new ArrayList<>());
+        }
+        // add subject to various groups
+        for (Subject sub : project.getSubjectsList()) {
+            int phenoPosition = project.getPhenoColumnNumber() - 1;
+            subjectGroups.get(sub.getPhenos()[phenoPosition]).add(sub);
+        }
+    }
+
+    public HashMap<String, ArrayList<Subject>> getSubjectGroups() {
+        return subjectGroups;
     }
 
     public boolean isPhenoFileProvided() {
@@ -115,58 +137,70 @@ public class Project implements Serializable {
         String sex;
         String phe;
 
-        String fileExtension = getExtension(famFilePath);
+        if(famFilePath!=null) { // is fam file provided?
+                try {
+                    BufferedReader r = Genesis.openFile(famFilePath);
+                    String l = r.readLine();
+                    String[] fields;
 
-        if (fileExtension.equals("fam")){
-            try {
-                BufferedReader r = Genesis.openFile(famFilePath);
-                String l = r.readLine();
-                String[] fields;
+                    while (l != null) {
+                        fields = l.split("\\s+");
 
-                while (l != null) {
-                    fields = l.split("\\s+");
+                        fid = fields[0];
+                        iid = fields[1];
+                        pat = fields[2];
+                        mat = fields[3];
+                        sex = fields[4];
+                        phe = fields[5];
 
-                    fid = fields[0];
-                    iid = fields[1];
-                    pat = fields[2];
-                    mat = fields[3];
-                    sex = fields[4];
-                    phe = fields[5];
+                        // set subjects
+                        subjectsList.add(new Subject(fid, iid, pat, mat, sex, phe, colors[0], icons[0], defaultIconSize, false));
 
-                    // set subjects
-                    subjectsList.add(new Subject(fid, iid, pat, mat, sex, phe, colors[0], icons[0], defaultIconSize, false));
+                        iidsList.add(iid); // keep order of iids
 
-                    iidsList.add(iid); // keep order of iids
+                        l = r.readLine();
+                    }
 
-                    l = r.readLine();
+                    famCreated = true; // fam file successfully imported
+
+                    numOfIndividuals = subjectsList.size();
+
+                    // set group name, icons and color if only fam file is provided
+                    groupNames.add("All"); // if no pheno column, name the group All
+                    famOrder.put("All", iidsList);
+                    groupColors.put(groupNames.get(0), colors[0]);  // mkk -> #800000
+                    groupIcons.put(groupNames.get(0), icons[0]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
+                } catch (Exception e) {
+                    famCreated = false;
+                    String famError = "There was a problem in reading the fam file. " +
+                            "Make sure the file is in this format \"RYCS149 WITS149 1 2 1 1\" - starting with individual iids in the first line";
+                    Alert dialog = new Alert(Alert.AlertType.ERROR, famError, ButtonType.OK);
+                    dialog.show();
                 }
 
-                famCreated = true; // fam file successfully imported
-
-                numOfIndividuals = subjectsList.size();
-
-                // set group name, icons and color if only fam file is provided
-                groupNames.add("All"); // if no pheno column, name the group All
-                famOrder.put("All", iidsList);
-                groupColors.put(groupNames.get(0), colors[0]);  // mkk -> #800000
-                groupIcons.put(groupNames.get(0), icons[0]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
-            }catch (Exception e){
-                famCreated = false;
-                String famError = "There was a problem in reading the fam file. " +
-                        "Make sure the file is in this format \"RYCS149 WITS149 1 2 1 1\" - starting with individual iids in the first line";
-                Alert dialog = new Alert(Alert.AlertType.ERROR, famError, ButtonType.OK);
-                dialog.show();
-            }
         }else {
-            Alert dialog = new Alert(Alert.AlertType.ERROR, "Wrong fam file provided. Provide a file with .fam extension", ButtonType.OK);
-            dialog.show();
+            ; // if the fam file name is not provided, do nothing
         }
     }
 
     private void readPhenotypeFile(String phenoFilePath) throws IOException {
-        String fileExtension = getExtension(phenoFilePath);
 
-        if (fileExtension.equals("phe")){
+        if(famCreated==false){
+            BufferedReader reader = Genesis.openFile(phenoFilePath);
+            String row = reader.readLine();
+            String[] fields;
+            while (row != null) {
+                fields = row.split("\\s+");
+                String fid = fields[0];
+                String iid = fields[1];
+                // set subjects
+                subjectsList.add(new Subject(fid, iid, null, null, null, null, colors[0], icons[0], defaultIconSize, false));
+                // set iids
+                iidsList.add(iid); // keep order of iids
+                row = reader.readLine();
+            }
+        }
+
             try {
                 // get phenotype groups and assign colors and icons
                 setPhenotypeGroups(Genesis.openFile(phenoFilePath));
@@ -227,9 +261,6 @@ public class Project implements Serializable {
                 phenoCreated = false;
                 Genesis.throwInformationException(e.getMessage());
             }
-        }else {
-            Genesis.throwInformationException("Wrong phenotype file provided. Provide a file with .phe extension");
-        }
     }
 
 

@@ -24,6 +24,8 @@
     -fx-background-repeat: stretch;   
     -fx-background-size: 250 100, 100 60, 100 50;
     -fx-background-position: center, bottom left, bottom right;
+    -fx-close-tab-animation: NONE;
+
 }
 
 .tab-pane .tab

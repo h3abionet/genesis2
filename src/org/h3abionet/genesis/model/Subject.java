@@ -23,7 +23,7 @@ public class Subject implements java.io.Serializable{
     private String[] pcs;
     private String[] phenos = null;
     private int iconSize;
-    private ArrayList<ArrayList<String>> qValuesList = new ArrayList<>(); // {{1,2}, {1,2, 3}, ...}
+    private ArrayList<String[]> qValuesList = new ArrayList<>(); // {{1,2}, {1,2, 3}, ...}
 
     /**
      * constructor for pheno file - mostly provided
@@ -48,11 +48,11 @@ public class Subject implements java.io.Serializable{
         this.iconSize = iconSize;
     }
 
-    public void setQs(ArrayList qValues ){
+    public void setQs(String [] qValues ){
         qValuesList.add(qValues);
     }
 
-    public ArrayList<ArrayList<String>> getqValuesList() {
+    public ArrayList<String[]> getqValuesList() {
         return qValuesList;
     }
 

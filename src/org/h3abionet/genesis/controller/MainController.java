@@ -3,6 +3,7 @@ package org.h3abionet.genesis.controller;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -31,6 +32,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import jfxtras.labs.util.event.MouseControlUtil;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.Monitor;
 import org.h3abionet.genesis.model.AdmixtureGraph;
 import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.Project;
@@ -172,16 +174,17 @@ public class MainController implements Initializable{
                 disableAdmixtureBtn(false);
                 disableControlBtns(false);
                 disableDataBtn(false);
-            } else if (project.isFamCreated() && project.isPhenoFileProvided() == false) {
-                // if only the fam file is provided and is correct, launch project
+            } else if (project.isPhenoFileProvided() && project.isFamCreated() == false) {
+                // if only pheno file is provided, dont allow admixture
                 disableImportProjBtn(true);
                 disableNewProjBtn(true);
                 disablePcaBtn(false);
-                disableAdmixtureBtn(false);
+                disableAdmixtureBtn(true);
                 disableControlBtns(false);
                 disableDataBtn(false);
-            } else {
-                // otherwise don't launch the project
+            }
+            else {
+//                 otherwise don't launch the project
                 disableImportProjBtn(false);
                 disableNewProjBtn(false);
                 disablePcaBtn(true);
@@ -276,7 +279,7 @@ public class MainController implements Initializable{
                 }
 
                 // disable new project, import project and data buttons
-                disableDataBtn(true);
+                disableDataBtn(false);
                 disableImportProjBtn(true);
                 disableNewProjBtn(true);
 
@@ -345,6 +348,7 @@ public class MainController implements Initializable{
 
             // add the pca chart container to the tab
             pcaChartTab.setContent(pc.addGraph());
+
             tabPane.getTabs().add(pcaChartTab);
 
             tabPaneClickEvent(); // set pcaChart index to selected tab number
@@ -420,9 +424,10 @@ public class MainController implements Initializable{
      * This method sets the admixture pcaChart.
      */
     public void setAdmixtureChart(ArrayList<StackedBarChart<String, Number>> admixCharts) {
+        long startTime = System.nanoTime();
+
         listOfAdmixtureCharts = admixCharts; // get multiple charts
         allAdmixtureCharts.add(listOfAdmixtureCharts);
-
         int sumOfIndividuals = project.getNumOfIndividuals();
 
         // check if the first rowPointer has nodes. If not, define column constraints.
@@ -466,24 +471,27 @@ public class MainController implements Initializable{
             if(project.getImportedKs().size()==1 || project.isProjIsImported()){
                 tabPane.getTabs().add(admixtureTab);
             }else{ // else first remove the existing admixture tab
-                for(int t=0; t<tabPane.getTabs().size(); t++){
-                    if(tabPane.getTabs().get(t).getId().equals("admix")){
-                        tabPane.getTabs().remove(tabPane.getTabs().get(t));
-                        tabPane.getTabs().add(admixtureTab);
+                ObservableList<Tab> tabs = tabPane.getTabs();
+                for(int t=0; t<tabs.size(); t++){
+                    if(tabs.get(t).getId().equals("admix")){
+                        tabs.set(t,admixtureTab);
+                        break;
                     }
                 }
             }
 
             closeTab(admixtureTab); //  on closing the admixture tab
-
-            // create another rowPointer index
-            rowPointer++;
+            rowPointer++; // create another rowPointer index
 
         } catch (Exception e) {
             ; // do nothing
         }
 
         tabPaneClickEvent();
+
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+        System.out.println("time taken to run setter function is "+duration/1000000);
     }
 
     @FXML
@@ -507,7 +515,6 @@ public class MainController implements Initializable{
                 dialogStage.setScene(new Scene(root));
                 dialogStage.setResizable(false);
                 dialogStage.showAndWait();
-
             }
             else if(selectedTab.getId().contains("admix")){
                 // show admixture settings

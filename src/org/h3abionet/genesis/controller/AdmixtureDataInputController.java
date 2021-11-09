@@ -45,9 +45,13 @@ public class AdmixtureDataInputController{
     }
 
     @FXML
-    private void handleAdmixEntryOK(ActionEvent event) {
+    private void handleAdmixEntryOK(ActionEvent event) throws IOException {
         try {
             // set list of stackedBarCharts
+            admixtureGraph = new AdmixtureGraph(admixtureFilePath); // read the file using module class
+            admixtureGraph.setMainController(mainController);
+            mainController.setAdmixtureGraph(admixtureGraph);
+
             admixtureGraph.createAdmixGraph();
             mainController.setAdmixCreationSuccessful(true);
 
@@ -62,13 +66,11 @@ public class AdmixtureDataInputController{
     private void handleEntryBtnAdmixtureData(ActionEvent event) throws IOException {
         File admixture = getFile("Choose admixture file");
         try{
+            System.out.println(admixtureFilePath);
             admixtureFilePath = admixture.getAbsolutePath();
             admixtureFileName = admixture.getName();
             btnAdmixtureData.setText(admixtureFileName);
             btnAdmixtureData.setStyle("-fx-text-fill: #06587F");
-            admixtureGraph = new AdmixtureGraph(admixtureFilePath); // read the file using module class
-            admixtureGraph.setMainController(mainController);
-            mainController.setAdmixtureGraph(admixtureGraph);
 
         }catch(Exception ex){
             Genesis.throwErrorException("No file imported");

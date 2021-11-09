@@ -107,7 +107,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 ArrayList<String> qValues = new ArrayList<>(Arrays.asList(fields));
                 String iid = sub.getIid();
                 qValues.add(0, iid); // add qs
-                sub.setQs(qValues);
+                String qs[] = qValues.toArray(new String[0]);
+                sub.setQs(qs);
                 line = r.readLine();
             }
         } catch (Exception e) {
@@ -137,7 +138,13 @@ public class AdmixtureGraph extends Graph implements Serializable {
         // charts = [chart1, chart2, chart3, ...]
         ArrayList<StackedBarChart<String, Number>> charts = new ArrayList<>(); // store stacked charts for every group
 
-        for (String groupName : project.getGroupNames()) {
+        project.getGroupNames().parallelStream().forEachOrdered(
+                groupName -> {
+//
+//                }
+//        );
+
+//        for (String groupName : project.getGroupNames()) {
 
             XYChart.Series<String, Number> ancestry;
             CategoryAxis xAxis = new CategoryAxis();
@@ -153,28 +160,56 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
             // collect all values belong to this population groups
             // [{iid, v1, v2}, {iid, v1, v2}, ...]
-            List<ArrayList<String>> listOfQValues = new ArrayList<>();
+            List<String []> listOfQValues = new ArrayList<>();
 
-            for (Subject sub : project.getSubjectsList()) {
-                if (project.isPhenoFileProvided()) {
-                    if (sub.getPhenos()[project.getPhenoColumnNumber() - 1].equals(groupName) && sub.getqValuesList().size() != 0 && sub.isHidden() == false) {
-                        ArrayList<String> ls = sub.getqValuesList().get(chartIndex);
-                        listOfQValues.add(ls); //{iid, v1, v2}
-                    }
+            ArrayList<Subject> thisGroup = project.getSubjectGroups().get(groupName);
+
+            thisGroup.parallelStream().forEachOrdered(sub -> {
+                int sizeOfQValuesList = sub.getqValuesList().size();
+                if (sizeOfQValuesList != 0 && sub.isHidden() == false) {
+                    String [] ls = sub.getqValuesList().get(chartIndex);
+                    listOfQValues.add(ls); //{iid, v1, v2}
                 }
-            }
+            });
 
-            // create data series for every ancestry
-            for (int i = 0; i < ancestryLabels.length; i++) {
+
+
+//            for (Subject sub : project.getSubjectsList()) {
+//                int sizeOfQValuesList = sub.getqValuesList().size();
+//                if (project.isPhenoFileProvided()) {
+//                    if (sub.getPhenos()[project.getPhenoColumnNumber() - 1].equals(groupName) && sizeOfQValuesList != 0 && sub.isHidden() == false) {
+//                        ArrayList<String> ls = sub.getqValuesList().get(chartIndex);
+//                        listOfQValues.add(ls); //{iid, v1, v2}
+//                    }
+//                }
+//            }
+
+
+                    long startTime = System.nanoTime();
+
+                    // create data series for every ancestry
+                    int numOfAncentries = ancestryLabels.length;
+            for (int i = 0; i < numOfAncentries; i++) {
                 ancestry = new XYChart.Series<>();
                 ancestry.setName(ancestryLabels[i]);
 
-                for (ArrayList<String> qValues : listOfQValues) { // get individual values
-                    ancestry.getData().add(new XYChart.Data<>(qValues.get(0), Float.parseFloat(qValues.get(1 + i)))); //{iid, v1, v2}
+                Collection<XYChart.Data<String,Number>> individuals = new ArrayList<>(listOfQValues.size());
+                for (String [] qValues : listOfQValues) { // get individual values
+                    individuals.add(new XYChart.Data<>(qValues[0], Float.parseFloat(qValues[1 + i]))); //{iid, v1, v2}
                 }
+                ancestry.getData().addAll(individuals);
+
+//                for (String [] qValues : listOfQValues) { // get individual values
+//                    ancestry.getData().add(new XYChart.Data<>(qValues[0], Float.parseFloat(qValues[1 + i]))); //{iid, v1, v2, v3, v4}
+//                }
 
                 populationGroupChart.getData().add(ancestry); // add values to chart
             }
+
+            long endTime = System.nanoTime();
+            long duration = (endTime - startTime);
+            System.out.println("The time taken to create is "+duration/100000 + " "+groupName);
+
             setAncestryColors(populationGroupChart, ancestryColors); // set ancestry colors
 
             // update current num of ancestries
@@ -197,14 +232,18 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     TilePane tn = (TilePane) n;
                     ObservableList<Node> children = tn.getChildren();
                     tn.getChildren().remove(0, children.size()); // remove all items in range 0 to size
+                    break;
                 }
             }
+
             // only add charts with data
             if (populationGroupChart.getData().get(0).getData().size() > 0) {
                 showIndividualDetails(populationGroupChart);
                 charts.add(populationGroupChart);
             }
-        }
+
+    }
+        );
 
         listOfStackedBarCharts = charts;
         chartIndex += 1;
@@ -235,11 +274,15 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
                             for (Subject sub : project.getSubjectsList()) {
                                 if (sub.getIid().equals(item.getXValue())) {
-                                    List<String> list = sub.getqValuesList().get(rowIndexOfClickedAdmixChart).subList(1,
-                                            sub.getqValuesList().get(rowIndexOfClickedAdmixChart).size());
+//                                    List<String> list = sub.getqValuesList().get(rowIndexOfClickedAdmixChart).subList(1,
+//                                            sub.getqValuesList().get(rowIndexOfClickedAdmixChart).size());
+
+                                    String [] list = Arrays.copyOfRange(sub.getqValuesList().get(rowIndexOfClickedAdmixChart), 1,
+                                            sub.getqValuesList().get(rowIndexOfClickedAdmixChart).length);
+
                                     iidDetails = new ArrayList<>(Arrays.asList(sub.getPhenos()));
                                     iidDetails.add(sub.getSex());
-                                    admixIndivDetailsCtrler.setValuesList(list); // get Y value
+                                    admixIndivDetailsCtrler.setValuesList(Arrays.asList(list)); // get Y value
                                     break;
                                 }
                             }
@@ -411,7 +454,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
     public void showIndividual(String[] ids){
         String iid = ids[1];
         String groupName = null;
-        ArrayList<ArrayList<String>> qValues = null;
+        ArrayList<String[]> qValues = null;
 
         // set subject group and remove individual
         for (Subject s : project.getSubjectsList()) {
@@ -434,7 +477,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
                     for (int s=0; s<admixGraph.getData().size();s++){
                         XYChart.Series<String, Number> serie = admixGraph.getData().get(s);
-                        Float yValue = Float.parseFloat(qValues.get(i).get(s+1));
+                        Float yValue = Float.parseFloat(qValues.get(i)[s+1]);
                         serie.getData().add(new XYChart.Data<>(iid, yValue));
                         //TODO add this data node to a list of all graphs
                     }
@@ -552,13 +595,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
     @SuppressWarnings("empty-statement")
     public GridPane getGridPane(GridPane gridPane, int rowPointer) {
         this.gridPane = gridPane;
-
-        Monitor monitor = new Monitor(Thread.currentThread(), 8);
-        Thread thread = new Thread(monitor, "MonitorThread");
-        thread.setDaemon(true);
-        thread.start();
-
-
 //        try {
             Text kValue = new Text("K = " + numOfAncestries);
             StackPane kValuePane = new StackPane(kValue);
@@ -584,12 +620,11 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
             gridPane.add(kValuePane, 0, rowPointer); // add K value.
 
+        int colIndex = 1;
 
+        long startTime = System.nanoTime();
 
-            int colIndex = 1;
-            for (StackedBarChart<String, Number> admixChart : listOfStackedBarCharts) {
-                monitor.reset();
-
+        for (StackedBarChart<String, Number> admixChart : listOfStackedBarCharts) {
                 // define chart properties
                 admixChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
                 admixChart.setCategoryGap(0); // remove gaps in iids
@@ -621,20 +656,13 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 // set the label at the bottom
                 setChartGroupName(colIndex, rowPointer+1, xLabel);
 
-//                long startTime = System.nanoTime();
                 // add graph to grid pane
-//                GridPane.setColumnIndex(admixChart, colIndex);
-//                GridPane.setRowIndex(admixChart, rowPointer);
-//                gridPane.getChildren().add(admixChart);
                 Effect lighting = new Lighting();
                 admixChart.setEffect(lighting);
                 admixChart.setCache(true);
                 admixChart.setCacheHint(CacheHint.SPEED);
 
                 gridPane.add(admixChart, colIndex, rowPointer);
-//                long endTime = System.nanoTime();
-//                long duration = (endTime - startTime);
-//                System.out.println("Execution time in seconds: " + TimeUnit.SECONDS.convert(duration, TimeUnit.NANOSECONDS));
 
                 // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
@@ -658,8 +686,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
                             aop.setProject(project);
                             aop.setAdmixChart(admixChart);
                             aop.setNumOfRows(gridPane.getRowCount());
-                             aop.downwardShiftMovement();
-                             aop.upwardShiftMovement();
+                            aop.downwardShiftMovement();
+                            aop.upwardShiftMovement();
                             dialogStage.show();
                         } catch (IOException ex) {
                             Genesis.throwErrorException("Failed to load plot format options");
@@ -667,15 +695,18 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     }
                 });
 
-
-
                 // increment the column index
                 colIndex++;
             }
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        System.out.println("Time taken to return the gridpane for loop "+duration/100000);
+
 
 //        } catch (Exception e) {
 //            Genesis.throwErrorException("Sorry. Try Again"); //do nothing
 //        }
+
         return gridPane;
     }
 
