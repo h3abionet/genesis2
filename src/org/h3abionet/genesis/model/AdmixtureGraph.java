@@ -202,7 +202,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
 //                for (String [] qValues : listOfQValues) { // get individual values
 //                    ancestry.getData().add(new XYChart.Data<>(qValues[0], Float.parseFloat(qValues[1 + i]))); //{iid, v1, v2, v3, v4}
 //                }
-
                 populationGroupChart.getData().add(ancestry); // add values to chart
             }
 
@@ -622,9 +621,10 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
         int colIndex = 1;
 
-        long startTime = System.nanoTime();
+
 
         for (StackedBarChart<String, Number> admixChart : listOfStackedBarCharts) {
+
                 // define chart properties
                 admixChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
                 admixChart.setCategoryGap(0); // remove gaps in iids
@@ -662,7 +662,13 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 admixChart.setCache(true);
                 admixChart.setCacheHint(CacheHint.SPEED);
 
+            long startTime = System.nanoTime();
+
                 gridPane.add(admixChart, colIndex, rowPointer);
+
+            long endTime = System.nanoTime();
+            long duration = (endTime - startTime);
+            System.out.println("Time taken to return the gridpane "+admixChart.getId()+" "+duration/100000);
 
                 // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
@@ -698,9 +704,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 // increment the column index
                 colIndex++;
             }
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime);
-        System.out.println("Time taken to return the gridpane for loop "+duration/100000);
 
 
 //        } catch (Exception e) {
