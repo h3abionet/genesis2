@@ -67,6 +67,7 @@ public class Project implements Serializable {
     HashMap<String, String> capitalCities = new HashMap<String, String>();
     // chart groups with subjects
     HashMap<String, ArrayList<Subject>> subjectGroups = new HashMap<>();
+    private String pcaFileName;
 
     public Project(String proj_name, String fam_fname_s) {
         this.projectName = proj_name;
@@ -189,6 +190,8 @@ public class Project implements Serializable {
             BufferedReader reader = Genesis.openFile(phenoFilePath);
             String row = reader.readLine();
             String[] fields;
+
+            // create the subjects
             while (row != null) {
                 fields = row.split("\\s+");
                 String fid = fields[0];
@@ -218,6 +221,7 @@ public class Project implements Serializable {
                     String chosenPheno = fields[phenoColumnNumber - 1];
                     String color = (String) groupColors.get(chosenPheno);
                     String icon = (String) groupIcons.get(chosenPheno);
+
                     // add pheno details to every subject
                     for (Subject sub : subjectsList) {
                         if (sub.getFid().equals(fid) && sub.getIid().equals(iid) && sub.getPhenos()==null) {
@@ -447,5 +451,13 @@ public class Project implements Serializable {
         // change the key for the icons and colors
         groupIcons.put(newGroupName,groupIcons.remove(oldGroupName));
         groupColors.put(newGroupName,groupColors.remove(oldGroupName));
+    }
+
+    public void setPcaFileName(String pcaFileName) {
+        this.pcaFileName = pcaFileName;
+    }
+
+    public String getPcaFileName() {
+        return pcaFileName;
     }
 }

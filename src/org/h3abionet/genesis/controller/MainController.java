@@ -150,7 +150,7 @@ public class MainController implements Initializable{
     private Project project;
     private ArrayList<ScatterChart> pcaChartsList = new ArrayList<>();
 //    private ArrayList<ScatterChart> pcaChartsList = new ArrayList<>();
-
+    private PCAGraphEventsHandler pc;
     @FXML
     private void newProject(ActionEvent event) throws IOException {
         // remove background image
@@ -227,6 +227,7 @@ public class MainController implements Initializable{
         Parent parent = (Parent) fxmlLoader.load();
         pcaDataInputController = fxmlLoader.getController();
         pcaDataInputController.setMainController(this);
+        pcaDataInputController.setProject(project);
         Stage dialogStage = new Stage();
         dialogStage.setScene(new Scene(parent));
         dialogStage.setResizable(false);
@@ -307,6 +308,7 @@ public class MainController implements Initializable{
         PCADataInputController controller = fxmlLoader.getController();
         controller.enableOK();
         controller.setPcaGraph(pcaGraph);
+        controller.setProject(project);
         controller.setButtons();
         Stage dialogStage = new Stage();
         dialogStage.setScene(new Scene(root));
@@ -329,7 +331,7 @@ public class MainController implements Initializable{
         this.pcaChart = pcaChart;
         try {
             // pc acquires the pcaChart for additional features
-            PCAGraphEventsHandler pc = new PCAGraphEventsHandler(pcaChart);
+            pc = new PCAGraphEventsHandler(pcaChart);
 
             // get axis labels
             String xAxisLabel = pcaChart.getXAxis().getLabel();
@@ -818,6 +820,7 @@ public class MainController implements Initializable{
         Region r = (Region) p.getChildren().get(0);
         Group gr = new Group();
 
+        // change cursor on hovering the shape
         shape.setOnMouseEntered(e -> {
             shape.getScene().setCursor(Cursor.HAND);
             shape.setEffect(new DropShadow(20, Color.BLUE));
@@ -1001,7 +1004,7 @@ public class MainController implements Initializable{
 
     public void disableControlBtns(boolean enable){
         disableSaveBtn(enable);
-        disableSettingsBtn(false);
+        disableSettingsBtn(enable);
         disableDrawingBtn(enable);
         disableIndividualBtn(enable);
         disableSearchBtn(enable);

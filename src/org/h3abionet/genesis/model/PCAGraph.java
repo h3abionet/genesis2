@@ -450,7 +450,9 @@ public class PCAGraph extends Graph implements Serializable {
                 try {
                     // launch individual details window
                     showIndividualDetails(data, sc);
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             });
         }
     }
@@ -483,12 +485,13 @@ public class PCAGraph extends Graph implements Serializable {
                         lab.setOnMouseClicked(me -> {
                             // Toggle group (phenotype) visibility on left click
                             if (me.getButton() == MouseButton.PRIMARY) {
+                                chartGroupNameClicked(me.getSource());
 //                                chartGroupNameClicked(me.getSource());
-                                for (XYChart.Data<Number, Number> d : s.getData()) {
-                                    if (d.getNode() != null) {
-                                        d.getNode().setVisible(!d.getNode().isVisible()); // Toggle visibility of every node in the series
-                                    }
-                                }
+//                                for (XYChart.Data<Number, Number> d : s.getData()) {
+//                                    if (d.getNode() != null) {
+//                                        d.getNode().setVisible(!d.getNode().isVisible()); // Toggle visibility of every node in the series
+//                                    }
+//                                }
                             }else{ // right click
                                 try {
                                     FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCAGroupLabel.fxml"));
@@ -584,12 +587,10 @@ public class PCAGraph extends Graph implements Serializable {
             firstGroupLabel = lbl;
         } else {
             secondGroupLabel = lbl;
-
             // if the same label is clicked, do not swap
             groupNameSwap();
         }
-
-        labelClickCounter = ++labelClickCounter % 2;  // changes values between 0 1
+        labelClickCounter = ++labelClickCounter % 2;  // change values between 0 1
     }
 
     private void groupNameSwap() {
@@ -607,21 +608,11 @@ public class PCAGraph extends Graph implements Serializable {
                     int firstIndex = tn.getChildren().indexOf(firstGroupLabel);
                     int secondIndex = tn.getChildren().indexOf(secondGroupLabel);
 
-                    tn.getChildren().remove(firstGroupLabel);
-                    tn.getChildren().remove(secondGroupLabel);
+                    children.set(firstIndex, new Label());
+                    children.set(secondIndex, new Label());
 
-                    children.add(firstIndex, firstGroupLabel);
-                    children.add(secondIndex, secondGroupLabel);
-
-//                    for (int j=0;j<sc.getData().size();j++){ // get every serie
-//                        Label lab = (Label) children.get(j).lookup(".chart-legend-item");
-//                        if(lab.getText().equals(oldGroupName)){
-//                            // change the node with group name on the chart
-//                            lab.setText(newGroupName);
-//                            break;
-//                        }
-//                    }
-//                    break;
+                    children.set(firstIndex, secondGroupLabel);
+                    children.set(secondIndex, firstGroupLabel);
                 }
             }
         }
@@ -832,7 +823,9 @@ public class PCAGraph extends Graph implements Serializable {
             String yAxisLabel = chart.getYAxis().getLabel();
             individualDetailsController.setPcaLabel(xAxisLabel + ": " + xValue + "\n" + yAxisLabel + ": " + yValue);
 
-            for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
+            // list of current pca subjects
+            ArrayList<Subject> subjects = project.getPcGraphSubjectsList().get(project.getCurrentTabIndex());
+            for(Subject s: subjects){
                 ObservableList<String> phenoDetails;
                 if(s.getPcs()!=null && Arrays.asList(s.getPcs()).contains(xValue) && Arrays.asList(s.getPcs()).contains(yValue)){
                     if(project.isPhenoFileProvided()){
@@ -843,7 +836,7 @@ public class PCAGraph extends Graph implements Serializable {
                         phenoDetails = FXCollections.observableArrayList(new String[]{s.getFid(), s.getIid(), s.getSex()});
                         individualDetailsController.setPhenotypeGroup(project.getGroupNames().get(0));
                     }
-
+//
                     individualDetailsController.setPhenoListView(phenoDetails);
                     individualDetailsController.setIconColor(s.getColor());
                     individualDetailsController.setIconSVGShape(s.getIcon());
@@ -852,8 +845,8 @@ public class PCAGraph extends Graph implements Serializable {
                     break;
                 }
             }
-
-            // display icon for clicked point
+//
+//            // display icon for clicked point
             individualDetailsController.setIconDisplay(data.getNode().getStyle());
 
             // set values of groupName combo box
@@ -862,11 +855,10 @@ public class PCAGraph extends Graph implements Serializable {
                 uniqueGroups.add(s.getName());
             }
             individualDetailsController.setPhenotypeComboBox(FXCollections.observableArrayList(uniqueGroups));
+
             dialogStage.showAndWait();
 
-        } catch (Exception ex) {
-            ;
-        }
+        } catch (Exception ex) {;}
     }
 
     /**

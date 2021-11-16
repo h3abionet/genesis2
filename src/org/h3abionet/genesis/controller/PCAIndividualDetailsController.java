@@ -199,7 +199,6 @@ public class PCAIndividualDetailsController {
     }
 
     @FXML
-    @SuppressWarnings("empty-statement")
     private void entryOkButton(ActionEvent event) {
         // hide or place the point on top
         for (XYChart.Series<Number, Number> series : chart.getData()) {

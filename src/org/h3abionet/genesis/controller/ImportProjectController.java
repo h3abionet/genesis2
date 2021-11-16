@@ -65,6 +65,8 @@ public class ImportProjectController {
             mainController.disableControlBtns(false);
             mainController.disablePcaBtn(false);
             mainController.disableAdmixtureBtn(false);
+            mainController.disableDataBtn(false);
+
         } catch (IOException i) {
             Genesis.throwErrorException("Failed to import the project");
         } catch (ClassNotFoundException c) {

@@ -594,7 +594,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
     @SuppressWarnings("empty-statement")
     public GridPane getGridPane(GridPane gridPane, int rowPointer) {
         this.gridPane = gridPane;
-//        try {
+        try {
             Text kValue = new Text("K = " + numOfAncestries);
             StackPane kValuePane = new StackPane(kValue);
             kValuePane.setId(String.valueOf(kValue));
@@ -662,13 +662,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 admixChart.setCache(true);
                 admixChart.setCacheHint(CacheHint.SPEED);
 
-            long startTime = System.nanoTime();
-
                 gridPane.add(admixChart, colIndex, rowPointer);
-
-            long endTime = System.nanoTime();
-            long duration = (endTime - startTime);
-            System.out.println("Time taken to return the gridpane "+admixChart.getId()+" "+duration/100000);
 
                 // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
@@ -706,9 +700,9 @@ public class AdmixtureGraph extends Graph implements Serializable {
             }
 
 
-//        } catch (Exception e) {
-//            Genesis.throwErrorException("Sorry. Try Again"); //do nothing
-//        }
+        } catch (Exception e) {
+            Genesis.throwErrorException("Sorry. Try Again"); //do nothing
+        }
 
         return gridPane;
     }
@@ -897,7 +891,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     secondChart = node;
                 }
             }
-
             if (firstChart != null && secondChart != null) {
                 // remove nodes
                 gridPane.getChildren().removeAll(firstChart, secondChart);
@@ -908,13 +901,10 @@ public class AdmixtureGraph extends Graph implements Serializable {
             } else {
                 ;
             }
-
             // reset nodes
             firstChart = null;
             secondChart = null;
-
             columnIndex++;
         }
-
     }
 }

@@ -125,7 +125,6 @@ public class PCASettingsController implements Initializable{
 
     @FXML
     private void entryOkButton(ActionEvent event) {
-        System.out.println(chosenFontColor);
         if(chosenFontColor.equals("ffff")){
             chosenFontColor = "000000";
         }

@@ -14,6 +14,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCAGraph;
+import org.h3abionet.genesis.model.Project;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,11 +31,11 @@ public class PCADataInputController implements Initializable {
     private PCAGraph pcaGraph;
     private MainController mainController;
 
-    private static String pcaFilePath = "";
-    private static String pcaFileName = "";
+    private String pcaFilePath = "";
+    private String pcaFileName = "";
 
-    private static String pcaComboButton1Value = "";
-    private static String pcaComboButton2Value = "";
+    private String pcaComboButton1Value = "";
+    private String pcaComboButton2Value = "";
     private boolean firstPcaSuccessful = false;
 
     @FXML
@@ -51,16 +52,21 @@ public class PCADataInputController implements Initializable {
 
     @FXML
     private Button entryCancelButton;
+    private Project project;
 
     public void setButtons(){
-        pcaEvecFileBtn.setText(pcaFileName);
+        pcaEvecFileBtn.setText(project.getPcaFileName());
         pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
         pcaComboButton1.setItems(pcaGraph.getPcaColumnLabels());
         pcaComboButton2.setItems(pcaGraph.getPcaColumnLabels());
 
         // show current PCAs being displayed - user changes them
-        pcaComboButton1.setValue(pcaComboButton1Value);
-        pcaComboButton2.setValue(pcaComboButton2Value);
+        pcaComboButton1.setValue(pcaGraph.getPcaColumnLabels().get(0));
+        pcaComboButton2.setValue(pcaGraph.getPcaColumnLabels().get(1));
+
+        // set the default values of the pca combo box buttons
+        pcaComboButton1Value = pcaGraph.getPcaColumnLabels().get(0);
+        pcaComboButton2Value = pcaGraph.getPcaColumnLabels().get(1);
     }
 
     /**
@@ -74,7 +80,8 @@ public class PCADataInputController implements Initializable {
         try{
             pcaFilePath = pcaFile.getAbsolutePath();
             pcaFileName = pcaFile.getName();
-            pcaEvecFileBtn.setText(pcaFileName);
+            project.setPcaFileName(pcaFileName);
+            pcaEvecFileBtn.setText(project.getPcaFileName());
             pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
 
             pcaGraph = new PCAGraph(pcaFilePath);
@@ -184,5 +191,9 @@ public class PCADataInputController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         entryOKButton.setDisable(true);
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }

@@ -65,12 +65,16 @@ public class Subject implements java.io.Serializable{
     }
 
     public String getSex() {
-        if(sex.equals("1")){
-            return "Male";
-        }else if(sex.equals("2")){
-            return "Female";
+        if(sex!=null){
+            if(sex.equals("1")){
+                return "Male";
+            }else if(sex.equals("2")){
+                return "Female";
+            }else{
+                return "Unkown Sex";
+            }
         }else{
-            return "Unkown Sex";
+            return "Unknown Sex";
         }
     }
 
