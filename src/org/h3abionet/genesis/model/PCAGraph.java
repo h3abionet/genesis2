@@ -54,7 +54,7 @@ public class PCAGraph extends Graph implements Serializable {
     // group name -> with all associated graphs for different values of k
     private HashMap<String, ArrayList<XYChart.Series<Number, Number>>> hiddenPCAGroups = new HashMap<>();
     private int labelClickCounter;
-    private Label firstGroupLabel, secondGroupLabel;
+    private transient Label firstGroupLabel, secondGroupLabel;
 
 
     /**
@@ -607,6 +607,9 @@ public class PCAGraph extends Graph implements Serializable {
 
                     int firstIndex = tn.getChildren().indexOf(firstGroupLabel);
                     int secondIndex = tn.getChildren().indexOf(secondGroupLabel);
+
+
+
 
                     children.set(firstIndex, new Label());
                     children.set(secondIndex, new Label());

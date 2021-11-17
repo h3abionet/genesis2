@@ -7,7 +7,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.AdmixtureGraph;
-import org.h3abionet.genesis.model.Graph;
 import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.Project;
 
@@ -51,7 +50,7 @@ public class ImportProjectController {
     }
 
     @FXML
-    void Done(ActionEvent event) throws IOException, ClassNotFoundException {
+    void Done(ActionEvent event) throws IOException, ClassNotFoundException, InterruptedException {
         try {
             FileInputStream fileIn = new FileInputStream(projFile);
             ObjectInputStream in = new ObjectInputStream(fileIn);
