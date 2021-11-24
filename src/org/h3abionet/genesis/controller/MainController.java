@@ -32,7 +32,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import jfxtras.labs.util.event.MouseControlUtil;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.Monitor;
 import org.h3abionet.genesis.model.AdmixtureGraph;
 import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.Project;

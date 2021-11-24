@@ -19,14 +19,12 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.Monitor;
 import org.h3abionet.genesis.controller.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author henry
