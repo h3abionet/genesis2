@@ -24,6 +24,11 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.controller.MainController;
@@ -470,6 +475,18 @@ public class PCAGraph extends Graph implements Serializable {
                 TilePane tn = (TilePane) n;
                 ObservableList<Node> children = tn.getChildren();
 
+                // add hover property
+                tn.hoverProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue) {
+                        tn.setStyle("-fx-background-color: #b3e5fc");
+                        tn.setCursor(Cursor.WAIT);
+//                        tn.setCursor(Cursor.HAND);
+                    }else {
+                        tn.setCursor(Cursor.NONE);
+                        tn.setStyle(null);
+                    }
+                });
+
                 Label lab = (Label) children.get(serieIndex).lookup(".chart-legend-item");
 
                 // get color and shape of the group for this lab
@@ -483,7 +500,7 @@ public class PCAGraph extends Graph implements Serializable {
                 // legend mouse click events for left and right click
                 for (XYChart.Series<Number, Number> s : sc.getData()) {
                     if (s.getName().equals(lab.getText())) {
-                        lab.setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
+//                        lab.setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
                         lab.setOnMouseClicked(me -> {
                             // Toggle group (phenotype) visibility on left click
                             if (me.getButton() == MouseButton.PRIMARY) {
@@ -580,6 +597,8 @@ public class PCAGraph extends Graph implements Serializable {
     }
 
     private void chartGroupNameClicked(Object source, ScatterChart<Number, Number> sc) {
+        Label clickNext = new Label("Click Next");
+
         if (!(source instanceof Label)) {
             return;
         }
@@ -587,33 +606,34 @@ public class PCAGraph extends Graph implements Serializable {
 
         if (labelClickCounter == 0) {
             firstGroupLabel = lbl;
-            ((Label) source).setCursor(Cursor.CROSSHAIR);
+//            ((Label) source).setCursor(Cursor.MOVE);
+            clickNext.setStyle("-fx-text-fill: red");
 
             for (Node n : sc.getChildrenUnmodifiable()) {
                 if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                     TilePane tn = (TilePane) n;
                     ObservableList<Node> children = tn.getChildren(); // get legend items
-                    children.add(new Label("Click Next Position"));
+                    children.add(clickNext);
+                    break;
                 }
             }
-
-            sc.getScene().parentProperty().addListener(new ChangeListener<Parent>() {
-                @Override public void changed(ObservableValue<? extends Parent> ov, Parent oldParent, Parent parent) {
-                    Group parentGroup = (Group) parent;
-                    parentGroup.getChildren().add(dataText);
-                }
-            });
-//            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//            alert.setTitle("Legend");
-//            alert.setHeaderText(null);
-//            alert.setContentText("Click its next position");
-//            alert.getDialogPane().setMaxSize(50,50);
-//            alert.showAndWait();
 
         } else {
             secondGroupLabel = lbl;
             // if the same label is clicked, do not swap
+
+            // swap
             groupNameSwap();
+
+            // remove the next label
+            for (Node n : sc.getChildrenUnmodifiable()) {
+                if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+                    TilePane tn = (TilePane) n;
+                    ObservableList<Node> children = tn.getChildren(); // get legend items
+                    children.remove(children.size() - 1);
+                    break;
+                }
+            }
         }
         labelClickCounter = ++labelClickCounter % 2;  // change values between 0 1
     }
@@ -646,24 +666,32 @@ public class PCAGraph extends Graph implements Serializable {
                         children.set(secondIndex, firstGroupLabel);
                     }
 
-                    if(firstIndex>0){
-
+                    if(firstIndex>0 && firstIndex!=children.size()-2){
                         for(Node lbl: children) {
                             if ((lbl instanceof Label)) {
                                 int curIndex = children.indexOf(lbl);
                                 if (curIndex <= secondIndex && curIndex > firstIndex) {
-                                    System.out.println("current index "+curIndex);
                                     children.set(curIndex, new Label("Cur"));
                                     children.set(curIndex-1, lbl);
                                 }
                             }
                         }
-//                        children.set(firstIndex, new Label());
-//                        children.set(secondIndex, new Label());
-//                        children.set(firstIndex, secondGroupLabel);
                         children.set(secondIndex, firstGroupLabel);
                     }
 
+//                    if(firstIndex==children.size()-2){
+//                        System.out.println(children.size()-2);
+//                        for(Node lbl: children) {
+//                            if ((lbl instanceof Label)) {
+//                                int curIndex = children.indexOf(lbl);
+//                                if (curIndex >= secondIndex && curIndex < firstIndex) {
+//                                    children.set(curIndex, new Label("Cur"));
+//                                    children.set(curIndex+1, lbl);
+//                                }
+//                            }
+//                        }
+//                        children.set(secondIndex, firstGroupLabel);
+//                    }
                 }
             }
         }
