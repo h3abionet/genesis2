@@ -474,15 +474,13 @@ public class PCAGraph extends Graph implements Serializable {
             if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                 TilePane tn = (TilePane) n;
                 ObservableList<Node> children = tn.getChildren();
+                tn.setCursor(Cursor.HAND);
 
                 // add hover property
                 tn.hoverProperty().addListener((observable, oldValue, newValue) -> {
                     if (newValue) {
                         tn.setStyle("-fx-background-color: #b3e5fc");
-                        tn.setCursor(Cursor.WAIT);
-//                        tn.setCursor(Cursor.HAND);
                     }else {
-                        tn.setCursor(Cursor.NONE);
                         tn.setStyle(null);
                     }
                 });
@@ -505,12 +503,6 @@ public class PCAGraph extends Graph implements Serializable {
                             // Toggle group (phenotype) visibility on left click
                             if (me.getButton() == MouseButton.PRIMARY) {
                                 chartGroupNameClicked(me.getSource(), sc);
-//                                chartGroupNameClicked(me.getSource());
-//                                for (XYChart.Data<Number, Number> d : s.getData()) {
-//                                    if (d.getNode() != null) {
-//                                        d.getNode().setVisible(!d.getNode().isVisible()); // Toggle visibility of every node in the series
-//                                    }
-//                                }
                             }else{ // right click
                                 try {
                                     FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCAGroupLabel.fxml"));
@@ -613,6 +605,7 @@ public class PCAGraph extends Graph implements Serializable {
                 if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                     TilePane tn = (TilePane) n;
                     ObservableList<Node> children = tn.getChildren(); // get legend items
+                    tn.setCursor(Cursor.CROSSHAIR);
                     children.add(clickNext);
                     break;
                 }
@@ -620,8 +613,6 @@ public class PCAGraph extends Graph implements Serializable {
 
         } else {
             secondGroupLabel = lbl;
-            // if the same label is clicked, do not swap
-
             // swap
             groupNameSwap();
 
@@ -640,10 +631,10 @@ public class PCAGraph extends Graph implements Serializable {
 
     private void groupNameSwap() {
         // column and row index for clicked labels
-
         for(int i=0; i<mainController.getPcaChartsList().size(); i++){ // every chart
 
             ScatterChart<Number, Number> sc = mainController.getPcaChartsList().get(i);
+            System.out.println("chart "+i);
 
             for (Node n : sc.getChildrenUnmodifiable()) {
                 if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
@@ -652,58 +643,43 @@ public class PCAGraph extends Graph implements Serializable {
 
                     int firstIndex = tn.getChildren().indexOf(firstGroupLabel);
                     int secondIndex = tn.getChildren().indexOf(secondGroupLabel);
-
-                    if(firstIndex==0){
-                        for(Node lbl: children) {
-                            if ((lbl instanceof Label)) {
-                                int curIndex = children.indexOf(lbl);
-                                if (curIndex <= secondIndex && curIndex != 0) {
-                                    children.set(curIndex, new Label("Cur"));
-                                    children.set(curIndex-1, lbl);
+                    // shift down
+                    if(firstIndex<secondIndex){
+                        for(int j=firstIndex; j<=secondIndex; j++){ // starting
+                            Node first = children.get(j);
+                            Node second = children.get(j+1);
+                            if ((first instanceof Label)) {
+                                if (j < secondIndex) { // limit
+                                    children.set(j, new Label("Cur")); // current position
+                                    children.set(j+1, new Label("Cur")); // next position
+                                    children.set(j+1, first);
+                                    children.set(j, second);
                                 }
                             }
-                        }
-                        children.set(secondIndex, firstGroupLabel);
-                    }
 
-                    if(firstIndex>0 && firstIndex!=children.size()-2){
-                        for(Node lbl: children) {
-                            if ((lbl instanceof Label)) {
-                                int curIndex = children.indexOf(lbl);
-                                if (curIndex <= secondIndex && curIndex > firstIndex) {
-                                    children.set(curIndex, new Label("Cur"));
-                                    children.set(curIndex-1, lbl);
+                        }
+                    }
+                    // shift up
+                    if(firstIndex>secondIndex){
+                        for(int j=firstIndex; j>=secondIndex; j--){ // starting
+                            Node first = children.get(j);
+                            Node second = children.get(j-1);
+                            if ((first instanceof Label)) {
+                                if (j > secondIndex) { // limit
+                                    children.set(j, new Label("Cur")); // current position
+                                    children.set(j-1, new Label("Cur")); // next position
+                                    children.set(j-1, first);
+                                    children.set(j, second);
                                 }
                             }
+
                         }
-                        children.set(secondIndex, firstGroupLabel);
                     }
 
-//                    if(firstIndex==children.size()-2){
-//                        System.out.println(children.size()-2);
-//                        for(Node lbl: children) {
-//                            if ((lbl instanceof Label)) {
-//                                int curIndex = children.indexOf(lbl);
-//                                if (curIndex >= secondIndex && curIndex < firstIndex) {
-//                                    children.set(curIndex, new Label("Cur"));
-//                                    children.set(curIndex+1, lbl);
-//                                }
-//                            }
-//                        }
-//                        children.set(secondIndex, firstGroupLabel);
-//                    }
                 }
             }
         }
     }
-
-    private Label addInfoLabel() {
-        Label legensLbl = new Label("Click ESC to reset the zoom level.");
-        TilePane.setAlignment(legensLbl, Pos.TOP_RIGHT);
-        legensLbl.setVisible(false);
-        return legensLbl;
-    }
-
 
     public void renameLegendGroupNames(String oldGroupName, String newGroupName){
         // rename group in all charts
