@@ -498,7 +498,6 @@ public class PCAGraph extends Graph implements Serializable {
                 // legend mouse click events for left and right click
                 for (XYChart.Series<Number, Number> s : sc.getData()) {
                     if (s.getName().equals(lab.getText())) {
-//                        lab.setCursor(Cursor.HAND); // Hint user that legend symbol is clickable
                         lab.setOnMouseClicked(me -> {
                             // Toggle group (phenotype) visibility on left click
                             if (me.getButton() == MouseButton.PRIMARY) {
@@ -598,14 +597,13 @@ public class PCAGraph extends Graph implements Serializable {
 
         if (labelClickCounter == 0) {
             firstGroupLabel = lbl;
-//            ((Label) source).setCursor(Cursor.MOVE);
             clickNext.setStyle("-fx-text-fill: red");
 
             for (Node n : sc.getChildrenUnmodifiable()) {
                 if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                     TilePane tn = (TilePane) n;
                     ObservableList<Node> children = tn.getChildren(); // get legend items
-                    tn.setCursor(Cursor.CROSSHAIR);
+                    tn.setCursor(Cursor.CLOSED_HAND);
                     children.add(clickNext);
                     break;
                 }
@@ -621,6 +619,7 @@ public class PCAGraph extends Graph implements Serializable {
                 if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                     TilePane tn = (TilePane) n;
                     ObservableList<Node> children = tn.getChildren(); // get legend items
+                    tn.setCursor(Cursor.HAND);
                     children.remove(children.size() - 1);
                     break;
                 }
@@ -633,8 +632,9 @@ public class PCAGraph extends Graph implements Serializable {
         // column and row index for clicked labels
         for(int i=0; i<mainController.getPcaChartsList().size(); i++){ // every chart
 
+            System.out.println("the chart is "+i);
+
             ScatterChart<Number, Number> sc = mainController.getPcaChartsList().get(i);
-            System.out.println("chart "+i);
 
             for (Node n : sc.getChildrenUnmodifiable()) {
                 if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
