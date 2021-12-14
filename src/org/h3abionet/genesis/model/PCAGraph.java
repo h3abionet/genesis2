@@ -632,8 +632,6 @@ public class PCAGraph extends Graph implements Serializable {
         // column and row index for clicked labels
         for(int i=0; i<mainController.getPcaChartsList().size(); i++){ // every chart
 
-            System.out.println("the chart is "+i);
-
             ScatterChart<Number, Number> sc = mainController.getPcaChartsList().get(i);
 
             for (Node n : sc.getChildrenUnmodifiable()) {

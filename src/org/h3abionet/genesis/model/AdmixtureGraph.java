@@ -792,6 +792,9 @@ public class AdmixtureGraph extends Graph implements Serializable {
         int secondRow = GridPane.getRowIndex(secondGroupLabel);
         int secondCol = GridPane.getColumnIndex(secondGroupLabel);
 
+        // under development
+        
+
         // groupNameSwap their column constraints
         Collections.swap(gridPane.getColumnConstraints(), firstCol, secondCol);
 
