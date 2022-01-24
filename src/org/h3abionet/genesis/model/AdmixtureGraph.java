@@ -50,6 +50,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
     private int rowIndexOfClickedAdmixChart;
     private String clickedId;
     private AdmixtureOptionsController admixtureOptionsController;
+    private double defaultAngleOfChartNames = 90;
 
     public static void setChartIndex(int chartIndex) {
         AdmixtureGraph.chartIndex = chartIndex;
@@ -147,12 +148,17 @@ public class AdmixtureGraph extends Graph implements Serializable {
             XYChart.Series<String, Number> ancestry;
             CategoryAxis xAxis = new CategoryAxis();
             NumberAxis yAxis = new NumberAxis(0, 1, 0.1);
+
+            //xAxis.setAutoRanging(false);
             xAxis.setTickMarkVisible(false);
             xAxis.setTickLabelsVisible(false);
-
+            xAxis.setPrefSize(0, 0);
+            yAxis.setAutoRanging(false);
             yAxis.setMinorTickVisible(false);
             yAxis.setTickMarkVisible(false);
             yAxis.setTickLabelsVisible(false);
+            yAxis.setPrefSize(0, 0);
+
 
             StackedBarChart<String, Number> populationGroupChart = new StackedBarChart<>(xAxis, yAxis);
 
@@ -183,8 +189,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
 //            }
 
 
-                    long startTime = System.nanoTime();
-
                     // create data series for every ancestry
                     int numOfAncentries = ancestryLabels.length;
             for (int i = 0; i < numOfAncentries; i++) {
@@ -202,10 +206,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
 //                }
                 populationGroupChart.getData().add(ancestry); // add values to chart
             }
-
-            long endTime = System.nanoTime();
-            long duration = (endTime - startTime);
-            System.out.println("The time taken to create is "+duration/100000 + " "+groupName);
 
             setAncestryColors(populationGroupChart, ancestryColors); // set ancestry colors
 
@@ -619,8 +619,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
         int colIndex = 1;
 
-
-
         for (StackedBarChart<String, Number> admixChart : listOfStackedBarCharts) {
 
                 // define chart properties
@@ -633,7 +631,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 admixChart.setMaxWidth(Double.MAX_VALUE);
 
                 // set the margins of the chart
-                GridPane.setMargin(admixChart, new Insets(0, 0, -3, -3)); // TODO remove the chart content margins on axes
+                GridPane.setMargin(admixChart, new Insets(0, 0.5, 0, 0)); // TODO remove the chart content margins on axes
 
                 // remove last rowPointer - population group labels
                 // remove previous group labels - cell will be replaced with new graph
@@ -711,11 +709,12 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
     private void setChartGroupName(int colIndex, int rowIndex, String groupName){
         Text chartGroupName = new Text(groupName);
-
+        chartGroupName.setRotate(defaultAngleOfChartNames); // default angle of the chart names
         StackPane pane = new StackPane(chartGroupName);
         pane.setAlignment(Pos.CENTER);
-        pane.setMargin(chartGroupName, new Insets(5));
-        String paneCssStyle = "-fx-border-color: black; -fx-border-width: 1px;"; //TODO check if not redundant
+        pane.setMargin(chartGroupName, new Insets(0));
+        pane.setPadding(new Insets(15,0,0,0));
+        String paneCssStyle = "-fx-padding: 10px; -fx-border-style: solid solid none solid; -fx-border-color: black; -fx-border-width: 1px"; //TODO check if not redundant
         pane.setStyle(paneCssStyle);
 
         pane.hoverProperty().addListener((observable, oldValue, newValue) -> {
@@ -793,7 +792,19 @@ public class AdmixtureGraph extends Graph implements Serializable {
         int secondCol = GridPane.getColumnIndex(secondGroupLabel);
 
         // under development
-        
+        if(firstCol != secondCol) {
+
+            for (Node child : gridPane.getChildren()) {
+                int curNodeRow = GridPane.getRowIndex(child);
+                int curNodeCol = GridPane.getColumnIndex(child);
+                // shift left
+                if(curNodeCol<secondCol){ // decrement
+                    // groupNameSwap their column constraints
+                    Collections.swap(gridPane.getColumnConstraints(), curNodeCol, curNodeCol+1);
+
+                }
+            }
+        }
 
         // groupNameSwap their column constraints
         Collections.swap(gridPane.getColumnConstraints(), firstCol, secondCol);
@@ -817,7 +828,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 if (GridPane.getColumnIndex(node) == secondCol && GridPane.getRowIndex(node) == rowIndex) {
                     secondChart = node;
                 }
-            }
+            } 
 
             if (firstChart != null && secondChart != null) {
                 // remove nodes

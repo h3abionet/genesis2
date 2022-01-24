@@ -588,7 +588,7 @@ public class PCAGraph extends Graph implements Serializable {
     }
 
     private void chartGroupNameClicked(Object source, ScatterChart<Number, Number> sc) {
-        Label clickNext = new Label("Click Next");
+        Label clickNext = new Label("Click where to");
 
         if (!(source instanceof Label)) {
             return;

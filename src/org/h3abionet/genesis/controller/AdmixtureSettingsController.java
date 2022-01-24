@@ -167,7 +167,7 @@ public class AdmixtureSettingsController implements Initializable {
     private static ArrayList<Double> groupNameWidthList; 
     private static boolean isLabelBold = false, isLabelItalic = false, isLabelUnderlined = false;
     private static boolean labelsHidden = false;
-    private static double labelAngelOfRotation = 0;
+    private static double labelAngelOfRotation = 90;
     private static ObservableList<Node> gridPaneChildren;
     private static int numOfCols;
 
