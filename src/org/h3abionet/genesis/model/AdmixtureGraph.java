@@ -69,6 +69,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
     private static int kClickCounter = 0;
     private static StackPane firstKLabel, secondKLabel;
     private static int clickedColIndex;
+    boolean correctAdmixFile = Boolean.parseBoolean(null);
 
     //    private ArrayList<String> orderOfAdmixGraphs = (ArrayList<String>) project.getGroupNames(); // store graph names here
     private HashMap<String, ColumnConstraints> constraintsHashMap = new HashMap<>();
@@ -84,19 +85,27 @@ public class AdmixtureGraph extends Graph implements Serializable {
 //
 //        for (String l: ancestryLabels)
 //            ancestryOrder.add(l);
-
         project.setAdmixtureGraph(this);
     }
 
     @Override
     public void readGraphData(String admixtureFilePath) throws IOException {
-
         BufferedReader r = Genesis.openFile(admixtureFilePath);
         String line = r.readLine();
         String fields[] = line.split("\\s+");
 
+        // check if file contains strings
+        for(String f: fields){
+            try {
+                Float floatVal = Float.valueOf(f).floatValue();
+                correctAdmixFile = true;
+            }catch (Exception e){
+                correctAdmixFile = false;
+            }
+        }
+
         // check first value: float or id ?
-        try {
+        if(correctAdmixFile) {
             setNumOfAncestries(fields.length);
             project.setImportedKs(numOfAncestries);
             setAncestryLabels(numOfAncestries);
@@ -110,9 +119,13 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 sub.setQs(qs);
                 line = r.readLine();
             }
-        } catch (Exception e) {
-            Genesis.throwInformationException("You might have imported a wrong file");
+        }else {
+            Genesis.throwInformationException("Imported file contains strings");
         }
+    }
+
+    public boolean isCorrectAdmixFile() {
+        return correctAdmixFile;
     }
 
     public void setNumOfAncestries(int numOfAncestries) {
@@ -713,8 +726,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
         StackPane pane = new StackPane(chartGroupName);
         pane.setAlignment(Pos.CENTER);
         pane.setMargin(chartGroupName, new Insets(0));
-        pane.setPadding(new Insets(15,0,0,0));
-        String paneCssStyle = "-fx-padding: 10px; -fx-border-style: solid solid none solid; -fx-border-color: black; -fx-border-width: 1px"; //TODO check if not redundant
+//        pane.setPadding(new Insets(15,0,0,0));
+        String paneCssStyle = "-fx-padding: 15px; -fx-border-style: solid solid none solid ; -fx-border-color: black; -fx-border-width: 1px"; //TODO check if not redundant
         pane.setStyle(paneCssStyle);
 
         pane.hoverProperty().addListener((observable, oldValue, newValue) -> {

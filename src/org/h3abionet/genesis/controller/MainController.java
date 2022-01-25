@@ -74,8 +74,6 @@ public class MainController implements Initializable{
     @FXML
     private Button newProjBtn;
     @FXML
-    private Button threeDBtn;
-    @FXML
     private Button dataBtn;
     @FXML
     private Button settingsBtn;
@@ -988,10 +986,6 @@ public class MainController implements Initializable{
         searchBtn.setDisable(b);
      }
 
-     public void disable3DBtn(boolean b){
-        threeDBtn.setDisable(b);
-     }
-
      public void disableSaveBtn(boolean b){
         saveProjBtn.setDisable(b);
      }
@@ -1022,7 +1016,6 @@ public class MainController implements Initializable{
         disableDrawingBtn(true);
         disableIndividualBtn(true);
         disableSearchBtn(true);
-        disable3DBtn(true);
         disableSaveBtn(true);
 
         // set the admixture tab
