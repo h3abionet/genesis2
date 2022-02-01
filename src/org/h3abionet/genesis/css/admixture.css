@@ -39,7 +39,7 @@ and open the template in the editor.
 }
 
 .chart-plot-background {
-    -fx-background-color: transparent;
+    -fx-background-color: red;
 }
 
 .axis:top {
@@ -70,6 +70,5 @@ and open the template in the editor.
     -fx-stroke: transparent;
 }
 .axis-label {
-  
-  -fx-text-fill: white;
+  -fx-text-fill: transparent;
 }

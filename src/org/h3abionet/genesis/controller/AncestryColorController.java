@@ -5,12 +5,7 @@
  */
 package org.h3abionet.genesis.controller;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
-import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.control.Button;
@@ -21,6 +16,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import org.h3abionet.genesis.Genesis;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AncestryColorController {
 
@@ -89,14 +87,15 @@ public class AncestryColorController {
             
             // set chosen color
             chosenColor = colorPicker.getValue();
-            
+
             selectedColor = Integer.toHexString(colorPicker.getValue().hashCode());
+
             // change the color of series
             for (StackedBarChart<String, Number> stackedbarChart : listOfAdmixtureCharts) {
                 stackedbarChart.getData().forEach((series) -> {
                     series.getData().forEach((bar) -> {
                         bar.getNode().lookupAll(".default-color" + serieIndex + ".chart-bar")
-                                .forEach(n -> n.setStyle("-fx-background-color: #" + selectedColor + ";"));
+                                .forEach(n -> n.setStyle("-fx-background-color: " + selectedColor + ";"));
                     });
                 });
 

@@ -423,8 +423,6 @@ public class MainController implements Initializable{
      * This method sets the admixture pcaChart.
      */
     public void setAdmixtureChart(ArrayList<StackedBarChart<String, Number>> admixCharts) {
-        long startTime = System.nanoTime();
-
         listOfAdmixtureCharts = admixCharts; // get multiple charts
         allAdmixtureCharts.add(listOfAdmixtureCharts);
         int sumOfIndividuals = project.getNumOfIndividuals();
@@ -487,10 +485,6 @@ public class MainController implements Initializable{
         }
 
         tabPaneClickEvent();
-
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
-        System.out.println("time taken to run setter function is "+duration/1000000);
     }
 
     @FXML
@@ -1029,6 +1023,7 @@ public class MainController implements Initializable{
         //VBox to keep the admix plot and heading
         admixVbox = new VBox(10);
         admixVbox.setPrefWidth(defaultAdmixPlotWidth + VBOX_MARGIN); // TODO - change these hard coded values
+        admixVbox.setStyle("-fx-background-color: #ffffff;");
 
         // add pane for the title
         chartHeading = new Text("Admixture plot");
@@ -1037,13 +1032,12 @@ public class MainController implements Initializable{
         titlePane.setPrefWidth(Double.MAX_VALUE);
 
         AnchorPane pane = new AnchorPane();
-//        pane.setStyle("-fx-border-color: red; -fx-border-width: 1;");
-
+        pane.setStyle("-fx-background-color: #ffffff;");
         admixVbox.getChildren().addAll(titlePane, pane);
-//        admixVbox.setStyle("-fx-border-color: pink; -fx-background-color: white; -fx-border-width: 5px");
 
         // gridpane section for admixture plots
         gridPane = new GridPane();
+        gridPane.setStyle("-fx-background-color: transparent;");
         gridPane.setCache(true);
         gridPane.setCacheHint(CacheHint.SPEED);
         gridPane.setHgap(0); //horizontal gap
@@ -1052,17 +1046,15 @@ public class MainController implements Initializable{
         gridPane.setMinWidth(defaultAdmixPlotWidth); // TODO - change these hard coded values
         gridPane.setMaxWidth(defaultAdmixPlotWidth); // increase this value to increase the thickness of subjects
 
-
         AnchorPane.setRightAnchor(gridPane, 40.0);
 
         admixPane = new AnchorPane();
-//        admixPane.setStyle("-fx-border-color: green; -fx-border-width: 3px 3px 3px 3px");
+        admixPane.setStyle("-fx-background-color: #ffffff;");
 
         // set scrollpane that keeps admix charts
         scrollPane = new ScrollPane();
         scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-//        scrollPane.setStyle("-fx-border-color: purple; -fx-border-width: 2px");
+        scrollPane.setStyle("-fx-background-color: #transparent;");
     }
-
 }

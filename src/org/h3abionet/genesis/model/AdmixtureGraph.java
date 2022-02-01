@@ -190,7 +190,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
             });
 
 
-
 //            for (Subject sub : project.getSubjectsList()) {
 //                int sizeOfQValuesList = sub.getqValuesList().size();
 //                if (project.isPhenoFileProvided()) {
@@ -232,6 +231,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
             populationGroupChart.setPrefHeight(CHART_HEIGHT);
             populationGroupChart.setMinHeight(CHART_HEIGHT);
             populationGroupChart.setLegendVisible(false);
+            populationGroupChart.setStyle("-fx-background-color: #ffffff;");
 
             // set the css stylesheet
             populationGroupChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
