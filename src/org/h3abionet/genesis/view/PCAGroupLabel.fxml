@@ -11,37 +11,52 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="150.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.PCAGroupLabelController">
+<AnchorPane prefHeight="150.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.PCAGroupLabelController">
    <children>
       <VBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" prefHeight="176.0" prefWidth="240.0" spacing="10.0" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5;" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
          <children>
             <Label text="Population Group Label" textAlignment="CENTER">
                <font>
-                  <Font size="14.0" />
+                  <Font name="Helvetica" size="14.0" />
                </font>
             </Label>
             <HBox prefHeight="37.0" prefWidth="390.0" spacing="10.0">
                <children>
-                  <Label text="Hide Group" />
+                  <Label text="Hide Group">
+                     <font>
+                        <Font name="Helvetica" size="14.0" />
+                     </font></Label>
                   <CheckBox fx:id="hideGroupCheckbox" mnemonicParsing="false" />
                </children>
             </HBox>
             <HBox layoutX="10.0" layoutY="36.0" prefHeight="37.0" prefWidth="390.0" spacing="10.0">
                <children>
-                  <Label text="Group Name" />
+                  <Label prefHeight="16.0" prefWidth="111.0" text="Group Name">
+                     <font>
+                        <Font name="Helvetica" size="14.0" />
+                     </font></Label>
                   <TextField fx:id="groupNameLbl" prefHeight="27.0" prefWidth="137.0" />
                </children>
             </HBox>
             <HBox prefHeight="36.0" prefWidth="390.0" spacing="10.0">
                <children>
-                  <Label prefHeight="27.0" prefWidth="127.0" text="Legend Position" />
+                  <Label prefHeight="26.0" prefWidth="156.0" text="Legend Position">
+                     <font>
+                        <Font name="Helvetica" size="14.0" />
+                     </font></Label>
                   <ComboBox fx:id="legendPosition" prefWidth="150.0" />
                </children>
             </HBox>
             <HBox layoutX="20.0" layoutY="94.0" prefHeight="37.0" prefWidth="390.0" spacing="50.0">
                <children>
-                  <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancelHandler" prefHeight="27.0" prefWidth="82.0" text="Cancel" />
-                  <Button fx:id="doneBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#doneHandler" prefHeight="27.0" prefWidth="89.0" text="Done" />
+                  <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancelHandler" prefHeight="27.0" prefWidth="82.0" text="Cancel">
+                     <font>
+                        <Font name="Helvetica" size="14.0" />
+                     </font></Button>
+                  <Button fx:id="doneBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#doneHandler" prefHeight="27.0" prefWidth="89.0" text="Done">
+                     <font>
+                        <Font name="Helvetica" size="14.0" />
+                     </font></Button>
                </children>
             </HBox>
          </children>

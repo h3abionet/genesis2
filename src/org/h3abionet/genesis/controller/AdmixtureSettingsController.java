@@ -388,7 +388,6 @@ public class AdmixtureSettingsController implements Initializable {
         }
 
         chartHeading.setFill(headingColorPicker.getValue()); // set heading color
-
     }
     
     private void setPopulationGroupLabels(){
@@ -488,7 +487,6 @@ public class AdmixtureSettingsController implements Initializable {
             gridPane.getChildren().forEach((n) -> {
                 if (n instanceof StackPane || n instanceof Label) {
                     if(n instanceof StackPane){
-                        System.out.println("the id is "+n.getId());
 //                        if (n.getId().startsWith("K = ")) { // do not put borders on ks
 //                            ;
 //                        }else {

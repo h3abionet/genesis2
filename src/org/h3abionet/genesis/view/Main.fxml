@@ -60,9 +60,9 @@
                <children>
                   <VBox layoutX="5.0" layoutY="3.0" prefHeight="936.0" prefWidth="70.0" spacing="2.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                      <children>
-                        <Button fx:id="newProjBtn" mnemonicParsing="false" onAction="#newProject" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;" text="New">
+                        <Button fx:id="newProjBtn" alignment="CENTER" mnemonicParsing="false" onAction="#newProject" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;">
                            <font>
-                              <Font name="System Bold" size="12.0" />
+                              <Font name="Helvetica" size="24.0" />
                            </font>
                            <tooltip>
                               <Tooltip text="Start Project">
@@ -71,28 +71,57 @@
                                  </font>
                               </Tooltip>
                            </tooltip>
+                           <graphic>
+                              <ImageView fitHeight="21.0" fitWidth="47.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/new.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                         </Button>
-                        <Button fx:id="pcaBtn" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newPCA" prefHeight="50.0" prefWidth="156.0" style="-fx-text-fill: white;" text="PCA">
+                        <Button fx:id="pcaBtn" alignment="CENTER" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#newPCA" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;">
                            <font>
-                              <Font name="System Bold" size="12.0" />
+                              <Font name="Helvetica" size="24.0" />
                            </font>
                            <tooltip>
-                              <Tooltip text="Import PCA File" />
+                              <Tooltip text="Import PCA File">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
                            </tooltip>
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/pcabtn.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                         </Button>
-                        <Button fx:id="admixtureBtn" alignment="CENTER" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#newAdmixture" prefHeight="50.0" prefWidth="100.0" style="-fx-text-fill: white;" text="Admix">
+                        <Button fx:id="admixtureBtn" alignment="CENTER" layoutX="10.0" layoutY="62.0" mnemonicParsing="false" onAction="#newAdmixture" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;">
                            <font>
-                              <Font name="System Bold" size="12.0" />
+                              <Font name="Helvetica" size="24.0" />
                            </font>
                            <tooltip>
-                              <Tooltip text="Import Admixture File" />
+                              <Tooltip text="Import Admixture File">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
                            </tooltip>
+                           <graphic>
+                              <ImageView fitHeight="22.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/admixbtn.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                         </Button>
                         <Button fx:id="settingsBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#settingsSelector" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Settings">
                            <graphic>
-                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="35.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/settings1.png" />
+                                    <Image url="@../image/settings2.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -102,9 +131,9 @@
                         </Button>
                         <Button fx:id="dataBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#loadData" prefHeight="50.0" prefWidth="119.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="47.0" fitWidth="47.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/database1.png" />
+                                    <Image url="@../image/database2.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -114,9 +143,9 @@
                         </Button>
                         <Button fx:id="downloadBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#saveChart" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="48.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/download3.png" />
+                                    <Image url="@../image/download2.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -126,9 +155,9 @@
                         </Button>
                         <Button fx:id="drawingBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#drawingTool" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="48.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/paint1.png" />
+                                    <Image url="@../image/paint2.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -138,9 +167,9 @@
                         </Button>
                         <Button fx:id="individualBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#showHiddenIndividuals" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="44.0" fitWidth="63.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/individual1.png" />
+                                    <Image url="@../image/individual2.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -150,9 +179,9 @@
                         </Button>
                         <Button fx:id="searchBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#searchIndividual" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="43.0" fitWidth="51.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/search1.png" />
+                                    <Image url="@../image/search2.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -162,9 +191,9 @@
                         </Button>
                         <Button fx:id="saveProjBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#saveProject" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;">
                            <graphic>
-                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="43.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/floppy-disk1.png" />
+                                    <Image url="@../image/floppy-disk2.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -174,9 +203,9 @@
                         </Button>
                         <Button fx:id="importProjBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#importProject" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;">
                            <graphic>
-                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="42.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/folder1.png" />
+                                    <Image url="@../image/folder2.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -186,9 +215,9 @@
                         </Button>
                         <Button fx:id="helpBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" layoutX="10.0" layoutY="415.0" mnemonicParsing="false" onAction="#help" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="57.0" fitWidth="52.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/info1.png" />
+                                    <Image url="@../image/info2.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -198,9 +227,9 @@
                         </Button>
                         <Button fx:id="cancelBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#closeProgram" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
                            <graphic>
-                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="53.0" fitWidth="57.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../image/cancel1.png" />
+                                    <Image url="@../image/cancel2.png" />
                                  </image>
                               </ImageView>
                            </graphic>

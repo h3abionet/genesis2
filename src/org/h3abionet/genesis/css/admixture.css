@@ -10,10 +10,13 @@ and open the template in the editor.
 
 .chart {
     -fx-padding: 0px;
-    
+    -fx-background-color:  transparent;
+
 }
+
 .chart-content {
     -fx-padding: 0px;
+    -fx-background-color:  transparent;
 }
 
 .chart-legend {
@@ -29,17 +32,11 @@ and open the template in the editor.
     -fx-start-margin: 0;
     -fx-end-margin: 0;
     -fx-gap-start-and-end: false;
-    
 }
 
 .chart-title {
     -fx-padding: 0px;
-    -fx-background-color: red;
-
-}
-
-.chart-plot-background {
-    -fx-background-color: red;
+    -fx-background-color: transparent;
 }
 
 .axis:top {
@@ -58,6 +55,18 @@ and open the template in the editor.
     -fx-border-color: transparent;
 }
 
+.chart-horizontal-zero-line  {
+    -fx-stroke: transparent;
+}
+
+.axis-label {
+  -fx-text-fill: transparent;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
 .chart-vertical-grid-lines {
     -fx-stroke: transparent;
 }
@@ -66,9 +75,8 @@ and open the template in the editor.
     -fx-stroke: transparent;
 }
 
-.chart-horizontal-zero-line  {
+.chart-alternative-row-fill {
+    -fx-fill: transparent;
     -fx-stroke: transparent;
-}
-.axis-label {
-  -fx-text-fill: transparent;
+    -fx-stroke-width: 0;
 }

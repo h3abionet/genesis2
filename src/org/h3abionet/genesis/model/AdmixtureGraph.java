@@ -5,12 +5,14 @@
  */
 package org.h3abionet.genesis.model;
 
+import com.sun.tools.javac.Main;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.chart.*;
+import javafx.scene.control.Label;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.Lighting;
 import javafx.scene.input.MouseButton;
@@ -231,7 +233,11 @@ public class AdmixtureGraph extends Graph implements Serializable {
             populationGroupChart.setPrefHeight(CHART_HEIGHT);
             populationGroupChart.setMinHeight(CHART_HEIGHT);
             populationGroupChart.setLegendVisible(false);
-            populationGroupChart.setStyle("-fx-background-color: #ffffff;");
+            populationGroupChart.setAlternativeRowFillVisible(false);
+            populationGroupChart.setAlternativeColumnFillVisible(false);
+            populationGroupChart.setHorizontalGridLinesVisible(false);
+            populationGroupChart.setVerticalGridLinesVisible(false);
+            populationGroupChart.setCategoryGap(-1);
 
             // set the css stylesheet
             populationGroupChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
@@ -775,6 +781,9 @@ public class AdmixtureGraph extends Graph implements Serializable {
      * @param source
      */
     private void chartGroupNameClicked(Object source) {
+        Label clickWhereTo = new Label("Click where to");
+        clickWhereTo.setStyle("-fx-text-fill:red");
+
         if (!(source instanceof StackPane)) {
             return;
         }
@@ -782,13 +791,16 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
         if (labelClickCounter == 0) {
             firstGroupLabel = lbl;
+            MainController.getAdmixVbox().getChildren().add(clickWhereTo);
+            MainController.getAdmixVbox().setAlignment(Pos.CENTER);
         } else {
             secondGroupLabel = lbl;
             // if the same label is clicked, do not swap
             if(GridPane.getColumnIndex(firstGroupLabel) != GridPane.getColumnIndex(secondGroupLabel)){
                 groupNameSwap();
+                MainController.getAdmixVbox().getChildren().remove(MainController.getAdmixVbox().getChildren().size()-1);
             }else {
-                ;
+                MainController.getAdmixVbox().getChildren().remove(MainController.getAdmixVbox().getChildren().size()-1);
             }
         }
         labelClickCounter = ++labelClickCounter % 2;  // changes values between 0 1
@@ -805,19 +817,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
         int secondCol = GridPane.getColumnIndex(secondGroupLabel);
 
         // under development
-        if(firstCol != secondCol) {
-
-            for (Node child : gridPane.getChildren()) {
-                int curNodeRow = GridPane.getRowIndex(child);
-                int curNodeCol = GridPane.getColumnIndex(child);
-                // shift left
-                if(curNodeCol<secondCol){ // decrement
-                    // groupNameSwap their column constraints
-                    Collections.swap(gridPane.getColumnConstraints(), curNodeCol, curNodeCol+1);
-
-                }
-            }
-        }
+        // TODO - Develop code for shifting
 
         // groupNameSwap their column constraints
         Collections.swap(gridPane.getColumnConstraints(), firstCol, secondCol);

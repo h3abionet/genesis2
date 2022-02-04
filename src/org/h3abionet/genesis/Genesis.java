@@ -35,6 +35,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.h3abionet.genesis.controller.MainController;
 
 /**
  * This is the main class of the program
@@ -52,12 +53,6 @@ public class Genesis extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("view/Main.fxml"));
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Genesis.class.getResource("css/pca.css").toExternalForm());
-        
-        scene.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.H) {
-                System.out.println("Please Help");
-            }
-        });
         
         // Press F to enter full screen mode or E to exit full screen mode
         stage.addEventFilter(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {

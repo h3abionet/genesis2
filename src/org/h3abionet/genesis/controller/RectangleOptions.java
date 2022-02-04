@@ -146,14 +146,14 @@ public class RectangleOptions{
         ButtonType doneBtn = new ButtonType("Done", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().setAll(doneBtn, deleteBtn);
 
-        dialog.setResultConverter(new Callback<ButtonType, Options>() {
+        dialog.setResultConverter(new Callback<>() {
             @Override
-            public Options call(ButtonType b) {                      
-                if (b == doneBtn) {        
-                    return new Options((int)widthSlider.getValue(), (int)heightSlider.getValue(),
-                            (int)archSizeCombo.getValue(), (int)archSizeCombo.getValue(),
-                            (int)stkWidth.getValue(), cpStroke.getValue(), cpFill.getValue());
-                }else{
+            public Options call(ButtonType b) {
+                if (b == doneBtn) {
+                    return new Options((int) widthSlider.getValue(), (int) heightSlider.getValue(),
+                            (int) archSizeCombo.getValue(), (int) archSizeCombo.getValue(),
+                            (int) stkWidth.getValue(), cpStroke.getValue(), cpFill.getValue());
+                } else {
                     rectangle.setVisible(false);
                 }
 

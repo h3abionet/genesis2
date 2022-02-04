@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="407.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.PCAIndividualDetailsController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="407.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.PCAIndividualDetailsController">
    <children>
       <AnchorPane prefHeight="407.0" prefWidth="300.0" style="-fx-background-color: #F0F8FE;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -23,7 +23,7 @@
                      <children>
                         <Label contentDisplay="CENTER" text="Individual Details" textAlignment="CENTER" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
                            <font>
-                              <Font size="14.0" />
+                              <Font name="Helvetica" size="16.0" />
                            </font>
                            <padding>
                               <Insets left="60.0" />
@@ -47,7 +47,7 @@
                   </AnchorPane>
                   <Label prefHeight="17.0" prefWidth="123.0" text="Phenotype Data:">
                      <font>
-                        <Font size="13.0" />
+                        <Font name="Helvetica" size="14.0" />
                      </font>
                      <VBox.margin>
                         <Insets left="90.0" right="90.0" />
@@ -72,12 +72,24 @@
                                  <toggleGroup>
                                     <ToggleGroup fx:id="individualGroup" />
                                  </toggleGroup>
+                                 <font>
+                                    <Font name="Helvetica" size="14.0" />
+                                 </font>
                               </RadioButton>
-                              <RadioButton fx:id="topRadioBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#getClickedRadioBtn" text="Place this individual on top" toggleGroup="$individualGroup" />
-                              <RadioButton fx:id="clearRadioBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#getClickedRadioBtn" prefWidth="259.0" text="Clear all icon data" toggleGroup="$individualGroup" />
+                              <RadioButton fx:id="topRadioBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#getClickedRadioBtn" text="Place this individual on top" toggleGroup="$individualGroup">
+                                 <font>
+                                    <Font name="Helvetica" size="14.0" />
+                                 </font></RadioButton>
+                              <RadioButton fx:id="clearRadioBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#getClickedRadioBtn" prefWidth="259.0" text="Clear all icon data" toggleGroup="$individualGroup">
+                                 <font>
+                                    <Font name="Helvetica" size="14.0" />
+                                 </font></RadioButton>
                               <HBox prefHeight="27.0" prefWidth="226.0">
                                  <children>
-                                    <RadioButton fx:id="seriesRadioBtn" mnemonicParsing="false" onAction="#getClickedRadioBtn" prefHeight="18.0" prefWidth="184.0" text="Group icon data" toggleGroup="$individualGroup" />
+                                    <RadioButton fx:id="seriesRadioBtn" mnemonicParsing="false" onAction="#getClickedRadioBtn" prefHeight="18.0" prefWidth="184.0" text="Group icon data" toggleGroup="$individualGroup">
+                                       <font>
+                                          <Font name="Helvetica" size="14.0" />
+                                       </font></RadioButton>
                                     <ComboBox fx:id="phenotypeComboBox" prefWidth="150.0" />
                                  </children>
                               </HBox>
@@ -93,7 +105,10 @@
                         <HBox prefHeight="60.0" prefWidth="200.0" spacing="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="10.0">
                            <children>
                               <AnchorPane fx:id="iconDisplay" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="33.0" />
-                              <Button fx:id="btnChangeIcon" mnemonicParsing="false" onAction="#changeIcon" prefHeight="34.0" prefWidth="100.0" text="Change Icon" />
+                              <Button fx:id="btnChangeIcon" mnemonicParsing="false" onAction="#changeIcon" prefHeight="34.0" prefWidth="100.0" text="Change Icon">
+                                 <font>
+                                    <Font name="Helvetica" size="14.0" />
+                                 </font></Button>
                               <AnchorPane fx:id="chosenIconDisplay" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="42.0" />
                            </children>
                         </HBox>
@@ -106,8 +121,14 @@
                      <children>
                         <HBox prefHeight="38.0" prefWidth="200.0" spacing="80.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="5.0">
                            <children>
-                              <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#entryCancelButton" prefHeight="25.0" prefWidth="81.0" text="Cancel" />
-                              <Button fx:id="btnOK" mnemonicParsing="false" onAction="#entryOkButton" prefHeight="25.0" prefWidth="76.0" text="OK" />
+                              <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#entryCancelButton" prefHeight="25.0" prefWidth="81.0" text="Cancel">
+                                 <font>
+                                    <Font name="Helvetica" size="14.0" />
+                                 </font></Button>
+                              <Button fx:id="btnOK" mnemonicParsing="false" onAction="#entryOkButton" prefHeight="25.0" prefWidth="76.0" text="OK">
+                                 <font>
+                                    <Font name="Helvetica" size="14.0" />
+                                 </font></Button>
                            </children>
                         </HBox>
                      </children>

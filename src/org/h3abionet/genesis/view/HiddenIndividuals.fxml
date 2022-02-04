@@ -8,14 +8,18 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="150.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.HiddenIndividualsController">
+<AnchorPane id="AnchorPane" prefHeight="150.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.HiddenIndividualsController">
    <children>
       <VBox prefHeight="200.0" prefWidth="450.0" spacing="5.0" style="-fx-background-color: #F0F8FE;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <AnchorPane prefHeight="65.0" prefWidth="450.0" style="-fx-background-color: #ebeced;">
                <children>
-                  <Label text="Select Hiden Individual" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="159.0" AnchorPane.topAnchor="5.0" />
+                  <Label prefHeight="20.0" prefWidth="199.0" text="Select Hiden Individual" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="101.0" AnchorPane.topAnchor="5.0">
+                     <font>
+                        <Font name="Helvetica" size="16.0" />
+                     </font></Label>
                </children>
                <effect>
                   <DropShadow height="5.0" radius="6.0" />
@@ -27,13 +31,19 @@
                      <children>
                         <VBox prefHeight="200.0" prefWidth="100.0">
                            <children>
-                              <Label prefHeight="17.0" prefWidth="113.0" text="Select Group" textAlignment="CENTER" />
+                              <Label prefHeight="17.0" prefWidth="113.0" text="Select Group" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="Helvetica" size="14.0" />
+                                 </font></Label>
                               <ComboBox fx:id="hiddenGroupCombo" prefWidth="150.0" />
                            </children>
                         </VBox>
                         <VBox>
                            <children>
-                              <Label prefHeight="17.0" prefWidth="126.0" text="Select Individual" />
+                              <Label prefHeight="17.0" prefWidth="126.0" text="Select Individual">
+                                 <font>
+                                    <Font name="Helvetica" size="14.0" />
+                                 </font></Label>
                               <ComboBox fx:id="hiddenIndividualCombo" prefHeight="27.0" prefWidth="225.0" />
                            </children>
                         </VBox>
@@ -48,8 +58,14 @@
                <children>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="100.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0">
                      <children>
-                        <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#entryCancelBtn" prefHeight="27.0" prefWidth="89.0" text="Cancel" />
-                        <Button fx:id="unhideBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#entryUnhideBtn" prefHeight="27.0" prefWidth="83.0" text="Unhide" />
+                        <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#entryCancelBtn" prefHeight="27.0" prefWidth="89.0" text="Cancel">
+                           <font>
+                              <Font name="Helvetica" size="14.0" />
+                           </font></Button>
+                        <Button fx:id="unhideBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#entryUnhideBtn" prefHeight="27.0" prefWidth="83.0" text="Unhide">
+                           <font>
+                              <Font name="Helvetica" size="14.0" />
+                           </font></Button>
                      </children>
                   </HBox>
                </children>

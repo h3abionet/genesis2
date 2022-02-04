@@ -8,11 +8,19 @@ public class PCAGraphLayout implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
-    private String font = "System";
-    private String fontStyle = "NORMAL";
-    private String fontColor = "000000";
-    private String fontPosture = "REGULAR";
-    private int fontSize = 12;
+    // axes
+    private String axesFont = "Helvetica";
+    private String axesFontStyle = "NORMAL";
+    private String axesFontColor = "000000";
+    private String axesPosture = "REGULAR";
+    private double axesFontSize = 13;
+
+    // heading styles
+    private String headingFont = "Helvetica";
+    private String headingFontStyle = "NORMAL";
+    private String headingFontColor = "000000";
+    private String headingPosture = "REGULAR";
+    private double headingFontSize = 13;
 
     private String graphTitle;
     private String xAxisLabel;
@@ -24,45 +32,125 @@ public class PCAGraphLayout implements Serializable {
     private boolean showGrid = true;
     private boolean showAxisMarks = true;
 
-    public String getFont() {
-        return font;
+    public String getAxesFont() {
+        return axesFont;
     }
 
-    public void setFont(String font) {
-        this.font = font;
+    public void setAxesFont(String axesFont) {
+        this.axesFont = axesFont;
     }
 
-    public String getFontStyle() {
-        return fontStyle;
+    public String getAxesFontStyle() {
+        return axesFontStyle;
     }
 
-    public void setFontStyle(String fontStyle) {
-        this.fontStyle = fontStyle;
+    public void setAxesFontStyle(String axesFontStyle) {
+        this.axesFontStyle = axesFontStyle;
     }
 
-    public String getFontColor() {
-        return fontColor;
+    public String getAxesFontColor() {
+        return axesFontColor;
     }
 
-    public void setFontColor(String fontColor) {
-        this.fontColor = fontColor;
+    public void setAxesFontColor(String axesFontColor) {
+        this.axesFontColor = axesFontColor;
     }
 
-    public String getFontPosture() {
-        return fontPosture;
+    public String getAxesPosture() {
+        return axesPosture;
     }
 
-    public void setFontPosture(String fontPosture) {
-        this.fontPosture = fontPosture;
+    public void setAxesPosture(String axesPosture) {
+        this.axesPosture = axesPosture;
     }
 
-    public int getFontSize() {
-        return fontSize;
+    public double getAxesFontSize() {
+        return axesFontSize;
     }
 
-    public void setFontSize(int fontSize) {
-        this.fontSize = fontSize;
+    public void setAxesFontSize(double axesFontSize) {
+        this.axesFontSize = axesFontSize;
     }
+
+    public String getHeadingFont() {
+        return headingFont;
+    }
+
+    public void setHeadingFont(String headingFont) {
+        this.headingFont = headingFont;
+    }
+
+    public String getHeadingFontStyle() {
+        return headingFontStyle;
+    }
+
+    public void setHeadingFontStyle(String headingFontStyle) {
+        this.headingFontStyle = headingFontStyle;
+    }
+
+    public String getHeadingFontColor() {
+        return headingFontColor;
+    }
+
+    public void setHeadingFontColor(String headingFontColor) {
+        this.headingFontColor = headingFontColor;
+    }
+
+    public String getHeadingPosture() {
+        return headingPosture;
+    }
+
+    public void setHeadingPosture(String headingPosture) {
+        this.headingPosture = headingPosture;
+    }
+
+    public double getHeadingFontSize() {
+        return headingFontSize;
+    }
+
+    public void setHeadingFontSize(double headingFontSize) {
+        this.headingFontSize = headingFontSize;
+    }
+
+    //    public String getFont() {
+//        return font;
+//    }
+//
+//    public void setFont(String font) {
+//        this.font = font;
+//    }
+//
+//    public String getFontStyle() {
+//        return fontStyle;
+//    }
+//
+//    public void setFontStyle(String fontStyle) {
+//        this.fontStyle = fontStyle;
+//    }
+//
+//    public String getFontColor() {
+//        return fontColor;
+//    }
+//
+//    public void setFontColor(String fontColor) {
+//        this.fontColor = fontColor;
+//    }
+//
+//    public String getFontPosture() {
+//        return fontPosture;
+//    }
+//
+//    public void setFontPosture(String fontPosture) {
+//        this.fontPosture = fontPosture;
+//    }
+//
+//    public double getFontSize() {
+//        return fontSize;
+//    }
+//
+//    public void setFontSize(double fontSize) {
+//        this.fontSize = fontSize;
+//    }
 
     public String getGraphTitle() {
         return graphTitle;
@@ -130,25 +218,25 @@ public class PCAGraphLayout implements Serializable {
 
     public void setGraphProperties(ScatterChart<Number, Number> sc) {
         // set x-axis
-        sc.getXAxis().lookup(".axis-label").setStyle("-fx-fill: #"+fontColor+";"+
-                "-fx-font-size: "+fontSize+"pt;"+
-                "-fx-font-weight: "+fontStyle+";"+
-                "-fx-font-family: \"" +font+"\";"+
-                "-fx-text-fill: #"+fontColor+";" );
+        sc.getXAxis().lookup(".axis-label").setStyle("-fx-fill: #"+axesFontColor+";"+
+                "-fx-font-size: "+axesFontSize+"pt;"+
+                "-fx-font-weight: "+axesFontStyle+";"+
+                "-fx-font-family: \"" +axesFont+"\";"+
+                "-fx-text-fill: #"+axesFontColor+";" );
 
         // set x-axis
-        sc.getYAxis().lookup(".axis-label").setStyle("-fx-fill: #"+fontColor+";"+
-                "-fx-font-size: "+fontSize+"pt;"+
-                "-fx-font-weight: "+fontStyle+";"+
-                "-fx-font-family: \"" +font+"\";"+
-                "-fx-text-fill: #"+fontColor+";" );
+        sc.getYAxis().lookup(".axis-label").setStyle("-fx-fill: #"+axesFontColor+";"+
+                "-fx-font-size: "+axesFontSize+"pt;"+
+                "-fx-font-weight: "+axesFontStyle+";"+
+                "-fx-font-family: \"" +axesFont+"\";"+
+                "-fx-text-fill: #"+axesFontColor+";" );
 
         // set title
-        sc.lookup(".chart-title").setStyle("-fx-fill: #"+fontColor+";"+
-                "-fx-font-size: "+fontSize+"pt;"+
-                "-fx-font-weight: "+fontStyle+";"+
-                "-fx-font-family: \"" +font+"\";"+
-                "-fx-text-fill: #"+fontColor+";");
+        sc.lookup(".chart-title").setStyle("-fx-fill: #"+headingFontColor+";"+
+                "-fx-font-size: "+headingFontSize+"pt;"+
+                "-fx-font-weight: "+headingFontStyle+";"+
+                "-fx-font-family: \"" +headingFont+"\";"+
+                "-fx-text-fill: #"+headingFontColor+";");
 
 
         if(!showAxes){

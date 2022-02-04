@@ -9,8 +9,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.AncestryColorController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.AncestryColorController">
    <children>
       <VBox prefHeight="200.0" prefWidth="200.0" spacing="10.0" style="-fx-border-color: #c6c8cc; -fx-border-width: 1; -fx-border-radius: 5;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -20,16 +21,25 @@
                   <ColorPicker fx:id="colorPicker" />
                </children>
             </HBox>
-            <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+            <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                <children>
-                  <Label prefHeight="26.0" prefWidth="100.0" text="Change in all plots" />
+                  <Label prefHeight="26.0" prefWidth="137.0" text="Change in all plots">
+                     <font>
+                        <Font name="Helvetica" size="14.0" />
+                     </font></Label>
                   <CheckBox fx:id="allPlotsCheckBox" mnemonicParsing="false" prefHeight="22.0" prefWidth="25.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER" layoutX="16.0" layoutY="80.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                <children>
-                  <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancelHandler" prefHeight="27.0" prefWidth="80.0" text="Cancel" />
-                  <Button fx:id="doneBtn" layoutX="54.0" layoutY="13.0" mnemonicParsing="false" onAction="#doneHandler" prefHeight="27.0" prefWidth="80.0" text="Done" />
+                  <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancelHandler" prefHeight="27.0" prefWidth="80.0" text="Cancel">
+                     <font>
+                        <Font name="Helvetica" size="14.0" />
+                     </font></Button>
+                  <Button fx:id="doneBtn" layoutX="54.0" layoutY="13.0" mnemonicParsing="false" onAction="#doneHandler" prefHeight="27.0" prefWidth="80.0" text="Done">
+                     <font>
+                        <Font name="Helvetica" size="14.0" />
+                     </font></Button>
                </children>
             </HBox>
          </children>

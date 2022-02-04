@@ -5,29 +5,20 @@
  */
 package org.h3abionet.genesis.controller;
 
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.ScatterChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.FontPosture;
+import javafx.scene.text.Text;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCAGraphLayout;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -35,25 +26,40 @@ import org.h3abionet.genesis.model.PCAGraphLayout;
  */
 public class PCASettingsController implements Initializable{
     @FXML
-    private TextField titleLabel;
+    private ColorPicker axisColorPicker;
 
     @FXML
-    private CheckBox titleCheckbox;
+    private ComboBox<String> axisFontCombo;
+
+    @FXML
+    private Spinner<Double> axisFontSizeSpinner;
+
+    @FXML
+    private CheckBox boldAxisCheckbox;
+
+    @FXML
+    private CheckBox boldHeadingCheckbox;
+
+    @FXML
+    private ColorPicker headingColorPicker;
+
+    @FXML
+    private ComboBox<String> headingFontCombo;
+
+    @FXML
+    private Spinner<Double> headingFontSizeSpinner;
+
+    @FXML
+    private TextField titleLabel;
     
     @FXML
     private TextField xLabel;
-
-    @FXML
-    private CheckBox axisLabelCheckbox;
 
     @FXML
     private TextField yLabel;
     
     @FXML
     private CheckBox hideAxisMarks;
-
-    @FXML
-    private CheckBox hideAxes;
 
     @FXML
     private CheckBox hideAxisLabels;
@@ -63,24 +69,18 @@ public class PCASettingsController implements Initializable{
 
     @FXML
     private CheckBox hideGrid;
-    
-    @FXML
-    private ListView<String> fontList;
 
     @FXML
-    private ListView<String> styleList;
+    private CheckBox underlineAxisCheckbox;
 
     @FXML
-    private ListView<Integer> sizeList;
-    
-    @FXML
-    private ListView<String> postureList;
+    private CheckBox underlineHeadingCheckbox;
 
     @FXML
-    private Label sample;
+    private CheckBox italicAxisCheckbox;
 
     @FXML
-    private ColorPicker colorPicker;
+    private CheckBox italicHeadingCheckbox;
 
     @FXML
     private Button btnOK;
@@ -90,30 +90,30 @@ public class PCASettingsController implements Initializable{
     
     private ScatterChart<Number, Number> chart;
 
-    // default chosen values -- changed by event handlers 
-    private String chosenFont = "System";
-    private String chosenFontStyle = "NORMAL";
-    private String chosenFontColor = "000000";
-    private String chosenPosture = "REGULAR";
-    private int chosenFontSize = 12;
-
-    // default chosen values -- changed by event handlers
-    private String axesFont = "System";
+    // default axis chosen values -- changed by event handlers
+    private String axesFont = "Helvetica";
     private String axesFontStyle = "NORMAL";
     private String axesFontColor = "000000";
     private String axesPosture = "REGULAR";
-    private int axesFontSize = 12;
+    private double axesFontSize = 13;
 
-    // font weight names 
-    String weights[] = {"BOLD", "NORMAL"};
-    
-    // font posture
-    String posture[] = {"REGULAR", "ITALIC"};
-    
-    // list of font sizes from 8 to 72
-    List<Integer> list = IntStream.range(8, 36).boxed().collect(Collectors.toList());
+    // heading styles
+    private String headingFont = "Helvetica";
+    private String headingFontStyle = "NORMAL";
+    private String headingFontColor = "000000";
+    private String headingPosture = "REGULAR";
+    private double headingFontSize = 13;
+
     private PCAGraphLayout pcaGraphLayout;
     private MainController mainController;
+
+    private boolean isHeadingBold = false;
+    private boolean isHeadingItalic = false;
+    private boolean isHeadingUnderlined = false;
+
+    private boolean isAxisLblBold = false;
+    private boolean isAxisLblItalic = false;
+    private boolean isAxisLblUnderlined = false;
 
     public void setAxesProperties(String axesFont, String axesFontStyle, String axesFontColor, String axesPosture, int axesFontSize) {
         this.axesFont = axesFont;
@@ -125,53 +125,79 @@ public class PCASettingsController implements Initializable{
 
     @FXML
     private void entryOkButton(ActionEvent event) {
-        if(chosenFontColor.equals("ffff")){
-            chosenFontColor = "000000";
+        if(axesFontColor.equals("ffff")){
+            axesFontColor = "000000";
         }
+
+        if(headingFontColor.equals("ffff")){
+            headingFontColor = "000000";
+        }
+
+        axesFont = axisFontCombo.getValue();
+
+        if(boldAxisCheckbox.isSelected()){
+            axesFontStyle = "BOLD";
+        }else{
+            axesFontStyle = "NORMAL";
+        }
+
+        axesFontColor = Integer.toHexString(axisColorPicker.getValue().hashCode());
+
+        if(italicAxisCheckbox.isSelected()){
+            axesPosture = "ITALIC";
+        }else {
+            axesPosture = "REGULAR";
+        }
+
+        axesFontSize = axisFontSizeSpinner.getValue();
+
+        // heading styles
+        headingFont = headingFontCombo.getValue();
+
+        if(boldHeadingCheckbox.isSelected()){
+            headingFontStyle = "BOLD";
+        }else{
+            headingFontStyle = "NORMAL";
+        }
+
+        headingFontColor = Integer.toHexString(headingColorPicker.getValue().hashCode());
+
+        if(italicHeadingCheckbox.isSelected()){
+            headingPosture = "ITALIC";
+        }else {
+            headingPosture = "REGULAR";
+        }
+
+        headingFontSize = headingFontSizeSpinner.getValue();
          
         // only format selected axis
-        if(axisLabelCheckbox.isSelected()){
           chart.getXAxis().setLabel(xLabel.getText());
           pcaGraphLayout.setxAxisLabel(xLabel.getText());
 
           // set x-axis label
-          chart.getXAxis().lookup(".axis-label").setStyle("-fx-fill: #"+chosenFontColor+";"+
-                                  "-fx-font-size: "+chosenFontSize+"pt;"+
-                                  "-fx-font-weight: "+chosenFontStyle+";"+
-                                  "-fx-font-family: \"" + chosenFont + "\";"+
-                                  "-fx-text-fill: #"+chosenFontColor+";" );
+          chart.getXAxis().lookup(".axis-label").setStyle("-fx-fill: #"+axesFontColor+";"+
+                                  "-fx-font-size: "+axesFontSize+"pt;"+
+                                  "-fx-font-weight: "+axesFontStyle+";"+
+                                  "-fx-font-family: \"" + axesFont + "\";"+
+                                  "-fx-text-fill: #"+axesFontColor+";" );
 
           // set y-axis label
             chart.getYAxis().setLabel(yLabel.getText());
             pcaGraphLayout.setyAxisLabel(yLabel.getText());
-            chart.getYAxis().lookup(".axis-label").setStyle("-fx-fill: #"+chosenFontColor+";"+
-                    "-fx-font-size: "+chosenFontSize+"pt;"+
-                    "-fx-font-weight: "+chosenFontStyle+";"+
-                    "-fx-font-family: \"" + chosenFont + "\";"+
-                    "-fx-text-fill: #"+chosenFontColor+";" );
 
-          // set axes values
-          setAxesProperties(chosenFont, chosenFontStyle, chosenFontColor, chosenPosture, chosenFontSize);
-        }
-        
-        if(titleCheckbox.isSelected()){
+            chart.getYAxis().lookup(".axis-label").setStyle("-fx-fill: #"+axesFontColor+";"+
+                    "-fx-font-size: "+axesFontSize+"pt;"+
+                    "-fx-font-weight: "+axesFontStyle+";"+
+                    "-fx-font-family: \"" + axesFont + "\";"+
+                    "-fx-text-fill: #"+axesFontColor+";" );
+
             chart.setTitle(titleLabel.getText());
             pcaGraphLayout.setGraphTitle(titleLabel.getText());
-            chart.lookup(".chart-title").setStyle("-fx-fill: #"+chosenFontColor+";"+
-                                  "-fx-font-size: "+chosenFontSize+"pt;"+
-                                  "-fx-font-weight: "+chosenFontStyle+";"+
-                                  "-fx-font-family: \"" + chosenFont + "\";"+
-                                  "-fx-text-fill: #"+chosenFontColor+";" );
-        }
-
-        if(hideAxes.isSelected()){
-            pcaGraphLayout.setShowAxes(false);
-            chart.lookup(".chart-vertical-zero-line").setStyle("-fx-stroke: transparent;");
-            chart.lookup(".chart-horizontal-zero-line").setStyle("-fx-stroke: transparent;");
-        }else {
-            chart.lookup(".chart-vertical-zero-line").setStyle(null);
-            chart.lookup(".chart-horizontal-zero-line").setStyle(null);
-        }
+            chart.lookup(".chart-title").setStyle("-fx-fill: #"+headingFontColor+";"+
+                                  "-fx-font-size: "+headingFontSize+"pt;"+
+                                  "-fx-font-weight: "+headingFontStyle+";"+
+                                  "-fx-font-family: \"" + headingFont + "\";"+
+                                  "-fx-text-fill: #"+headingFontColor+";" );
 
         if(hideAxisLabels.isSelected()){
             pcaGraphLayout.setShowAxisLabels(false);
@@ -222,12 +248,19 @@ public class PCASettingsController implements Initializable{
          
          }
 
-         // store font properties
-         pcaGraphLayout.setFont(chosenFont);
-         pcaGraphLayout.setFontColor(chosenFontColor);
-         pcaGraphLayout.setFontPosture(chosenPosture);
-         pcaGraphLayout.setFontSize(chosenFontSize);
-         pcaGraphLayout.setFontStyle(chosenFontStyle);
+         // store font properties for heading
+         pcaGraphLayout.setAxesFont(axesFont);
+         pcaGraphLayout.setAxesFontColor(axesFontColor);
+         pcaGraphLayout.setAxesPosture(axesPosture);
+         pcaGraphLayout.setAxesFontSize(axesFontSize);
+         pcaGraphLayout.setAxesFontStyle(axesFontStyle);
+
+        pcaGraphLayout.setHeadingFont(headingFont);
+        pcaGraphLayout.setHeadingFontColor(headingFontColor);
+        pcaGraphLayout.setHeadingPosture(headingPosture);
+        pcaGraphLayout.setHeadingFontSize(headingFontSize);
+        pcaGraphLayout.setHeadingFontStyle(headingFontStyle);
+
          mainController.disableSettingsBtn(false);
         Genesis.closeOpenStage(event);
     }
@@ -245,49 +278,66 @@ public class PCASettingsController implements Initializable{
      * set all variables
      */
     public void setControls(){
+        // set the heading title and axis labels
+        Text chartHeading = new Text(pcaGraphLayout.getGraphTitle());
         titleLabel.setText(pcaGraphLayout.getGraphTitle());
+
         xLabel.setText(pcaGraphLayout.getxAxisLabel());
         yLabel.setText(pcaGraphLayout.getyAxisLabel());
-        colorPicker.setValue(Color.BLACK);
 
-        styleList.setItems(FXCollections.observableArrayList(weights));
-        fontList.setItems(FXCollections.observableArrayList(Font.getFamilies()));
-        postureList.setItems(FXCollections.observableArrayList(posture));
-        sizeList.setItems(FXCollections.observableList(list));
+        // set the heading controls
+        headingFontCombo.setItems(FXCollections.observableArrayList(Font.getFamilies()));
+        headingFontCombo.setValue(chartHeading.getFont().getFamily());
 
-        styleList.setOnMouseClicked((MouseEvent event) -> {
-            chosenFontStyle = styleList.getSelectionModel().getSelectedItem();
-            updateSampleLabel();
-        });
+        // set the axis controls
+        axisFontCombo.setItems(FXCollections.observableArrayList(Font.getFamilies()));
+        axisFontCombo.setValue(xLabel.getFont().getFamily());
 
-        postureList.setOnMouseClicked((MouseEvent event) -> {
-            chosenPosture = postureList.getSelectionModel().getSelectedItem();
-            updateSampleLabel();
-        });
+        // heading boxes
+        if (isHeadingBold) {
+            boldHeadingCheckbox.setSelected(true);
+        }
+        if (isHeadingItalic) {
+            italicHeadingCheckbox.setSelected(true);
+        }
+        if (isHeadingUnderlined) {
+            underlineHeadingCheckbox.setSelected(true);
+        }
 
-        fontList.setOnMouseClicked((MouseEvent event) -> {
-            chosenFont = fontList.getSelectionModel().getSelectedItem();
-            updateSampleLabel();
+        // axis check boxes
+        if (isAxisLblBold) {
+            boldAxisCheckbox.setSelected(true);
+        }
+        if (isAxisLblItalic) {
+            italicAxisCheckbox.setSelected(true);
+        }
+        if (isAxisLblUnderlined) {
+            underlineAxisCheckbox.setSelected(true);
+        }
 
-        });
+        // set spinners for the font sizes
+        setSpinner(headingFontSizeSpinner, 0, 100, chartHeading.getFont().getSize());
+        setSpinner(axisFontSizeSpinner, 0, 100, yLabel.getFont().getSize());
 
-        sizeList.setOnMouseClicked((MouseEvent event) -> {
-            chosenFontSize = sizeList.getSelectionModel().getSelectedItem();
-            updateSampleLabel();
+        // default colors for the pickers
+        headingColorPicker.setValue(Color.BLACK);
+        axisColorPicker.setValue(Color.BLACK);
 
-        });
-
-        colorPicker.setOnAction((ActionEvent event) -> {
-            updateSampleLabel();
-
-        });
-
-        // set checkboxes
-        hideAxes.setSelected(!pcaGraphLayout.isShowAxes());
         hideAxisLabels.setSelected(!pcaGraphLayout.isShowAxisLabels());
         hideAxisMarks.setSelected(!pcaGraphLayout.isShowAxisMarks());
         hideGrid.setSelected(!pcaGraphLayout.isShowGrid());
         showBorder.setSelected(pcaGraphLayout.isShowBorders());
+    }
+
+    private void setSpinner(Spinner sp, double startValue, double endValue, double defaultValue) {
+        SpinnerValueFactory<Double> spValues = new SpinnerValueFactory.DoubleSpinnerValueFactory(startValue, endValue);
+        sp.setEditable(true);
+        sp.setValueFactory(spValues);
+        sp.getValueFactory().setValue(defaultValue);
+        TextFormatter textFormatter = new TextFormatter(spValues.getConverter(),
+                spValues.getValue());
+        sp.getEditor().setTextFormatter(textFormatter);
+        spValues.valueProperty().bindBidirectional(textFormatter.valueProperty());
     }
 
     /**
@@ -300,13 +350,6 @@ public class PCASettingsController implements Initializable{
 
     public void setPCAGraphLayout(PCAGraphLayout pcaGraphLayout){
         this.pcaGraphLayout = pcaGraphLayout;
-    }
-
-    // get chosen properties and update the label
-    private void updateSampleLabel(){
-        chosenFontColor = Integer.toHexString(colorPicker.getValue().hashCode());
-        sample.setFont(Font.font(chosenFont, FontWeight.valueOf(chosenFontStyle), FontPosture.valueOf(chosenPosture), chosenFontSize));
-        sample.setTextFill(colorPicker.getValue());
     }
 
     public void setMainController(MainController mainController) {

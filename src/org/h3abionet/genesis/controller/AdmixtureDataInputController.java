@@ -66,7 +66,6 @@ public class AdmixtureDataInputController{
     private void handleEntryBtnAdmixtureData(ActionEvent event) throws IOException {
         File admixture = getFile("Choose admixture file");
         try{
-            System.out.println(admixtureFilePath);
             admixtureFilePath = admixture.getAbsolutePath();
             admixtureFileName = admixture.getName();
             btnAdmixtureData.setText(admixtureFileName);
@@ -92,20 +91,7 @@ public class AdmixtureDataInputController{
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(which);
 
-        if(Genesis.getPreviouslyOpenedPath()==null){
-            ;
-        }else{
-            File validator = new File(Genesis.getPreviouslyOpenedPath());
-            if (validator.exists() && validator.isDirectory())
-                fileChooser.setInitialDirectory(validator);
-        }
-
         wanted = fileChooser.showOpenDialog(dialogStage);
-        if(wanted.getParent()!=null){
-            Genesis.setPreviouslyOpenedPath(wanted.getParent());
-        }else {
-            ;
-        }
 
         return wanted;
     }

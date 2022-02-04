@@ -135,7 +135,6 @@ public class MainController implements Initializable{
     private double VBOX_MARGIN = 50;
     private static double defaultAdmixPlotWidth = 1200; // default width
     private static Text chartHeading; // default heading;
-    private AdmixtureGraphEventsHandler admixGraphEventHandler;
     private HiddenIndividualsController hiddenIndividualsController;
     private PCADataInputController pcaDataInputController;
     private ProjectDetailsController projectDetailsController;
@@ -534,7 +533,7 @@ public class MainController implements Initializable{
      */
     @FXML
     @SuppressWarnings("empty-statement")
-    public void saveChart() {
+    public void saveChart() throws Exception {
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
 
         try {
@@ -543,15 +542,16 @@ public class MainController implements Initializable{
                 PCAGraphEventsHandler pc = new PCAGraphEventsHandler(pcaChartsList.get(currentTabIndex));
                 pc.saveChart();
             }
+
             // load admixture setting
             if (selectedTab.getId().contains("admix")){
+                AdmixtureGraphEventsHandler admixGraphEventHandler = new AdmixtureGraphEventsHandler();
                 admixGraphEventHandler.saveChart(admixVbox);
             }
 
         } catch (Exception e) {
             Genesis.throwInformationException("No chart to save");
         }
-
     }
 
     @FXML
@@ -727,8 +727,11 @@ public class MainController implements Initializable{
                     break;
                 case SECONDARY:
                     // set pos of end without arrow head
-                    arrow.setStartX(evt.getX());
-                    arrow.setStartY(evt.getY());
+//                    arrow.setStartX(evt.getX());
+//                    arrow.setStartY(evt.getY());
+                    ArrowOptions arrowOptions = new ArrowOptions(arrow);
+                    // modify the chosen circle
+                    arrowOptions.modifyArrow();
                     break;
             }
         });
