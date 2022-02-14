@@ -10,7 +10,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="369.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.AdmixtureIndividualDetailsController">
+<AnchorPane prefHeight="369.0" prefWidth="271.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.h3abionet.genesis.controller.AdmixtureIndividualDetailsController">
    <children>
       <VBox alignment="CENTER" prefHeight="411.0" prefWidth="282.0" spacing="5.0" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>

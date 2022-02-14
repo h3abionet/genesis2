@@ -42,6 +42,7 @@ public class Project implements Serializable {
     private int phenoColumnNumber; // column with phenotype
     private int currentTabIndex; // set index of the current tab
     private List<String> groupNames = new ArrayList<>();
+    private ArrayList<String> pcaLegendItems = new ArrayList<>();
 
     private int defaultIconSize = 15; //default icon size
     private HashMap groupColors = new HashMap(); // default group colors e.g. mkk -> #800000
@@ -168,6 +169,7 @@ public class Project implements Serializable {
 
                     // set group name, icons and color if only fam file is provided
                     groupNames.add("All"); // if no pheno column, name the group All
+                    pcaLegendItems.add("All"); // only one legend item
                     famOrder.put("All", iidsList);
                     groupColors.put(groupNames.get(0), colors[0]);  // mkk -> #800000
                     groupIcons.put(groupNames.get(0), icons[0]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
@@ -277,6 +279,7 @@ public class Project implements Serializable {
     private void setPhenotypeGroups(BufferedReader r) throws IOException {
 
         // only used when the pheno file is not provided
+        pcaLegendItems.clear();
         groupNames.clear();
         groupIcons.clear();
         groupColors.clear();
@@ -289,7 +292,7 @@ public class Project implements Serializable {
             // keep track of unique phenotypes
             if (!groupNames.contains(rowValues[phenoColumnNumber-1])) {
                 groupNames.add(rowValues[phenoColumnNumber-1]);
-
+                pcaLegendItems.add(rowValues[phenoColumnNumber-1]);
             }
             row = r.readLine();
         }
@@ -451,6 +454,10 @@ public class Project implements Serializable {
         // change the key for the icons and colors
         groupIcons.put(newGroupName,groupIcons.remove(oldGroupName));
         groupColors.put(newGroupName,groupColors.remove(oldGroupName));
+    }
+
+    public ArrayList<String> getPcaLegendItems() {
+        return pcaLegendItems;
     }
 
     public void setPcaFileName(String pcaFileName) {

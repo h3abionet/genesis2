@@ -915,12 +915,13 @@ public class MainController implements Initializable{
 
     @FXML
     private void help(ActionEvent event) {
-                    Tab tab = setHelpTab(Genesis.class.getResource("help/home.html").toExternalForm());
-                    tabPane.getTabs().add(tab);
-                    closeTab(tab);
-                    helpBtn.setDisable(true);
+//            Tab tab = setHelpTab(Genesis.class.getResource("help/home.html").toExternalForm());
+//            tabPane.getTabs().add(tab);
+//            closeTab(tab);
+        Genesis.throwInformationException("Sorry. The documentation/help is temporary unavailable");
+            helpBtn.setDisable(true);
     }
-
+ 
     /**
      * help tab with documentation
      * @param url

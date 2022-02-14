@@ -246,6 +246,11 @@ public class PCAGraph extends Graph implements Serializable {
         int xPcaIndex = pcaX - 1; // position in the pcs array
         int yPcaIndex =  pcaY - 1; // position in the pcs array
 
+        for(String s: project.getPcaLegendItems())
+        {
+            System.out.println("this is "+s);
+        }
+
         // retrieve subjects in the graphIndex position
         PCAGraphLayout pcaGraphLayout = project.getPCAGraphLayouts().get(graphIndex);
         ArrayList<Subject> subjectsList = project.getPcGraphSubjectsList().get(graphIndex);
@@ -654,12 +659,12 @@ public class PCAGraph extends Graph implements Serializable {
                                     children.set(j, second);
                                 }
                             }
-
                         }
                     }
+
                     // shift up
                     if(firstIndex>secondIndex){
-                        for(int j=firstIndex; j>=secondIndex; j--){ // starting
+                        for(int j=firstIndex; j>secondIndex; j--){ // starting
                             Node first = children.get(j);
                             Node second = children.get(j-1);
                             if ((first instanceof Label)) {
@@ -670,10 +675,15 @@ public class PCAGraph extends Graph implements Serializable {
                                     children.set(j, second);
                                 }
                             }
-
                         }
                     }
 
+                    // swap items in the legend list
+                    project.getPcaLegendItems().clear();
+                    for(int c=0;c<children.size();c++){
+                        Label lab = (Label) children.get(c).lookup(".chart-legend-item");
+                        project.getPcaLegendItems().add(lab.getText());
+                    }
                 }
             }
         }
@@ -1045,7 +1055,7 @@ public class PCAGraph extends Graph implements Serializable {
                 + "-fx-padding: "+iconSize+"px;"
                 + "-fx-pref-width: "+iconSize+"px;"
                 + "-fx-pref-height: "+iconSize+"px;"
-                + "-fx-background-color: "+color+", white;";
+                + "-fx-background-color: "+color+","+color+";";
         return s;
     }
 
