@@ -3,13 +3,19 @@ package org.h3abionet.genesis.controller;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.control.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.Project;
 
-public class PCAGroupLabelController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class PCAGroupLabelController implements Initializable {
 
     @FXML
     private CheckBox hideGroupCheckbox;
@@ -25,6 +31,21 @@ public class PCAGroupLabelController {
 
     @FXML
     private Button doneBtn;
+
+    @FXML
+    private Spinner<Double> legendFontSizeSpinner;
+
+    @FXML
+    private ComboBox<String> legendFontComboBox;
+
+    @FXML
+    private ColorPicker legendFontColorPicker;
+
+    // default axis chosen values -- changed by event handlers
+    private String legendFont = "Helvetica";
+    private String legendFontColor = "000000";
+    private String legendFontPosture = "REGULAR";
+    private double legendFontSize = 13;
 
     private String oldGroupName;
     private Project proj;
@@ -62,6 +83,15 @@ public class PCAGroupLabelController {
         // change legend position
         chart.lookup(".chart").setStyle("-fx-legend-side: "+legendPosition.getValue()+";");
 
+        // style the legend item
+        legendFont = legendFontComboBox.getValue();
+        legendFontSize = legendFontSizeSpinner.getValue();
+        legendFontColor = Integer.toHexString(legendFontColorPicker.getValue().hashCode());
+        if(legendFontColor.equals("#ff")){
+            legendFontColor = "000000";
+        }
+        pcaGraph.styleLegendItems(legendFont, legendFontSize, legendFontColor);
+
         Genesis.closeOpenStage(event);
 
     }
@@ -90,5 +120,23 @@ public class PCAGroupLabelController {
 
     public void setPCAGraph(PCAGraph pcaGraph) {
         this.pcaGraph = pcaGraph;
+    }
+
+    private void setSpinner(Spinner sp, double startValue, double endValue, double defaultValue) {
+        SpinnerValueFactory<Double> spValues = new SpinnerValueFactory.DoubleSpinnerValueFactory(startValue, endValue);
+        sp.setEditable(true);
+        sp.setValueFactory(spValues);
+        sp.getValueFactory().setValue(defaultValue);
+        TextFormatter textFormatter = new TextFormatter(spValues.getConverter(),
+                spValues.getValue());
+        sp.getEditor().setTextFormatter(textFormatter);
+        spValues.valueProperty().bindBidirectional(textFormatter.valueProperty());
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        legendFontColorPicker.setValue(Color.BLACK);
+        setSpinner(legendFontSizeSpinner, 5, 25, 13);
+        legendFontComboBox.setItems(FXCollections.observableArrayList(Font.getFamilies()));
     }
 }

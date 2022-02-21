@@ -72,7 +72,7 @@ public class PCAGraphEventsHandler {
             chartContainer.getChildren().add(chart);
 
             // add the chart and the container to the Zoom class              
-            Zoom zoom = new Zoom(chart, chartContainer);
+//            Zoom zoom = new Zoom(chart, chartContainer);
 
         } else {
         }

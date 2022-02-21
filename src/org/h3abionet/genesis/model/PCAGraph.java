@@ -63,7 +63,6 @@ public class PCAGraph extends Graph implements Serializable {
     private int labelClickCounter;
     private transient Label firstGroupLabel, secondGroupLabel;
 
-
     /**
      *
      * @param pcaFilePath - PCA file absolute path
@@ -245,11 +244,6 @@ public class PCAGraph extends Graph implements Serializable {
         // get index of pcs which will be used to extract associated values in the pcs[]
         int xPcaIndex = pcaX - 1; // position in the pcs array
         int yPcaIndex =  pcaY - 1; // position in the pcs array
-
-        for(String s: project.getPcaLegendItems())
-        {
-            System.out.println("this is "+s);
-        }
 
         // retrieve subjects in the graphIndex position
         PCAGraphLayout pcaGraphLayout = project.getPCAGraphLayouts().get(graphIndex);
@@ -492,6 +486,7 @@ public class PCAGraph extends Graph implements Serializable {
 
                 Label lab = (Label) children.get(serieIndex).lookup(".chart-legend-item");
 
+
                 // get color and shape of the group for this lab
                 String iconColor = (String) iconColors.get(lab.getText());
                 String iconShape = (String) iconShapes.get(lab.getText());
@@ -557,7 +552,11 @@ public class PCAGraph extends Graph implements Serializable {
                 for(int i=0;i<children.size();i++){
                     labels.add((Label)children.get(i).lookup(".chart-legend-item"));
                 }
-                Collections.sort(labels, new LabelComparator());
+                // sort alfabetically
+//               Collections.sort(labels, new LabelComparator());
+                // arrange the items as organised before
+                labels.sort(Comparator.comparing(v->project.getOrderOfLegendItems().indexOf(v.getText())));
+
                 tn.getChildren().setAll(labels);
             }
         }
@@ -593,7 +592,7 @@ public class PCAGraph extends Graph implements Serializable {
     }
 
     private void chartGroupNameClicked(Object source, ScatterChart<Number, Number> sc) {
-        Label clickNext = new Label("Click where to");
+//        Label clickNext = new Label("Click where to");
 
         if (!(source instanceof Label)) {
             return;
@@ -602,14 +601,14 @@ public class PCAGraph extends Graph implements Serializable {
 
         if (labelClickCounter == 0) {
             firstGroupLabel = lbl;
-            clickNext.setStyle("-fx-text-fill: red");
+//            clickNext.setStyle("-fx-text-fill: red");
 
             for (Node n : sc.getChildrenUnmodifiable()) {
                 if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                     TilePane tn = (TilePane) n;
                     ObservableList<Node> children = tn.getChildren(); // get legend items
-                    tn.setCursor(Cursor.CLOSED_HAND);
-                    children.add(clickNext);
+                    tn.setCursor(Cursor.CROSSHAIR);
+//                    children.add(clickNext);
                     break;
                 }
             }
@@ -625,7 +624,7 @@ public class PCAGraph extends Graph implements Serializable {
                     TilePane tn = (TilePane) n;
                     ObservableList<Node> children = tn.getChildren(); // get legend items
                     tn.setCursor(Cursor.HAND);
-                    children.remove(children.size() - 1);
+//                    children.remove(children.size() - 1);
                     break;
                 }
             }
@@ -634,59 +633,79 @@ public class PCAGraph extends Graph implements Serializable {
     }
 
     private void groupNameSwap() {
-        // column and row index for clicked labels
-        for(int i=0; i<mainController.getPcaChartsList().size(); i++){ // every chart
 
-            ScatterChart<Number, Number> sc = mainController.getPcaChartsList().get(i);
+        for(int g=0; g<mainController.getPcaChartsList().size(); g++) {
 
+            ScatterChart<Number, Number> sc = mainController.getPcaChartsList().get(g);
+            int firstIndex = 0;
+            int secondIndex = 0;
             for (Node n : sc.getChildrenUnmodifiable()) {
                 if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                     TilePane tn = (TilePane) n;
-                    ObservableList<Node> children = tn.getChildren(); // get legend items
+                    firstIndex = tn.getChildren().indexOf(firstGroupLabel);
+                    secondIndex = tn.getChildren().indexOf(secondGroupLabel);
+                    break;
+                }
+            }
 
-                    int firstIndex = tn.getChildren().indexOf(firstGroupLabel);
-                    int secondIndex = tn.getChildren().indexOf(secondGroupLabel);
-                    // shift down
-                    if(firstIndex<secondIndex){
-                        for(int j=firstIndex; j<=secondIndex; j++){ // starting
-                            Node first = children.get(j);
-                            Node second = children.get(j+1);
-                            if ((first instanceof Label)) {
-                                if (j < secondIndex) { // limit
-                                    children.set(j, new Label("Cur")); // current position
-                                    children.set(j+1, new Label("Cur")); // next position
-                                    children.set(j+1, first);
-                                    children.set(j, second);
-                                }
+            // shift down
+            if(firstIndex<secondIndex){
+                for(int graph=0; graph<mainController.getPcaChartsList().size(); graph++) {
+                    ObservableList<Node> children = getLegend(graph);
+                    for(int j=firstIndex; j<=secondIndex; j++){ // starting
+                        Node first = children.get(j);
+                        Node second = children.get(j+1);
+                        if ((first instanceof Label)) {
+                            if (j < secondIndex) { // limit
+                                children.set(j, new Label("Cur")); // current position
+                                children.set(j+1, new Label("Cur")); // next position
+                                children.set(j+1, first);
+                                children.set(j, second);
                             }
                         }
-                    }
-
-                    // shift up
-                    if(firstIndex>secondIndex){
-                        for(int j=firstIndex; j>secondIndex; j--){ // starting
-                            Node first = children.get(j);
-                            Node second = children.get(j-1);
-                            if ((first instanceof Label)) {
-                                if (j > secondIndex) { // limit
-                                    children.set(j, new Label("Cur")); // current position
-                                    children.set(j-1, new Label("Cur")); // next position
-                                    children.set(j-1, first);
-                                    children.set(j, second);
-                                }
-                            }
-                        }
-                    }
-
-                    // swap items in the legend list
-                    project.getPcaLegendItems().clear();
-                    for(int c=0;c<children.size();c++){
-                        Label lab = (Label) children.get(c).lookup(".chart-legend-item");
-                        project.getPcaLegendItems().add(lab.getText());
                     }
                 }
             }
+
+            // shift up
+            if(firstIndex>secondIndex){
+                for(int graph=0; graph<mainController.getPcaChartsList().size(); graph++) {
+                    ObservableList<Node> children = getLegend(graph);
+                    for (int j = firstIndex; j > secondIndex; j--) { // starting
+                        Node first = children.get(j);
+                        Node second = children.get(j - 1);
+                        if ((first instanceof Label)) {
+                            if (j > secondIndex) { // limit
+                                children.set(j, new Label("Cur")); // current position
+                                children.set(j - 1, new Label("Cur")); // next position
+                                children.set(j - 1, first);
+                                children.set(j, second);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // swap items in the legend list
+            project.getOrderOfLegendItems().clear();
+            for(Node node: getLegend(0)){
+                if(node instanceof Label){
+                    project.getOrderOfLegendItems().add(((Label) node).getText());
+                }
+            }
         }
+    }
+
+    private ObservableList<Node> getLegend(int graphIndex){
+        ObservableList<Node> children = null;
+            ScatterChart<Number, Number> chart = mainController.getPcaChartsList().get(graphIndex);
+            for (Node n : chart.getChildrenUnmodifiable()) {
+                if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+                    TilePane tn = (TilePane) n;
+                    children = tn.getChildren();
+                }
+            }
+        return children;
     }
 
     public void renameLegendGroupNames(String oldGroupName, String newGroupName){
@@ -1037,6 +1056,19 @@ public class PCAGraph extends Graph implements Serializable {
                 data.getNode().lookup(".chart-symbol").setStyle(getStyle(color, icon, s.getIconSize()));
 
                 break;
+            }
+        }
+    }
+
+    public void  styleLegendItems(String font, double size, String color){
+        for(int g=0; g<mainController.getPcaChartsList().size(); g++) {
+            for(Node node: getLegend(g)){
+                if(node instanceof Label){
+                    Label lbl = ((Label) node);
+                    lbl.setStyle("-fx-text-fill: #"+color+";"+
+                            "-fx-font-size: "+size+"pt;"+
+                            "-fx-font-family: \"" + font + "\";");
+                }
             }
         }
     }

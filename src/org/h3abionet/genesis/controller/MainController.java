@@ -147,6 +147,9 @@ public class MainController implements Initializable{
     private ArrayList<ScatterChart> pcaChartsList = new ArrayList<>();
 //    private ArrayList<ScatterChart> pcaChartsList = new ArrayList<>();
     private PCAGraphEventsHandler pc;
+
+    double orgSceneX, orgSceneY;
+
     @FXML
     private void newProject(ActionEvent event) throws IOException {
         // remove background image
@@ -169,7 +172,7 @@ public class MainController implements Initializable{
                 disablePcaBtn(false);
                 disableAdmixtureBtn(false);
                 disableControlBtns(false);
-                disableDataBtn(false);
+//                disableDataBtn(true);
             } else if (project.isPhenoFileProvided() && project.isFamCreated() == false) {
                 // if only pheno file is provided, dont allow admixture
                 disableImportProjBtn(true);
@@ -177,7 +180,7 @@ public class MainController implements Initializable{
                 disablePcaBtn(false);
                 disableAdmixtureBtn(true);
                 disableControlBtns(false);
-                disableDataBtn(false);
+//                disableDataBtn(true);
             }
             else {
 //                 otherwise don't launch the project
@@ -676,19 +679,40 @@ public class MainController implements Initializable{
 
         addShapeToChart(line);
 
-        MouseControlUtil.makeDraggable(line);
+        line.setOnMousePressed((t) -> {
+            orgSceneX = t.getSceneX();
+            orgSceneY = t.getSceneY();
 
-        // set on mouse drag
-        line.setOnMouseMoved((MouseEvent evnt) -> {
-            double mouseDeltaX = evnt.getSceneX() - pivot.getTranslateX();
-            double mouseDeltaY = evnt.getSceneY() - pivot.getTranslateY();
-            double radAngle = Math.atan2(mouseDeltaY, mouseDeltaX);
-            double[] res = rotateLine(pivot, radAngle - Math.toRadians(lineCurrentAngle(line)), line.getEndX(), line.getEndY());
-
-            line.setEndX(res[0]);
-            line.setEndY(res[1]);
-
+            Line l = (Line) (t.getSource());
+            l.toFront();
         });
+
+        line.setOnMouseDragged((t) -> {
+            double offsetX = t.getSceneX() - orgSceneX;
+            double offsetY = t.getSceneY() - orgSceneY;
+
+            Line l = (Line) (t.getSource());
+
+            line.setTranslateX(l.getTranslateX() + offsetX);
+            line.setTranslateY(l.getTranslateY() + offsetY);
+
+            orgSceneX = t.getSceneX();
+            orgSceneY = t.getSceneY();
+        });
+
+//        MouseControlUtil.makeDraggable(line);
+//
+//        // set on mouse drag
+//        line.setOnMouseMoved((MouseEvent evnt) -> {
+//            double mouseDeltaX = evnt.getSceneX() - pivot.getTranslateX();
+//            double mouseDeltaY = evnt.getSceneY() - pivot.getTranslateY();
+//            double radAngle = Math.atan2(mouseDeltaY, mouseDeltaX);
+//            double[] res = rotateLine(pivot, radAngle - Math.toRadians(lineCurrentAngle(line)), line.getEndX(), line.getEndY());
+//
+//            line.setEndX(res[0]);
+//            line.setEndY(res[1]);
+//
+//        });
     }
 
     @FXML
@@ -718,23 +742,44 @@ public class MainController implements Initializable{
         gr.getChildren().addAll(arrow);
         pane.getChildren().add(gr);
 
-        pane.setOnMouseClicked(evt -> {
-            switch (evt.getButton()) {
-                case PRIMARY:
-                    // set pos of end with arrow head
-                    arrow.setEndX(evt.getX());
-                    arrow.setEndY(evt.getY());
-                    break;
-                case SECONDARY:
-                    // set pos of end without arrow head
-//                    arrow.setStartX(evt.getX());
-//                    arrow.setStartY(evt.getY());
-                    ArrowOptions arrowOptions = new ArrowOptions(arrow);
-                    // modify the chosen circle
-                    arrowOptions.modifyArrow();
-                    break;
-            }
+        arrow.setOnMousePressed((t) -> {
+            orgSceneX = t.getSceneX();
+            orgSceneY = t.getSceneY();
+
+            Arrow l = (Arrow) (t.getSource());
+            l.toFront();
         });
+
+        arrow.setOnMouseDragged((t) -> {
+            double offsetX = t.getSceneX() - orgSceneX;
+            double offsetY = t.getSceneY() - orgSceneY;
+
+            Arrow l = (Arrow) (t.getSource());
+
+            arrow.setTranslateX(l.getTranslateX() + offsetX);
+            arrow.setTranslateY(l.getTranslateY() + offsetY);
+
+            orgSceneX = t.getSceneX();
+            orgSceneY = t.getSceneY();
+        });
+
+//        pane.setOnMouseClicked(evt -> {
+//            switch (evt.getButton()) {
+//                case PRIMARY:
+//                    // set pos of end with arrow head
+//                    arrow.setEndX(evt.getX());
+//                    arrow.setEndY(evt.getY());
+//                    break;
+//                case SECONDARY:
+//                    // set pos of end without arrow head
+////                    arrow.setStartX(evt.getX());
+////                    arrow.setStartY(evt.getY());
+//                    ArrowOptions arrowOptions = new ArrowOptions(arrow);
+//                    // modify the chosen circle
+//                    arrowOptions.modifyArrow();
+//                    break;
+//            }
+//        });
 
     }
 

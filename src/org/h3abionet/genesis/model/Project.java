@@ -43,6 +43,7 @@ public class Project implements Serializable {
     private int currentTabIndex; // set index of the current tab
     private List<String> groupNames = new ArrayList<>();
     private ArrayList<String> pcaLegendItems = new ArrayList<>();
+    private ArrayList<String> orderOfLegendItems = new ArrayList<>();
 
     private int defaultIconSize = 15; //default icon size
     private HashMap groupColors = new HashMap(); // default group colors e.g. mkk -> #800000
@@ -65,7 +66,6 @@ public class Project implements Serializable {
     private boolean phenoCreated;
     private ArrayList<String> hiddenGroups = new ArrayList<>(); // [CEU, MKK, ...]
 
-    HashMap<String, String> capitalCities = new HashMap<String, String>();
     // chart groups with subjects
     HashMap<String, ArrayList<Subject>> subjectGroups = new HashMap<>();
     private String pcaFileName;
@@ -458,6 +458,10 @@ public class Project implements Serializable {
 
     public ArrayList<String> getPcaLegendItems() {
         return pcaLegendItems;
+    }
+
+    public ArrayList<String> getOrderOfLegendItems() {
+        return orderOfLegendItems;
     }
 
     public void setPcaFileName(String pcaFileName) {

@@ -125,14 +125,6 @@ public class PCASettingsController implements Initializable{
 
     @FXML
     private void entryOkButton(ActionEvent event) {
-        if(axesFontColor.equals("ffff")){
-            axesFontColor = "000000";
-        }
-
-        if(headingFontColor.equals("ffff")){
-            headingFontColor = "000000";
-        }
-
         axesFont = axisFontCombo.getValue();
 
         if(boldAxisCheckbox.isSelected()){
@@ -142,6 +134,9 @@ public class PCASettingsController implements Initializable{
         }
 
         axesFontColor = Integer.toHexString(axisColorPicker.getValue().hashCode());
+        if(axesFontColor.equals("ff")){
+            axesFontColor = "000000"; // change to black
+        }
 
         if(italicAxisCheckbox.isSelected()){
             axesPosture = "ITALIC";
@@ -159,8 +154,10 @@ public class PCASettingsController implements Initializable{
         }else{
             headingFontStyle = "NORMAL";
         }
-
         headingFontColor = Integer.toHexString(headingColorPicker.getValue().hashCode());
+        if(headingFontColor.equals("ff")){
+            headingFontColor = "000000";
+        }
 
         if(italicHeadingCheckbox.isSelected()){
             headingPosture = "ITALIC";
@@ -178,7 +175,7 @@ public class PCASettingsController implements Initializable{
           chart.getXAxis().lookup(".axis-label").setStyle("-fx-fill: #"+axesFontColor+";"+
                                   "-fx-font-size: "+axesFontSize+"pt;"+
                                   "-fx-font-weight: "+axesFontStyle+";"+
-                                  "-fx-font-family: \"" + axesFont + "\";"+
+                                  "-fx-font-family: \""+ axesFont+"\";"+
                                   "-fx-text-fill: #"+axesFontColor+";" );
 
           // set y-axis label
@@ -188,7 +185,7 @@ public class PCASettingsController implements Initializable{
             chart.getYAxis().lookup(".axis-label").setStyle("-fx-fill: #"+axesFontColor+";"+
                     "-fx-font-size: "+axesFontSize+"pt;"+
                     "-fx-font-weight: "+axesFontStyle+";"+
-                    "-fx-font-family: \"" + axesFont + "\";"+
+                    "-fx-font-family: \""+axesFont+"\";"+
                     "-fx-text-fill: #"+axesFontColor+";" );
 
             chart.setTitle(titleLabel.getText());

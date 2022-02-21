@@ -46,7 +46,8 @@ public class Arrow extends Group {
                 arrow1.setStartY(ey);
                 arrow2.setStartX(ex);
                 arrow2.setStartY(ey);
-            } else {
+            }
+            else {
                 double factor = arrowLength / Math.hypot(sx-ex, sy-ey);
                 double factorO = arrowWidth / Math.hypot(sx-ex, sy-ey);
 
