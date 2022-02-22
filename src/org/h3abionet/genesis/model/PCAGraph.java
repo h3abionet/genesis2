@@ -899,9 +899,8 @@ public class PCAGraph extends Graph implements Serializable {
             individualDetailsController.disableOK();
             individualDetailsController.setPCAGraph(this);
             individualDetailsController.setProject(project);
-
             individualDetailsController.setChart(mainController.getPcaChart());
-
+            individualDetailsController.setPhenotypeComboBoxEvent();
             // set values of clicked pca point
             String xValue = String.valueOf(data.getXValue());
             String yValue = String.valueOf(data.getYValue());
@@ -934,7 +933,7 @@ public class PCAGraph extends Graph implements Serializable {
                     break;
                 }
             }
-//
+
 //            // display icon for clicked point
             individualDetailsController.setIconDisplay(data.getNode().getStyle());
 
@@ -958,7 +957,6 @@ public class PCAGraph extends Graph implements Serializable {
      * @param iconSize
      */
     public void changeSeriesProperties(String serieName, String iconColor, String iconSVGShape, int iconSize){
-
         for(int g=0; g<mainController.getPcaChartsList().size(); g++){
 
             ScatterChart<Number, Number> pcgraph = mainController.getPcaChartsList().get(g);
@@ -985,7 +983,7 @@ public class PCAGraph extends Graph implements Serializable {
                             }
                         }
                     }
-                    break;
+//                    break;
                 }
             }
 
@@ -994,10 +992,12 @@ public class PCAGraph extends Graph implements Serializable {
                     if(s.getPhenos()[project.getPhenoColumnNumber()-1].equals(serieName)){
                         s.setColor(iconColor);
                         s.setIcon(iconSVGShape);
+                        s.setIconSize(iconSize);
                     }
                 }else{
                     s.setColor(iconColor);
                     s.setIcon(iconSVGShape);
+                    s.setIconSize(iconSize);
                 }
             }
         }
@@ -1081,13 +1081,16 @@ public class PCAGraph extends Graph implements Serializable {
      * @return
      */
     public String getStyle(String color, String icon, int iconSize){
-        String s = "-fx-shape: \""+icon+"\";"
+        String s = "-fx-shape:\""+icon+"\";"
                 + "-fx-background-insets: 0, 2;"
                 + "-fx-background-radius:"+iconSize+"px;"
-                + "-fx-padding: "+iconSize+"px;"
-                + "-fx-pref-width: "+iconSize+"px;"
-                + "-fx-pref-height: "+iconSize+"px;"
-                + "-fx-background-color: "+color+","+color+";";
+                +"-fx-background-size:"+iconSize+"px;"
+                + "-fx-padding:"+iconSize+"px;"
+                + "-fx-pref-width:"+iconSize+"px;"
+                + "-fx-pref-height:"+iconSize+"px;"
+                + "-fx-min-width:"+iconSize+"px;"
+                + "-fx-min-height:"+iconSize+"px;"
+                + "-fx-background-color:"+color+","+color+";";
         return s;
     }
 

@@ -8,6 +8,7 @@ package org.h3abionet.genesis.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,15 +21,17 @@ import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.Project;
+import org.h3abionet.genesis.model.Subject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
  * @author Henry
  */
-public class PCAIndividualDetailsController {
+public class PCAIndividualDetailsController{
 
     @FXML
     private Label pcaLabel;
@@ -88,6 +91,7 @@ public class PCAIndividualDetailsController {
     private PCAGraph pcaGraph;
     private Project project;
     private MainController mainController;
+    private IconOptionsController iconCtrlr;
 
     public void setIdsOfClickedPoint(String idsOfClickedPoint[]) {
         this.idsOfClickedPoint = idsOfClickedPoint;
@@ -143,7 +147,7 @@ public class PCAIndividualDetailsController {
             Stage iconStage = new Stage();
             iconStage.initOwner(iconDisplay.getScene().getWindow());
             Scene icon_root = new Scene((Parent) fxmlLoader.load());
-            IconOptionsController iconCtrlr = fxmlLoader.getController();
+            iconCtrlr = fxmlLoader.getController();
             iconCtrlr.setPCAController(this);
             iconCtrlr.setPcaGraph(pcaGraph);
 
@@ -202,8 +206,16 @@ public class PCAIndividualDetailsController {
     private void entryOkButton(ActionEvent event) {
         // hide or place the point on top
         for (XYChart.Series<Number, Number> series : chart.getData()) {
-            for (XYChart.Data<Number, Number> data : series.getData()) {
+            // change the properties of the selected group
+            if(seriesRadioBtnClicked){
+                if (series.getName().equals(phenotypeComboBox.getValue())) {
+                    pcaGraph.changeSeriesProperties(series.getName(), iconColor, iconSVGShape, iconSize);
+                    break;
+                }
+                Genesis.closeOpenStage(event);
+            }
 
+            for (XYChart.Data<Number, Number> data : series.getData()) {
                 String xValue = String.valueOf(data.getXValue());
                 String yValue = String.valueOf(data.getYValue());
 
@@ -217,13 +229,11 @@ public class PCAIndividualDetailsController {
                     }else if (clearRadioBtnClicked) {
                         pcaGraph.resetSubjectProperties(data, xValue, yValue);
                         break;
-                    }else if(seriesRadioBtnClicked){
-                        if (series.getName().equals(phenotypeComboBox.getValue())) {
-                            pcaGraph.changeSeriesProperties(series.getName(), iconColor, iconSVGShape, iconSize);
-                        }
-                    }else {
-                        // set icons and colors for all subjects of this group
+                    }
+                    else {
+                        // set icon and color for all a particular data point
                         pcaGraph.changeSubjectProperties(data, xValue, yValue, iconColor, iconSVGShape, iconSize);
+                        Genesis.closeOpenStage(event);
                     }
                 }
             }
@@ -296,4 +306,35 @@ public class PCAIndividualDetailsController {
         this.iconType = (String) project.getIconTypes().get(icon);
     }
 
+    public void setPhenotypeComboBoxEvent() {
+        // reset icon properties
+        ArrayList<Subject> subjects = project.getPcGraphSubjectsList().get(project.getCurrentTabIndex());
+        // add an even to the combo to auto change the icon for the selected group
+        phenotypeComboBox.valueProperty().addListener((obs, oldItem, newItem) -> {
+            if (newItem == null) {
+                ;
+            } else {
+                phenotypeGroup = phenotypeComboBox.getValue();// MKK
+                for (XYChart.Series<Number, Number> series : chart.getData()) {
+                    if(series.getName().equals(phenotypeGroup)){
+                        // change the icon display
+                        iconDisplay.setStyle(series.getData().get(0).getNode().getStyle());
+                        break;
+                    }
+                }
+                // get the properties of the selected group and update them accordingly
+                for(Subject s: subjects){
+                    if(s.getPhenos()[project.getPhenoColumnNumber()-1].equals(phenotypeGroup)){
+                        iconColor = s.getColor();
+                        iconSVGShape = s.getIcon();
+                        iconSize = s.getIconSize();
+                        iconType = (String) project.getIconTypes().get(iconSVGShape);
+                        clickedIconStyle = iconDisplay.getStyle();
+                        break;
+                    }
+                }
+
+            }
+        });
+    }
 }

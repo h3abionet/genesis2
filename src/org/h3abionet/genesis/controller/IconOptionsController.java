@@ -143,7 +143,7 @@ public class IconOptionsController implements Initializable {
      * set default icon size
      * @param iconSizeValue
      */
-    public void setIconSizeValue(Integer iconSizeValue) {
+    public void setIconSizeValue(int iconSizeValue) {
         // get value form pca individual ctrl
         this.iconSizeValue = iconSizeValue;
         // set values of combo box
