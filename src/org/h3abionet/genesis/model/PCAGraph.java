@@ -493,7 +493,7 @@ public class PCAGraph extends Graph implements Serializable {
 
                 // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
                 // set the legend icons (graphics)
-                lab.getGraphic().setStyle(getStyle(iconColor, iconShape, project.getDefaultIconSize()/2));
+                lab.getGraphic().setStyle(getStyle(iconColor, iconShape, project.getDefaultIconSize()));
 
                 // legend mouse click events for left and right click
                 for (XYChart.Series<Number, Number> s : sc.getData()) {
@@ -977,7 +977,7 @@ public class PCAGraph extends Graph implements Serializable {
                                 Label lab = (Label) children.get(i).lookup(".chart-legend-item");
                                 if(lab.getText().equals(serieName)){
                                     // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
-                                    lab.getGraphic().setStyle(getStyle(iconColor, iconSVGShape, iconSize/2));
+                                    lab.getGraphic().setStyle(getStyle(iconColor, iconSVGShape, iconSize));
                                     break;
                                 }
                             }
@@ -1085,12 +1085,10 @@ public class PCAGraph extends Graph implements Serializable {
                 + "-fx-background-insets: 0, 2;"
                 + "-fx-background-radius:"+iconSize+"px;"
                 +"-fx-background-size:"+iconSize+"px;"
-                + "-fx-padding:"+iconSize+"px;"
+//                + "-fx-padding:"+iconSize+"px;"
                 + "-fx-pref-width:"+iconSize+"px;"
                 + "-fx-pref-height:"+iconSize+"px;"
-                + "-fx-min-width:"+iconSize+"px;"
-                + "-fx-min-height:"+iconSize+"px;"
-                + "-fx-background-color:"+color+","+color+";";
+        + "-fx-background-color:"+color+","+color+";";
         return s;
     }
 

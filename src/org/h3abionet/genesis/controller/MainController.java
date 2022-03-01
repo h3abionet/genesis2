@@ -700,19 +700,14 @@ public class MainController implements Initializable{
             orgSceneY = t.getSceneY();
         });
 
-//        MouseControlUtil.makeDraggable(line);
-//
-//        // set on mouse drag
-//        line.setOnMouseMoved((MouseEvent evnt) -> {
-//            double mouseDeltaX = evnt.getSceneX() - pivot.getTranslateX();
-//            double mouseDeltaY = evnt.getSceneY() - pivot.getTranslateY();
-//            double radAngle = Math.atan2(mouseDeltaY, mouseDeltaX);
-//            double[] res = rotateLine(pivot, radAngle - Math.toRadians(lineCurrentAngle(line)), line.getEndX(), line.getEndY());
-//
-//            line.setEndX(res[0]);
-//            line.setEndY(res[1]);
-//
-//        });
+        line.setOnMouseClicked((MouseEvent e) -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                // use class circle options -- accepts chosen circle as a parameter
+                LineOptions lineOptions = new LineOptions(line);
+                // modify the chosen circle
+                lineOptions.modifyArrow();
+            }
+        });
     }
 
     @FXML
@@ -753,34 +748,21 @@ public class MainController implements Initializable{
         arrow.setOnMouseDragged((t) -> {
             double offsetX = t.getSceneX() - orgSceneX;
             double offsetY = t.getSceneY() - orgSceneY;
-
             Arrow l = (Arrow) (t.getSource());
-
             arrow.setTranslateX(l.getTranslateX() + offsetX);
             arrow.setTranslateY(l.getTranslateY() + offsetY);
-
             orgSceneX = t.getSceneX();
             orgSceneY = t.getSceneY();
         });
 
-//        pane.setOnMouseClicked(evt -> {
-//            switch (evt.getButton()) {
-//                case PRIMARY:
-//                    // set pos of end with arrow head
-//                    arrow.setEndX(evt.getX());
-//                    arrow.setEndY(evt.getY());
-//                    break;
-//                case SECONDARY:
-//                    // set pos of end without arrow head
-////                    arrow.setStartX(evt.getX());
-////                    arrow.setStartY(evt.getY());
-//                    ArrowOptions arrowOptions = new ArrowOptions(arrow);
-//                    // modify the chosen circle
-//                    arrowOptions.modifyArrow();
-//                    break;
-//            }
-//        });
-
+        arrow.setOnMouseClicked((MouseEvent e) -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                // use class circle options -- accepts chosen circle as a parameter
+                ArrowOptions arrowOptions = new ArrowOptions(arrow);
+                // modify the chosen circle
+                arrowOptions.modifyArrow();
+            }
+        });
     }
 
     @FXML
@@ -797,7 +779,7 @@ public class MainController implements Initializable{
 
         circle.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY) {
-                // use class circle options -- accepts chosen circle as a paremeter
+                // use class circle options -- accepts chosen circle as a parameter
                 CircleOptions circleOptions = new CircleOptions(circle);
                 // modify the chosen circle
                 circleOptions.modifyCircle();
