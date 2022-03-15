@@ -65,7 +65,7 @@ public class IconsAndColors implements Serializable {
     private String round_triangle = "M 23.68,18.52 C 24.59,20.04 23.49,21.99 21.71,21.99 21.71,21.99 2.30,21.99 2.30,21.99 0.51,21.99 " +
             "-0.58,20.04 0.33,18.52 0.33,18.52 10.04,2.34 10.04,2.34 9.15,0.86 13.08,0.86 13.97,2.34 13.97,2.34 23.68,18.52 23.68,18.52 23.68,18.52 23.68,18.52 23.68,18.52 Z";
 
-    private String round_sqaure = "M 24.00,5.00 C 24.00,2.24 21.76,0.00 19.00,0.00 19.00,0.00 5.00,0.00 5.00,0.00 2.24,0.00 0.00,2.24 0.00,5.00 0.00,5.00 0.00,19.00 " +
+    private String round_square = "M 24.00,5.00 C 24.00,2.24 21.76,0.00 19.00,0.00 19.00,0.00 5.00,0.00 5.00,0.00 2.24,0.00 0.00,2.24 0.00,5.00 0.00,5.00 0.00,19.00 " +
             "0.00,19.00 0.00,21.76 2.24,24.00 5.00,24.00 5.00,24.00 19.00,24.00 19.00,24.00 21.76,24.00 24.00,21.76 24.00,19.00 24.00,19.00 24.00,5.00 24.00,5.00 Z";
 
     private String arrow3 = "M 17.00,5.00 C 17.00,5.00 0.00,5.00 0.00,5.00 0.00,5.00 0.00,19.00 0.00,19.00 0.00,19.00 17.00,19.00 " +
@@ -104,7 +104,7 @@ public class IconsAndColors implements Serializable {
         iconTypes.put(sharp_arrow, "sharp_arrow");
         iconTypes.put(folder, "folder");
         iconTypes.put(round_triangle, "round_triangle");
-        iconTypes.put(round_sqaure, "round_sqaure");
+        iconTypes.put(round_square, "round_square");
         iconTypes.put(arrow3, "arrow3");
         iconTypes.put(arrow1, "arrow1");
         iconTypes.put(speech, "speech");
@@ -119,9 +119,9 @@ public class IconsAndColors implements Serializable {
     }
 
     private String[] listOfIcons = new String[]{tree, circle, hexagon, egg, rectangle, triangle, square, diamond, drop, cursor, heart, location, shield, shield2, user,
-            sharp_arrow, folder, round_sqaure, round_triangle, arrow3, arrow, arrow1, speech, star, kite, cross, tick, // repeat same icons
+            sharp_arrow, folder, round_square, round_triangle, arrow3, arrow, arrow1, speech, star, kite, cross, tick, // repeat same icons
             tree, circle, hexagon, egg, rectangle, triangle, square, diamond, drop, cursor, location, shield, shield2, user,
-            sharp_arrow, folder, round_sqaure, round_triangle, arrow3, arrow, arrow1, speech, star, kite, cross, tick};
+            sharp_arrow, folder, round_square, round_triangle, arrow3, arrow, arrow1, speech, star, kite, cross, tick};
 
     private String[] listOfColors = new String[]{
             "#800000", // maroon

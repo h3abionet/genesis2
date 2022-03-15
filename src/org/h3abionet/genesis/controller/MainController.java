@@ -32,10 +32,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import jfxtras.labs.util.event.MouseControlUtil;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.model.AdmixtureGraph;
-import org.h3abionet.genesis.model.PCAGraph;
-import org.h3abionet.genesis.model.Project;
-import org.h3abionet.genesis.model.Subject;
+import org.h3abionet.genesis.model.*;
 
 import java.io.*;
 import java.util.*;
@@ -73,8 +70,6 @@ public class MainController implements Initializable{
     private Button pcaBtn;
     @FXML
     private Button newProjBtn;
-    @FXML
-    private Button dataBtn;
     @FXML
     private Button settingsBtn;
     @FXML
@@ -172,7 +167,6 @@ public class MainController implements Initializable{
                 disablePcaBtn(false);
                 disableAdmixtureBtn(false);
                 disableControlBtns(false);
-//                disableDataBtn(true);
             } else if (project.isPhenoFileProvided() && project.isFamCreated() == false) {
                 // if only pheno file is provided, dont allow admixture
                 disableImportProjBtn(true);
@@ -180,7 +174,6 @@ public class MainController implements Initializable{
                 disablePcaBtn(false);
                 disableAdmixtureBtn(true);
                 disableControlBtns(false);
-//                disableDataBtn(true);
             }
             else {
 //                 otherwise don't launch the project
@@ -227,6 +220,11 @@ public class MainController implements Initializable{
         pcaDataInputController = fxmlLoader.getController();
         pcaDataInputController.setMainController(this);
         pcaDataInputController.setProject(project);
+        pcaDataInputController.enableOK();
+        if(pcaGraph!=null){
+            pcaDataInputController.setPcaGraph(pcaGraph);
+            pcaDataInputController.setButtons();
+        }
         Stage dialogStage = new Stage();
         dialogStage.setScene(new Scene(parent));
         dialogStage.setResizable(false);
@@ -237,10 +235,9 @@ public class MainController implements Initializable{
             if(pcaDataInputController.isFirstPcaSuccessful()){
                 setPCAChart(pcaGraph.getPcaChart());
                 // disable the pca button after first import
-                disablePcaBtn(true);
+                disablePcaBtn(false);
                 disableImportProjBtn(true);
                 disableNewProjBtn(true);
-                disableDataBtn(false);
                 // enable other buttons
                 disableControlBtns(false);
 
@@ -279,7 +276,6 @@ public class MainController implements Initializable{
                 }
 
                 // disable new project, import project and data buttons
-                disableDataBtn(false);
                 disableImportProjBtn(true);
                 disableNewProjBtn(true);
 
@@ -289,35 +285,6 @@ public class MainController implements Initializable{
             } else {
                 ; // if import was wrong, do nothing
             }
-        }
-    }
-
-    /**
-     * loads the stored data when the data button is pressed It uses the
-     * launchPCADataInputView method in PCADataInputController to show the stage
-     *
-     * @param event
-     * @throws IOException
-     */
-    @FXML
-    @SuppressWarnings("empty-statement")
-    private void loadData(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCADataInput.fxml"));
-        Parent root = fxmlLoader.load();
-        PCADataInputController controller = fxmlLoader.getController();
-        controller.enableOK();
-        controller.setPcaGraph(pcaGraph);
-        controller.setProject(project);
-        controller.setButtons();
-        Stage dialogStage = new Stage();
-        dialogStage.setScene(new Scene(root));
-        dialogStage.setResizable(false);
-        dialogStage.showAndWait();
-
-        try {
-            setPCAChart(pcaGraph.getPcaChart());
-        } catch (Exception e) {
-            ;
         }
     }
 
@@ -677,7 +644,11 @@ public class MainController implements Initializable{
         line.setStrokeWidth(2);
         line.setStroke(Color.web("000000"));
 
-        addShapeToChart(line);
+        Annotation lineAnnotation = new Annotation();
+        lineAnnotation.setStrokeWidth(2);
+        lineAnnotation.setStrokeColor(Color.web("000000"));
+
+        addShapeToChart(line, lineAnnotation);
 
         line.setOnMousePressed((t) -> {
             orgSceneX = t.getSceneX();
@@ -703,7 +674,7 @@ public class MainController implements Initializable{
         line.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY) {
                 // use class circle options -- accepts chosen circle as a parameter
-                LineOptions lineOptions = new LineOptions(line);
+                LineOptions lineOptions = new LineOptions(line, lineAnnotation);
                 // modify the chosen circle
                 lineOptions.modifyArrow();
             }
@@ -774,8 +745,14 @@ public class MainController implements Initializable{
         circle.setFill(Color.TRANSPARENT);
         circle.setStroke(Color.BLACK);
 
+        Annotation circleAnnotation = new Annotation();
+        circleAnnotation.setName("circle");
+        circleAnnotation.setCenterX(200);
+        circleAnnotation.setCenterY(200);
+        circleAnnotation.setRadius(100);
+
         MouseControlUtil.makeDraggable(circle);
-        addShapeToChart(circle);
+        addShapeToChart(circle, circleAnnotation);
 
         circle.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY) {
@@ -785,7 +762,6 @@ public class MainController implements Initializable{
                 circleOptions.modifyCircle();
             }
         });
-
     }
 
     @FXML
@@ -804,7 +780,7 @@ public class MainController implements Initializable{
         // can drag text
         MouseControlUtil.makeDraggable(text);
         // add text to pcaChart
-        addShapeToChart(text);
+//        addShapeToChart(text); //TODO - REMOVE THE COMMENT TO ADD TEXT
         // add mouse event to text for editing options
         text.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY) {
@@ -824,7 +800,7 @@ public class MainController implements Initializable{
         rec.setStroke(Color.BLACK);
 
         MouseControlUtil.makeDraggable(rec);
-        addShapeToChart(rec);
+//        addShapeToChart(rec); //TODO - REMOVE THE COMMENT TO ADD THE REC
 
         rec.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY) {
@@ -836,10 +812,12 @@ public class MainController implements Initializable{
         });
     }
 
-    public void addShapeToChart(Shape shape) {
+    public void addShapeToChart(Shape shape, Annotation annotation) {
         Pane p = (Pane) pcaChartsList.get(currentTabIndex).getChildrenUnmodifiable().get(1);
         Region r = (Region) p.getChildren().get(0);
         Group gr = new Group();
+
+        project.getPcGraphAnnotationsList().get(currentTabIndex).add(annotation);
 
         // change cursor on hovering the shape
         shape.setOnMouseEntered(e -> {
@@ -854,17 +832,6 @@ public class MainController implements Initializable{
 
         gr.getChildren().addAll(shape);
         p.getChildren().add(gr);
-    }
-
-    private double lineCurrentAngle(Line line) {
-        return Math.toDegrees(Math.atan2(line.getEndY() - pivot.getTranslateY(), line.getEndX() - pivot.getTranslateX()));
-    }
-
-    private double[] rotateLine(Shape pivot, double radAngle, double endX, double endY) {
-        double x, y;
-        x = Math.cos(radAngle) * (endX - pivot.getTranslateX()) - Math.sin(radAngle) * (endY - pivot.getTranslateY()) + pivot.getTranslateX();
-        y = Math.sin(radAngle) * (endX - pivot.getTranslateX()) + Math.cos(radAngle) * (endY - pivot.getTranslateY()) + pivot.getTranslateY();
-        return new double[]{x, y};
     }
 
     /**
@@ -991,10 +958,6 @@ public class MainController implements Initializable{
         settingsBtn.setDisable(b);
      }
 
-     public  void disableDataBtn(boolean b){
-        dataBtn.setDisable(b);
-     }
-
      public void disableDownloadBtn(boolean b){
         downloadBtn.setDisable(b);
      }
@@ -1036,7 +999,6 @@ public class MainController implements Initializable{
         disablePcaBtn(true);
         disableAdmixtureBtn(true);
         disableSettingsBtn(true);
-        disableDataBtn(true);
         disableDownloadBtn(true);
         disableDrawingBtn(true);
         disableIndividualBtn(true);

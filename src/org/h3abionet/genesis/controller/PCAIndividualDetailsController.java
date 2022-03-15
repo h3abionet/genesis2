@@ -210,7 +210,6 @@ public class PCAIndividualDetailsController{
             if(seriesRadioBtnClicked){
                 if (series.getName().equals(phenotypeComboBox.getValue())) {
                     pcaGraph.changeSeriesProperties(series.getName(), iconColor, iconSVGShape, iconSize);
-                    break;
                 }
                 Genesis.closeOpenStage(event);
             }

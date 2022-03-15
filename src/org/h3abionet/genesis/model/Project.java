@@ -55,6 +55,7 @@ public class Project implements Serializable {
     private ArrayList<String> hiddenPoints = new ArrayList<>(); // store hidden ids of every pc graph in a separate list
     private ArrayList<Subject> subjectsList; // list of every subject object created
     private ArrayList<ArrayList<Subject>> pcGraphSubjectsList =  new ArrayList<>(); // every graph has it
+    private ArrayList<ArrayList<Annotation>> pcGraphAnnotationsList =  new ArrayList<>(); // every graph has it
 
     private int numOfIndividuals;
     private AdmixtureGraph admixtureGraph;
@@ -470,5 +471,9 @@ public class Project implements Serializable {
 
     public String getPcaFileName() {
         return pcaFileName;
+    }
+
+    public ArrayList<ArrayList<Annotation>> getPcGraphAnnotationsList() {
+        return pcGraphAnnotationsList;
     }
 }

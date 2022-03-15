@@ -473,7 +473,7 @@ public class PCAGraph extends Graph implements Serializable {
             if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                 TilePane tn = (TilePane) n;
                 ObservableList<Node> children = tn.getChildren();
-                tn.setCursor(Cursor.HAND);
+                tn.setCursor(Cursor.CROSSHAIR);
 
                 // add hover property
                 tn.hoverProperty().addListener((observable, oldValue, newValue) -> {
@@ -490,6 +490,9 @@ public class PCAGraph extends Graph implements Serializable {
                 // get color and shape of the group for this lab
                 String iconColor = (String) iconColors.get(lab.getText());
                 String iconShape = (String) iconShapes.get(lab.getText());
+
+                System.out.println("the group is "+lab.getText());
+                System.out.println(iconShape);
 
                 // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
                 // set the legend icons (graphics)
@@ -552,7 +555,7 @@ public class PCAGraph extends Graph implements Serializable {
                 for(int i=0;i<children.size();i++){
                     labels.add((Label)children.get(i).lookup(".chart-legend-item"));
                 }
-                // sort alfabetically
+                // sort alphabetically
 //               Collections.sort(labels, new LabelComparator());
                 // arrange the items as organised before
                 labels.sort(Comparator.comparing(v->project.getOrderOfLegendItems().indexOf(v.getText())));
@@ -607,7 +610,7 @@ public class PCAGraph extends Graph implements Serializable {
                 if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                     TilePane tn = (TilePane) n;
                     ObservableList<Node> children = tn.getChildren(); // get legend items
-                    tn.setCursor(Cursor.CROSSHAIR);
+                    tn.setCursor(Cursor.HAND);
 //                    children.add(clickNext);
                     break;
                 }
@@ -623,7 +626,7 @@ public class PCAGraph extends Graph implements Serializable {
                 if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                     TilePane tn = (TilePane) n;
                     ObservableList<Node> children = tn.getChildren(); // get legend items
-                    tn.setCursor(Cursor.HAND);
+                    tn.setCursor(Cursor.CROSSHAIR);
 //                    children.remove(children.size() - 1);
                     break;
                 }
@@ -649,26 +652,33 @@ public class PCAGraph extends Graph implements Serializable {
             }
 
             // shift down
-            if(firstIndex<secondIndex){
-                for(int graph=0; graph<mainController.getPcaChartsList().size(); graph++) {
-                    ObservableList<Node> children = getLegend(graph);
-                    for(int j=firstIndex; j<=secondIndex; j++){ // starting
-                        Node first = children.get(j);
-                        Node second = children.get(j+1);
-                        if ((first instanceof Label)) {
-                            if (j < secondIndex) { // limit
-                                children.set(j, new Label("Cur")); // current position
-                                children.set(j+1, new Label("Cur")); // next position
-                                children.set(j+1, first);
-                                children.set(j, second);
+            if(firstIndex<secondIndex) {
+
+                try {
+
+                    for (int graph = 0; graph < mainController.getPcaChartsList().size(); graph++) {
+                        ObservableList<Node> children = getLegend(graph);
+                        for (int j = firstIndex; j <= secondIndex; j++) { // starting
+                            Node first = children.get(j);
+                            Node second = children.get(j + 1);
+                            if ((first instanceof Label)) {
+                                if (j < secondIndex) { // limit
+                                    children.set(j, new Label("Cur")); // current position
+                                    children.set(j + 1, new Label("Cur")); // next position
+                                    children.set(j + 1, first);
+                                    children.set(j, second);
+                                }
                             }
                         }
                     }
+                } catch (Exception e) {
+                    return;
                 }
             }
 
             // shift up
             if(firstIndex>secondIndex){
+                try{
                 for(int graph=0; graph<mainController.getPcaChartsList().size(); graph++) {
                     ObservableList<Node> children = getLegend(graph);
                     for (int j = firstIndex; j > secondIndex; j--) { // starting
@@ -684,6 +694,9 @@ public class PCAGraph extends Graph implements Serializable {
                         }
                     }
                 }
+                }catch (Exception e){
+                    return;
+                }
             }
 
             // swap items in the legend list
@@ -692,6 +705,10 @@ public class PCAGraph extends Graph implements Serializable {
                 if(node instanceof Label){
                     project.getOrderOfLegendItems().add(((Label) node).getText());
                 }
+            }
+
+            for(String s: project.getOrderOfLegendItems()){
+                System.out.println("the group is "+s);
             }
         }
     }
@@ -968,7 +985,7 @@ public class PCAGraph extends Graph implements Serializable {
                         dt.getNode().lookup(".chart-symbol").setStyle(getStyle(iconColor, iconSVGShape, iconSize));
                     }
 
-                    // change population group color and icon the legend
+                    // change population group color and icon the legend - dont change the size of icons on the legend
                     for (Node n : pcgraph.getChildrenUnmodifiable()) {
                         if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                             TilePane tn = (TilePane) n;
@@ -977,13 +994,12 @@ public class PCAGraph extends Graph implements Serializable {
                                 Label lab = (Label) children.get(i).lookup(".chart-legend-item");
                                 if(lab.getText().equals(serieName)){
                                     // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
-                                    lab.getGraphic().setStyle(getStyle(iconColor, iconSVGShape, iconSize));
+                                    lab.getGraphic().setStyle(getLegendStyle(iconColor, iconSVGShape));
                                     break;
                                 }
                             }
                         }
                     }
-//                    break;
                 }
             }
 
@@ -1083,12 +1099,22 @@ public class PCAGraph extends Graph implements Serializable {
     public String getStyle(String color, String icon, int iconSize){
         String s = "-fx-shape:\""+icon+"\";"
                 + "-fx-background-insets: 0, 2;"
-                + "-fx-background-radius:"+iconSize+"px;"
-                +"-fx-background-size:"+iconSize+"px;"
-//                + "-fx-padding:"+iconSize+"px;"
-                + "-fx-pref-width:"+iconSize+"px;"
-                + "-fx-pref-height:"+iconSize+"px;"
-        + "-fx-background-color:"+color+","+color+";";
+                +"-fx-background-size: "+iconSize+"px;"
+                + "-fx-padding: "+iconSize+"px;"
+                + "-fx-background-radius: "+iconSize+"px;"
+                + "-fx-pref-width: "+iconSize+"px;"
+                + "-fx-pref-height: "+iconSize+"px;"
+                + "-fx-min-width: "+iconSize+"px;"
+                + "-fx-max-width: "+iconSize+"px;"
+                + "-fx-min-height: "+iconSize+"px;"
+                + "-fx-max-height: "+iconSize+"px;"
+        + "-fx-background-color: "+color+","+color+";";
+        return s;
+    }
+
+    public String getLegendStyle(String color, String icon){
+        String s = "-fx-shape:\""+icon+"\";"
+                + "-fx-background-color:"+color+","+color+";";
         return s;
     }
 

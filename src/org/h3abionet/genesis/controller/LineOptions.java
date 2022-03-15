@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.transform.Rotate;
+import org.h3abionet.genesis.model.Annotation;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,9 +29,11 @@ public class LineOptions extends Line{
     private ComboBox stkWidth;
     private Slider lineLengthSlider;
     private Label adjustLineLengthLbl;
+    private Annotation lineAnnotation;
 
-    public LineOptions(Line line) {
+    public LineOptions(Line line, Annotation lineAnnotation) {
         this.line = line;
+        this.lineAnnotation = lineAnnotation;
         setControllers();
     }
 
@@ -81,6 +84,7 @@ public class LineOptions extends Line{
         //add event handlers to the controllers
         cpStroke.setOnAction((ActionEvent e) -> {
             line.setStroke(cpStroke.getValue());
+            lineAnnotation.setStroke(cpStroke.getValue());
         });
 
         stkWidth.setOnAction(e -> {
