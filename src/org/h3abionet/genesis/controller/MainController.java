@@ -644,12 +644,30 @@ public class MainController implements Initializable{
         line.setStrokeWidth(2);
         line.setStroke(Color.web("000000"));
 
+        // add line properties
         Annotation lineAnnotation = new Annotation();
+        lineAnnotation.setName("line");
         lineAnnotation.setStrokeWidth(2);
-        lineAnnotation.setStrokeColor(Color.web("000000"));
+        lineAnnotation.setStrokeColor("000000");
 
-        addShapeToChart(line, lineAnnotation);
+        project.getPcGraphAnnotationsList().get(currentTabIndex).add(lineAnnotation);
 
+        addShapeToChart(line);
+
+        addLineEvents(line, lineAnnotation);
+    }
+
+    public void recreateLine(Annotation l){
+        Line line = new Line(l.getStartX(), l.getStartY(), l.getEndX(), l.getEndY());
+        line.setStrokeWidth(l.getStrokeWidth());
+        line.setStroke(Color.web(l.getStrokeColor()));
+
+        addShapeToChart(line);
+
+        addLineEvents(line, l);
+    }
+
+    private void addLineEvents(Line line, Annotation lineAnnotation){
         line.setOnMousePressed((t) -> {
             orgSceneX = t.getSceneX();
             orgSceneY = t.getSceneY();
@@ -752,7 +770,7 @@ public class MainController implements Initializable{
         circleAnnotation.setRadius(100);
 
         MouseControlUtil.makeDraggable(circle);
-        addShapeToChart(circle, circleAnnotation);
+        addShapeToChart(circle);
 
         circle.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY) {
@@ -780,7 +798,7 @@ public class MainController implements Initializable{
         // can drag text
         MouseControlUtil.makeDraggable(text);
         // add text to pcaChart
-//        addShapeToChart(text); //TODO - REMOVE THE COMMENT TO ADD TEXT
+        addShapeToChart(text); //TODO - add text to annotation
         // add mouse event to text for editing options
         text.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY) {
@@ -800,7 +818,7 @@ public class MainController implements Initializable{
         rec.setStroke(Color.BLACK);
 
         MouseControlUtil.makeDraggable(rec);
-//        addShapeToChart(rec); //TODO - REMOVE THE COMMENT TO ADD THE REC
+        addShapeToChart(rec); //TODO - add rec to annotations
 
         rec.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY) {
@@ -812,12 +830,10 @@ public class MainController implements Initializable{
         });
     }
 
-    public void addShapeToChart(Shape shape, Annotation annotation) {
+    public void addShapeToChart(Shape shape) {
         Pane p = (Pane) pcaChartsList.get(currentTabIndex).getChildrenUnmodifiable().get(1);
         Region r = (Region) p.getChildren().get(0);
         Group gr = new Group();
-
-        project.getPcGraphAnnotationsList().get(currentTabIndex).add(annotation);
 
         // change cursor on hovering the shape
         shape.setOnMouseEntered(e -> {

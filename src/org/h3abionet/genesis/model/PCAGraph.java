@@ -288,6 +288,9 @@ public class PCAGraph extends Graph implements Serializable {
         // add subjects to the list of all subjects
         project.getPcGraphSubjectsList().add(subjects);
 
+        // add an empty list of annotation list
+        project.getPcGraphAnnotationsList().add(new ArrayList<Annotation>());
+
         // get a copy of default colors and add them to a list for this particular graph
         groupColors = project.getGroupColors();
 

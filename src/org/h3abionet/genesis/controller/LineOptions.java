@@ -23,13 +23,14 @@ public class LineOptions extends Line{
     private final Line line;
     GridPane grid;
     private Label StrokeWidthLabel;
-    private Slider slider;
+    private Slider rotationSlider;
     private Label cpStrokeLabel;
     private ColorPicker cpStroke;
     private ComboBox stkWidth;
     private Slider lineLengthSlider;
     private Label adjustLineLengthLbl;
     private Annotation lineAnnotation;
+    private double angleOfRotation;
 
     public LineOptions(Line line, Annotation lineAnnotation) {
         this.line = line;
@@ -37,11 +38,15 @@ public class LineOptions extends Line{
         setControllers();
     }
 
+    public void setAngleOfRotation(double angleOfRotation) {
+        this.angleOfRotation = angleOfRotation;
+    }
 
     private void setControllers() {
         adjustLineLengthLbl = new Label("Reduce Line");
         StrokeWidthLabel = new Label("Stroke Width");
         cpStrokeLabel = new Label("Stroke color: ");
+        StrokeWidthLabel = new Label("Stroke Width");
 
         cpStroke = new ColorPicker((Color) line.getStroke());
         cpStroke.getStyleClass().add("split-button");
@@ -50,16 +55,16 @@ public class LineOptions extends Line{
                 observableArrayList(IntStream.range(1, 11).boxed().collect(Collectors.toList())));
         stkWidth.setValue((int)line.getStrokeWidth());
 
-        StrokeWidthLabel = new Label("Stroke Width");
-        slider = new Slider(0, 360,line.getRotate());
-        slider.setShowTickLabels(true);
-        slider.setShowTickMarks(true);
-        slider.setOrientation(Orientation.HORIZONTAL);
+
+        rotationSlider = new Slider(-180, 180, line.getRotate());
+        rotationSlider.setShowTickLabels(true);
+        rotationSlider.setShowTickMarks(true);
+        rotationSlider.setOrientation(Orientation.HORIZONTAL);
 
         lineLengthSlider = new Slider(0, 360, 5);
-        slider.setShowTickLabels(true);
-        slider.setShowTickMarks(true);
-        slider.setOrientation(Orientation.HORIZONTAL);
+        lineLengthSlider.setShowTickLabels(true);
+        lineLengthSlider.setShowTickMarks(true);
+        lineLengthSlider.setOrientation(Orientation.HORIZONTAL);
 
         // controls
         // set the grid
@@ -72,7 +77,7 @@ public class LineOptions extends Line{
         // add controllers to the grid
         grid.add(new Label("Line options"), 0, 0);
         grid.add(new Label("Rotation Slider"), 0,1);
-        grid.add(slider,1,1);
+        grid.add(rotationSlider,1,1);
 
         grid.add(StrokeWidthLabel, 0, 2);
         grid.add(stkWidth, 1, 2);
@@ -84,11 +89,12 @@ public class LineOptions extends Line{
         //add event handlers to the controllers
         cpStroke.setOnAction((ActionEvent e) -> {
             line.setStroke(cpStroke.getValue());
-            lineAnnotation.setStroke(cpStroke.getValue());
+            lineAnnotation.setStroke(Integer.toHexString(cpStroke.getValue().hashCode()));
         });
 
         stkWidth.setOnAction(e -> {
             line.setStrokeWidth((int) stkWidth.getValue());
+            lineAnnotation.setStrokeWidth((int) stkWidth.getValue());
         });
 
         //creating the rotation transformation
@@ -96,24 +102,22 @@ public class LineOptions extends Line{
         //Setting pivot points for the rotation
         rotate.setPivotX((line.getStartX() + line.getEndX())/2);
         rotate.setPivotY((line.getStartY() + line.getEndY())/2);
-        //Adding the transformation to line
-        line.getTransforms().addAll(rotate);
 
         //Linking the transformation to the slider
-        slider.valueProperty().addListener(new ChangeListener<Number>() {
+        rotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<?extends Number> observable, Number oldValue, Number newValue){
                 //Setting the angle for the rotation
                 rotate.setAngle((double) newValue);
+                setAngleOfRotation((double) newValue);
+                //Adding the transformation to the line
+                line.getTransforms().add(rotate);
             }
         });
 
-        //Adding the transformation to the line
-        line.getTransforms().add(rotate);
 
         //Linking the transformation to the slider
         lineLengthSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<?extends Number> observable, Number oldValue, Number newValue){
-                //Setting the angle for the rotation
                 double  reduction = (double) newValue;
                 line.setStartX(line.getStartX()-reduction);
                 line.setStartY(line.getStartY()-reduction);
@@ -137,7 +141,7 @@ public class LineOptions extends Line{
 
         dialog.setResultConverter(b -> {
             if (b == doneBtn) {
-                return new Options((int) slider.getValue(), (int) stkWidth.getValue(), cpStroke.getValue());
+                return new Options((int) rotationSlider.getValue(), (int) stkWidth.getValue(), cpStroke.getValue());
             } else {
                 line.setVisible(false);
             }
@@ -149,6 +153,14 @@ public class LineOptions extends Line{
         results.ifPresent((Options options) -> {
             line.setStrokeWidth(options.strokeWidth);
             line.setStroke(options.strokeColor);
+
+            // store the properties of the annotation
+            lineAnnotation.setStartX(line.getStartX());
+            lineAnnotation.setStartY(line.getStartY());
+            lineAnnotation.setEndY(line.getEndX());
+            lineAnnotation.setEndY(line.getEndY());
+            lineAnnotation.setRotation(angleOfRotation);
+
         });
 
     }

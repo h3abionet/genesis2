@@ -7,6 +7,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.AdmixtureGraph;
+import org.h3abionet.genesis.model.Annotation;
 import org.h3abionet.genesis.model.PCAGraph;
 import org.h3abionet.genesis.model.Project;
 
@@ -14,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 
 public class ImportProjectController {
 
@@ -121,6 +123,18 @@ public class ImportProjectController {
                 // set every pca graph on a new tab. recreateGraph - returns a graph given the x,y pc columns
                 mainController.setPCAChart(pcaGraph.recreatePcaGraph(firstPC, secondPC, listIndex));
             }
+
+            // add annotations
+            for (int annoIndex = 0; annoIndex < proj.getPcGraphAnnotationsList().size(); annoIndex++) {
+                ArrayList<Annotation> annotations = proj.getPcGraphAnnotationsList().get(annoIndex);
+                for(Annotation an : annotations ){
+                    if(an.getName().equals("line")){
+                        mainController.recreateLine(an);
+                    }
+                }
+            }
+
+
         }
 
         if(proj.getAdmixtureGraph()!=null) {

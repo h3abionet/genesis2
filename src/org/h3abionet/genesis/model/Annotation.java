@@ -2,8 +2,10 @@ package org.h3abionet.genesis.model;
 
 import javafx.scene.paint.Color;
 
-public class Annotation {
+import java.io.Serializable;
 
+public class Annotation implements Serializable {
+    private static final long serialVersionUID = 2L;
     String name;
     int radius;
     int width;
@@ -11,18 +13,18 @@ public class Annotation {
     int archWidth;
     int archHeight;
     int strokeWidth;
-    Color strokeColor;
-    Color fillColor;
+    String strokeColor;
+    String fillColor;
     int length;
-    int startX;
-    int startY;
-    int endX;
-    int endY;
+    double startX;
+    double startY;
+    double endX;
+    double endY;
     int centerX;
     int centerY;
     String fill;
     String Stroke;
-    int rotation;
+    double rotation;
 
     public String getName() {
         return name;
@@ -32,11 +34,11 @@ public class Annotation {
         return centerX;
     }
 
-    public int getRotation() {
+    public double getRotation() {
         return rotation;
     }
 
-    public void setRotation(int rotation) {
+    public void setRotation(double rotation) {
         this.rotation = rotation;
     }
 
@@ -120,19 +122,19 @@ public class Annotation {
         this.strokeWidth = strokeWidth;
     }
 
-    public Color getStrokeColor() {
+    public String getStrokeColor() {
         return strokeColor;
     }
 
-    public void setStrokeColor(Color strokeColor) {
+    public void setStrokeColor(String strokeColor) {
         this.strokeColor = strokeColor;
     }
 
-    public Color getFillColor() {
+    public String getFillColor() {
         return fillColor;
     }
 
-    public void setFillColor(Color fillColor) {
+    public void setFillColor(String fillColor) {
         this.fillColor = fillColor;
     }
 
@@ -144,35 +146,35 @@ public class Annotation {
         this.length = length;
     }
 
-    public int getStartX() {
+    public double getStartX() {
         return startX;
     }
 
-    public void setStartX(int startX) {
+    public void setStartX(double startX) {
         this.startX = startX;
     }
 
-    public int getStartY() {
+    public double getStartY() {
         return startY;
     }
 
-    public void setStartY(int startY) {
+    public void setStartY(double startY) {
         this.startY = startY;
     }
 
-    public int getEndX() {
+    public double getEndX() {
         return endX;
     }
 
-    public void setEndX(int endX) {
+    public void setEndX(double endX) {
         this.endX = endX;
     }
 
-    public int getEndY() {
+    public double getEndY() {
         return endY;
     }
 
-    public void setEndY(int endY) {
+    public void setEndY(double endY) {
         this.endY = endY;
     }
 }
