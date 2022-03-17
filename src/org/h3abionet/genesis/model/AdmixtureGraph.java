@@ -739,9 +739,9 @@ public class AdmixtureGraph extends Graph implements Serializable {
         pane.hoverProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 pane.setCursor(Cursor.HAND);
-                pane.setStyle(paneCssStyle+"-fx-background-color: #e1f3f7;");
+                pane.setStyle(paneCssStyle+"; -fx-background-color: #e1f3f7;");
             } else {
-                pane.setStyle(paneCssStyle+"-fx-background-color: transparent;");
+                pane.setStyle(paneCssStyle+"; -fx-background-color: transparent;");
             }
         });
 

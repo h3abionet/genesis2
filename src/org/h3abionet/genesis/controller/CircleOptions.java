@@ -25,6 +25,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
+import org.h3abionet.genesis.model.Annotation;
 
 /**
  *
@@ -34,21 +35,23 @@ public class CircleOptions implements Serializable{
 
     private static final long serialVersionUID = 2L;
 
-    transient Circle circle;
-    transient GridPane grid;
+    private Circle circle;
+    private GridPane grid;
     
     // grid components or controllers
-    transient Label StrokeWidthLabel;
-    transient Label radiusSizeLabel;
-    transient Label cpStrokeLabel;
-    transient Label cpFillLabel;
-    transient ColorPicker cpStroke;
-    transient ColorPicker cpFill;
-    transient Slider slider;
-    transient ComboBox stkWidth;
+    private Label StrokeWidthLabel;
+    private Label radiusSizeLabel;
+    private Label cpStrokeLabel;
+    private Label cpFillLabel;
+    private ColorPicker cpStroke;
+//    private ColorPicker cpFill;
+    private Slider slider;
+    private ComboBox stkWidth;
+    private Annotation annotation;
 
-    public CircleOptions(Circle circle) {
+    public CircleOptions(Circle circle, Annotation circleAnn) {
         this.circle = circle;
+        this.annotation = circleAnn;
         setControllers();
     }
     
@@ -56,15 +59,15 @@ public class CircleOptions implements Serializable{
         StrokeWidthLabel = new Label("Stroke Width");
         radiusSizeLabel = new Label("Radius size: ");
         cpStrokeLabel = new Label("Stroke color: ");
-        cpFillLabel = new Label("Fill color: ");
+//        cpFillLabel = new Label("Fill color: ");
 
         cpStroke = new ColorPicker((Color) circle.getStroke());
         cpStroke.getStyleClass().add("split-button");
-
-        cpFill = new ColorPicker((Color) circle.getFill());
-        cpFill.getStyleClass().add("split-button");
+//
+//        cpFill = new ColorPicker((Color) circle.getFill());
+//        cpFill.getStyleClass().add("split-button");
         
-        slider = new Slider(5, 200, (int)circle.getRadius());
+        slider = new Slider(5, 300, (int)circle.getRadius());
         slider.setShowTickLabels(true);
         slider.setShowTickMarks(true);
         
@@ -86,8 +89,8 @@ public class CircleOptions implements Serializable{
         grid.add(slider, 2, 2);
         grid.add(cpStrokeLabel, 1, 3);
         grid.add(cpStroke, 2, 3);
-        grid.add(cpFillLabel, 1, 4);
-        grid.add(cpFill, 2, 4);
+//        grid.add(cpFillLabel, 1, 4);
+//        grid.add(cpFill, 2, 4);
         
         //add event handlers to the controllers
         slider.valueProperty().addListener((ObservableValue <? extends Number >  
@@ -99,10 +102,10 @@ public class CircleOptions implements Serializable{
             circle.setStroke(cpStroke.getValue());
         });
         
-        cpFill.setOnAction((ActionEvent e) -> {
-            circle.setFill(cpFill.getValue());
-
-        });
+//        cpFill.setOnAction((ActionEvent e) -> {
+//            circle.setFill(cpFill.getValue());
+//
+//        });
         
         stkWidth.setOnAction(e -> {
             circle.setStrokeWidth((int) stkWidth.getValue());
@@ -123,7 +126,12 @@ public class CircleOptions implements Serializable{
 
         dialog.setResultConverter(b -> {
             if (b == doneBtn) {
-                return new Options((int) slider.getValue(), (int) stkWidth.getValue(), cpStroke.getValue(), cpFill.getValue());
+                // set annotation values
+                annotation.setRadius((int) slider.getValue());
+                annotation.setStrokeWidth( (int) stkWidth.getValue());
+                annotation.setStrokeColor(Integer.toHexString(cpStroke.getValue().hashCode()));
+//                annotation.setFill(Integer.toHexString(cpFill.getValue().hashCode()));
+                return new Options((int) slider.getValue(), (int) stkWidth.getValue(), cpStroke.getValue());
             } else {
                 circle.setVisible(false);
             }
@@ -135,7 +143,7 @@ public class CircleOptions implements Serializable{
             circle.setRadius(options.radius);
             circle.setStrokeWidth(options.strokeWidth);
             circle.setStroke(options.strokeColor);
-            circle.setFill(options.fillColor);
+//            circle.setFill(options.fillColor);
         });
 
     }
@@ -144,13 +152,13 @@ public class CircleOptions implements Serializable{
         int radius;
         int strokeWidth;
         Color strokeColor;
-        Color fillColor;
+//        Color fillColor;
 
-        public Options(int radius, int strokeWidth, Color strokeColor, Color fillColor) {
+        public Options(int radius, int strokeWidth, Color strokeColor) {
             this.radius = radius;
             this.strokeWidth = strokeWidth;
             this.strokeColor = strokeColor;
-            this.fillColor = fillColor;
+//            this.fillColor = fillColor;
         }
     }
 }

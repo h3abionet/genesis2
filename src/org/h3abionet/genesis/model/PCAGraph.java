@@ -289,7 +289,8 @@ public class PCAGraph extends Graph implements Serializable {
         project.getPcGraphSubjectsList().add(subjects);
 
         // add an empty list of annotation list
-        project.getPcGraphAnnotationsList().add(new ArrayList<Annotation>());
+        ArrayList<Annotation> annotationList = new ArrayList<>();
+        project.getPcGraphAnnotationsList().add(annotationList);
 
         // get a copy of default colors and add them to a list for this particular graph
         groupColors = project.getGroupColors();
@@ -493,9 +494,6 @@ public class PCAGraph extends Graph implements Serializable {
                 // get color and shape of the group for this lab
                 String iconColor = (String) iconColors.get(lab.getText());
                 String iconShape = (String) iconShapes.get(lab.getText());
-
-                System.out.println("the group is "+lab.getText());
-                System.out.println(iconShape);
 
                 // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
                 // set the legend icons (graphics)
@@ -710,9 +708,9 @@ public class PCAGraph extends Graph implements Serializable {
                 }
             }
 
-            for(String s: project.getOrderOfLegendItems()){
-                System.out.println("the group is "+s);
-            }
+//            for(String s: project.getOrderOfLegendItems()){
+//                System.out.println("the group is "+s);
+//            }
         }
     }
 

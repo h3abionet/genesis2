@@ -114,7 +114,6 @@ public class LineOptions extends Line{
             }
         });
 
-
         //Linking the transformation to the slider
         lineLengthSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<?extends Number> observable, Number oldValue, Number newValue){
@@ -160,7 +159,7 @@ public class LineOptions extends Line{
             lineAnnotation.setEndY(line.getEndX());
             lineAnnotation.setEndY(line.getEndY());
             lineAnnotation.setRotation(angleOfRotation);
-
+            lineAnnotation.setStrokeColor(Integer.toHexString(cpStroke.getValue().hashCode()));
         });
 
     }

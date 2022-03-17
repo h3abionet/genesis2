@@ -128,8 +128,15 @@ public class ImportProjectController {
             for (int annoIndex = 0; annoIndex < proj.getPcGraphAnnotationsList().size(); annoIndex++) {
                 ArrayList<Annotation> annotations = proj.getPcGraphAnnotationsList().get(annoIndex);
                 for(Annotation an : annotations ){
-                    if(an.getName().equals("line")){
-                        mainController.recreateLine(an);
+                    switch(an.getName()) {
+                        case "line":
+                            mainController.recreateLine(an,annoIndex);
+                            break;
+                        case "circle":
+                            mainController.recreateCircle(an,annoIndex);
+                            break;
+                        default:
+                            return; // nothing
                     }
                 }
             }

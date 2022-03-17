@@ -93,6 +93,10 @@ public class AdmixtureOptionsController implements Initializable {
 
     private Node firstChart, secondChart;
     private int numOfRows;
+    private StackedBarChart<String, Number> newChart; // for shifting
+    private String[] ancestries;
+    private ArrayList<String> ancestryOrder = new ArrayList<String>();
+
 
     @FXML
     void shiftGraphBottom(ActionEvent event) {
@@ -417,30 +421,30 @@ public class AdmixtureOptionsController implements Initializable {
             String ancestorName = admixChart.getData().get(i).getName();
             
             // create ancestor button
-            Button ancenstorNameBtn = new Button("Change " + ancestorName);
-
-            // load stage for shifting up or down the ancestries
-            ancenstorNameBtn.setOnMouseClicked((MouseEvent anacestorEvent) -> {
-                try {
-                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/ShiftAncestry.fxml"));
-                    Parent parent = (Parent) fxmlLoader.load();
-                    Stage dialogStage = new Stage();
-                    dialogStage.setScene(new Scene(parent));
-                    dialogStage.setResizable(false);
-
-                    ShiftAncestryController sac = fxmlLoader.getController();
-                    sac.setAncestorNumberLabel(ancestorName); // set the ancestry name
-                    sac.setNumOfAncestry(admixChart.getData().size());
-                    sac.setListOfAdmixtureCharts(mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart));
-                    sac.setRowIndexOfClickedAdmixChart(rowIndexOfClickedAdmixChart);
-                    sac.setGridPane(mainController.getGridPane());
-//                    sac.setMainController(mainController);
-                    dialogStage.showAndWait();
-
-                } catch (IOException e) {
-                }
-
-            });
+//            Button ancenstorNameBtn = new Button("Change " + ancestorName);
+//
+//            // load stage for shifting up or down the ancestries
+//            ancenstorNameBtn.setOnMouseClicked((MouseEvent anacestorEvent) -> {
+//                try {
+//                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/ShiftAncestry.fxml"));
+//                    Parent parent = (Parent) fxmlLoader.load();
+//                    Stage dialogStage = new Stage();
+//                    dialogStage.setScene(new Scene(parent));
+//                    dialogStage.setResizable(false);
+//
+//                    ShiftAncestryController sac = fxmlLoader.getController();
+//                    sac.setAncestorNumberLabel(ancestorName); // set the ancestry name
+//                    sac.setNumOfAncestry(admixChart.getData().size());
+//                    sac.setListOfAdmixtureCharts(mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart));
+//                    sac.setRowIndexOfClickedAdmixChart(rowIndexOfClickedAdmixChart);
+//                    sac.setGridPane(mainController.getGridPane());
+////                    sac.setMainController(mainController);
+//                    dialogStage.showAndWait();
+//
+//                } catch (IOException e) {
+//                }
+//
+//            });
 
             // create a sort individuals button
             Button colorSortBtn = new Button("Sort Ancestry " + ancestorName.substring(ancestorName.length() - 1));
@@ -452,9 +456,22 @@ public class AdmixtureOptionsController implements Initializable {
                     sortChartByColor(stackedBarChart, Integer.parseInt(ancestryNumber) - 1);
                 }
             });
+
+            Button shiftUp = new Button("Shift Up");
+            shiftUp.setOnMouseClicked((MouseEvent up) -> {
+                verticalMove(0, ancestryOrder.size()-1);
+            });
+
+
+            Button shiftDown =  new Button("Shift Down");
+            shiftDown.setOnMouseClicked((MouseEvent down) -> {
+                verticalMove(ancestryOrder.size()-1, 0);
+
+            });
             
             // for every serie, store its default color, change color btn, and sort btn in HBox
-            ancenstorHBox.getChildren().addAll(ancestorColorDisplay, ancenstorNameBtn, colorSortBtn);
+            ancenstorHBox.getChildren().addAll(ancestorColorDisplay, colorSortBtn, shiftUp, shiftDown);
+
 
             // add the the HBox to the list of HBoxes.
             listOfAncenstorHBox.add(ancenstorHBox);
@@ -497,6 +514,7 @@ public class AdmixtureOptionsController implements Initializable {
 
     public void setAdmixChart(StackedBarChart<String, Number> admixChart) {
         this.admixChart = admixChart;
+        setNumOfAncestry(admixChart.getData().size()); // set the number of ancestries
     }
 
     private VBox setVbox(Node node) {
@@ -618,4 +636,56 @@ public class AdmixtureOptionsController implements Initializable {
     public void setNumOfRows(int rowCount) {
         this.numOfRows = rowCount;
     }
+
+    /**
+     * performs the job of moving series
+     */
+    public void verticalMove(int pos_removed, int pos_added) {
+        Comparator<XYChart.Series<String, Number>> mycomp
+                = (s1, s2)
+                -> ancestryOrder.indexOf(s2.getName()) - ancestryOrder.indexOf(s1.getName());
+
+        for (Node node : gridPane.getChildren()) {
+
+            // from the second column to the last column. The 1st col stores K values
+            // list of admixtures in this current row
+            for (int col = 1; col < mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart).size()+1; col++) {
+
+                // change the row index.
+                if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == rowIndexOfClickedAdmixChart) {
+                    newChart = (StackedBarChart<String, Number>) node;
+                    newChart.setData(newChart.getData().sorted(mycomp));
+
+                    // clear legend items
+//                    Legend legend = (Legend) newChart.lookup(".chart-legend").;
+//                    legend.getItems().clear();
+
+                }
+            }
+        }
+
+        // now we make arbitrary change to order of colours for next time round
+        String moved_label;
+        moved_label = ancestryOrder.remove(pos_removed);
+        ancestryOrder.add(pos_added, moved_label);
+
+    }
+
+    public void setNumOfAncestry(int size) {
+        int numOfSeries = size;
+        // set ancestries and their order
+        ancestries = new String[numOfSeries];
+        for (int i = 0; i < numOfSeries; i++) {
+            ancestries[i] = "Ancestry " + (i + 1);
+        }
+
+        for (String l:ancestries)
+            ancestryOrder.add(l);
+    }
+
+//
+//    public void setListOfAdmixtureCharts(ArrayList<StackedBarChart<String, Number>> listOfAdmixtureCharts) {
+//        this.listOfAdmixtureCharts = listOfAdmixtureCharts;
+//    }
+
 }

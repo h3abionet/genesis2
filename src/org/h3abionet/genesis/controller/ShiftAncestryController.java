@@ -127,17 +127,7 @@ public class ShiftAncestryController{
             ancestryOrder.add(l);
     }
 
-//    @Override
-//    public void initialize(URL url, ResourceBundle rb) {
-        // get row index of clicked chart
-//        rowIndexOfClickedAdmixChart = AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart();
 
-        // get the list of the current staked bar charts being displayed
-//        listOfAdmixtureCharts = mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
-
-        // set the current gridpane - to get the row index of any clicked chart
-//        gridPane = MainController.getGridPane();
-//    }
     public void setListOfAdmixtureCharts(ArrayList<StackedBarChart<String, Number>> listOfAdmixtureCharts) {
         this.listOfAdmixtureCharts = listOfAdmixtureCharts;
     }

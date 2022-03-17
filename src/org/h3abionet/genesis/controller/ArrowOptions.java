@@ -74,6 +74,7 @@ public class ArrowOptions {
                 rotate.setAngle((double) newValue);
             }
         });
+
         //Adding the transformation to the circle
         arrow.getTransforms().add(rotate);
 

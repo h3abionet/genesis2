@@ -652,18 +652,16 @@ public class MainController implements Initializable{
 
         project.getPcGraphAnnotationsList().get(currentTabIndex).add(lineAnnotation);
 
-        addShapeToChart(line);
-
+        addShapeToChart(line, currentTabIndex);
         addLineEvents(line, lineAnnotation);
     }
 
-    public void recreateLine(Annotation l){
+    public void recreateLine(Annotation l, int chartIndex){
         Line line = new Line(l.getStartX(), l.getStartY(), l.getEndX(), l.getEndY());
+
         line.setStrokeWidth(l.getStrokeWidth());
         line.setStroke(Color.web(l.getStrokeColor()));
-
-        addShapeToChart(line);
-
+        addShapeToChart(line, chartIndex);
         addLineEvents(line, l);
     }
 
@@ -769,17 +767,41 @@ public class MainController implements Initializable{
         circleAnnotation.setCenterY(200);
         circleAnnotation.setRadius(100);
 
-        MouseControlUtil.makeDraggable(circle);
-        addShapeToChart(circle);
+        project.getPcGraphAnnotationsList().get(currentTabIndex).add(circleAnnotation);
+
+        MouseControlUtil.makeDraggable(circle
+
+    );    addShapeToChart(circle, currentTabIndex);
+
+        addCircleEvents(circle, circleAnnotation);
+    }
+
+    private void addCircleEvents(Circle circle, Annotation circleAnn){
 
         circle.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY) {
                 // use class circle options -- accepts chosen circle as a parameter
-                CircleOptions circleOptions = new CircleOptions(circle);
+                CircleOptions circleOptions = new CircleOptions(circle, circleAnn);
                 // modify the chosen circle
                 circleOptions.modifyCircle();
             }
         });
+    }
+
+    public void recreateCircle(Annotation circleAnn, int chartIndex){
+        Circle circle = new Circle();
+        circle.setCenterX(circleAnn.getCenterX());
+        circle.setCenterY(circleAnn.getCenterY());
+        circle.setRadius(circleAnn.getRadius());
+        circle.setFill(Color.TRANSPARENT);
+        circle.setStrokeWidth(circleAnn.getStrokeWidth());
+
+//        circle.setFill(Color.web(circleAnn.getFill()));
+        circle.setStroke(Color.web(circleAnn.getStrokeColor()));
+
+        MouseControlUtil.makeDraggable(circle);
+        addShapeToChart(circle, chartIndex);
+        addCircleEvents(circle, circleAnn);
     }
 
     @FXML
@@ -798,7 +820,7 @@ public class MainController implements Initializable{
         // can drag text
         MouseControlUtil.makeDraggable(text);
         // add text to pcaChart
-        addShapeToChart(text); //TODO - add text to annotation
+//        addShapeToChart(text); //TODO - add text to annotation
         // add mouse event to text for editing options
         text.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY) {
@@ -818,7 +840,7 @@ public class MainController implements Initializable{
         rec.setStroke(Color.BLACK);
 
         MouseControlUtil.makeDraggable(rec);
-        addShapeToChart(rec); //TODO - add rec to annotations
+//        addShapeToChart(rec); //TODO - add rec to annotations
 
         rec.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY) {
@@ -830,8 +852,8 @@ public class MainController implements Initializable{
         });
     }
 
-    public void addShapeToChart(Shape shape) {
-        Pane p = (Pane) pcaChartsList.get(currentTabIndex).getChildrenUnmodifiable().get(1);
+    public void addShapeToChart(Shape shape, int chartIndex) {
+        Pane p = (Pane) pcaChartsList.get(chartIndex).getChildrenUnmodifiable().get(1);
         Region r = (Region) p.getChildren().get(0);
         Group gr = new Group();
 

@@ -1,11 +1,11 @@
 package org.h3abionet.genesis.model;
 
-import javafx.scene.paint.Color;
-
 import java.io.Serializable;
 
 public class Annotation implements Serializable {
+
     private static final long serialVersionUID = 2L;
+
     String name;
     int radius;
     int width;
