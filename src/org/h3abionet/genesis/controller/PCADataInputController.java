@@ -84,7 +84,7 @@ public class PCADataInputController implements Initializable {
             pcaEvecFileBtn.setText(project.getPcaFileName());
             pcaEvecFileBtn.setStyle("-fx-text-fill: #06587F");
 
-            pcaGraph = new PCAGraph(pcaFilePath);
+            pcaGraph = new PCAGraph(pcaFilePath,project);
             pcaGraph.setMainController(mainController);
             mainController.setPcaGraph(pcaGraph); // set pca graph in the main controller
 

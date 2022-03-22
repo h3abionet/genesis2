@@ -16,20 +16,24 @@
 package org.h3abionet.genesis.model;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author scott
  */
-public abstract class Graph {
+public abstract class Graph implements Serializable {
 
-    public Project project;
-
+//    public pto project;
     protected abstract void readGraphData(String filePath) throws IOException;
     abstract void createAdmixGraph(); // used by admixture
     abstract void createGraph(int pcaX, int pcaY) throws IOException; // used by pca
 
-    public Graph() {
-        project = Project.getProject();
-    }
+//    public void setProject(Project project) {
+//        this.project = project;
+//    }
+
+//    public Graph() { // set project
+//        project = Project.getProject();
+//    }
 }

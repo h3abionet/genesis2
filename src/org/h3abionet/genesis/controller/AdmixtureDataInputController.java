@@ -12,6 +12,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.AdmixtureGraph;
+import org.h3abionet.genesis.model.Project;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +39,7 @@ public class AdmixtureDataInputController{
     @FXML
     private Button entryCancelButton;
     private MainController mainController;
+    private Project project;
 
     @FXML
     private void handleAdmixEntryCancel(ActionEvent event) {
@@ -46,19 +48,23 @@ public class AdmixtureDataInputController{
 
     @FXML
     private void handleAdmixEntryOK(ActionEvent event) throws IOException {
-            // set list of stackedBarCharts
-            admixtureGraph = new AdmixtureGraph(admixtureFilePath); // read the file using module class
+        // set list of stackedBarCharts
+        try{
+            admixtureGraph = new AdmixtureGraph(admixtureFilePath, project); // read the file using module class
             admixtureGraph.setMainController(mainController);
             mainController.setAdmixtureGraph(admixtureGraph);
 
-            if(admixtureGraph.isCorrectAdmixFile()){
+            if (admixtureGraph.isCorrectAdmixFile()) {
                 admixtureGraph.createAdmixGraph();
                 mainController.setAdmixCreationSuccessful(true);
-            }else {
+            } else {
                 mainController.setAdmixCreationSuccessful(false);
                 Genesis.throwErrorException("Imported file contains strings");
-
             }
+        }catch (Exception e){
+            Genesis.throwErrorException(e.toString()+" \n"+"Wrong file imported");
+        }
+
         Genesis.closeOpenStage(event);
     }
 
@@ -94,5 +100,9 @@ public class AdmixtureDataInputController{
         wanted = fileChooser.showOpenDialog(dialogStage);
 
         return wanted;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }

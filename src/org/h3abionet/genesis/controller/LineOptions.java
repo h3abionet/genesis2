@@ -89,12 +89,10 @@ public class LineOptions extends Line{
         //add event handlers to the controllers
         cpStroke.setOnAction((ActionEvent e) -> {
             line.setStroke(cpStroke.getValue());
-            lineAnnotation.setStroke(Integer.toHexString(cpStroke.getValue().hashCode()));
         });
 
         stkWidth.setOnAction(e -> {
             line.setStrokeWidth((int) stkWidth.getValue());
-            lineAnnotation.setStrokeWidth((int) stkWidth.getValue());
         });
 
         //creating the rotation transformation
@@ -115,14 +113,12 @@ public class LineOptions extends Line{
         });
 
         //Linking the transformation to the slider
-        lineLengthSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<?extends Number> observable, Number oldValue, Number newValue){
-                double  reduction = (double) newValue;
-                line.setStartX(line.getStartX()-reduction);
-                line.setStartY(line.getStartY()-reduction);
-                line.setStartX(line.getEndX()-reduction);
-                line.setStartY(line.getEndY()-reduction);
-            }
+        lineLengthSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            double  reduction = (double) newValue;
+            line.setStartX(line.getEndX()-reduction);
+            line.setStartY(line.getEndY()-reduction);
+//            line.setStartX(line.getStartX()-reduction);
+//            line.setStartY(line.getStartY()-reduction);
         });
     }
 
@@ -140,7 +136,17 @@ public class LineOptions extends Line{
 
         dialog.setResultConverter(b -> {
             if (b == doneBtn) {
-                return new Options((int) rotationSlider.getValue(), (int) stkWidth.getValue(), cpStroke.getValue());
+                double strokeWidth = Double.parseDouble(stkWidth.getValue().toString());
+                // store the properties of the annotation
+                lineAnnotation.setStartX(line.getStartX());
+                lineAnnotation.setStartY(line.getStartY());
+                lineAnnotation.setEndX(line.getEndX());
+                lineAnnotation.setEndY(line.getEndY());
+                lineAnnotation.setRotation(angleOfRotation);
+                lineAnnotation.setStrokeColor(cpStroke.getValue());
+                lineAnnotation.setStrokeWidth(strokeWidth);
+                return new Options(rotationSlider.getValue(), strokeWidth, cpStroke.getValue(),
+                        line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
             } else {
                 line.setVisible(false);
             }
@@ -150,29 +156,32 @@ public class LineOptions extends Line{
         Optional<Options> results = dialog.showAndWait();
 
         results.ifPresent((Options options) -> {
+
             line.setStrokeWidth(options.strokeWidth);
             line.setStroke(options.strokeColor);
 
-            // store the properties of the annotation
-            lineAnnotation.setStartX(line.getStartX());
-            lineAnnotation.setStartY(line.getStartY());
-            lineAnnotation.setEndY(line.getEndX());
-            lineAnnotation.setEndY(line.getEndY());
-            lineAnnotation.setRotation(angleOfRotation);
-            lineAnnotation.setStrokeColor(Integer.toHexString(cpStroke.getValue().hashCode()));
         });
 
     }
 
     private static class Options {
-        int strokeWidth;
+        double strokeWidth;
         Color strokeColor;
-        int angle;
+        double angle;
+        double startX;
+        double startY;
+        double endX;
+        double endY;
 
-        public Options(int angle, int strokeWidth, Color strokeColor) {
+        public Options(double angle, double strokeWidth, Color strokeColor, double startX, double startY,
+                       double endX, double endY) {
             this.angle = angle;
             this.strokeWidth = strokeWidth;
             this.strokeColor = strokeColor;
+            this.endX = endX;
+            this.endY = endY;
+            this.startX = startX;
+            this.startY = startY;
         }
     }
 }

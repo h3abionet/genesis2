@@ -470,10 +470,10 @@ public class AdmixtureSettingsController implements Initializable {
                             if (newValue) {
                                 // show background color and a hand cursor
                                 n.setCursor(Cursor.HAND);
-                                n.setStyle(cssBorderLayout + "-fx-background-color: #e1f3f7;");
+                                n.setStyle(cssBorderLayout + " -fx-background-color: #e1f3f7;");
                             } else {
                                 // remove background color and change cursor type
-                                n.setStyle(cssBorderLayout + "-fx-background-color: transparent;");
+                                n.setStyle(cssBorderLayout + " -fx-background-color: transparent;");
                             }
                         });
                     } else {

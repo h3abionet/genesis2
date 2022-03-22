@@ -8,12 +8,11 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.transform.Rotate;
+import org.h3abionet.genesis.model.Annotation;
 
 import java.util.Optional;
 
 public class ArrowOptions {
-    // arrow variables
-    // TODO
 
     private final Arrow arrow;
     GridPane grid;
@@ -21,12 +20,18 @@ public class ArrowOptions {
     private Slider slider;
     private Slider arrowLengthSlider;
     private Label adjustArrowLengthLbl;
+    private Annotation arrowAnnotation;
+    private double angleOfRotation;
 
-    public ArrowOptions(Arrow arrow) {
+    public ArrowOptions(Arrow arrow, Annotation arrowAnnotation) {
         this.arrow = arrow;
+        this.arrowAnnotation = arrowAnnotation;
         setControllers();
     }
 
+    public void setAngleOfRotation(double angleOfRotation) {
+        this.angleOfRotation = angleOfRotation;
+    }
 
     private void setControllers() {
         adjustArrowLengthLbl = new Label("Adjust Arrow Length");
@@ -72,6 +77,7 @@ public class ArrowOptions {
             public void changed(ObservableValue<?extends Number> observable, Number oldValue, Number newValue){
                 //Setting the angle for the rotation
                 rotate.setAngle((double) newValue);
+                setAngleOfRotation((double) newValue);
             }
         });
 
@@ -113,7 +119,15 @@ public class ArrowOptions {
 
         Optional<Options> results = dialog.showAndWait();
         results.ifPresent((Options options) -> {
-            return;
+//            arrow.setStrokeWidth(options.strokeWidth);
+//            arrow.setStroke(options.strokeColor);
+            // store the properties of the annotation
+            arrowAnnotation.setStartX(arrow.getStartX());
+            arrowAnnotation.setStartY(arrow.getStartY());
+            arrowAnnotation.setEndX(arrow.getEndX());
+            arrowAnnotation.setEndY(arrow.getEndY());
+            arrowAnnotation.setRotation(angleOfRotation);
+//            arrowAnnotation.setStrokeColor(Integer.toHexString(cpStroke.getValue().hashCode()));
         });
 
     }

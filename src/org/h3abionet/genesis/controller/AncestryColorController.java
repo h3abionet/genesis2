@@ -95,7 +95,7 @@ public class AncestryColorController {
                 stackedbarChart.getData().forEach((series) -> {
                     series.getData().forEach((bar) -> {
                         bar.getNode().lookupAll(".default-color" + serieIndex + ".chart-bar")
-                                .forEach(n -> n.setStyle("-fx-background-color: " + selectedColor + ";"));
+                                .forEach(n -> n.setStyle("-fx-background-color: "+ selectedColor + ";"));
                     });
                 });
 

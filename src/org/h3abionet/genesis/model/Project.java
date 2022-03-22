@@ -7,6 +7,7 @@ package org.h3abionet.genesis.model;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.util.Duration;
 import org.h3abionet.genesis.Genesis;
 
 import java.io.BufferedReader;
@@ -33,7 +34,7 @@ public class Project implements Serializable {
     private boolean projIsImported;
 
     // creation of project variables
-    private static Project project;
+    private Project project;
     private String projectName;
     private String phenoFileName;
     private String famFileName;
@@ -70,13 +71,14 @@ public class Project implements Serializable {
     // chart groups with subjects
     HashMap<String, ArrayList<Subject>> subjectGroups = new HashMap<>();
     private String pcaFileName;
+    private ArrayList<Annotation> admixtureAnnotationList = new ArrayList<>();
 
     public Project(String proj_name, String fam_fname_s) {
         this.projectName = proj_name;
         this.famFileName = fam_fname_s;
         this.phenoFileProvided = false;
 
-        project = this;
+        setProject(this);
         subjectsList = new ArrayList<>();
         try {
             readFamFile(fam_fname_s);
@@ -99,11 +101,15 @@ public class Project implements Serializable {
         this.phenoFileProvided = true;
         subjectsList = new ArrayList<>();
 
-        project = this;
+        setProject(this);
         readFamFile(fam_fname_s);
         readPhenotypeFile(pheno_fname_s);
         setIconTypes();
         createGroups();
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     private void createGroups(){
@@ -331,7 +337,7 @@ public class Project implements Serializable {
     }
 
     // singleton pattern is used to limit creation of a class to only one object
-    public static Project getProject() {
+    public Project getProject() {
         return project;
     }
 
@@ -475,5 +481,9 @@ public class Project implements Serializable {
 
     public ArrayList<ArrayList<Annotation>> getPcGraphAnnotationsList() {
         return pcGraphAnnotationsList;
+    }
+
+    public ArrayList<Annotation> getAdmixtureAnnotationsList() {
+        return admixtureAnnotationList;
     }
 }

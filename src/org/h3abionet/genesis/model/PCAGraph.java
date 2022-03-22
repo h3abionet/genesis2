@@ -62,6 +62,7 @@ public class PCAGraph extends Graph implements Serializable {
     private HashMap<String, ArrayList<XYChart.Series<Number, Number>>> hiddenPCAGroups = new HashMap<>();
     private int labelClickCounter;
     private transient Label firstGroupLabel, secondGroupLabel;
+    private Project project;
 
     /**
      *
@@ -69,7 +70,8 @@ public class PCAGraph extends Graph implements Serializable {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public PCAGraph(String pcaFilePath) throws FileNotFoundException, IOException {
+    public PCAGraph(String pcaFilePath, Project project) throws FileNotFoundException, IOException {
+        this.project = project;
         eigenValues = new ArrayList<>();
         // read data
         readGraphData(pcaFilePath);

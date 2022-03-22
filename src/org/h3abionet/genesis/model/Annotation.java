@@ -1,5 +1,7 @@
 package org.h3abionet.genesis.model;
 
+import javafx.scene.paint.Color;
+
 import java.io.Serializable;
 
 public class Annotation implements Serializable {
@@ -7,30 +9,34 @@ public class Annotation implements Serializable {
     private static final long serialVersionUID = 2L;
 
     String name;
-    int radius;
-    int width;
-    int height;
-    int archWidth;
-    int archHeight;
-    int strokeWidth;
+    double radius;
+    double width;
+    double height;
+    double arcWidth;
+    double arcHeight;
+    double strokeWidth;
     String strokeColor;
     String fillColor;
-    int length;
+    double length;
     double startX;
     double startY;
     double endX;
     double endY;
-    int centerX;
-    int centerY;
+    double centerX;
+    double centerY;
     String fill;
-    String Stroke;
     double rotation;
+    String text;
+    private int fontSize;
+    private String fontFamily;
+    private String fontWeight;
+
 
     public String getName() {
         return name;
     }
 
-    public int getCenterX() {
+    public double getCenterX() {
         return centerX;
     }
 
@@ -42,15 +48,15 @@ public class Annotation implements Serializable {
         this.rotation = rotation;
     }
 
-    public void setCenterX(int centerX) {
+    public void setCenterX(double centerX) {
         this.centerX = centerX;
     }
 
-    public int getCenterY() {
+    public double getCenterY() {
         return centerY;
     }
 
-    public void setCenterY(int centerY) {
+    public void setCenterY(double centerY) {
         this.centerY = centerY;
     }
 
@@ -58,67 +64,54 @@ public class Annotation implements Serializable {
         return fill;
     }
 
-    public void setFill(String fill) {
-        this.fill = fill;
-    }
-
-    public String getStroke() {
-        return Stroke;
-    }
-
-    public void setStroke(String stroke) {
-        Stroke = stroke;
+    public void setFill(Color color) {
+        this.fill =  String.format( "#%02X%02X%02X",
+                (int)( color.getRed() * 255 ),
+                (int)( color.getGreen() * 255 ),
+                (int)( color.getBlue() * 255 ) );
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public int getRadius() {
+    public double getRadius() {
         return radius;
     }
 
-    public void setRadius(int radius) {
+    public void setRadius(double radius) {
         this.radius = radius;
     }
 
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(double width) {
         this.width = width;
     }
 
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(double height) {
         this.height = height;
     }
 
-    public int getArchWidth() {
-        return archWidth;
+    public double getArcWidth() {
+        return arcWidth;
     }
 
-    public void setArchWidth(int archWidth) {
-        this.archWidth = archWidth;
+    public double getArcHeight() {
+        return arcHeight;
     }
 
-    public int getArchHeight() {
-        return archHeight;
-    }
-
-    public void setArchHeight(int archHeight) {
-        this.archHeight = archHeight;
-    }
-
-    public int getStrokeWidth() {
+    public double getStrokeWidth() {
         return strokeWidth;
     }
 
-    public void setStrokeWidth(int strokeWidth) {
+    public void setStrokeWidth(double strokeWidth) {
         this.strokeWidth = strokeWidth;
     }
 
@@ -126,23 +119,11 @@ public class Annotation implements Serializable {
         return strokeColor;
     }
 
-    public void setStrokeColor(String strokeColor) {
-        this.strokeColor = strokeColor;
-    }
-
-    public String getFillColor() {
-        return fillColor;
-    }
-
-    public void setFillColor(String fillColor) {
-        this.fillColor = fillColor;
-    }
-
-    public int getLength() {
+    public double getLength() {
         return length;
     }
 
-    public void setLength(int length) {
+    public void setLength(double length) {
         this.length = length;
     }
 
@@ -176,5 +157,53 @@ public class Annotation implements Serializable {
 
     public void setEndY(double endY) {
         this.endY = endY;
+    }
+
+    public void setArcHeight(double archHeight) {
+        this.arcHeight = archHeight;
+    }
+
+    public void setArcWidth(double archWidth) {
+        this.arcWidth = archWidth;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setStrokeColor(Color color )
+    {
+        this.strokeColor =  String.format( "#%02X%02X%02X",
+                (int)( color.getRed() * 255 ),
+                (int)( color.getGreen() * 255 ),
+                (int)( color.getBlue() * 255 ) );
+    }
+
+    public void setFontFamily(String fontFamily) {
+        this.fontFamily = fontFamily;
+    }
+
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    public int getFontSize() {
+        return fontSize;
+    }
+
+    public String getFontFamily() {
+        return fontFamily;
+    }
+
+    public void setFontWeight(String fontWeight) {
+        this.fontWeight = fontWeight;
+    }
+
+    public String getFontWeight() {
+        return fontWeight;
     }
 }

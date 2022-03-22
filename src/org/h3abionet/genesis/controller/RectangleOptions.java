@@ -5,51 +5,46 @@
  */
 package org.h3abionet.genesis.controller;
 
-import java.io.Serializable;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
+import org.h3abionet.genesis.model.Annotation;
+
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  *
  * @author Henry
  */
 public class RectangleOptions{
-    Rectangle rectangle;
-    GridPane grid;
+    private Rectangle rectangle;
+    private GridPane grid;
     
     // grid components or controllers
-    Label StrokeWidthLabel;
-    Label widthSizeLabel;
-    Label heightSizeLabel;
-    Label cpStrokeLabel;
-    Label cpFillLabel;
-    Label archSizeLabel;
-    ColorPicker cpStroke;
-    ColorPicker cpFill;
-    Slider widthSlider;
-    Slider heightSlider;
-    ComboBox stkWidth;
-    ComboBox archSizeCombo;
+    private Label StrokeWidthLabel;
+    private Label widthSizeLabel;
+    private Label heightSizeLabel;
+    private Label cpStrokeLabel;
+    private Label archSizeLabel;
+    private ColorPicker cpStroke;
+    private Slider widthSlider;
+    private Slider heightSlider;
+    private ComboBox stkWidth;
+    private ComboBox archSizeCombo;
+    private Annotation rectangleAnnotation;
 
-    public RectangleOptions(Rectangle rectangle) {
+    public RectangleOptions(Rectangle rectangle, Annotation rectangleAnnotation) {
         this.rectangle = rectangle;
+        this.rectangleAnnotation = rectangleAnnotation;
         setControllers();
     }
     
@@ -58,14 +53,10 @@ public class RectangleOptions{
         widthSizeLabel = new Label("Width: ");
         heightSizeLabel = new Label("Height: ");
         cpStrokeLabel = new Label("Stroke color: ");
-        cpFillLabel = new Label("Fill color: ");
         archSizeLabel = new Label("Arch size: ");
         
         cpStroke = new ColorPicker((Color) rectangle.getStroke());
         cpStroke.getStyleClass().add("split-button");
-
-        cpFill = new ColorPicker((Color) rectangle.getFill());
-        cpFill.getStyleClass().add("split-button");
         
         widthSlider = new Slider(5, 300, (int)rectangle.getWidth());
         widthSlider.setShowTickLabels(true);
@@ -97,12 +88,10 @@ public class RectangleOptions{
         grid.add(widthSlider, 2, 2);
         grid.add(heightSizeLabel, 1, 3);
         grid.add(heightSlider, 2, 3);
-        grid.add(cpFillLabel, 1, 4);
-        grid.add(cpFill, 2, 4);
-        grid.add(cpStrokeLabel, 1, 5);
-        grid.add(cpStroke, 2, 5);
-        grid.add(archSizeLabel, 1, 6);
-        grid.add(archSizeCombo, 2, 6);
+        grid.add(cpStrokeLabel, 1, 4);
+        grid.add(cpStroke, 2, 4);
+        grid.add(archSizeLabel, 1, 5);
+        grid.add(archSizeCombo, 2, 5);
         
         //add event handlers to the controllers
         widthSlider.valueProperty().addListener((ObservableValue <? extends Number >  
@@ -117,11 +106,7 @@ public class RectangleOptions{
         
         cpStroke.setOnAction((ActionEvent e) -> {
             rectangle.setStroke(cpStroke.getValue());
-        });
-        
-        cpFill.setOnAction((ActionEvent e) -> {
-            rectangle.setFill(cpFill.getValue());
-
+            rectangleAnnotation.setStrokeColor(cpStroke.getValue());
         });
         
         stkWidth.setOnAction(e -> {
@@ -150,9 +135,18 @@ public class RectangleOptions{
             @Override
             public Options call(ButtonType b) {
                 if (b == doneBtn) {
-                    return new Options((int) widthSlider.getValue(), (int) heightSlider.getValue(),
-                            (int) archSizeCombo.getValue(), (int) archSizeCombo.getValue(),
-                            (int) stkWidth.getValue(), cpStroke.getValue(), cpFill.getValue());
+                    // set annotations
+                    double strokeWidth = Double.parseDouble(stkWidth.getValue().toString());
+                    double arc = Double.parseDouble(archSizeCombo.getValue().toString());
+
+                    rectangleAnnotation.setWidth(rectangle.getWidth());
+                    rectangleAnnotation.setHeight(rectangle.getHeight());
+                    rectangleAnnotation.setArcHeight(rectangle.getArcHeight());
+                    rectangleAnnotation.setArcWidth(rectangle.getArcWidth());
+                    rectangleAnnotation.setStrokeWidth(rectangle.getStrokeWidth());
+                    rectangleAnnotation.setStrokeColor(cpStroke.getValue());
+                    return new Options(widthSlider.getValue(), heightSlider.getValue(),
+                            arc, arc, strokeWidth, cpStroke.getValue());
                 } else {
                     rectangle.setVisible(false);
                 }
@@ -169,31 +163,25 @@ public class RectangleOptions{
             rectangle.setArcWidth(options.archWidth);
             rectangle.setStrokeWidth(options.strokeWidth);
             rectangle.setStroke(options.strokeColor);
-            rectangle.setFill(options.fillColor);
-
         });
 
     }
 
     private static class Options {
-        int width;
-        int height;
-        int archWidth;
-        int archHeight;
-        int strokeWidth;
+        double width;
+        double height;
+        double archWidth;
+        double archHeight;
+        double strokeWidth;
         Color strokeColor;
-        Color fillColor;
 
-        public Options(int width, int height, int archWidth, int archHeight, int strokeWidth, Color strokeColor, Color fillColor) {
+        public Options(double width, double height, double archWidth, double archHeight, double strokeWidth,Color strokeColor) {
             this.width = width;
             this.height = height;
             this.archWidth = archWidth;
             this.archHeight = archHeight;
             this.strokeWidth = strokeWidth;
             this.strokeColor = strokeColor;
-            this.fillColor = fillColor;
         }
-
-        
     }
 }

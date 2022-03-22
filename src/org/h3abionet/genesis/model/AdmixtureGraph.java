@@ -72,6 +72,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
     private static StackPane firstKLabel, secondKLabel;
     private static int clickedColIndex;
     boolean correctAdmixFile = Boolean.parseBoolean(null);
+    private Project project;
 
     //    private ArrayList<String> orderOfAdmixGraphs = (ArrayList<String>) project.getGroupNames(); // store graph names here
     private HashMap<String, ColumnConstraints> constraintsHashMap = new HashMap<>();
@@ -82,7 +83,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
      * @param admixtureFilePath
      * @throws IOException
      */
-    public AdmixtureGraph(String admixtureFilePath) throws IOException {
+    public AdmixtureGraph(String admixtureFilePath, Project project) throws IOException {
+        this.project = project;
         readGraphData(admixtureFilePath);
 //
 //        for (String l: ancestryLabels)

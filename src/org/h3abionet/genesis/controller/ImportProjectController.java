@@ -6,10 +6,7 @@ import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.model.AdmixtureGraph;
-import org.h3abionet.genesis.model.Annotation;
-import org.h3abionet.genesis.model.PCAGraph;
-import org.h3abionet.genesis.model.Project;
+import org.h3abionet.genesis.model.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,16 +59,19 @@ public class ImportProjectController {
             fileIn.close();
             proj.setProjIsImported(true);
             readGraphs();
+            mainController.setProjIsImported(true);
             mainController.disableNewProjBtn(true);
             mainController.disableControlBtns(false);
             mainController.disablePcaBtn(false);
             mainController.disableAdmixtureBtn(false);
+
         } catch (IOException i) {
-            Genesis.throwErrorException("Failed to import the project");
+            Genesis.throwErrorException(i.toString());
         } catch (ClassNotFoundException c) {
-            Genesis.throwErrorException("Project class not found");
+            Genesis.throwErrorException(c.toString());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Genesis.throwErrorException(e.toString());
+//            e.printStackTrace();
         }
         Genesis.closeOpenStage(event);
     }
@@ -101,7 +101,6 @@ public class ImportProjectController {
     }
 
     public void readGraphs() throws IOException, InterruptedException {
-
         if(proj.getPcaGraph()!=null) {
 
             // call saved pcaGraph object from projects
@@ -130,22 +129,27 @@ public class ImportProjectController {
                 for(Annotation an : annotations ){
                     switch(an.getName()) {
                         case "line":
-                            mainController.recreateLine(an,annoIndex);
+                            mainController.recreateLine(an,annoIndex,"pca");
                             break;
                         case "circle":
-                            mainController.recreateCircle(an,annoIndex);
+                            mainController.recreateCircle(an,annoIndex,"pca");
+                            break;
+                        case "arrow":
+                            mainController.recreateArrow(an,annoIndex,"pca");
+                        case "rectangle":
+                            mainController.recreateRectangle(an,annoIndex,"pca");
+                            break;
+                        case "text":
+                            mainController.recreateText(an,annoIndex,"pca");
                             break;
                         default:
                             return; // nothing
                     }
                 }
             }
-
-
         }
 
         if(proj.getAdmixtureGraph()!=null) {
-
             for (int i = 0; i < proj.getImportedKs().size(); i++) {
                 //  call saved admixture object from projects
                 AdmixtureGraph admixtureGraph = proj.getAdmixtureGraph();
@@ -165,10 +169,30 @@ public class ImportProjectController {
 
                 admixtureGraph.createAdmixGraph();
                 mainController.setAdmixtureChart(admixtureGraph.getListOfStackedBarCharts());
-
+            }
+            // add annotations
+            for(Annotation an : proj.getAdmixtureAnnotationsList()){
+                switch(an.getName()) {
+                    case "line":
+                        mainController.recreateLine(an,0,"admixture");
+                        break;
+                    case "circle":
+                        mainController.recreateCircle(an,0,"admixture");
+                        break;
+                    case "arrow":
+                        mainController.recreateArrow(an,0,"admixture");
+                        break;
+                    case "rectangle":
+                        mainController.recreateRectangle(an,0,"admixture");
+                        break;
+                    case "text":
+                        mainController.recreateText(an,0,"admixture");
+                        break;
+                    default:
+                        return; // nothing
+                }
             }
         }
-
     }
 
 }

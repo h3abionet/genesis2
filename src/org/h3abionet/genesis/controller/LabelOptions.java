@@ -5,7 +5,6 @@
  */
 package org.h3abionet.genesis.controller;
 
-import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -22,8 +21,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
+import org.h3abionet.genesis.model.Annotation;
 
 /**
  *
@@ -32,16 +33,20 @@ import javafx.util.Callback;
 public class LabelOptions{
     Text text;
     GridPane grid;
-    
     Label label;
     Label cpLabel;
     TextField textField;
     ColorPicker cp;
     ComboBox fontCombo;
     ComboBox sizeCombo;
+    ComboBox weightCombo;
+    Label weightComboLbl;
 
-    public LabelOptions(Text text) {
+    private Annotation textAnnotation;
+
+    public LabelOptions(Text text, Annotation textAnnotation) {
         this.text = text;
+        this.textAnnotation = textAnnotation;
         setControllers();
     }
     
@@ -52,8 +57,14 @@ public class LabelOptions{
         cp = new ColorPicker((Color) text.getFill());
         cp.getStyleClass().add("split-button");
 
+        weightComboLbl = new Label("Font weight: ");
+        String weight[] = {"EXTRA_BOLD","NORMAL"};
+        weightCombo = new ComboBox(FXCollections.observableArrayList(weight));
+        weightCombo.setValue(textAnnotation.getFontWeight());
+
         fontCombo = new ComboBox(FXCollections.observableArrayList(Font.getFamilies()));
         fontCombo.setValue(text.getFont().getFamily());
+
         sizeCombo = new ComboBox(FXCollections.
                 observableArrayList(IntStream.range(8, 73).boxed().collect(Collectors.toList())));
         sizeCombo.setValue((int)text.getFont().getSize());
@@ -70,13 +81,15 @@ public class LabelOptions{
         grid.add(sizeCombo, 2, 2);
         grid.add(cpLabel, 1, 3);
         grid.add(cp, 2, 3);
+        grid.add(weightComboLbl,1,4);
+        grid.add(weightCombo,2,4);
         
         fontCombo.setOnAction(e ->{
-            text.setFont(Font.font(String.valueOf(fontCombo.getValue()), (int)sizeCombo.getValue()));
+            text.setFont(Font.font(String.valueOf(fontCombo.getValue()), FontWeight.valueOf((String)weightCombo.getValue()),(int)sizeCombo.getValue()));
         });
         
         sizeCombo.setOnAction(e ->{
-            text.setFont(Font.font(String.valueOf(fontCombo.getValue()), (int)sizeCombo.getValue()));
+            text.setFont(Font.font(String.valueOf(fontCombo.getValue()), FontWeight.valueOf((String)weightCombo.getValue()),(int)sizeCombo.getValue()));
         });
         
         cp.setOnAction(e ->{
@@ -100,9 +113,18 @@ public class LabelOptions{
                 dialog.setResultConverter(new Callback<ButtonType, Options>() {
                     @Override
                     public Options call(ButtonType b) {                      
-                        if (b == doneBtn) {        
+                        if (b == doneBtn) {
+                            // annotations
+                            textAnnotation.setStartX(text.getX());
+                            textAnnotation.setStartY(text.getY());
+                            textAnnotation.setText(text.getText());
+                            textAnnotation.setFill(cp.getValue());
+                            textAnnotation.setFontFamily(String.valueOf(fontCombo.getValue()));
+                            textAnnotation.setFontSize((int) sizeCombo.getValue());
+                            textAnnotation.setFontWeight(String.valueOf(weightCombo.getValue()));
+
                             return new Options(textField.getText(), String.valueOf(fontCombo.getValue()), 
-                                    (int) sizeCombo.getValue(), cp.getValue());
+                                    (int) sizeCombo.getValue(), String.valueOf(weightCombo.getValue()), cp.getValue());
                         }else{
                             text.setText("");
                         }
@@ -114,22 +136,23 @@ public class LabelOptions{
                     results.ifPresent((Options options) -> {
                     text.setText(options.lbl);
                     text.setFill(options.color);
-                    text.setFont(Font.font(options.font, options.fontSize));
+                    text.setFont(Font.font(options.fontFamily, options.fontSize));
                     
                 });
             }
 
     private static class Options {
-
         String lbl;
-        String font;
+        String fontFamily;
         int fontSize;
         Color color;
+        String fontWeight;
 
-        public Options(String lbl, String font, int fontSize, Color color) {
+        public Options(String lbl, String fontFamily, int fontSize, String fontWeight, Color color) {
             this.lbl = lbl;
-            this.font = font;
+            this.fontFamily = fontFamily;
             this.fontSize = fontSize;
+            this.fontWeight = fontWeight;
             this.color = color;
         }
     }
