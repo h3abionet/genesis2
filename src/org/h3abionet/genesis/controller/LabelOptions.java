@@ -11,20 +11,14 @@ import java.util.stream.IntStream;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
 import org.h3abionet.genesis.model.Annotation;
+import org.h3abionet.genesis.model.Project;
 
 /**
  *
@@ -43,8 +37,15 @@ public class LabelOptions{
     Label weightComboLbl;
 
     private Annotation textAnnotation;
+    private Project project;
+    private Tab selectedTab;
+    private boolean isDone;
+    private boolean isDeleted;
+    private MainController mainController;
 
     public LabelOptions(Text text, Annotation textAnnotation) {
+        isDone = false;
+        isDeleted = false;
         this.text = text;
         this.textAnnotation = textAnnotation;
         setControllers();
@@ -99,61 +100,49 @@ public class LabelOptions{
     }
     
     public void modifyLabel(){
-                Dialog<Options> dialog = new Dialog<>();
-                dialog.setTitle("Label options");
-                dialog.setHeaderText(null);
-                dialog.setResizable(false);
+        Dialog dialog = mainController.getDialog(grid);
+        Optional<ButtonType> results = dialog.showAndWait();
 
-                dialog.getDialogPane().setContent(grid);
-                
-                ButtonType deleteBtn = new ButtonType("Delete", ButtonBar.ButtonData.CANCEL_CLOSE);
-                ButtonType doneBtn = new ButtonType("Done", ButtonBar.ButtonData.OK_DONE);
-                dialog.getDialogPane().getButtonTypes().setAll(doneBtn, deleteBtn);
-                
-                dialog.setResultConverter(new Callback<ButtonType, Options>() {
-                    @Override
-                    public Options call(ButtonType b) {                      
-                        if (b == doneBtn) {
-                            // annotations
-                            textAnnotation.setStartX(text.getX());
-                            textAnnotation.setStartY(text.getY());
-                            textAnnotation.setText(text.getText());
-                            textAnnotation.setFill(cp.getValue());
-                            textAnnotation.setFontFamily(String.valueOf(fontCombo.getValue()));
-                            textAnnotation.setFontSize((int) sizeCombo.getValue());
-                            textAnnotation.setFontWeight(String.valueOf(weightCombo.getValue()));
-
-                            return new Options(textField.getText(), String.valueOf(fontCombo.getValue()), 
-                                    (int) sizeCombo.getValue(), String.valueOf(weightCombo.getValue()), cp.getValue());
-                        }else{
-                            text.setText("");
-                        }
-                        
-                        return null;
-                    }
-                });    
-                Optional<Options> results = dialog.showAndWait();
-                    results.ifPresent((Options options) -> {
-                    text.setText(options.lbl);
-                    text.setFill(options.color);
-                    text.setFont(Font.font(options.fontFamily, options.fontSize));
-                    
-                });
+        dialog.setOnCloseRequest(e->{
+            if(isDone==false && isDeleted==false){
+                e.consume();
             }
+        });
 
-    private static class Options {
-        String lbl;
-        String fontFamily;
-        int fontSize;
-        Color color;
-        String fontWeight;
-
-        public Options(String lbl, String fontFamily, int fontSize, String fontWeight, Color color) {
-            this.lbl = lbl;
-            this.fontFamily = fontFamily;
-            this.fontSize = fontSize;
-            this.fontWeight = fontWeight;
-            this.color = color;
+        if (results.get() == mainController.getButtonType("Done")){
+            // set annotations
+            textAnnotation.setStartX(text.getX());
+            textAnnotation.setStartY(text.getY());
+            textAnnotation.setText(text.getText());
+            textAnnotation.setFill(cp.getValue());
+            textAnnotation.setFontFamily(String.valueOf(fontCombo.getValue()));
+            textAnnotation.setFontSize((int) sizeCombo.getValue());
+            textAnnotation.setFontWeight(String.valueOf(weightCombo.getValue()));
+            textAnnotation.setLayoutX(text.getBoundsInParent().getCenterX()-20);//error margin
+            textAnnotation.setLayoutY(text.getBoundsInParent().getCenterY());
+            isDone = true;
         }
+
+        if (results.get() == mainController.getButtonType("Delete")) {
+            text.setVisible(false);
+            project.revomeAnnotation(selectedTab, textAnnotation);
+            isDeleted = true;
+        }
+
+        if (results.get() == mainController.getButtonType("Cancel")) {
+            return;
+        }
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public void setSelectedTab(Tab selectedTab) {
+        this.selectedTab = selectedTab;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 }

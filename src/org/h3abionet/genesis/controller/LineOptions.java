@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.transform.Rotate;
 import org.h3abionet.genesis.model.Annotation;
+import org.h3abionet.genesis.model.Project;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +22,8 @@ import java.util.stream.IntStream;
 public class LineOptions extends Line{
 
     private final Line line;
+    private boolean isDeleted;
+    private boolean isDone;
     GridPane grid;
     private Label StrokeWidthLabel;
     private Slider rotationSlider;
@@ -31,8 +34,13 @@ public class LineOptions extends Line{
     private Label adjustLineLengthLbl;
     private Annotation lineAnnotation;
     private double angleOfRotation;
+    private Tab selectedTab;
+    private Project project;
+    private MainController mainController;
 
     public LineOptions(Line line, Annotation lineAnnotation) {
+        isDone = false;
+        isDeleted = false;
         this.line = line;
         this.lineAnnotation = lineAnnotation;
         setControllers();
@@ -61,7 +69,7 @@ public class LineOptions extends Line{
         rotationSlider.setShowTickMarks(true);
         rotationSlider.setOrientation(Orientation.HORIZONTAL);
 
-        lineLengthSlider = new Slider(0, 360, 5);
+        lineLengthSlider = new Slider(30, 360, 10);
         lineLengthSlider.setShowTickLabels(true);
         lineLengthSlider.setShowTickMarks(true);
         lineLengthSlider.setOrientation(Orientation.HORIZONTAL);
@@ -98,8 +106,8 @@ public class LineOptions extends Line{
         //creating the rotation transformation
         Rotate rotate = new Rotate();
         //Setting pivot points for the rotation
-        rotate.setPivotX((line.getStartX() + line.getEndX())/2);
-        rotate.setPivotY((line.getStartY() + line.getEndY())/2);
+        rotate.setPivotX(line.getEndX());
+        rotate.setPivotY(line.getEndY());
 
         //Linking the transformation to the slider
         rotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
@@ -108,80 +116,64 @@ public class LineOptions extends Line{
                 rotate.setAngle((double) newValue);
                 setAngleOfRotation((double) newValue);
                 //Adding the transformation to the line
-                line.getTransforms().add(rotate);
             }
         });
+        line.getTransforms().add(rotate);
 
         //Linking the transformation to the slider
         lineLengthSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             double  reduction = (double) newValue;
             line.setStartX(line.getEndX()-reduction);
-            line.setStartY(line.getEndY()-reduction);
-//            line.setStartX(line.getStartX()-reduction);
-//            line.setStartY(line.getStartY()-reduction);
         });
     }
 
     public void modifyArrow(){
-        Dialog<LineOptions.Options> dialog = new Dialog<>();
-        dialog.setTitle("Line options");
-        dialog.setHeaderText(null);
-        dialog.setResizable(false);
+        Dialog dialog = mainController.getDialog(grid);
+        Optional<ButtonType> results = dialog.showAndWait();
 
-        dialog.getDialogPane().setContent(grid);
-
-        ButtonType deleteBtn = new ButtonType("Delete", ButtonBar.ButtonData.CANCEL_CLOSE);
-        ButtonType doneBtn = new ButtonType("Done", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().setAll(doneBtn, deleteBtn);
-
-        dialog.setResultConverter(b -> {
-            if (b == doneBtn) {
-                double strokeWidth = Double.parseDouble(stkWidth.getValue().toString());
-                // store the properties of the annotation
-                lineAnnotation.setStartX(line.getStartX());
-                lineAnnotation.setStartY(line.getStartY());
-                lineAnnotation.setEndX(line.getEndX());
-                lineAnnotation.setEndY(line.getEndY());
-                lineAnnotation.setRotation(angleOfRotation);
-                lineAnnotation.setStrokeColor(cpStroke.getValue());
-                lineAnnotation.setStrokeWidth(strokeWidth);
-                return new Options(rotationSlider.getValue(), strokeWidth, cpStroke.getValue(),
-                        line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
-            } else {
-                line.setVisible(false);
+        dialog.setOnCloseRequest(e->{
+            if(isDone==false && isDeleted==false){
+                e.consume();
             }
-            return null;
         });
 
-        Optional<Options> results = dialog.showAndWait();
+        if (results.get() == mainController.getButtonType("Done")){
+            // store the properties of the annotation
+            double strokeWidth = Double.parseDouble(stkWidth.getValue().toString());
+            // store the properties of the annotation
+            lineAnnotation.setStartX(line.getStartX());
+            lineAnnotation.setStartY(line.getStartY());
+            lineAnnotation.setEndX(line.getEndX());
+            lineAnnotation.setEndY(line.getEndY());
+            lineAnnotation.setRotation(angleOfRotation);
+            lineAnnotation.setStrokeColor(cpStroke.getValue());
+            lineAnnotation.setStrokeWidth(strokeWidth);
+            lineAnnotation.setLayoutX(line.getBoundsInParent().getMinX()+20);
+            lineAnnotation.setLayoutY(line.getBoundsInParent().getMinY()-110);
+            isDone = true;
+        }
 
-        results.ifPresent((Options options) -> {
+        if (results.get() == mainController.getButtonType("Delete")) {
+            line.setVisible(false);
+            project.revomeAnnotation(selectedTab, lineAnnotation);
+            isDeleted = true;
+        }
 
-            line.setStrokeWidth(options.strokeWidth);
-            line.setStroke(options.strokeColor);
-
-        });
-
-    }
-
-    private static class Options {
-        double strokeWidth;
-        Color strokeColor;
-        double angle;
-        double startX;
-        double startY;
-        double endX;
-        double endY;
-
-        public Options(double angle, double strokeWidth, Color strokeColor, double startX, double startY,
-                       double endX, double endY) {
-            this.angle = angle;
-            this.strokeWidth = strokeWidth;
-            this.strokeColor = strokeColor;
-            this.endX = endX;
-            this.endY = endY;
-            this.startX = startX;
-            this.startY = startY;
+        if (results.get() == mainController.getButtonType("Cancel")) {
+            return;
         }
     }
+
+    public void setSelectedTab(Tab selectedTab) {
+        this.selectedTab = selectedTab;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
+
 }

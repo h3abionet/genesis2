@@ -30,6 +30,8 @@ public class Annotation implements Serializable {
     private int fontSize;
     private String fontFamily;
     private String fontWeight;
+    double layoutX;
+    double layoutY;
 
 
     public String getName() {
@@ -205,5 +207,21 @@ public class Annotation implements Serializable {
 
     public String getFontWeight() {
         return fontWeight;
+    }
+
+    public double getLayoutX() {
+        return layoutX;
+    }
+
+    public void setLayoutX(double layoutX) {
+        this.layoutX = layoutX;
+    }
+
+    public double getLayoutY() {
+        return layoutY;
+    }
+
+    public void setLayoutY(double layoutY) {
+        this.layoutY = layoutY;
     }
 }

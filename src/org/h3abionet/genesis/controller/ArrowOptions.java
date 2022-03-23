@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.transform.Rotate;
 import org.h3abionet.genesis.model.Annotation;
+import org.h3abionet.genesis.model.Project;
 
 import java.util.Optional;
 
@@ -17,13 +18,20 @@ public class ArrowOptions {
     private final Arrow arrow;
     GridPane grid;
     private Label StrokeWidthLabel;
-    private Slider slider;
+    private Slider rotationSlider;
     private Slider arrowLengthSlider;
     private Label adjustArrowLengthLbl;
     private Annotation arrowAnnotation;
     private double angleOfRotation;
+    private Project project;
+    private Tab selectedTab;
+    private boolean isDone;
+    private boolean isDeleted;
+    private MainController mainController;
 
     public ArrowOptions(Arrow arrow, Annotation arrowAnnotation) {
+        isDone = false;
+        isDeleted = false;
         this.arrow = arrow;
         this.arrowAnnotation = arrowAnnotation;
         setControllers();
@@ -35,17 +43,16 @@ public class ArrowOptions {
 
     private void setControllers() {
         adjustArrowLengthLbl = new Label("Adjust Arrow Length");
-        arrowLengthSlider = new Slider(0, 360, 5);
+        arrowLengthSlider = new Slider(50, 360, 5);
         arrowLengthSlider.setShowTickLabels(true);
         arrowLengthSlider.setShowTickMarks(true);
         arrowLengthSlider.setOrientation(Orientation.HORIZONTAL);
-
-
         StrokeWidthLabel = new Label("Stroke Width");
-        slider = new Slider(0, 360, 5);
-        slider.setShowTickLabels(true);
-        slider.setShowTickMarks(true);
-        slider.setOrientation(Orientation.HORIZONTAL);
+
+        rotationSlider = new Slider(-180, 180, 10);
+        rotationSlider.setShowTickLabels(true);
+        rotationSlider.setShowTickMarks(true);
+        rotationSlider.setOrientation(Orientation.HORIZONTAL);
 
         // controls
         // set the grid
@@ -58,7 +65,7 @@ public class ArrowOptions {
         // add controllers to the grid
         grid.add(new Label("Arrow options"), 0, 0);
         grid.add(new Label("Rotation Slider"), 0,1);
-        grid.add(slider,1,1);
+        grid.add(rotationSlider,1,1);
         grid.add(adjustArrowLengthLbl,0,2);
         grid.add(arrowLengthSlider,1,2);
 
@@ -67,13 +74,14 @@ public class ArrowOptions {
         //creating the rotation transformation
         Rotate rotate = new Rotate();
         //Setting pivot points for the rotation
-        rotate.setPivotX((arrow.getStartX() + arrow.getEndX())/2);
-        rotate.setPivotY((arrow.getStartY() + arrow.getEndY())/2);
+        rotate.setPivotX(arrow.getEndX());
+        rotate.setPivotY(arrow.getEndY());
 
         //Adding the transformation to rectangle
-        arrow.getTransforms().addAll(rotate);
+//        arrow.getTransforms().addAll(rotate);
+
         //Linking the transformation to the slider
-        slider.valueProperty().addListener(new ChangeListener<Number>() {
+        rotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<?extends Number> observable, Number oldValue, Number newValue){
                 //Setting the angle for the rotation
                 rotate.setAngle((double) newValue);
@@ -88,57 +96,55 @@ public class ArrowOptions {
             public void changed(ObservableValue<?extends Number> observable, Number oldValue, Number newValue){
                 //Setting the angle for the rotation
                 double  reduction = (double) newValue;
-                arrow.setStartX(arrow.getStartX()-reduction);
-                arrow.setStartY(arrow.getStartY()-reduction);
                 arrow.setStartX(arrow.getEndX()-reduction);
-                arrow.setStartY(arrow.getEndY()-reduction);
             }
         });
     }
 
     public void modifyArrow(){
-        Dialog<ArrowOptions.Options> dialog = new Dialog<>();
-        dialog.setTitle("Arrow options");
-        dialog.setHeaderText(null);
-        dialog.setResizable(false);
+        Dialog dialog = mainController.getDialog(grid);
+        Optional<ButtonType> results = dialog.showAndWait();
 
-        dialog.getDialogPane().setContent(grid);
-
-        ButtonType deleteBtn = new ButtonType("Delete", ButtonBar.ButtonData.CANCEL_CLOSE);
-        ButtonType doneBtn = new ButtonType("Done", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().setAll(doneBtn, deleteBtn);
-
-        dialog.setResultConverter(b -> {
-            if (b == doneBtn) {
-                return new Options((int) slider.getValue());
-            } else {
-                arrow.setVisible(false);
+        dialog.setOnCloseRequest(e->{
+            if(isDone==false && isDeleted==false){
+                e.consume();
             }
-            return null;
         });
 
-        Optional<Options> results = dialog.showAndWait();
-        results.ifPresent((Options options) -> {
-//            arrow.setStrokeWidth(options.strokeWidth);
-//            arrow.setStroke(options.strokeColor);
-            // store the properties of the annotation
+        if (results.get() == mainController.getButtonType("Done")){
+//            // store the properties of the annotation
             arrowAnnotation.setStartX(arrow.getStartX());
             arrowAnnotation.setStartY(arrow.getStartY());
             arrowAnnotation.setEndX(arrow.getEndX());
             arrowAnnotation.setEndY(arrow.getEndY());
             arrowAnnotation.setRotation(angleOfRotation);
+            arrowAnnotation.setLayoutX(arrow.getBoundsInParent().getCenterX());
+            arrowAnnotation.setLayoutY(arrow.getBoundsInParent().getCenterY());
 //            arrowAnnotation.setStrokeColor(Integer.toHexString(cpStroke.getValue().hashCode()));
-        });
-
-    }
-
-    private static class Options {
-        // TODO constructor for the options
-        int angle;
-
-        public Options(int angle) {
-            this.angle = angle;
+            isDone = true;
         }
+
+        if (results.get() == mainController.getButtonType("Delete")) {
+            arrow.setVisible(false);
+            project.revomeAnnotation(selectedTab, arrowAnnotation);
+            isDeleted = true;
+        }
+
+        if (results.get() == mainController.getButtonType("Cancel")) {
+            return;
+        }
+
     }
 
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public void selectedTab(Tab selectedTab) {
+        this.selectedTab = selectedTab;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
 }

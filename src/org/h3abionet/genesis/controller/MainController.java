@@ -31,6 +31,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -111,6 +112,9 @@ public class MainController implements Initializable{
     // drawing tool variables
     private boolean drawingAnchorPaneVisibility;
     Shape pivot;
+    private ButtonType cancelButton;
+    private ButtonType deleteBtn;
+    private ButtonType doneBtn;
 
     // pca variables
     private static Tab pcaChartTab;
@@ -680,6 +684,12 @@ public class MainController implements Initializable{
         Line line = new Line(l.getStartX(), l.getStartY(), l.getEndX(), l.getEndY());
         line.setStrokeWidth(l.getStrokeWidth());
 
+        line.setLayoutX(l.getLayoutX());
+        line.setLayoutY(l.getLayoutY());
+
+        Rotate rotate = new Rotate(l.getRotation(),l.getEndX(), line.getEndY());
+        line.getTransforms().add(rotate);
+
         if(l.getStrokeColor().equals("000000") || l.getStrokeColor().equals("ff")){
             line.setStroke(Color.BLACK);
         }else{
@@ -718,6 +728,9 @@ public class MainController implements Initializable{
             if (e.getButton() == MouseButton.SECONDARY) {
                 // use class circle options -- accepts chosen circle as a parameter
                 LineOptions lineOptions = new LineOptions(line, lineAnnotation);
+                lineOptions.setProject(project);
+                lineOptions.setSelectedTab(tabPane.getSelectionModel().getSelectedItem());
+                lineOptions.setMainController(this);
                 // modify the chosen circle
                 lineOptions.modifyArrow();
             }
@@ -756,6 +769,8 @@ public class MainController implements Initializable{
         arrow.setStartY(a.getStartY());
         arrow.setEndX(a.getEndX());
         arrow.setEndY(a.getEndY());
+        arrow.setLayoutX(a.getLayoutX());
+        arrow.setLayoutY(a.getLayoutY());
 
         MouseControlUtil.makeDraggable(arrow);
 
@@ -801,6 +816,9 @@ public class MainController implements Initializable{
             if (e.getButton() == MouseButton.SECONDARY) {
                 // use class circle options -- accepts chosen circle as a parameter
                 ArrowOptions arrowOptions = new ArrowOptions(arrow, arrowAnnotation);
+                arrowOptions.setProject(project);
+                arrowOptions.selectedTab(tabPane.getSelectionModel().getSelectedItem());
+                arrowOptions.setMainController(this);
                 // modify the chosen circle
                 arrowOptions.modifyArrow();
             }
@@ -817,6 +835,7 @@ public class MainController implements Initializable{
             circle.setFill(Color.TRANSPARENT);
             circle.setStroke(Color.BLACK);
             circle.setStrokeWidth(1);
+//            System.out.println("layout "+circle.getLayoutX()+" "+circle.getLayoutY());
 
             Annotation circleAnnotation = new Annotation();
             circleAnnotation.setName("circle");
@@ -843,32 +862,36 @@ public class MainController implements Initializable{
                 circleAnn.setCenterY(e.getSceneY());
                 // use class circle options -- accepts chosen circle as a parameter
                 CircleOptions circleOptions = new CircleOptions(circle, circleAnn);
+                circleOptions.setProject(project);
+                circleOptions.setSelectedTab(tabPane.getSelectionModel().getSelectedItem());
+                circleOptions.setMainController(this);
                 // modify the chosen circle
                 circleOptions.modifyCircle();
             }
         });
 
-        circle.setOnMouseReleased(mouseEvent -> {
-//            Bounds boundsInScene = circle.localToScene(pcaChartsList.get(currentTabIndex).getBoundsInLocal());
-//            circleAnn.setCenterX(boundsInScene.getCenterX());
-//            circleAnn.setCenterY(boundsInScene.getCenterX());
-            double endX = mouseEvent.getSceneX();
-            double endY = mouseEvent.getSceneY();
-
-//            System.out.println("positions "+endX+" "+endY);
-            circleAnn.setCenterX(endX);
-            circleAnn.setCenterY(endY);
-        });
+//        circle.setOnMouseReleased(mouseEvent -> {
+////            Bounds boundsInScene = circle.localToScene(pcaChartsList.get(currentTabIndex).getBoundsInLocal());
+////            circleAnn.setCenterX(boundsInScene.getCenterX());
+////            circleAnn.setCenterY(boundsInScene.getCenterX());
+//            double endX = mouseEvent.getSceneX();
+//            double endY = mouseEvent.getSceneY();
+//
+//            circleAnn.setCenterX(endX);
+//            circleAnn.setCenterY(endY);
+//        });
 
     }
 
     public void recreateCircle(Annotation circleAnn, int chartIndex, String chartType){
         Circle circle = new Circle();
-        circle.setCenterX(circleAnn.getCenterX());
-        circle.setCenterY(circleAnn.getCenterY());
+//        circle.setCenterX(circleAnn.getCenterX());
+//        circle.setCenterY(circleAnn.getCenterY());
         circle.setRadius(circleAnn.getRadius());
         circle.setFill(Color.TRANSPARENT);
         circle.setStrokeWidth(circleAnn.getStrokeWidth());
+        circle.setLayoutX(circleAnn.getLayoutX());
+        circle.setLayoutY(circleAnn.getLayoutY());
 
         if(circleAnn.getStrokeColor().equals("000000") || circleAnn.getStrokeColor().equals("ff")){
             circle.setStroke(Color.web("000000"));
@@ -920,10 +943,15 @@ public class MainController implements Initializable{
     }
 
     public void recreateText(Annotation textAnn, int chartIndex, String chartType){
-        Text text = new Text(textAnn.getStartX(), textAnn.getStartY(), textAnn.getText());
+        Text text = new Text();
+        text.setText(textAnn.getText());
+//        text.setX(textAnn.getStartX());
+//        text.setY(textAnn.getStartY());
         String family = textAnn.getFontFamily();
         int size = textAnn.getFontSize();
         String weight = textAnn.getFontWeight();
+        text.setX(textAnn.getLayoutX());
+        text.setY(textAnn.getLayoutY());
 
         if(weight.equals("EXTRA_BOLD")){
             text.setFont(Font.font(family, FontWeight.EXTRA_BOLD, FontPosture.REGULAR, size));
@@ -948,6 +976,9 @@ public class MainController implements Initializable{
             if (e.getButton() == MouseButton.SECONDARY) {
                 // use class label options -- accepts chosen label as a parameter
                 LabelOptions labelOptions = new LabelOptions(text, textAnnotation);
+                labelOptions.setProject(project);
+                labelOptions.setSelectedTab(tabPane.getSelectionModel().getSelectedItem());
+                labelOptions.setMainController(this);
                 // modify the chosen label
                 labelOptions.modifyLabel();
             }
@@ -985,8 +1016,8 @@ public class MainController implements Initializable{
 
     public void recreateRectangle(Annotation recAn, int chartIndex, String chartType){
         Rectangle rec = new Rectangle();
-        rec.setX(recAn.getStartX());
-        rec.setY(recAn.getStartY());
+//        rec.setX(recAn.getStartX());
+//        rec.setY(recAn.getStartY());
         rec.setWidth(recAn.getWidth());
         rec.setHeight(recAn.getHeight());
         rec.setStrokeWidth(recAn.getStrokeWidth());
@@ -995,12 +1026,19 @@ public class MainController implements Initializable{
         rec.setArcWidth(recAn.getArcWidth());
         rec.setFill(Color.TRANSPARENT);
 
-        if(recAn.getStrokeColor().equals("000000") || recAn.getStrokeColor().equals("ff")){
-            rec.setStroke(Color.web("000000"));
-        }else{
-            rec.setStroke(Color.web(recAn.getStrokeColor()));
-        }
+        rec.setX(recAn.getLayoutX());
+        rec.setY(recAn.getLayoutY());
+//        rec.relocate(recAn.getLayoutX(),recAn.getLayoutY());
 
+        if(recAn.getStrokeColor()!=null){
+            if(recAn.getStrokeColor().equals("000000") || recAn.getStrokeColor().equals("ff")){
+                rec.setStroke(Color.web("000000"));
+            }else{
+                rec.setStroke(Color.web(recAn.getStrokeColor()));
+            }
+        }else{
+            ;
+        }
         MouseControlUtil.makeDraggable(rec);
         addImportedShape(rec, chartIndex, chartType);
         addRectangleEvents(rec, recAn);
@@ -1011,6 +1049,9 @@ public class MainController implements Initializable{
             if (e.getButton() == MouseButton.SECONDARY) {
                 // use class rectangle options -- accepts chosen rectangle as a parameter
                 RectangleOptions rectangleOptions = new RectangleOptions(rec, rectangleAnnotation);
+                rectangleOptions.setProject(project);
+                rectangleOptions.setSelectedTab(tabPane.getSelectionModel().getSelectedItem());
+                rectangleOptions.setMainController(this);
                 // modify the chosen rectangle
                 rectangleOptions.modifyRectangle();
             }
@@ -1126,6 +1167,39 @@ public class MainController implements Initializable{
             int tabIndex = Integer.valueOf(s[1]);
             project.getPcGraphAnnotationsList().get(tabIndex).add(annotationType);
         }
+    }
+
+
+    public Dialog getDialog(GridPane gridPane){
+        Dialog dialog = new Dialog<>();
+        dialog.setTitle("Select properties");
+        dialog.setHeaderText(null);
+        dialog.setResizable(false);
+
+        dialog.getDialogPane().setContent(gridPane);
+
+        cancelButton = new ButtonType("Cancel");
+        deleteBtn = new ButtonType("Delete");
+        doneBtn = new ButtonType("Done");
+
+        dialog.getDialogPane().getButtonTypes().setAll(cancelButton, deleteBtn, doneBtn);
+        return dialog;
+    }
+
+    public ButtonType getButtonType(String btnName){
+        ButtonType btn = null;
+        switch (btnName) {
+            case "Delete":
+                btn = deleteBtn;
+                break;
+            case "Cancel":
+                btn = cancelButton;
+                break;
+            case "Done":
+                btn = doneBtn;
+                break;
+        }
+        return btn;
     }
 
     /**

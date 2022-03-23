@@ -12,20 +12,14 @@ import java.util.stream.IntStream;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.h3abionet.genesis.model.Annotation;
+import org.h3abionet.genesis.model.Project;
 
 /**
  *
@@ -34,6 +28,8 @@ import org.h3abionet.genesis.model.Annotation;
 public class CircleOptions implements Serializable{
 
     private static final long serialVersionUID = 2L;
+    private boolean isDeleted;
+    private boolean isDone;
 
     private Circle circle;
     private GridPane grid;
@@ -46,8 +42,13 @@ public class CircleOptions implements Serializable{
     private Slider slider;
     private ComboBox stkWidth;
     private Annotation circleAnnotation;
+    private Project project;
+    private Tab selectedTab;
+    private MainController mainController;
 
     public CircleOptions(Circle circle, Annotation circleAnn) {
+        isDone = false;
+        isDeleted = false;
         this.circle = circle;
         this.circleAnnotation = circleAnn;
         setControllers();
@@ -100,51 +101,46 @@ public class CircleOptions implements Serializable{
     }
 
     public void modifyCircle(){
-        Dialog<Options> dialog = new Dialog<>();
-        dialog.setTitle("Circle options");
-        dialog.setHeaderText(null);
-        dialog.setResizable(false);
+        Dialog dialog = mainController.getDialog(grid);
+        Optional<ButtonType> results = dialog.showAndWait();
 
-        dialog.getDialogPane().setContent(grid);
-
-        ButtonType deleteBtn = new ButtonType("Delete", ButtonBar.ButtonData.CANCEL_CLOSE);
-        ButtonType doneBtn = new ButtonType("Done", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().setAll(doneBtn, deleteBtn);
-
-        dialog.setResultConverter(b -> {
-            if (b == doneBtn) {
-                // set annotation values
-                double strokeWidth = Double.parseDouble(stkWidth.getValue().toString());
-                circleAnnotation.setRadius((double) slider.getValue());
-                circleAnnotation.setStrokeWidth(strokeWidth);
-                circleAnnotation.setStrokeColor(cpStroke.getValue());
-
-                return new Options((double) slider.getValue(), strokeWidth, cpStroke.getValue());
-            } else {
-                circle.setVisible(false);
+        dialog.setOnCloseRequest(e->{
+            if(isDone==false && isDeleted==false){
+                e.consume();
             }
-            return null;
-        });
-        
-        Optional<Options> results = dialog.showAndWait();
-
-            results.ifPresent((Options options) -> {
-            circle.setRadius(options.radius);
-            circle.setStrokeWidth(options.strokeWidth);
-            circle.setStroke(options.strokeColor);
         });
 
+        if (results.get() == mainController.getButtonType("Done")){
+            // set annotations
+            double strokeWidth = Double.parseDouble(stkWidth.getValue().toString());
+            circleAnnotation.setRadius(slider.getValue());
+            circleAnnotation.setStrokeWidth(strokeWidth);
+            circleAnnotation.setStrokeColor(cpStroke.getValue());
+            circleAnnotation.setLayoutX(circle.getBoundsInParent().getCenterX());
+            circleAnnotation.setLayoutY(circle.getBoundsInParent().getCenterY());
+            isDone = true;
+        }
+
+        if (results.get() == mainController.getButtonType("Delete")) {
+            circle.setVisible(false);
+            project.revomeAnnotation(selectedTab, circleAnnotation);
+            isDeleted = true;
+        }
+
+        if (results.get() == mainController.getButtonType("Cancel")) {
+            return;
+        }
     }
 
-    private static class Options {
-        double radius;
-        double strokeWidth;
-        Color strokeColor;
+    public void setProject(Project project) {
+        this.project = project;
+    }
 
-        public Options(double radius, double strokeWidth, Color strokeColor) {
-            this.radius = radius;
-            this.strokeWidth = strokeWidth;
-            this.strokeColor = strokeColor;
-        }
+    public void setSelectedTab(Tab selectedTab) {
+        this.selectedTab = selectedTab;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 }

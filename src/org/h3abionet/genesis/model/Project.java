@@ -7,6 +7,7 @@ package org.h3abionet.genesis.model;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Tab;
 import javafx.util.Duration;
 import org.h3abionet.genesis.Genesis;
 
@@ -485,5 +486,17 @@ public class Project implements Serializable {
 
     public ArrayList<Annotation> getAdmixtureAnnotationsList() {
         return admixtureAnnotationList;
+    }
+
+    public void revomeAnnotation(Tab selectedTab, Annotation annotationType) {
+        if (selectedTab.getId().contains("admix")) {
+            project.getAdmixtureAnnotationsList().remove(annotationType);
+        }
+        // if pca tab - add annotation
+        if (selectedTab.getId().contains("tab")) {
+            String[] s = selectedTab.getId().split(" "); // [pca, 0] or [pca, 11]
+            int tabIndex = Integer.valueOf(s[1]);
+            project.getPcGraphAnnotationsList().get(tabIndex).remove(annotationType);
+        }
     }
 }

@@ -14,8 +14,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.util.Callback;
 import org.h3abionet.genesis.model.Annotation;
+import org.h3abionet.genesis.model.Project;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,8 +41,15 @@ public class RectangleOptions{
     private ComboBox stkWidth;
     private ComboBox archSizeCombo;
     private Annotation rectangleAnnotation;
+    private Project project;
+    private Tab selectedTab;
+    private boolean isDone;
+    private boolean isDeleted;
+    private MainController mainController;
 
     public RectangleOptions(Rectangle rectangle, Annotation rectangleAnnotation) {
+        isDone = false;
+        isDeleted = false;
         this.rectangle = rectangle;
         this.rectangleAnnotation = rectangleAnnotation;
         setControllers();
@@ -106,7 +113,6 @@ public class RectangleOptions{
         
         cpStroke.setOnAction((ActionEvent e) -> {
             rectangle.setStroke(cpStroke.getValue());
-            rectangleAnnotation.setStrokeColor(cpStroke.getValue());
         });
         
         stkWidth.setOnAction(e -> {
@@ -120,68 +126,49 @@ public class RectangleOptions{
     }
 
     public void modifyRectangle(){
-        Dialog<Options> dialog = new Dialog<>();
-        dialog.setTitle("Rectangle options");
-        dialog.setHeaderText(null);
-        dialog.setResizable(false);
+        Dialog dialog = mainController.getDialog(grid);
+        Optional<ButtonType> results = dialog.showAndWait();
 
-        dialog.getDialogPane().setContent(grid);
-
-        ButtonType deleteBtn = new ButtonType("Delete", ButtonBar.ButtonData.CANCEL_CLOSE);
-        ButtonType doneBtn = new ButtonType("Done", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().setAll(doneBtn, deleteBtn);
-
-        dialog.setResultConverter(new Callback<>() {
-            @Override
-            public Options call(ButtonType b) {
-                if (b == doneBtn) {
-                    // set annotations
-                    double strokeWidth = Double.parseDouble(stkWidth.getValue().toString());
-                    double arc = Double.parseDouble(archSizeCombo.getValue().toString());
-
-                    rectangleAnnotation.setWidth(rectangle.getWidth());
-                    rectangleAnnotation.setHeight(rectangle.getHeight());
-                    rectangleAnnotation.setArcHeight(rectangle.getArcHeight());
-                    rectangleAnnotation.setArcWidth(rectangle.getArcWidth());
-                    rectangleAnnotation.setStrokeWidth(rectangle.getStrokeWidth());
-                    rectangleAnnotation.setStrokeColor(cpStroke.getValue());
-                    return new Options(widthSlider.getValue(), heightSlider.getValue(),
-                            arc, arc, strokeWidth, cpStroke.getValue());
-                } else {
-                    rectangle.setVisible(false);
-                }
-
-                return null;
+        dialog.setOnCloseRequest(e->{
+            if(isDone==false && isDeleted==false){
+                e.consume();
             }
         });
-        
-        Optional<Options> results = dialog.showAndWait();
-            results.ifPresent((Options options) -> {
-            rectangle.setWidth(options.width);
-            rectangle.setHeight(options.height);
-            rectangle.setArcHeight(options.archHeight);
-            rectangle.setArcWidth(options.archWidth);
-            rectangle.setStrokeWidth(options.strokeWidth);
-            rectangle.setStroke(options.strokeColor);
-        });
 
+        if (results.get() == mainController.getButtonType("Done")){
+            // set annotations
+            rectangleAnnotation.setWidth(rectangle.getWidth());
+            rectangleAnnotation.setHeight(rectangle.getHeight());
+            rectangleAnnotation.setArcHeight(rectangle.getArcHeight());
+            rectangleAnnotation.setArcWidth(rectangle.getArcWidth());
+            rectangleAnnotation.setStrokeWidth(rectangle.getStrokeWidth());
+            rectangleAnnotation.setStrokeColor(cpStroke.getValue());
+            rectangleAnnotation.setLayoutX(rectangle.getBoundsInParent().getMinX()+20); // 20 error margin
+            rectangleAnnotation.setLayoutY(rectangle.getBoundsInParent().getMinY()+20);
+            isDone = true;
+        }
+
+        if (results.get() == mainController.getButtonType("Delete")) {
+            rectangle.setVisible(false);
+            project.revomeAnnotation(selectedTab, rectangleAnnotation);
+            isDeleted = true;
+        }
+
+        if (results.get() == mainController.getButtonType("Cancel")) {
+            return;
+        }
     }
 
-    private static class Options {
-        double width;
-        double height;
-        double archWidth;
-        double archHeight;
-        double strokeWidth;
-        Color strokeColor;
 
-        public Options(double width, double height, double archWidth, double archHeight, double strokeWidth,Color strokeColor) {
-            this.width = width;
-            this.height = height;
-            this.archWidth = archWidth;
-            this.archHeight = archHeight;
-            this.strokeWidth = strokeWidth;
-            this.strokeColor = strokeColor;
-        }
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public void setSelectedTab(Tab selectedTab) {
+        this.selectedTab = selectedTab;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 }
