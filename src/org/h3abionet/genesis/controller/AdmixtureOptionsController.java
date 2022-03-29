@@ -457,21 +457,42 @@ public class AdmixtureOptionsController implements Initializable {
                 }
             });
 
-            Button shiftUp = new Button("Shift Up");
-            shiftUp.setOnMouseClicked((MouseEvent up) -> {
-                verticalMove(0, ancestryOrder.size()-1);
-            });
+            Button shiftUp = null;
+            Button shiftDown = null;
+            if(project.isAdmixtureHorizontal()) {
+                shiftUp = new Button("Shift Up");
+                shiftUp.setOnMouseClicked((MouseEvent up) -> {
+                    verticalMove(0, ancestryOrder.size() - 1);
+                });
 
+                shiftDown = new Button("Shift Down");
+                shiftDown.setOnMouseClicked((MouseEvent down) -> {
+                    verticalMove(ancestryOrder.size() - 1, 0);
+                });
+            } else if(project.isAdmixtureVertical()){
+                shiftUp = new Button("Shift Right");
+                shiftUp.setOnMouseClicked((MouseEvent up) -> {
+                    verticalMove(0, ancestryOrder.size() - 1);
+                });
 
-            Button shiftDown =  new Button("Shift Down");
-            shiftDown.setOnMouseClicked((MouseEvent down) -> {
-                verticalMove(ancestryOrder.size()-1, 0);
+                shiftDown = new Button("Shift Left");
+                shiftDown.setOnMouseClicked((MouseEvent down) -> {
+                    verticalMove(ancestryOrder.size() - 1, 0);
+                });
+            }else {
+                shiftUp = new Button("Shift Right");
+                shiftUp.setOnMouseClicked((MouseEvent up) -> {
+                    verticalMove(0, ancestryOrder.size() - 1);
+                });
 
-            });
+                shiftDown = new Button("Shift Left");
+                shiftDown.setOnMouseClicked((MouseEvent down) -> {
+                    verticalMove(ancestryOrder.size() - 1, 0);
+                });
+            }
             
             // for every serie, store its default color, change color btn, and sort btn in HBox
             ancenstorHBox.getChildren().addAll(ancestorColorDisplay, colorSortBtn, shiftUp, shiftDown);
-
 
             // add the the HBox to the list of HBoxes.
             listOfAncenstorHBox.add(ancenstorHBox);
@@ -504,7 +525,6 @@ public class AdmixtureOptionsController implements Initializable {
         optionsStage.setScene(sceneForPopulationGroupBtn);
         optionsStage.setResizable(false);
         optionsStage.show();
-
     }
 
     @FXML

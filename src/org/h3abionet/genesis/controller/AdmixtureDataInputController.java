@@ -76,10 +76,10 @@ public class AdmixtureDataInputController{
             admixtureFileName = admixture.getName();
             btnAdmixtureData.setText(admixtureFileName);
             btnAdmixtureData.setStyle("-fx-text-fill: #06587F");
-
         }catch(Exception ex){
+            mainController.setAdmixCreationSuccessful(false);
             Genesis.throwErrorException("No file imported");
-        }   
+        }
     }
 
     public void setMainController(MainController mainController) {

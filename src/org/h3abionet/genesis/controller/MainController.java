@@ -6,11 +6,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.chart.ScatterChart;
@@ -40,7 +38,10 @@ import jfxtras.labs.util.event.MouseControlUtil;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.*;
 
 /*
@@ -281,7 +282,6 @@ public class MainController implements Initializable{
                 if (AdmixtureSettingsController.isAdmixRotated()) {
                     setAdmixtureChart(admixtureGraph.getListOfStackedBarCharts());
                     admixVbox.setMaxHeight(Double.MAX_VALUE); // restore vGrow property
-
                 } else {
                     setAdmixtureChart(admixtureGraph.getListOfStackedBarCharts());
                 }
@@ -496,6 +496,7 @@ public class MainController implements Initializable{
                 AdmixtureSettingsController admixSettingsCtlr =  loader.getController();
                 admixSettingsCtlr.setAdmixtureGraph(admixtureGraph);
                 admixSettingsCtlr.setMainController(this);
+                admixSettingsCtlr.setProject(project);
                 admixSettingsCtlr.setControls();
                 disableSettingsBtn(true);
                 Stage dialogStage = new Stage();
@@ -735,6 +736,16 @@ public class MainController implements Initializable{
                 lineOptions.modifyArrow();
             }
         });
+
+        line.setOnMouseReleased(mouseEvent -> {
+            // set annotations
+            lineAnnotation.setStartX(line.getStartX());
+            lineAnnotation.setStartY(line.getStartY());
+            lineAnnotation.setEndX(line.getEndX());
+            lineAnnotation.setEndY(line.getEndY());
+            lineAnnotation.setLayoutX(line.getBoundsInParent().getMinX()+20);
+            lineAnnotation.setLayoutY(line.getBoundsInParent().getMinY()-129);
+        });
     }
 
     @FXML
@@ -823,6 +834,12 @@ public class MainController implements Initializable{
                 arrowOptions.modifyArrow();
             }
         });
+
+        arrow.setOnMouseReleased(mouseEvent -> {
+            // set annotations
+            arrowAnnotation.setLayoutX(arrow.getBoundsInParent().getCenterX());
+            arrowAnnotation.setLayoutY(arrow.getBoundsInParent().getCenterY());
+        });
     }
 
     @FXML
@@ -870,17 +887,10 @@ public class MainController implements Initializable{
             }
         });
 
-//        circle.setOnMouseReleased(mouseEvent -> {
-////            Bounds boundsInScene = circle.localToScene(pcaChartsList.get(currentTabIndex).getBoundsInLocal());
-////            circleAnn.setCenterX(boundsInScene.getCenterX());
-////            circleAnn.setCenterY(boundsInScene.getCenterX());
-//            double endX = mouseEvent.getSceneX();
-//            double endY = mouseEvent.getSceneY();
-//
-//            circleAnn.setCenterX(endX);
-//            circleAnn.setCenterY(endY);
-//        });
-
+        circle.setOnMouseReleased(mouseEvent -> {
+            circleAnn.setLayoutX(circle.getBoundsInParent().getCenterX());
+            circleAnn.setLayoutY(circle.getBoundsInParent().getCenterY());
+        });
     }
 
     public void recreateCircle(Annotation circleAnn, int chartIndex, String chartType){
@@ -983,6 +993,13 @@ public class MainController implements Initializable{
                 labelOptions.modifyLabel();
             }
         });
+
+        text.setOnMouseReleased(mouseEvent -> {
+            // set annotations
+            textAnnotation.setLayoutX(text.getBoundsInParent().getCenterX()-20);//error margin
+            textAnnotation.setLayoutY(text.getBoundsInParent().getCenterY());
+        });
+
     }
 
 
@@ -1026,9 +1043,9 @@ public class MainController implements Initializable{
         rec.setArcWidth(recAn.getArcWidth());
         rec.setFill(Color.TRANSPARENT);
 
-        rec.setX(recAn.getLayoutX());
-        rec.setY(recAn.getLayoutY());
-//        rec.relocate(recAn.getLayoutX(),recAn.getLayoutY());
+//        rec.setX(recAn.getLayoutX());
+//        rec.setY(recAn.getLayoutY());
+        rec.relocate(recAn.getLayoutX(),recAn.getLayoutY());
 
         if(recAn.getStrokeColor()!=null){
             if(recAn.getStrokeColor().equals("000000") || recAn.getStrokeColor().equals("ff")){
@@ -1055,6 +1072,17 @@ public class MainController implements Initializable{
                 // modify the chosen rectangle
                 rectangleOptions.modifyRectangle();
             }
+        });
+
+        rec.setOnMouseReleased(mouseEvent -> {
+            // set annotations
+            rectangleAnnotation.setWidth(rec.getWidth());
+            rectangleAnnotation.setHeight(rec.getHeight());
+            rectangleAnnotation.setArcHeight(rec.getArcHeight());
+            rectangleAnnotation.setArcWidth(rec.getArcWidth());
+            rectangleAnnotation.setStrokeWidth(rec.getStrokeWidth());
+            rectangleAnnotation.setLayoutX(rec.getBoundsInParent().getMinX()+20); // 20 error margin
+            rectangleAnnotation.setLayoutY(rec.getBoundsInParent().getMinY()+20);
         });
     }
 

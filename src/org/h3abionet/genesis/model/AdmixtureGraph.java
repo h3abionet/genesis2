@@ -154,6 +154,16 @@ public class AdmixtureGraph extends Graph implements Serializable {
         // charts = [chart1, chart2, chart3, ...]
         ArrayList<StackedBarChart<String, Number>> charts = new ArrayList<>(); // store stacked charts for every group
 
+        // remove groups with no individuals - subjects
+        Iterator<String> iter = project.getGroupNames().iterator();
+        while(iter.hasNext()) {
+            String group = iter.next();
+            ArrayList<Subject> thisGroup = project.getSubjectGroups().get(group);
+            if(thisGroup.size()==0) {
+                iter.remove(); // Removes the 'current' group
+            }
+        }
+
         project.getGroupNames().parallelStream().forEachOrdered(
                 groupName -> {
 //
@@ -799,7 +809,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
             secondGroupLabel = lbl;
             // if the same label is clicked, do not swap
             if(GridPane.getColumnIndex(firstGroupLabel) != GridPane.getColumnIndex(secondGroupLabel)){
-                groupNameSwap();
+//                groupNameSwap();
+                moveColumnGroups();
                 MainController.getAdmixVbox().getChildren().remove(MainController.getAdmixVbox().getChildren().size()-1);
             }else {
                 MainController.getAdmixVbox().getChildren().remove(MainController.getAdmixVbox().getChildren().size()-1);
@@ -811,59 +822,144 @@ public class AdmixtureGraph extends Graph implements Serializable {
     /**
      * groupNameSwap population group labels
      */
-    private void groupNameSwap() {
+    private void moveColumnGroups() {
+        ObservableList<Node> children = gridPane.getChildren();
+
         // column and row index for clicked labels
         int firstRow = GridPane.getRowIndex(firstGroupLabel);
         int firstCol = GridPane.getColumnIndex(firstGroupLabel);
         int secondRow = GridPane.getRowIndex(secondGroupLabel);
         int secondCol = GridPane.getColumnIndex(secondGroupLabel);
 
-        // under development
-        // TODO - Develop code for shifting
-
-        // groupNameSwap their column constraints
-        Collections.swap(gridPane.getColumnConstraints(), firstCol, secondCol);
-
-        // remove group existing labels
-        gridPane.getChildren().removeAll(firstGroupLabel, secondGroupLabel);
-
-        // groupNameSwap population group nodes
-        if(firstCol!=secondCol) {
-            gridPane.add(firstGroupLabel, secondCol, secondRow);
-            gridPane.add(secondGroupLabel, firstCol, firstRow);
-        }
-
-        int rowIndex = 0;
-        ObservableList<Node> children = gridPane.getChildren();
-        while (rowIndex < firstRow) {
-            for (Node node : children) {
-                if (GridPane.getColumnIndex(node) == firstCol && GridPane.getRowIndex(node) == rowIndex) {
-                    firstChart = node;
-                }
-                if (GridPane.getColumnIndex(node) == secondCol && GridPane.getRowIndex(node) == rowIndex) {
-                    secondChart = node;
-                }
-            } 
-
-            if (firstChart != null && secondChart != null) {
-                // remove nodes
-                gridPane.getChildren().removeAll(firstChart, secondChart);
-
-                // groupNameSwap nodes
-                if(firstCol!=secondCol) {
-                    gridPane.add(firstChart, secondCol, rowIndex);
-                    gridPane.add(secondChart, firstCol, rowIndex);
+        // swap the population labels
+        if (firstCol < secondCol) {
+            for (int j = firstCol; j < secondCol; j++) {
+                for (Node node : children) {
+                    // get first chart
+                    if (GridPane.getColumnIndex(node) == j && GridPane.getRowIndex(node) == firstRow) {
+                        if (node instanceof StackPane) {
+                            firstGroupLabel = (StackPane) node;
+                        }
+                    }
+                    // get second chart
+                    if (GridPane.getColumnIndex(node) == j + 1 && GridPane.getRowIndex(node) == firstRow) {
+                        if (node instanceof StackPane) {
+                            secondGroupLabel = (StackPane) node;
+                        }
+                    }
                 }
 
-            } else {
-                ;
+                // groupNameSwap their column constraints
+                ArrayList<String> list = project.getGroupNames();
+
+                Collections.swap(gridPane.getColumnConstraints(), j, j+1);
+                Collections.swap(list, j-1, j);
+
+                // remove group existing labels
+                gridPane.getChildren().removeAll(firstGroupLabel, secondGroupLabel);
+
+                // groupNameSwap population group nodes
+                if (firstCol != secondCol) {
+                    gridPane.add(firstGroupLabel, j + 1, secondRow);
+                    gridPane.add(secondGroupLabel, j, firstRow);
+                }
             }
+            int rowIndex = 0;
+            while (rowIndex < firstRow) {
+            for (int j = firstCol; j < secondCol; j++) {
+                // get the charts to swap
+                for (Node node : children) {
+                    // get first chart
+                    if (GridPane.getColumnIndex(node) == j && GridPane.getRowIndex(node) == rowIndex) {
+                        firstChart = node;
+                    }
+                    // get second chart
+                    if (GridPane.getColumnIndex(node) == j + 1 && GridPane.getRowIndex(node) == rowIndex) {
+                        secondChart = node;
+                    }
+                }
 
+                if (firstChart != null && secondChart != null) {
+                    // remove nodes
+                    gridPane.getChildren().removeAll(firstChart, secondChart);
+                    // groupNameSwap nodes
+                    if (firstCol != secondCol) {
+                        gridPane.add(firstChart, j+1, rowIndex);
+                        gridPane.add(secondChart, j, rowIndex);
+                    }
+                } else {
+                    ;
+                }
+            }
             // reset nodes
             firstChart = null;
             secondChart = null;
-
             rowIndex++;
+        }
+        }
+
+        if(firstCol>secondCol){
+            for (int j = firstCol; j > secondCol; j--) {
+                for (Node node : children) {
+                    // get first chart
+                    if (GridPane.getColumnIndex(node) == j && GridPane.getRowIndex(node) == firstRow) {
+                        if (node instanceof StackPane) {
+                            firstGroupLabel = (StackPane) node;
+                        }
+                    }
+                    // get second chart
+                    if (GridPane.getColumnIndex(node) == j - 1 && GridPane.getRowIndex(node) == firstRow) {
+                        if (node instanceof StackPane) {
+                            secondGroupLabel = (StackPane) node;
+                        }
+                    }
+                }
+
+                // groupNameSwap their column constraints
+                Collections.swap(gridPane.getColumnConstraints(), j, j-1);
+
+                // remove group existing labels
+                gridPane.getChildren().removeAll(firstGroupLabel, secondGroupLabel);
+
+                // groupNameSwap population group nodes
+                if (firstCol != secondCol) {
+                    gridPane.add(firstGroupLabel, j - 1, secondRow);
+                    gridPane.add(secondGroupLabel, j, firstRow);
+                }
+            }
+
+            int rowIndex = 0;
+            while (rowIndex < firstRow) {
+                for (int j = firstCol; j > secondCol; j--) {
+                    // get the charts to swap
+                    for (Node node : children) {
+                        // get first chart
+                        if (GridPane.getColumnIndex(node) == j && GridPane.getRowIndex(node) == rowIndex) {
+                            firstChart = node;
+                        }
+                        // get second chart
+                        if (GridPane.getColumnIndex(node) == j - 1 && GridPane.getRowIndex(node) == rowIndex) {
+                            secondChart = node;
+                        }
+                    }
+
+                    if (firstChart != null && secondChart != null) {
+                        // remove nodes
+                        gridPane.getChildren().removeAll(firstChart, secondChart);
+                        // groupNameSwap nodes
+                        if (firstCol != secondCol) {
+                            gridPane.add(firstChart, j-1, rowIndex);
+                            gridPane.add(secondChart, j, rowIndex);
+                        }
+                    } else {
+                        ;
+                    }
+                }
+                // reset nodes
+                firstChart = null;
+                secondChart = null;
+                rowIndex++;
+            }
         }
 
     }

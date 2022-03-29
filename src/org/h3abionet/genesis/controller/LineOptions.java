@@ -149,7 +149,7 @@ public class LineOptions extends Line{
             lineAnnotation.setStrokeColor(cpStroke.getValue());
             lineAnnotation.setStrokeWidth(strokeWidth);
             lineAnnotation.setLayoutX(line.getBoundsInParent().getMinX()+20);
-            lineAnnotation.setLayoutY(line.getBoundsInParent().getMinY()-110);
+            lineAnnotation.setLayoutY(line.getBoundsInParent().getMinY()-129);
             isDone = true;
         }
 

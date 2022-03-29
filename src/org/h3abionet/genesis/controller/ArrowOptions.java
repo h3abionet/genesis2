@@ -118,8 +118,8 @@ public class ArrowOptions {
             arrowAnnotation.setEndX(arrow.getEndX());
             arrowAnnotation.setEndY(arrow.getEndY());
             arrowAnnotation.setRotation(angleOfRotation);
-            arrowAnnotation.setLayoutX(arrow.getBoundsInParent().getCenterX());
-            arrowAnnotation.setLayoutY(arrow.getBoundsInParent().getCenterY());
+            arrowAnnotation.setLayoutX(arrow.getBoundsInParent().getMinX());
+            arrowAnnotation.setLayoutY(arrow.getBoundsInParent().getMinY());
 //            arrowAnnotation.setStrokeColor(Integer.toHexString(cpStroke.getValue().hashCode()));
             isDone = true;
         }

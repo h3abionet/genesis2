@@ -25,7 +25,7 @@ public class Annotation implements Serializable {
     double centerX;
     double centerY;
     String fill;
-    double rotation;
+    double rotation = 0;
     String text;
     private int fontSize;
     private String fontFamily;

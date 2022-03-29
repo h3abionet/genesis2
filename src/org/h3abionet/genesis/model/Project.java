@@ -8,7 +8,6 @@ package org.h3abionet.genesis.model;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
-import javafx.util.Duration;
 import org.h3abionet.genesis.Genesis;
 
 import java.io.BufferedReader;
@@ -43,7 +42,7 @@ public class Project implements Serializable {
     private PCAGraph pcaGraph;
     private int phenoColumnNumber; // column with phenotype
     private int currentTabIndex; // set index of the current tab
-    private List<String> groupNames = new ArrayList<>();
+    private ArrayList<String> groupNames = new ArrayList<>();
     private ArrayList<String> pcaLegendItems = new ArrayList<>();
     private ArrayList<String> orderOfLegendItems = new ArrayList<>();
 
@@ -73,6 +72,8 @@ public class Project implements Serializable {
     HashMap<String, ArrayList<Subject>> subjectGroups = new HashMap<>();
     private String pcaFileName;
     private ArrayList<Annotation> admixtureAnnotationList = new ArrayList<>();
+    private boolean isAdmixtureVertical;
+    private boolean isAdmixtureHorizontal;
 
     public Project(String proj_name, String fam_fname_s) {
         this.projectName = proj_name;
@@ -342,7 +343,7 @@ public class Project implements Serializable {
         return project;
     }
 
-    public List<String> getGroupNames() {
+    public ArrayList<String> getGroupNames() {
         return groupNames;
     }
 
@@ -498,5 +499,22 @@ public class Project implements Serializable {
             int tabIndex = Integer.valueOf(s[1]);
             project.getPcGraphAnnotationsList().get(tabIndex).remove(annotationType);
         }
+    }
+
+
+    public boolean isAdmixtureVertical() {
+        return isAdmixtureVertical;
+    }
+
+    public void setAdmixtureVertical(boolean admixtureVertical) {
+        isAdmixtureVertical = admixtureVertical;
+    }
+
+    public boolean isAdmixtureHorizontal() {
+        return isAdmixtureHorizontal;
+    }
+
+    public void setAdmixtureHorizontal(boolean admixtureHorizontal) {
+        isAdmixtureHorizontal = admixtureHorizontal;
     }
 }

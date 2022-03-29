@@ -40,6 +40,7 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.AdmixtureGraph;
+import org.h3abionet.genesis.model.Project;
 
 /**
  * FXML Controller class
@@ -188,6 +189,7 @@ public class AdmixtureSettingsController implements Initializable {
     private static final double extraSpace = 50; // change
     private AdmixtureGraph admixtureGraph;
     private MainController mainController;
+    private Project project;
 
     /**
      * check if plot was rotated from vertical back to horizontal orientation
@@ -272,10 +274,14 @@ public class AdmixtureSettingsController implements Initializable {
         // orientation
         if ("Horizontal".equals(linearLayoutBox.getValue()) && admixHorizontal == false) {
             horizontalRotation();
+            project.setAdmixtureHorizontal(true);
+            project.setAdmixtureVertical(false);
         }
 
         if ("Vertical".equals(linearLayoutBox.getValue()) && admixVertical == false) {
             verticalRotation();
+            project.setAdmixtureHorizontal(false);
+            project.setAdmixtureVertical(true);
         }
 
         mainController.disableSettingsBtn(false);
@@ -717,5 +723,9 @@ public class AdmixtureSettingsController implements Initializable {
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }

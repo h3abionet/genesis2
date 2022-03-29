@@ -656,9 +656,7 @@ public class PCAGraph extends Graph implements Serializable {
 
             // shift down
             if(firstIndex<secondIndex) {
-
                 try {
-
                     for (int graph = 0; graph < mainController.getPcaChartsList().size(); graph++) {
                         ObservableList<Node> children = getLegend(graph);
                         for (int j = firstIndex; j <= secondIndex; j++) { // starting
