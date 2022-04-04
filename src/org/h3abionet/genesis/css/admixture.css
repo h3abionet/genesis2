@@ -8,6 +8,7 @@ and open the template in the editor.
     Author     : Henry
 */
 
+
 .chart {
     -fx-padding: 0px;
     -fx-background-color:  transparent;
@@ -16,7 +17,23 @@ and open the template in the editor.
 
 .chart-content {
     -fx-padding: 0px;
-    -fx-background-color:  transparent;
+    -fx-background-color:  white;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: transparent;
+    -fx-stroke-width: 0px;
+
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: transparent;
+    -fx-stroke-width: 0px;
+}
+
+.chart-horizontal-zero-line  {
+    -fx-stroke: transparent;
+    -fx-stroke-width: 0px;
 }
 
 .chart-legend {
@@ -28,51 +45,52 @@ and open the template in the editor.
 
 
 .axis{
-    -fx-padding: 0;
-    -fx-start-margin: 0;
-    -fx-end-margin: 0;
+    -fx-padding: 1.5;
+    -fx-start-margin: 1.5;
+    -fx-end-margin: 1.5;
     -fx-gap-start-and-end: false;
-}
-
-.chart-title {
-    -fx-padding: 0px;
-    -fx-background-color: transparent;
-}
-
-.axis:top {
-    -fx-border-color: transparent;
-}
-
-.axis:right {
-    -fx-border-color: transparent;
-}
-
-.axis:bottom {
-    -fx-border-color: transparent;
-}
-
-.axis:left {
-    -fx-border-color: transparent;
-}
-
-.chart-horizontal-zero-line  {
-    -fx-stroke: transparent;
-}
-
-.axis-label {
-  -fx-text-fill: transparent;
 }
 
 .chart-plot-background {
     -fx-background-color: transparent;
 }
 
-.chart-vertical-grid-lines {
+.chart-alternative-row-fill {
+    -fx-fill: white;
     -fx-stroke: transparent;
+    -fx-stroke-width: 10;
 }
 
-.chart-horizontal-grid-lines {
+.chart-alternative-column-fill {
+    -fx-fill: white;
     -fx-stroke: transparent;
+    -fx-stroke-width: 10;
+}
+
+/*
+.chart-title {
+    -fx-padding: 0px;
+    -fx-background-color: transparent;
+}
+
+.axis:top {
+    -fx-border-color: transparent transparent transparent transparent;
+}
+
+.axis:right {
+    -fx-border-color: transparent transparent transparent transparent;
+}
+
+.axis:bottom {
+    -fx-border-color: transparent transparent transparent transparent;
+}
+
+.axis:left {
+    -fx-border-color: transparent transparent transparent transparent;
+}
+
+.axis-label {
+  -fx-text-fill: transparent;
 }
 
 .chart-alternative-row-fill {
@@ -80,3 +98,4 @@ and open the template in the editor.
     -fx-stroke: transparent;
     -fx-stroke-width: 0;
 }
+*/

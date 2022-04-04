@@ -220,7 +220,7 @@ public class MainController implements Initializable{
      * remove the genesis logo from the tabPane
      */
     public void setTabPaneStyle(){
-        tabPane.setStyle("-fx-background-image: null");
+        tabPane.setStyle("-fx-background-image: null;-fx-background-color: white;");
     }
 
     @FXML
@@ -438,6 +438,7 @@ public class MainController implements Initializable{
                 admixPane.getChildren().set(0, admixtureGraph.getGridPane(gridPane, rowPointer));
                 AnchorPane name = (AnchorPane) admixVbox.getChildren().get(1);
                 name.getChildren().set(0, admixPane);
+                name.setStyle("-fx-background-color: transparent;");
                 scrollPane.setContent(admixVbox);
             }
 
@@ -1408,6 +1409,7 @@ public class MainController implements Initializable{
         admixtureTab = new Tab();
         admixtureTab.setText("Admixture Plot");
         admixtureTab.setId("admix");
+        admixtureTab.setStyle("-fx-background-color:  #06587F;");
 
         drawingAnchorPaneVisibility = false;
         drawingAnchorPane.setVisible(drawingAnchorPaneVisibility);
@@ -1415,7 +1417,7 @@ public class MainController implements Initializable{
         //VBox to keep the admix plot and heading
         admixVbox = new VBox(10);
         admixVbox.setPrefWidth(defaultAdmixPlotWidth + VBOX_MARGIN); // TODO - change these hard coded values
-        admixVbox.setStyle("-fx-background-color: #ffffff;");
+        admixVbox.setStyle("-fx-background-color: white;");
 
         // add pane for the title
         chartHeading = new Text("Admixture plot");
@@ -1424,12 +1426,12 @@ public class MainController implements Initializable{
         titlePane.setPrefWidth(Double.MAX_VALUE);
 
         AnchorPane pane = new AnchorPane();
-        pane.setStyle("-fx-background-color: #ffffff;");
+        pane.setStyle("-fx-background-color: white;");
         admixVbox.getChildren().addAll(titlePane, pane);
 
         // gridpane section for admixture plots
         gridPane = new GridPane();
-        gridPane.setStyle("-fx-background-color: transparent;");
+        gridPane.setStyle("-fx-background-color: white;");
         gridPane.setCache(true);
         gridPane.setCacheHint(CacheHint.SPEED);
         gridPane.setHgap(0); //horizontal gap
@@ -1441,13 +1443,13 @@ public class MainController implements Initializable{
         AnchorPane.setRightAnchor(gridPane, 40.0);
 
         admixPane = new AnchorPane();
-        admixPane.setStyle("-fx-background-color: #ffffff;");
+        admixPane.setStyle("-fx-background-color: white; -fx-border-color: white;");
 
         // set scrollpane that keeps admix charts
         scrollPane = new ScrollPane();
         scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setStyle("-fx-background-color: transparent;");
+        scrollPane.setStyle("-fx-background: red; -fx-border-color: white;");
     }
 
     public void setProjIsImported(boolean b) {

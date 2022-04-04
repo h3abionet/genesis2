@@ -178,14 +178,16 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
             //xAxis.setAutoRanging(false);
             xAxis.setTickMarkVisible(false);
-            xAxis.setTickLabelsVisible(false);
-            xAxis.setPrefSize(0, 0);
-            yAxis.setAutoRanging(false);
-            yAxis.setMinorTickVisible(false);
             yAxis.setTickMarkVisible(false);
+
+            xAxis.setTickLabelsVisible(false);
             yAxis.setTickLabelsVisible(false);
+
+            xAxis.setPrefSize(0, 0);
             yAxis.setPrefSize(0, 0);
 
+            yAxis.setAutoRanging(false);
+            yAxis.setMinorTickVisible(false);
 
             StackedBarChart<String, Number> populationGroupChart = new StackedBarChart<>(xAxis, yAxis);
 
@@ -245,11 +247,12 @@ public class AdmixtureGraph extends Graph implements Serializable {
             populationGroupChart.setPrefHeight(CHART_HEIGHT);
             populationGroupChart.setMinHeight(CHART_HEIGHT);
             populationGroupChart.setLegendVisible(false);
-            populationGroupChart.setAlternativeRowFillVisible(false);
-            populationGroupChart.setAlternativeColumnFillVisible(false);
-            populationGroupChart.setHorizontalGridLinesVisible(false);
-            populationGroupChart.setVerticalGridLinesVisible(false);
+//            populationGroupChart.setAlternativeRowFillVisible(false);
+//            populationGroupChart.setAlternativeColumnFillVisible(false);
+//            populationGroupChart.setHorizontalGridLinesVisible(false);
+//            populationGroupChart.setVerticalGridLinesVisible(false);
             populationGroupChart.setCategoryGap(-1);
+//            populationGroupChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
 
             // set the css stylesheet
             populationGroupChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
@@ -577,8 +580,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
             int ancestryIndex = i;
             String ancestryColor = admixColors.get(i);
             stackedBarChart.getData().get(i).getData().forEach((bar) -> {
-                bar.getNode().lookupAll(".default-color" + ancestryIndex + ".chart-bar")
-                        .forEach(n -> n.setStyle("-fx-bar-fill: " + ancestryColor + ";"));
+                bar.getNode().lookupAll(".default-color"+ancestryIndex+".chart-bar")
+                        .forEach(n -> n.setStyle("-fx-bar-fill: "+ ancestryColor+"; -fx-background-color:"+ancestryColor+"; -fx-border-width: 0px; -fx-border-color: "+ancestryColor+";"));
             });
         }
     }
@@ -653,9 +656,9 @@ public class AdmixtureGraph extends Graph implements Serializable {
         for (StackedBarChart<String, Number> admixChart : listOfStackedBarCharts) {
 
                 // define chart properties
-                admixChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
-                admixChart.setCategoryGap(0); // remove gaps in iids
-                admixChart.setLegendVisible(false);
+//                admixChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
+//                admixChart.setCategoryGap(0); // remove gaps in iids
+//                admixChart.setLegendVisible(false);
 
                 // set the chart size
                 admixChart.setMinWidth(Double.MIN_VALUE);
@@ -690,8 +693,9 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 admixChart.setCacheHint(CacheHint.SPEED);
 
                 gridPane.add(admixChart, colIndex, rowPointer);
+                gridPane.setStyle("-fx-background-color: transparent;");
 
-                // right click mouse event handler
+            // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
                     MouseButton button = event.getButton();
                     if (button == MouseButton.SECONDARY) {

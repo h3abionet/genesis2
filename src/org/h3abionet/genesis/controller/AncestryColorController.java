@@ -88,14 +88,14 @@ public class AncestryColorController {
             // set chosen color
             chosenColor = colorPicker.getValue();
 
-            selectedColor = Integer.toHexString(colorPicker.getValue().hashCode());
+            selectedColor = getColor(colorPicker.getValue());
 
             // change the color of series
             for (StackedBarChart<String, Number> stackedbarChart : listOfAdmixtureCharts) {
                 stackedbarChart.getData().forEach((series) -> {
                     series.getData().forEach((bar) -> {
                         bar.getNode().lookupAll(".default-color" + serieIndex + ".chart-bar")
-                                .forEach(n -> n.setStyle("-fx-background-color: "+ selectedColor + ";"));
+                                .forEach(n -> n.setStyle("-fx-background-color: "+ selectedColor + "; -fx-bar-fill: "+selectedColor+"; -fx-background-color:"+selectedColor+"; -fx-border-width: 1px; -fx-border-color: "+selectedColor+";"));
                     });
                 });
 
@@ -155,5 +155,14 @@ public class AncestryColorController {
 
     public void setAllAdmixtureCharts(List<ArrayList<StackedBarChart<String, Number>>> allAdmixtureCharts) {
         this.allAdmixtureCharts = allAdmixtureCharts;
+    }
+
+    private String getColor(Color color )
+    {
+        String strokeColor =  String.format( "#%02X%02X%02X",
+                (int)( color.getRed() * 255 ),
+                (int)( color.getGreen() * 255 ),
+                (int)( color.getBlue() * 255 ) );
+        return strokeColor;
     }
 }
