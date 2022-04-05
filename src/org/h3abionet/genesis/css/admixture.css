@@ -45,9 +45,9 @@ and open the template in the editor.
 
 
 .axis{
-    -fx-padding: 1.5;
-    -fx-start-margin: 1.5;
-    -fx-end-margin: 1.5;
+    -fx-padding: 1;
+    -fx-start-margin: 1;
+    -fx-end-margin: 1;
     -fx-gap-start-and-end: false;
 }
 

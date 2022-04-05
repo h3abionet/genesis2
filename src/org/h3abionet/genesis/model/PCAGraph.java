@@ -8,7 +8,6 @@ package org.h3abionet.genesis.model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -17,18 +16,10 @@ import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.controller.MainController;
@@ -433,7 +424,8 @@ public class PCAGraph extends Graph implements Serializable {
             for(Subject s : sub) {
                 if (s.getPhenos()[project.getPhenoColumnNumber() - 1].equals(serie.getName())) {
                     for (Node n : nodes) {
-                        n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
+                        n.setStyle(getStyle(s.getColor(), s.getIcon()));
+                        scaleIconSize(n, s.getIconSize());
                     }
                     break;
                 }
@@ -441,7 +433,8 @@ public class PCAGraph extends Graph implements Serializable {
         }else{
             for(Subject s : sub) {
                 for (Node n : nodes) {
-                    n.setStyle(getStyle(s.getColor(), s.getIcon(), s.getIconSize()));
+                    n.setStyle(getStyle(s.getColor(), s.getIcon()));
+                    scaleIconSize(n,s.getIconSize());
                 }
                 break;
             }
@@ -499,7 +492,7 @@ public class PCAGraph extends Graph implements Serializable {
 
                 // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
                 // set the legend icons (graphics)
-                lab.getGraphic().setStyle(getStyle(iconColor, iconShape, project.getDefaultIconSize()));
+                lab.getGraphic().setStyle( getStyle(iconColor, iconShape, project.getDefaultIconSize()));
 
                 // legend mouse click events for left and right click
                 for (XYChart.Series<Number, Number> s : sc.getData()) {
@@ -884,7 +877,8 @@ public class PCAGraph extends Graph implements Serializable {
                     s.getData().add(data); // add point to graph
 
                     // set the style of icon
-                    data.getNode().setStyle(getStyle(iconColor, iconsvg, iconSize));
+                    data.getNode().setStyle(getStyle(iconColor, iconsvg));
+                    scaleIconSize(data.getNode(), iconSize);
 
                     data.getNode().setOnMouseClicked(e ->{
                         try {
@@ -918,7 +912,7 @@ public class PCAGraph extends Graph implements Serializable {
             individualDetailsController.setPCAGraph(this);
             individualDetailsController.setProject(project);
             individualDetailsController.setChart(mainController.getPcaChart());
-            individualDetailsController.setPhenotypeComboBoxEvent();
+
             // set values of clicked pca point
             String xValue = String.valueOf(data.getXValue());
             String yValue = String.valueOf(data.getYValue());
@@ -955,13 +949,6 @@ public class PCAGraph extends Graph implements Serializable {
 //            // display icon for clicked point
             individualDetailsController.setIconDisplay(data.getNode().getStyle());
 
-            // set values of groupName combo box
-            ObservableList<String> uniqueGroups = FXCollections.observableArrayList();
-            for (XYChart.Series<Number, Number> s: chart.getData()){
-                uniqueGroups.add(s.getName());
-            }
-            individualDetailsController.setPhenotypeComboBox(FXCollections.observableArrayList(uniqueGroups));
-
             dialogStage.showAndWait();
 
         } catch (Exception ex) {;}
@@ -975,53 +962,62 @@ public class PCAGraph extends Graph implements Serializable {
      * @param iconSize
      */
     public void changeSeriesProperties(String serieName, String iconColor, String iconSVGShape, int iconSize){
-        for(int g=0; g<mainController.getPcaChartsList().size(); g++){
-
-            ScatterChart<Number, Number> pcgraph = mainController.getPcaChartsList().get(g);
-
-            for(XYChart.Series<Number, Number> series: pcgraph.getData()){
-                if(series.getName().equals(serieName)){
-                    // change population group color and icon on the chart
-                    for (XYChart.Data<Number, Number> dt : series.getData()) {
-                        dt.getNode().lookup(".chart-symbol").setStyle(getStyle(iconColor, iconSVGShape, iconSize));
-                    }
-
-                    // change population group color and icon the legend - dont change the size of icons on the legend
-                    for (Node n : pcgraph.getChildrenUnmodifiable()) {
-                        if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
-                            TilePane tn = (TilePane) n;
-                            ObservableList<Node> children = tn.getChildren();
-                            for(int i=0;i<children.size();i++){
-                                Label lab = (Label) children.get(i).lookup(".chart-legend-item");
-                                if(lab.getText().equals(serieName)){
-                                    // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
-                                    lab.getGraphic().setStyle(getLegendStyle(iconColor, iconSVGShape));
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            for(Subject s: project.getPcGraphSubjectsList().get(g)){
-                if(project.isPhenoFileProvided()){
-                    if(s.getPhenos()[project.getPhenoColumnNumber()-1].equals(serieName)){
+        // change for every subject
+        for(int g=0; g<mainController.getPcaChartsList().size(); g++) {
+            for (Subject s : project.getPcGraphSubjectsList().get(g)) {
+                if (project.isPhenoFileProvided()) {
+                    if (s.getPhenos()[project.getPhenoColumnNumber() - 1].equals(serieName)) {
                         s.setColor(iconColor);
                         s.setIcon(iconSVGShape);
                         s.setIconSize(iconSize);
                     }
-                }else{
+                } else {
                     s.setColor(iconColor);
                     s.setIcon(iconSVGShape);
                     s.setIconSize(iconSize);
                 }
             }
         }
-
         // change the color and icon of this phenotype category
         project.getGroupColors().put(serieName, iconColor);
         project.getGroupIcons().put(serieName, iconSVGShape);
+
+        for(int g=0; g<mainController.getPcaChartsList().size(); g++){
+            ScatterChart<Number, Number> pcgraph = mainController.getPcaChartsList().get(g);
+            for(int serieNum=0;serieNum<pcgraph.getData().size();serieNum++){
+                if(pcgraph.getData().get(serieNum).getName().equals(serieName)){
+                    for (XYChart.Data<Number, Number> dt : pcgraph.getData().get(serieNum).getData()) {
+                        scaleIconSize(dt.getNode(), iconSize);
+                        dt.getNode().lookup(".chart-symbol").setStyle(getStyle(iconColor,iconSVGShape));
+                    }
+                }
+            }
+//            for(XYChart.Series<Number, Number> series: pcgraph.getData()){
+//                if(series.getName().equals(serieName)){
+//                    // change population group color and icon on the chart
+//                    for (XYChart.Data<Number, Number> dt : series.getData()) {
+//                        String style = getStyle(iconColor, iconSVGShape, iconSize);
+//                        dt.getNode().lookup(".chart-symbol").setStyle(style);
+//                    }
+//
+//                    // change population group color and icon the legend - dont change the size of icons on the legend
+//                    for (Node n : pcgraph.getChildrenUnmodifiable()) {
+//                        if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+//                            TilePane tn = (TilePane) n;
+//                            ObservableList<Node> children = tn.getChildren();
+//                            for(int i=0;i<children.size();i++){
+//                                Label lab = (Label) children.get(i).lookup(".chart-legend-item");
+//                                if(lab.getText().equals(serieName)){
+//                                    // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
+//                                    lab.getGraphic().setStyle(getLegendStyle(iconColor, iconSVGShape));
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+        }
     }
 
     /**
@@ -1042,7 +1038,8 @@ public class PCAGraph extends Graph implements Serializable {
                 s.setIconSize(iconSize);
 
                 // show changes
-                data.getNode().lookup(".chart-symbol").setStyle(getStyle(iconColor, iconSVGShape, iconSize));
+                data.getNode().lookup(".chart-symbol").setStyle(getStyle(iconColor, iconSVGShape));
+                scaleIconSize(data.getNode(), iconSize);
                 break;
             }
         }
@@ -1070,8 +1067,8 @@ public class PCAGraph extends Graph implements Serializable {
                 s.setColor(color);
 
                 // set the style to default
-                data.getNode().lookup(".chart-symbol").setStyle(getStyle(color, icon, s.getIconSize()));
-
+                data.getNode().lookup(".chart-symbol").setStyle(getStyle(color, icon));
+                scaleIconSize(data.getNode(), s.getIconSize());
                 break;
             }
         }
@@ -1094,22 +1091,25 @@ public class PCAGraph extends Graph implements Serializable {
      * return a string of style
      * @param color
      * @param icon
-     * @param iconSize
      * @return
      */
+    public String getStyle(String color, String icon){
+        String s = "-fx-shape:\""+icon+"\";"
+//                + "-fx-background-insets: 0, 2;"
+//                +"-fx-background-size: "+iconSize+"px;"
+//                + "-fx-padding: "+iconSize+"px;"
+//                + "-fx-background-radius: "+iconSize+"px;"
+                + "-fx-background-color: "+color+","+color+";";
+        return s;
+    }
+
     public String getStyle(String color, String icon, int iconSize){
         String s = "-fx-shape:\""+icon+"\";"
-                + "-fx-background-insets: 0, 2;"
-                +"-fx-background-size: "+iconSize+"px;"
-                + "-fx-padding: "+iconSize+"px;"
+//                + "-fx-background-insets: 0, 2;"
+//                +"-fx-background-size: "+iconSize+"px;"
+//                + "-fx-padding: "+iconSize+"px;"
                 + "-fx-background-radius: "+iconSize+"px;"
-                + "-fx-pref-width: "+iconSize+"px;"
-                + "-fx-pref-height: "+iconSize+"px;"
-                + "-fx-min-width: "+iconSize+"px;"
-                + "-fx-max-width: "+iconSize+"px;"
-                + "-fx-min-height: "+iconSize+"px;"
-                + "-fx-max-height: "+iconSize+"px;"
-        + "-fx-background-color: "+color+","+color+";";
+                + "-fx-background-color: "+color+","+color+";";
         return s;
     }
 
@@ -1118,6 +1118,13 @@ public class PCAGraph extends Graph implements Serializable {
                 + "-fx-background-color:"+color+","+color+";";
         return s;
     }
+
+    private void scaleIconSize(Node n, double iconSize){
+        double scaleValue = Double.parseDouble(String.valueOf(iconSize))/10;
+        n.setScaleX(scaleValue);
+        n.setScaleY(scaleValue);
+    }
+
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;

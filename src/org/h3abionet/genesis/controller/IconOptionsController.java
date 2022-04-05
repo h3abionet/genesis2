@@ -148,7 +148,7 @@ public class IconOptionsController implements Initializable {
         this.iconSizeValue = iconSizeValue;
         // set values of combo box
         iconSizeCombo.getItems().setAll(
-                IntStream.rangeClosed(1,20).boxed().collect(Collectors.toList())
+                IntStream.rangeClosed(5,30).boxed().collect(Collectors.toList())
         );
         // set default value
         iconSizeCombo.setValue(iconSizeValue);
