@@ -580,8 +580,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
             int ancestryIndex = i;
             String ancestryColor = admixColors.get(i);
             stackedBarChart.getData().get(i).getData().forEach((bar) -> {
-                bar.getNode().lookupAll(".default-color"+ancestryIndex+".chart-bar")
-                        .forEach(n -> n.setStyle("-fx-bar-fill: "+ ancestryColor+"; -fx-background-color:"+ancestryColor+"; -fx-border-width: 0px; -fx-border-color: "+ancestryColor+";"));
+                    bar.getNode().lookupAll(".default-color" + ancestryIndex + ".chart-bar")
+                            .forEach(n -> n.setStyle("-fx-bar-fill: " + ancestryColor + ";-fx-background-color:"+ancestryColor+"; -fx-border-color: " + "transparent" + ";-fx-opacity: 100;"));
             });
         }
     }
@@ -691,9 +691,10 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 admixChart.setEffect(lighting);
                 admixChart.setCache(true);
                 admixChart.setCacheHint(CacheHint.SPEED);
+                admixChart.setStyle("-fx-background-color: white;");
 
                 gridPane.add(admixChart, colIndex, rowPointer);
-                gridPane.setStyle("-fx-background-color: transparent;");
+//                gridPane.setStyle("-fx-background-color: transparent;");
 
             // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
