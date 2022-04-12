@@ -224,7 +224,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 ancestry.setName(ancestryLabels[i]);
 
                 Collection<XYChart.Data<String,Number>> individuals = new ArrayList<>(listOfQValues.size());
-                for (String [] qValues : listOfQValues) { // get individual values
+                for (String [] qValues : listOfQValues.subList(1, 10)) { // get individual values
                     individuals.add(new XYChart.Data<>(qValues[0], Float.parseFloat(qValues[1 + i]))); //{iid, v1, v2}
                 }
                 ancestry.getData().addAll(individuals);
@@ -678,6 +678,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     }
                 }
 
+
+
                 // remove the x-axis label from the stacked bar chart
                 String xLabel = admixChart.getXAxis().getLabel();
                 admixChart.setId(xLabel); // set chart id
@@ -687,14 +689,13 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 setChartGroupName(colIndex, rowPointer+1, xLabel);
 
                 // add graph to grid pane
-                Effect lighting = new Lighting();
-                admixChart.setEffect(lighting);
-                admixChart.setCache(true);
-                admixChart.setCacheHint(CacheHint.SPEED);
-                admixChart.setStyle("-fx-background-color: white;");
+//                Effect lighting = new Lighting();
+//                admixChart.setEffect(lighting);
+//                admixChart.setCache(true);
+//                admixChart.setCacheHint(CacheHint.SPEED);
 
                 gridPane.add(admixChart, colIndex, rowPointer);
-//                gridPane.setStyle("-fx-background-color: transparent;");
+                gridPane.setStyle("-fx-background-color: transparent;");
 
             // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
@@ -730,10 +731,9 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 // increment the column index
                 colIndex++;
             }
-
-
         } catch (Exception e) {
-            Genesis.throwErrorException("Sorry. Try Again"); //do nothing
+            ;
+//            Genesis.throwErrorException("Sorry. Try Again"); //do nothing
         }
 
         return gridPane;
