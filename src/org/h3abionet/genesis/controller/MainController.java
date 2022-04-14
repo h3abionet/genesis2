@@ -421,7 +421,7 @@ public class MainController implements Initializable{
                 ColumnConstraints cc = new ColumnConstraints();
                 int numOfIndividuals = s.getData().get(0).getData().size();
                 double columnSize = (double) numOfIndividuals / (double) sumOfIndividuals * 100.0;
-                cc.setPercentWidth(columnSize*100);
+                cc.setPercentWidth(columnSize);
                 cc.setHgrow(Priority.NEVER);
                 gridPane.getColumnConstraints().add(cc);
             }
@@ -431,9 +431,9 @@ public class MainController implements Initializable{
             // if first chart, add gridpane to index 1 of vbox else reset index 1 with new gridpane
             if (rowPointer == 0) {
                 admixPane.getChildren().add(admixtureGraph.getGridPane(gridPane, rowPointer));
-                AnchorPane name = (AnchorPane) admixVbox.getChildren().get(1);
-                name.getChildren().add(admixPane);
-                scrollPane.setContent(admixtureGraph.getGridPane(gridPane, rowPointer));
+                AnchorPane pane = (AnchorPane) admixVbox.getChildren().get(1);
+                pane.getChildren().add(admixPane);
+                scrollPane.setContent(admixVbox);
             } else {
                 admixPane.getChildren().set(0, admixtureGraph.getGridPane(gridPane, rowPointer));
                 AnchorPane name = (AnchorPane) admixVbox.getChildren().get(1);

@@ -49,7 +49,7 @@ public class AdmixtureDataInputController{
     @FXML
     private void handleAdmixEntryOK(ActionEvent event) throws IOException {
         // set list of stackedBarCharts
-        try{
+//        try{
             admixtureGraph = new AdmixtureGraph(admixtureFilePath, project); // read the file using module class
             admixtureGraph.setMainController(mainController);
             mainController.setAdmixtureGraph(admixtureGraph);
@@ -61,10 +61,9 @@ public class AdmixtureDataInputController{
                 mainController.setAdmixCreationSuccessful(false);
                 Genesis.throwErrorException("Imported file contains strings");
             }
-        }catch (Exception e){
-            Genesis.throwErrorException(e.toString()+" \n"+"Wrong file imported");
-        }
-
+//        }catch (Exception e){
+//            Genesis.throwErrorException(e.toString()+" \n"+"Wrong file imported");
+//        }
         Genesis.closeOpenStage(event);
     }
 

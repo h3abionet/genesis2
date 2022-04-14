@@ -253,7 +253,7 @@ public class PCAGraph extends Graph implements Serializable {
             setSeriesColorsAndIcons(sc, i, subjectsList);
             setSubjectMouseEvent(sc, i);
             // set legend
-            setLegend(sc, i, project.getGroupColors(), project.getGroupIcons());
+            setLegend(sc, i, project.getPcaGroupColors(), project.getPcaGroupIcons());
         }
         return sc;
     }
@@ -286,10 +286,10 @@ public class PCAGraph extends Graph implements Serializable {
         project.getPcGraphAnnotationsList().add(annotationList);
 
         // get a copy of default colors and add them to a list for this particular graph
-        groupColors = project.getGroupColors();
+        groupColors = project.getPcaGroupColors();
 
         // get a copy of default icons and add them to a list for this particular graph
-        groupIcons = project.getGroupIcons();
+        groupIcons = project.getPcaGroupIcons();
 
         // create series
         createSeries(xPcaIndex, yPcaIndex, subjects, sc);
@@ -580,7 +580,7 @@ public class PCAGraph extends Graph implements Serializable {
                 // set color, icon, click event and legend for this chart
                 for(int k=0; k<chart.getData().size(); k++) {
                     // set legend
-                    setLegend(chart, k, project.getGroupColors(), project.getGroupIcons());
+                    setLegend(chart, k, project.getPcaGroupColors(), project.getPcaGroupIcons());
                 }
             }
         }
@@ -766,7 +766,7 @@ public class PCAGraph extends Graph implements Serializable {
                     // set color, icon, click event and legend for this chart
                     for(int k=0; k<chart.getData().size(); k++) {
                         // set legend
-                        setLegend(chart, k, project.getGroupColors(), project.getGroupIcons());
+                        setLegend(chart, k, project.getPcaGroupColors(), project.getPcaGroupIcons());
                     }
                     break;
                 }
@@ -978,9 +978,10 @@ public class PCAGraph extends Graph implements Serializable {
                 }
             }
         }
+
         // change the color and icon of this phenotype category
-        project.getGroupColors().put(serieName, iconColor);
-        project.getGroupIcons().put(serieName, iconSVGShape);
+        project.getPcaGroupColors().put(serieName, iconColor);
+        project.getPcaGroupIcons().put(serieName, iconSVGShape);
 
         for(int g=0; g<mainController.getPcaChartsList().size(); g++){
             ScatterChart<Number, Number> pcgraph = mainController.getPcaChartsList().get(g);
@@ -1055,8 +1056,8 @@ public class PCAGraph extends Graph implements Serializable {
         for(Subject s: project.getPcGraphSubjectsList().get(project.getCurrentTabIndex())){
             if(s.getPcs() != null && Arrays.asList(s.getPcs()).contains(xValue) && Arrays.asList(s.getPcs()).contains(yValue)){
 
-                HashMap groupColors = project.getGroupColors();
-                HashMap groupIcon = project.getGroupIcons();
+                HashMap groupColors = project.getPcaGroupColors();
+                HashMap groupIcon = project.getPcaGroupIcons();
 
                 // get the color and icon of the chart in this position
                 String color = (String) groupColors.get(s.getPhenos()[project.getPhenoColumnNumber()-1]);

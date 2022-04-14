@@ -8,10 +8,7 @@ import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.util.ArrayList;
 
 public class ImportProjectController {
@@ -170,6 +167,7 @@ public class ImportProjectController {
                 admixtureGraph.createAdmixGraph();
                 mainController.setAdmixtureChart(admixtureGraph.getListOfStackedBarCharts());
             }
+
             // add annotations
             for(Annotation an : proj.getAdmixtureAnnotationsList()){
                 switch(an.getName()) {

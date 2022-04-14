@@ -5,23 +5,29 @@
  */
 package org.h3abionet.genesis.model;
 
-import com.sun.tools.javac.Main;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.*;
-import javafx.scene.chart.*;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.StackedBarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
-import javafx.scene.effect.Effect;
-import javafx.scene.effect.Lighting;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
-import org.h3abionet.genesis.controller.*;
+import org.h3abionet.genesis.controller.AdmixtureIndividualDetailsController;
+import org.h3abionet.genesis.controller.AdmixtureOptionsController;
+import org.h3abionet.genesis.controller.MainController;
+import org.h3abionet.genesis.controller.PopulationGroupLabelController;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -51,7 +57,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
     private int numOfAncestries;
     private int rowIndexOfClickedAdmixChart;
     private String clickedId;
-    private AdmixtureOptionsController admixtureOptionsController;
+    private transient AdmixtureOptionsController admixtureOptionsController;
     private double defaultAngleOfChartNames = 90;
 
     public static void setChartIndex(int chartIndex) {
@@ -65,11 +71,11 @@ public class AdmixtureGraph extends Graph implements Serializable {
     private  static HashMap<String, ArrayList<StackedBarChart<String, Number>>> hiddenAdmixGraphs = new HashMap<>();
 
     private static int labelClickCounter = 0;
-    private StackPane firstGroupLabel, secondGroupLabel;
+    private transient StackPane firstGroupLabel, secondGroupLabel;
     private transient GridPane gridPane;
     private Node firstChart, secondChart;
     private static int kClickCounter = 0;
-    private static StackPane firstKLabel, secondKLabel;
+    private transient static StackPane firstKLabel, secondKLabel;
     private static int clickedColIndex;
     boolean correctAdmixFile = Boolean.parseBoolean(null);
     private Project project;
@@ -113,6 +119,23 @@ public class AdmixtureGraph extends Graph implements Serializable {
             setNumOfAncestries(fields.length);
             project.setImportedKs(numOfAncestries);
             setAncestryLabels(numOfAncestries);
+
+            // store colors in project once. Reuse stored colors on imported projects
+//            if(!project.isProjIsImported()) {
+//                ArrayList colors = new ArrayList(); // number of colors for this chart
+//                for (int c = 0; c < numOfAncestries; c++) {
+//                    colors.add(ancestryColors.get(c));
+//                }
+//                project.getAdmixtureAncestryColor().add(colors);
+//            }
+
+            if(chartIndex==project.getAdmixtureAncestryColor().size()){
+                ArrayList colors = new ArrayList(); // number of colors for this chart
+                for (int c = 0; c < numOfAncestries; c++) {
+                    colors.add(ancestryColors.get(c));
+                }
+                project.getAdmixtureAncestryColor().add(colors);
+            }
 
             for (Subject sub : project.getSubjectsList()) {
                 fields = line.split("\\s+");
@@ -217,14 +240,14 @@ public class AdmixtureGraph extends Graph implements Serializable {
 //            }
 
 
-                    // create data series for every ancestry
-                    int numOfAncentries = ancestryLabels.length;
+            // create data series for every ancestry
+            int numOfAncentries = ancestryLabels.length;
             for (int i = 0; i < numOfAncentries; i++) {
                 ancestry = new XYChart.Series<>();
                 ancestry.setName(ancestryLabels[i]);
 
                 Collection<XYChart.Data<String,Number>> individuals = new ArrayList<>(listOfQValues.size());
-                for (String [] qValues : listOfQValues.subList(1, 10)) { // get individual values
+                for (String [] qValues : listOfQValues) { // get individual values
                     individuals.add(new XYChart.Data<>(qValues[0], Float.parseFloat(qValues[1 + i]))); //{iid, v1, v2}
                 }
                 ancestry.getData().addAll(individuals);
@@ -272,10 +295,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 showIndividualDetails(populationGroupChart);
                 charts.add(populationGroupChart);
             }
-
     }
         );
-
         listOfStackedBarCharts = charts;
         chartIndex += 1;
     }
@@ -576,9 +597,13 @@ public class AdmixtureGraph extends Graph implements Serializable {
      * Set colors
      */
     private void setAncestryColors(StackedBarChart<String, Number> stackedBarChart, ArrayList<String> admixColors) {
-        for (int i = 0; i < stackedBarChart.getData().size(); i++) {
+        int numOfSeries = stackedBarChart.getData().size();// series are ancenstries
+        for (int i = 0; i < numOfSeries; i++) {
             int ancestryIndex = i;
-            String ancestryColor = admixColors.get(i);
+//            String ancestryColor = admixColors.get(i);
+//            String[] colors = (String[]) project.getAdmixtureAncestryColor().get("K="+numOfSeries);
+            ArrayList ancestryColorList = project.getAdmixtureAncestryColor().get(chartIndex);
+            String ancestryColor = (String) ancestryColorList.get(i);
             stackedBarChart.getData().get(i).getData().forEach((bar) -> {
                     bar.getNode().lookupAll(".default-color" + ancestryIndex + ".chart-bar")
                             .forEach(n -> n.setStyle("-fx-bar-fill: " + ancestryColor + ";-fx-background-color:"+ancestryColor+"; -fx-border-color: " + "transparent" + ";-fx-opacity: 100;"));
@@ -693,6 +718,16 @@ public class AdmixtureGraph extends Graph implements Serializable {
 //                admixChart.setEffect(lighting);
 //                admixChart.setCache(true);
 //                admixChart.setCacheHint(CacheHint.SPEED);
+
+//            FXMLLoader ttloader = new FXMLLoader(Genesis.class.getResource("view/test-pane.fxml"));
+//            Parent pt = (Parent) ttloader.load();
+//            Stage ttstage = new Stage();
+//            ttstage.setScene(new Scene(pt));
+//            ttstage.setResizable(false);
+//            TestPaneCtler tt = ttloader.getController();
+//            tt.addToPane(admixChart);
+//            ttstage.showAndWait();
+
 
                 gridPane.add(admixChart, colIndex, rowPointer);
                 gridPane.setStyle("-fx-background-color: transparent;");

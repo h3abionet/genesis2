@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import org.h3abionet.genesis.Genesis;
+import org.h3abionet.genesis.model.Project;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +42,11 @@ public class AncestryColorController {
     private List<ArrayList<StackedBarChart<String, Number>>> allAdmixtureCharts;
     private GridPane gridPane;
     private int serieIndex;
-    private Color chosenColor; // Color
+//    private Color chosenColor; // Color
     private String selectedColor; //Hex to string code
     private boolean colorSelected = false;
+    private int numOfAncestries;
+    private Project project;
 
     @FXML
     private void cancelHandler(ActionEvent event) {
@@ -70,6 +73,9 @@ public class AncestryColorController {
                 Genesis.throwErrorException("Oops! Some plots don't have your this ancestry");
             }
         }
+        // get list of this graph colors and change the one for this serie/ancestry
+        project.getAdmixtureAncestryColor().get(rowIndexOfClickedAdmixChart).add(serieIndex, selectedColor);
+
         Genesis.closeOpenStage(event);
     }
     /**
@@ -80,13 +86,13 @@ public class AncestryColorController {
         // display default ancestor color
         selectedColorDisplay.setFill(paint);
         
-        // colorpicker modifies the plots upon click
+        // color picker modifies the plots upon click
         colorPicker.setOnAction((ActionEvent t) -> {
             // display chosen color when the color picker value is clicked
             selectedColorDisplay.setFill(colorPicker.getValue());
             
             // set chosen color
-            chosenColor = colorPicker.getValue();
+//            chosenColor = colorPicker.getValue();
 
             selectedColor = getColor(colorPicker.getValue());
 
@@ -100,7 +106,6 @@ public class AncestryColorController {
                 });
 
             }
-
             colorSelected = true;
         });
 
@@ -128,19 +133,6 @@ public class AncestryColorController {
         return colorPicker.getValue();
     }
 
-//    @Override
-//    public void initialize(URL location, ResourceBundle resources) {
-//        // get row index of clicked chart
-//        rowIndexOfClickedAdmixChart = AdmixtureGraphEventsHandler.getRowIndexOfClickedAdmixChart();
-//
-//        // get the list of the current staked bar charts being displayed
-//        listOfAdmixtureCharts = MainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart);
-//
-//        // set the current gridpane - to get the row index of any clicked chart
-//        gridPane = MainController.getGridPane();
-//
-//    }
-
     public void setRowIndexOfClickedAdmixChart(int rowIndexOfClickedAdmixChart) {
         this.rowIndexOfClickedAdmixChart = rowIndexOfClickedAdmixChart;
     }
@@ -164,5 +156,13 @@ public class AncestryColorController {
                 (int)( color.getGreen() * 255 ),
                 (int)( color.getBlue() * 255 ) );
         return strokeColor;
+    }
+
+    public void setNumOfAncestries(int size) {
+        this.numOfAncestries = size;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }

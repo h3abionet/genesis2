@@ -47,8 +47,9 @@ public class Project implements Serializable {
     private ArrayList<String> orderOfLegendItems = new ArrayList<>();
 
     private int defaultIconSize = 15; //default icon size
-    private HashMap groupColors = new HashMap(); // default group colors e.g. mkk -> #800000
-    private HashMap groupIcons =  new HashMap();  // default group icons e.g. mkk -> "M 2 2 L 6 2 L 4 6 z"
+    private HashMap pcaGroupColors = new HashMap(); // default group colors e.g. mkk -> #800000
+    private HashMap pcaGroupIcons =  new HashMap();  // default group icons e.g. mkk -> "M 2 2 L 6 2 L 4 6 z"
+    private List<ArrayList<String>> admixtureAncestryColor = new ArrayList<>();
 
     private HashMap iconTypes;
     private ArrayList<int []> selectedPCs = new ArrayList<>(); // for each graph, keep selected pcs
@@ -180,8 +181,8 @@ public class Project implements Serializable {
                     groupNames.add("All"); // if no pheno column, name the group All
                     pcaLegendItems.add("All"); // only one legend item
                     famOrder.put("All", iidsList);
-                    groupColors.put(groupNames.get(0), colors[0]);  // mkk -> #800000
-                    groupIcons.put(groupNames.get(0), icons[0]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
+                    pcaGroupColors.put(groupNames.get(0), colors[0]);  // mkk -> #800000
+                    pcaGroupIcons.put(groupNames.get(0), icons[0]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
                 } catch (Exception e) {
                     famCreated = false;
                     String famError = "There was a problem in reading the fam file. " +
@@ -230,8 +231,8 @@ public class Project implements Serializable {
 
                     // get color and icon for selected pheno group or column
                     String chosenPheno = fields[phenoColumnNumber - 1];
-                    String color = (String) groupColors.get(chosenPheno);
-                    String icon = (String) groupIcons.get(chosenPheno);
+                    String color = (String) pcaGroupColors.get(chosenPheno);
+                    String icon = (String) pcaGroupIcons.get(chosenPheno);
 
                     // add pheno details to every subject
                     for (Subject sub : subjectsList) {
@@ -290,8 +291,8 @@ public class Project implements Serializable {
         // only used when the pheno file is not provided
         pcaLegendItems.clear();
         groupNames.clear();
-        groupIcons.clear();
-        groupColors.clear();
+        pcaGroupIcons.clear();
+        pcaGroupColors.clear();
         famOrder.clear();
 
         String row = r.readLine();
@@ -308,8 +309,8 @@ public class Project implements Serializable {
 
         // set colors and icons for every phenotype
         for (int i = 0; i < groupNames.size(); i++){
-            groupColors.put(groupNames.get(i), colors[i]);  // mkk -> #800000
-            groupIcons.put(groupNames.get(i), icons[i]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
+            pcaGroupColors.put(groupNames.get(i), colors[i]);  // mkk -> #800000
+            pcaGroupIcons.put(groupNames.get(i), icons[i]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
         }
 
     }
@@ -351,12 +352,12 @@ public class Project implements Serializable {
         return numOfIndividuals;
     }
 
-    public HashMap getGroupColors() {
-        return groupColors;
+    public HashMap getPcaGroupColors() {
+        return pcaGroupColors;
     }
 
-    public HashMap getGroupIcons() {
-        return groupIcons;
+    public HashMap getPcaGroupIcons() {
+        return pcaGroupIcons;
     }
 
     public ArrayList<Subject> getSubjectsList() {
@@ -461,8 +462,8 @@ public class Project implements Serializable {
         }
 
         // change the key for the icons and colors
-        groupIcons.put(newGroupName,groupIcons.remove(oldGroupName));
-        groupColors.put(newGroupName,groupColors.remove(oldGroupName));
+        pcaGroupIcons.put(newGroupName, pcaGroupIcons.remove(oldGroupName));
+        pcaGroupColors.put(newGroupName, pcaGroupColors.remove(oldGroupName));
     }
 
     public ArrayList<String> getPcaLegendItems() {
@@ -501,7 +502,6 @@ public class Project implements Serializable {
         }
     }
 
-
     public boolean isAdmixtureVertical() {
         return isAdmixtureVertical;
     }
@@ -516,5 +516,9 @@ public class Project implements Serializable {
 
     public void setAdmixtureHorizontal(boolean admixtureHorizontal) {
         isAdmixtureHorizontal = admixtureHorizontal;
+    }
+
+    public List<ArrayList<String>> getAdmixtureAncestryColor() {
+        return admixtureAncestryColor;
     }
 }

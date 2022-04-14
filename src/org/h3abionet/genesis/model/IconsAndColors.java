@@ -124,14 +124,14 @@ public class IconsAndColors implements Serializable {
             sharp_arrow, folder, round_square, round_triangle, arrow3, arrow, arrow1, speech, star, kite, cross, tick};
 
     private String[] listOfColors = new String[]{
-            "#800000", // maroon
-            "#000080", // Navy Blue
-            "#808000", // Olive
-            "#07AB99", // Niagara
-            "#860061", // Fresh Eggplant
-            "#ff8000", // Flush Orange
-            "#008080", // teal
-            "#008000", // Japanese Laurel
+            "#0000FF", // blue
+            "#FFFF00", // yellow
+            "#FF0000", // red
+            "#800080", // purple
+            "#FCFDFC", // green
+            "#F79501", // brown
+            "#FA13F3", // magenta
+            "#58E7F2", // cyan
             "#800080", // Fresh Eggplant
             "#004C4C", // Sherpa Blue
             "#ff00ff", // Magenta

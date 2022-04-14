@@ -9,7 +9,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -28,72 +27,74 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.Project;
+import org.h3abionet.genesis.model.Subject;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * FXML Controller class
  *
  * @author henry
  */
-public class AdmixtureOptionsController implements Initializable {
+public class AdmixtureOptionsController{
+//    private static final long serialVersionUID = 2L;
 
     @FXML
-    private Button creatLabelBtn;
+    private  Button populationGroupOptionsBtn;
 
     @FXML
-    private Button populationGroupOptionsBtn;
+    private  Button previousGraphColourBtn;
 
     @FXML
-    private Button previousGraphColourBtn;
+    private  Button nextGraphColourBtn;
 
     @FXML
-    private Button nextGraphColourBtn;
+    private  Button deleteGraphBtn;
 
     @FXML
-    private Button deleteGraphBtn;
+    private  Button cancelBtn;
 
     @FXML
-    private Button cancelBtn;
+    private  Button shiftUpBtn;
 
     @FXML
-    private Button shiftUpBtn;
+    private  Button shiftDownBtn;
 
     @FXML
-    private Button shiftDownBtn;
+    private  Button shiftTopBtn;
 
     @FXML
-    private Button shiftTopBtn;
-
-    @FXML
-    private Button shiftBottomBtn;
+    private  Button shiftBottomBtn;
 
 
     // list of admixture charts
-    private ArrayList<StackedBarChart<String, Number>> currChart;
+    private  ArrayList<StackedBarChart<String, Number>> currChart;
 
     // clicked admixture chart
-    private StackedBarChart<String, Number> admixChart;
+    private  StackedBarChart<String, Number> admixChart;
 
     // To store all ancestor HBoxes which will be added the leftVBox
-    private ArrayList<HBox> listOfAncenstorHBox;
+    private  ArrayList<HBox> listOfAncenstorHBox = new ArrayList<>();
 
     // borders for vbox and hbox containers
     private final String cssLayout = "-fx-border-color: #d9d9d9; -fx-border-width: 1;";
     
-    private Stage optionsStage;
-    private Scene sceneForPopulationGroupBtn;
+    private  Stage optionsStage = new Stage();
+    private  Scene sceneForPopulationGroupBtn;
     private int rowIndexOfClickedAdmixChart;
     private Project project;
     private MainController mainController;
     private AdmixtureGraphEventsHandler admixtureGraphEventsHandler;
-    private GridPane gridPane;
+    private  GridPane gridPane;
 
-    private Node firstChart, secondChart;
+    private  Node firstChart, secondChart;
     private int numOfRows;
-    private StackedBarChart<String, Number> newChart; // for shifting
+    private  StackedBarChart<String, Number> newChart; // for shifting
     private String[] ancestries;
     private ArrayList<String> ancestryOrder = new ArrayList<String>();
 
@@ -101,24 +102,34 @@ public class AdmixtureOptionsController implements Initializable {
     @FXML
     void shiftGraphBottom(ActionEvent event) {
         shiftPlots(rowIndexOfClickedAdmixChart, MainController.getRowPointer()-1);
+        // Swap the Ks and List of Colors
+        Collections.swap(project.getImportedKs(), rowIndexOfClickedAdmixChart, MainController.getRowPointer()-1);
+        Collections.swap(project.getAdmixtureAncestryColor(),rowIndexOfClickedAdmixChart, MainController.getRowPointer()-1);
         Genesis.closeOpenStage(event);
     }
 
     @FXML
     void shiftGraphDown(ActionEvent event) {
         shiftPlots(rowIndexOfClickedAdmixChart, rowIndexOfClickedAdmixChart+1);
+        // Swap the Ks and List of Colors
+        Collections.swap(project.getImportedKs(), rowIndexOfClickedAdmixChart, rowIndexOfClickedAdmixChart+1);
+        Collections.swap(project.getAdmixtureAncestryColor(),rowIndexOfClickedAdmixChart,rowIndexOfClickedAdmixChart+1);
         Genesis.closeOpenStage(event);
     }
 
     @FXML
     void shiftGraphTop(ActionEvent event) {
         shiftPlots(rowIndexOfClickedAdmixChart, 0);
+        Collections.swap(project.getImportedKs(), rowIndexOfClickedAdmixChart, 0);
+        Collections.swap(project.getAdmixtureAncestryColor(),rowIndexOfClickedAdmixChart,0);
         Genesis.closeOpenStage(event);
     }
 
     @FXML
     void shiftGraphUp(ActionEvent event) {
         shiftPlots(rowIndexOfClickedAdmixChart, rowIndexOfClickedAdmixChart-1);
+        Collections.swap(project.getImportedKs(), rowIndexOfClickedAdmixChart,rowIndexOfClickedAdmixChart-1);
+        Collections.swap(project.getAdmixtureAncestryColor(),rowIndexOfClickedAdmixChart,rowIndexOfClickedAdmixChart-1);
         Genesis.closeOpenStage(event);
 
     }
@@ -170,6 +181,15 @@ public class AdmixtureOptionsController implements Initializable {
 
         // remove a list of all charts in that index
         mainController.getAllAdmixtureCharts().remove(rowIndexOfClickedAdmixChart);
+        // remove this K from the project
+        project.getImportedKs().remove(rowIndexOfClickedAdmixChart);
+        // remove this list of ancestry colors from the project
+        project.getAdmixtureAncestryColor().remove(rowIndexOfClickedAdmixChart);
+
+        for (Subject sub : project.getSubjectsList()) {
+            sub.getqValuesList().remove(rowIndexOfClickedAdmixChart);// remove this k values from the subject
+        }
+
         // reduce the pointer
         MainController.setRowPointer(MainController.getRowPointer()-1);
 
@@ -406,7 +426,9 @@ public class AdmixtureOptionsController implements Initializable {
                     acc.setGridPane(mainController.getGridPane());
                     acc.setRowIndexOfClickedAdmixChart(rowIndexOfClickedAdmixChart);
                     acc.setListOfAdmixtureCharts(mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart));
+                    acc.setNumOfAncestries(mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart).get(0).getData().size());
                     acc.setAllAdmixtureCharts(mainController.getAllAdmixtureCharts());
+                    acc.setProject(project);
                     colorStage.showAndWait();
                     
                     if (acc.isColorSelected()) {
@@ -600,17 +622,6 @@ public class AdmixtureOptionsController implements Initializable {
             iids.add(j, temp);
             xAxis.setCategories(iids);
         }
-    }
-
-    /**
-     * Initializes the controller class.
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        creatLabelBtn.setDisable(true);
-        listOfAncenstorHBox = new ArrayList<>();
-        optionsStage = new Stage();
-
     }
 
     public void setProject(Project project) {
