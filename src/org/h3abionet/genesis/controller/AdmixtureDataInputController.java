@@ -43,13 +43,14 @@ public class AdmixtureDataInputController{
 
     @FXML
     private void handleAdmixEntryCancel(ActionEvent event) {
+        mainController.setAdmixCreationSuccessful(false);
         Genesis.closeOpenStage(event);
     }
 
     @FXML
-    private void handleAdmixEntryOK(ActionEvent event) throws IOException {
+    private void handleAdmixEntryOK(ActionEvent event) {
         // set list of stackedBarCharts
-//        try{
+        try{
             admixtureGraph = new AdmixtureGraph(admixtureFilePath, project); // read the file using module class
             admixtureGraph.setMainController(mainController);
             mainController.setAdmixtureGraph(admixtureGraph);
@@ -61,9 +62,9 @@ public class AdmixtureDataInputController{
                 mainController.setAdmixCreationSuccessful(false);
                 Genesis.throwErrorException("Imported file contains strings");
             }
-//        }catch (Exception e){
-//            Genesis.throwErrorException(e.toString()+" \n"+"Wrong file imported");
-//        }
+        }catch (Exception e){
+            Genesis.throwErrorException(e.toString()+" \n"+"Wrong file imported");
+        }
         Genesis.closeOpenStage(event);
     }
 
@@ -74,6 +75,7 @@ public class AdmixtureDataInputController{
             admixtureFilePath = admixture.getAbsolutePath();
             admixtureFileName = admixture.getName();
             btnAdmixtureData.setText(admixtureFileName);
+            entryOkButton.setDisable(false);
             btnAdmixtureData.setStyle("-fx-text-fill: #06587F");
         }catch(Exception ex){
             mainController.setAdmixCreationSuccessful(false);
@@ -87,7 +89,6 @@ public class AdmixtureDataInputController{
 
     /**
      * read Q files
-     *
      * @param which
      * @return
      */
@@ -103,5 +104,9 @@ public class AdmixtureDataInputController{
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    public void enbleOkButton(boolean btnStatus){
+        this.entryOkButton.setDisable(btnStatus);
     }
 }

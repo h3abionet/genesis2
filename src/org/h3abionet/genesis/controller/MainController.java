@@ -150,7 +150,6 @@ public class MainController implements Initializable{
     private AdmixtureGraph admixtureGraph;
     private Project project;
     private ArrayList<ScatterChart> pcaChartsList = new ArrayList<>();
-//    private ArrayList<ScatterChart> pcaChartsList = new ArrayList<>();
     private PCAGraphEventsHandler pc;
 
     double orgSceneX, orgSceneY;
@@ -263,7 +262,6 @@ public class MainController implements Initializable{
     @FXML
     @SuppressWarnings("empty-statement")
     private void newAdmixture(ActionEvent event) throws IOException {
-
         if (AdmixtureSettingsController.isAdmixVertical()) {
             Genesis.throwInformationException("First change the graph to a horizontal linear layout");
         } else {
@@ -272,20 +270,20 @@ public class MainController implements Initializable{
             admixDataInputCtlr = fxmlLoader.getController();
             admixDataInputCtlr.setMainController(this);
             admixDataInputCtlr.setProject(project); // the proj
+            admixDataInputCtlr.enbleOkButton(true);
             Stage dialogStage = new Stage();
             dialogStage.setScene(new Scene(parent));
             dialogStage.setResizable(false);
             dialogStage.showAndWait();
 
             if (isAdmixCreationSuccessful) { // was data imported correctly
-
+                System.out.println("is it running");
                 if (AdmixtureSettingsController.isAdmixRotated()) {
                     setAdmixtureChart(admixtureGraph.getListOfStackedBarCharts());
                     admixVbox.setMaxHeight(Double.MAX_VALUE); // restore vGrow property
                 } else {
                     setAdmixtureChart(admixtureGraph.getListOfStackedBarCharts());
                 }
-
                 // disable new project, import project and data buttons
                 disableImportProjBtn(true);
                 disableNewProjBtn(true);
@@ -294,7 +292,7 @@ public class MainController implements Initializable{
                 disableControlBtns(false);
 
             } else {
-                ; // if import was wrong, do nothing
+                ;
             }
         }
     }
