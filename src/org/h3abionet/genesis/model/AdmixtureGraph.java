@@ -679,12 +679,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
         int colIndex = 1;
 
         for (StackedBarChart<String, Number> admixChart : listOfStackedBarCharts) {
-
-                // define chart properties
-//                admixChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
-//                admixChart.setCategoryGap(0); // remove gaps in iids
-//                admixChart.setLegendVisible(false);
-
                 // set the chart size
                 admixChart.setMinWidth(Double.MIN_VALUE);
                 admixChart.setMaxWidth(Double.MAX_VALUE);
@@ -703,8 +697,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     }
                 }
 
-
-
                 // remove the x-axis label from the stacked bar chart
                 String xLabel = admixChart.getXAxis().getLabel();
                 admixChart.setId(xLabel); // set chart id
@@ -712,22 +704,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
                 // set the label at the bottom
                 setChartGroupName(colIndex, rowPointer+1, xLabel);
-
-                // add graph to grid pane
-//                Effect lighting = new Lighting();
-//                admixChart.setEffect(lighting);
-//                admixChart.setCache(true);
-//                admixChart.setCacheHint(CacheHint.SPEED);
-
-//            FXMLLoader ttloader = new FXMLLoader(Genesis.class.getResource("view/test-pane.fxml"));
-//            Parent pt = (Parent) ttloader.load();
-//            Stage ttstage = new Stage();
-//            ttstage.setScene(new Scene(pt));
-//            ttstage.setResizable(false);
-//            TestPaneCtler tt = ttloader.getController();
-//            tt.addToPane(admixChart);
-//            ttstage.showAndWait();
-
 
                 gridPane.add(admixChart, colIndex, rowPointer);
                 gridPane.setStyle("-fx-background-color: transparent;");
