@@ -700,10 +700,6 @@ public class PCAGraph extends Graph implements Serializable {
                     project.getOrderOfLegendItems().add(((Label) node).getText());
                 }
             }
-
-//            for(String s: project.getOrderOfLegendItems()){
-//                System.out.println("the group is "+s);
-//            }
         }
     }
 
