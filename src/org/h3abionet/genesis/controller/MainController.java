@@ -277,8 +277,7 @@ public class MainController implements Initializable{
             dialogStage.showAndWait();
 
             if (isAdmixCreationSuccessful) { // was data imported correctly
-                System.out.println("is it running");
-                if (AdmixtureSettingsController.isAdmixRotated()) {
+                 if (AdmixtureSettingsController.isAdmixRotated()) {
                     setAdmixtureChart(admixtureGraph.getListOfStackedBarCharts());
                     admixVbox.setMaxHeight(Double.MAX_VALUE); // restore vGrow property
                 } else {

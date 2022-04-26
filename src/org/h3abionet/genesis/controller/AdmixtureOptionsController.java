@@ -246,6 +246,18 @@ public class AdmixtureOptionsController{
                 -> currAncestries.indexOf(s1.getName()) - currAncestries.indexOf(s2.getName());
         for (StackedBarChart<String,Number> segment : currChart)
             segment.setData(segment.getData().sorted(mycomp));
+
+        // shift the colors
+        ArrayList<String> prevColors = project.getAdmixtureAncestryColor().get(rowIndexOfClickedAdmixChart-1);
+        ArrayList<String> currColors = project.getAdmixtureAncestryColor().get(rowIndexOfClickedAdmixChart);
+
+        for(int e=0;e<prevColors.size();e++){
+            if(e >= currColors.size() || e < 0){
+                ; //index does not exists
+            }else{
+                currColors.set(e,prevColors.get(e));
+            }
+        }
     }
 
     private void handleUnmatchedColours(int K, boolean[] used, ArrayList<String> curColourCodes, ArrayList<String> currAncestries) {
