@@ -20,6 +20,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.TilePane;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.controller.MainController;
@@ -468,6 +470,10 @@ public class PCAGraph extends Graph implements Serializable {
      * @param serieIndex
      */
     public void setLegend(ScatterChart<Number, Number> sc, int serieIndex,  HashMap iconColors, HashMap iconShapes){
+
+        // sort legend items
+        sortLegendItems(sc);
+
         for (Node n : sc.getChildrenUnmodifiable()) {
             if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
                 TilePane tn = (TilePane) n;
@@ -485,14 +491,27 @@ public class PCAGraph extends Graph implements Serializable {
 
                 Label lab = (Label) children.get(serieIndex).lookup(".chart-legend-item");
 
-
                 // get color and shape of the group for this lab
-                String iconColor = (String) iconColors.get(lab.getText());
-                String iconShape = (String) iconShapes.get(lab.getText());
+//                String groupName = project.getOrderOfLegendItems().get(serieIndex); //lab.getText()
+//                String iconColor = (String) iconColors.get(lab.getText());
+//                String iconShape = (String) iconShapes.get(lab.getText());
+
+                String iconColor = null;
+                String iconShape = null;
+
+                if(project.isProjIsImported()){
+                    iconColor = (String) iconColors.get(project.getOrderOfLegendItems().get(serieIndex));
+                    iconShape = (String) iconShapes.get(project.getOrderOfLegendItems().get(serieIndex));
+                    lab.getGraphic().setStyle(getStyle(iconColor, iconShape, project.getDefaultIconSize()));
+                }else{
+                    iconColor = (String) iconColors.get(lab.getText());
+                    iconShape = (String) iconShapes.get(lab.getText());
+                    lab.getGraphic().setStyle(getStyle(iconColor, iconShape, project.getDefaultIconSize()));
+                }
 
                 // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
                 // set the legend icons (graphics)
-                lab.getGraphic().setStyle( getStyle(iconColor, iconShape, project.getDefaultIconSize()));
+                lab.getGraphic().setStyle(getStyle(iconColor, iconShape, project.getDefaultIconSize()));
 
                 // legend mouse click events for left and right click
                 for (XYChart.Series<Number, Number> s : sc.getData()) {
@@ -517,7 +536,7 @@ public class PCAGraph extends Graph implements Serializable {
                                     pglc.setGroupNameNode(lab);
                                     pglc.setChart(sc);
                                     pglc.setPCAGraph(this);
-
+                                    dialogStage.initModality(Modality.APPLICATION_MODAL);
                                     dialogStage.showAndWait();
 
                                 }catch (IOException e){
@@ -528,13 +547,9 @@ public class PCAGraph extends Graph implements Serializable {
                         break;
                     }
                 }
-
             }
 
         }
-
-        // sort legend items
-        sortLegendItems(sc);
     }
 
     /**
@@ -551,10 +566,14 @@ public class PCAGraph extends Graph implements Serializable {
                 for(int i=0;i<children.size();i++){
                     labels.add((Label)children.get(i).lookup(".chart-legend-item"));
                 }
-                // sort alphabetically
-//               Collections.sort(labels, new LabelComparator());
+
                 // arrange the items as organised before
-                labels.sort(Comparator.comparing(v->project.getOrderOfLegendItems().indexOf(v.getText())));
+                if(project.isProjIsImported()) {
+                    labels.sort(Comparator.comparing(v -> project.getOrderOfLegendItems().indexOf(v.getText())));
+                }else{
+                    // sort alphabetically
+                    Collections.sort(labels, new LabelComparator());
+                }
 
                 tn.getChildren().setAll(labels);
             }
@@ -680,8 +699,8 @@ public class PCAGraph extends Graph implements Serializable {
                         Node second = children.get(j - 1);
                         if ((first instanceof Label)) {
                             if (j > secondIndex) { // limit
-                                children.set(j, new Label("Cur")); // current position
-                                children.set(j - 1, new Label("Cur")); // next position
+                                children.set(j, new Text("Cur")); // current position
+                                children.set(j - 1, new Text("Cur")); // next position
                                 children.set(j - 1, first);
                                 children.set(j, second);
                             }
@@ -689,7 +708,7 @@ public class PCAGraph extends Graph implements Serializable {
                     }
                 }
                 }catch (Exception e){
-                    return;
+                    ;
                 }
             }
 
@@ -900,8 +919,10 @@ public class PCAGraph extends Graph implements Serializable {
             FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IndividualDetails.fxml"));
             Parent parent = fxmlLoader.load();
             Stage dialogStage = new Stage();
+
             dialogStage.setScene(new Scene(parent));
             dialogStage.setResizable(false);
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
 
             PCAIndividualDetailsController individualDetailsController = fxmlLoader.getController();
             individualDetailsController.disableOK();
@@ -989,31 +1010,31 @@ public class PCAGraph extends Graph implements Serializable {
                     }
                 }
             }
-//            for(XYChart.Series<Number, Number> series: pcgraph.getData()){
-//                if(series.getName().equals(serieName)){
-//                    // change population group color and icon on the chart
-//                    for (XYChart.Data<Number, Number> dt : series.getData()) {
-//                        String style = getStyle(iconColor, iconSVGShape, iconSize);
-//                        dt.getNode().lookup(".chart-symbol").setStyle(style);
-//                    }
-//
-//                    // change population group color and icon the legend - dont change the size of icons on the legend
-//                    for (Node n : pcgraph.getChildrenUnmodifiable()) {
-//                        if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
-//                            TilePane tn = (TilePane) n;
-//                            ObservableList<Node> children = tn.getChildren();
-//                            for(int i=0;i<children.size();i++){
-//                                Label lab = (Label) children.get(i).lookup(".chart-legend-item");
-//                                if(lab.getText().equals(serieName)){
-//                                    // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
-//                                    lab.getGraphic().setStyle(getLegendStyle(iconColor, iconSVGShape));
-//                                    break;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+            for(XYChart.Series<Number, Number> series: pcgraph.getData()){
+                if(series.getName().equals(serieName)){
+                    // change population group color and icon on the chart
+                    for (XYChart.Data<Number, Number> dt : series.getData()) {
+                        String style = getStyle(iconColor, iconSVGShape, iconSize);
+                        dt.getNode().lookup(".chart-symbol").setStyle(style);
+                    }
+
+                    // change population group color and icon the legend - dont change the size of icons on the legend
+                    for (Node n : pcgraph.getChildrenUnmodifiable()) {
+                        if (n.getClass().toString().equals("class com.sun.javafx.charts.Legend")) {
+                            TilePane tn = (TilePane) n;
+                            ObservableList<Node> children = tn.getChildren();
+                            for(int i=0;i<children.size();i++){
+                                Label lab = (Label) children.get(i).lookup(".chart-legend-item");
+                                if(lab.getText().equals(serieName)){
+                                    // divide legend icon size by 2 - otherwise it will be twice bigger than the icons of the graph
+                                    lab.getGraphic().setStyle(getLegendStyle(iconColor, iconSVGShape));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

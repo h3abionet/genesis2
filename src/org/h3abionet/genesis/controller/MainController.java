@@ -2,6 +2,7 @@ package org.h3abionet.genesis.controller;
 
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,10 +12,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.*;
+import javafx.scene.Cursor;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseButton;
@@ -32,17 +37,22 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import jfxtras.labs.util.event.MouseControlUtil;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.*;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
+import java.util.List;
 
 /*
  * Copyright (C) 2018 scott
@@ -167,6 +177,7 @@ public class MainController implements Initializable{
             projectDetailsController.setMainController(this);
             Stage dialogStage = new Stage();
             dialogStage.setScene(new Scene(projParent));
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.setResizable(false);
             dialogStage.showAndWait();
 
@@ -238,7 +249,7 @@ public class MainController implements Initializable{
         Stage dialogStage = new Stage();
         dialogStage.setScene(new Scene(parent));
         dialogStage.setResizable(false);
-
+        dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.showAndWait();
 
         try {
@@ -274,6 +285,7 @@ public class MainController implements Initializable{
             Stage dialogStage = new Stage();
             dialogStage.setScene(new Scene(parent));
             dialogStage.setResizable(false);
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.showAndWait();
 
             if (isAdmixCreationSuccessful) { // was data imported correctly
@@ -485,6 +497,7 @@ public class MainController implements Initializable{
                 Stage dialogStage = new Stage();
                 dialogStage.setScene(new Scene(root));
                 dialogStage.setResizable(false);
+                dialogStage.initModality(Modality.APPLICATION_MODAL);
                 dialogStage.showAndWait();
             }
             else if(selectedTab.getId().contains("admix")){
@@ -500,6 +513,7 @@ public class MainController implements Initializable{
                 Stage dialogStage = new Stage();
                 dialogStage.setScene(new Scene(root));
                 dialogStage.setResizable(false);
+                dialogStage.initModality(Modality.APPLICATION_MODAL);
                 dialogStage.showAndWait();
             }
         }catch(Exception e){
@@ -561,7 +575,7 @@ public class MainController implements Initializable{
         Stage dialogStage = new Stage();
         dialogStage.setScene(new Scene(parent));
         dialogStage.setResizable(false);
-
+        dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.showAndWait();
     }
 
@@ -850,7 +864,6 @@ public class MainController implements Initializable{
             circle.setFill(Color.TRANSPARENT);
             circle.setStroke(Color.BLACK);
             circle.setStrokeWidth(1);
-//            System.out.println("layout "+circle.getLayoutX()+" "+circle.getLayoutY());
 
             Annotation circleAnnotation = new Annotation();
             circleAnnotation.setName("circle");
@@ -1275,7 +1288,7 @@ public class MainController implements Initializable{
         Stage dialogStage = new Stage();
         dialogStage.setScene(new Scene(p));
         dialogStage.setResizable(false);
-
+        dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.showAndWait();
     }
 
@@ -1303,25 +1316,12 @@ public class MainController implements Initializable{
 
     @FXML
     private void help(ActionEvent event) {
-            Tab tab = setHelpTab(Genesis.class.getResource("help/home.html").toExternalForm());
-            tabPane.getTabs().add(tab);
-            closeTab(tab);
-            Genesis.throwInformationException("Sorry. The documentation/help is temporary unavailable");
-            helpBtn.setDisable(true);
-    }
- 
-    /**
-     * help tab with documentation
-     * @param url
-     * @return
-     */
-    private Tab setHelpTab(String url){
-        WebView webView = new WebView();
-        webView.getEngine().load(url);
-        Tab helpTab = new Tab("Help");
-        helpTab.setId("help");
-        helpTab.setContent(webView);
-        return helpTab;
+        try {
+            File htmlFile = new File(Genesis.class.getResource("help/home.html").getFile());
+            Desktop.getDesktop().browse(htmlFile.toURI());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

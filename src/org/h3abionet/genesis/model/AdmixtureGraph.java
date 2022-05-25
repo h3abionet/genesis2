@@ -22,6 +22,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.controller.AdmixtureIndividualDetailsController;
@@ -315,6 +316,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                             Stage dialogStage = new Stage();
                             dialogStage.setScene(new Scene(parent));
                             dialogStage.setResizable(false);
+                            dialogStage.initModality(Modality.APPLICATION_MODAL);
 
                             // show subject details when clicked
                             AdmixtureIndividualDetailsController admixIndivDetailsCtrler = fxmlLoader.getController();
@@ -732,6 +734,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                             aop.setNumOfRows(gridPane.getRowCount());
                             aop.downwardShiftMovement();
                             aop.upwardShiftMovement();
+                            dialogStage.initModality(Modality.APPLICATION_MODAL);
                             dialogStage.show();
                         } catch (IOException ex) {
                             Genesis.throwErrorException("Failed to load plot format options");
@@ -795,6 +798,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     pglc.setAdmixtureGraph(this);
                     pglc.setProj(project);
                     pglc.setStackedPane(pane);
+                    dialogStage.initModality(Modality.APPLICATION_MODAL);
                     dialogStage.showAndWait();
                 } catch (IOException e) {
                 }

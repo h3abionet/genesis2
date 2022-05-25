@@ -89,33 +89,33 @@ public class IconsAndColors implements Serializable {
 
 
     private void setIconTypes() {
-        iconTypes.put(heart, "heart");
-        iconTypes.put(tree, "tree");
-        iconTypes.put(circle, "circle");
-        iconTypes.put(hexagon, "hexagon");
-        iconTypes.put(egg, "egg");
-        iconTypes.put(diamond, "diamond");
-        iconTypes.put(drop, "drop");
-        iconTypes.put(cursor, "cursor");
-        iconTypes.put(location, "location");
-        iconTypes.put(shield, "shield");
-        iconTypes.put(shield2, "shield2");
-        iconTypes.put(user, "user");
-        iconTypes.put(sharp_arrow, "sharp_arrow");
-        iconTypes.put(folder, "folder");
-        iconTypes.put(round_triangle, "round_triangle");
-        iconTypes.put(round_square, "round_square");
-        iconTypes.put(arrow3, "arrow3");
-        iconTypes.put(arrow1, "arrow1");
-        iconTypes.put(speech, "speech");
-        iconTypes.put(star, "star");
-        iconTypes.put(kite, "kite");
-        iconTypes.put(arrow, "arrow");
-        iconTypes.put(cross, "cross");
-        iconTypes.put(rectangle, "rectangle");
-        iconTypes.put(tick, "tick");
-        iconTypes.put(triangle, "triangle");
-        iconTypes.put(square, "square");
+        iconTypes.put(arrow, "Arrow");
+        iconTypes.put(circle, "Circle");
+        iconTypes.put(cross, "Cross");
+        iconTypes.put(drop, "Drop");
+        iconTypes.put(egg, "Egg");
+        iconTypes.put(hexagon, "Hexagon");
+        iconTypes.put(diamond, "Diamond");
+        iconTypes.put(location, "Location");
+        iconTypes.put(round_triangle, "Pyramid");
+        iconTypes.put(rectangle, "Rectangle");
+        iconTypes.put(arrow1, "R Arrow");
+        iconTypes.put(round_square, "Round_square");
+        iconTypes.put(shield, "Shield");
+        iconTypes.put(shield2, "Shield2");
+        iconTypes.put(square, "Square");
+        iconTypes.put(star, "Star");
+        iconTypes.put(sharp_arrow, "Sharp_arrow");
+        iconTypes.put(tree, "Tree");
+        iconTypes.put(tick, "Tick");
+        iconTypes.put(triangle, "Triangle");
+
+//        iconTypes.put(heart, "Heart");
+//        iconTypes.put(kite, "kite");
+//        iconTypes.put(cursor, "cursor");
+//        iconTypes.put(user, "user");
+//        iconTypes.put(folder, "folder");
+//        iconTypes.put(speech, "speech");
     }
 
     private String[] listOfIcons = new String[]{tree, circle, hexagon, egg, rectangle, triangle, square, diamond, drop, cursor, heart, location, shield, shield2, user,

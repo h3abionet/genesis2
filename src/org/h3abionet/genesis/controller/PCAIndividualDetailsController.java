@@ -212,32 +212,31 @@ public class PCAIndividualDetailsController{
                 }
         }
 
-//        for (XYChart.Series<Number, Number> series : chart.getData()) {
-//
-//            for (XYChart.Data<Number, Number> data : series.getData()) {
-//                String xValue = String.valueOf(data.getXValue());
-//                String yValue = String.valueOf(data.getYValue());
-//
-//                if((xValue.equals(xValueOfClickedPoint) & yValue.equals(yValueOfClickedPoint))){
-//                    if(hideRadioBtnClicked){
-//                        pcaGraph.hideIndividual(series, idsOfClickedPoint);
-//                        break;
-//                    }else if(topRadioBtnClicked){
-//                        data.getNode().toFront();
-//                        break;
-//                    }else if (clearRadioBtnClicked) {
-//                        pcaGraph.resetSubjectProperties(data, xValue, yValue);
-//                        break;
-//                    }
-//                    else {
-//    //                        // set icon and color for all a particular data point
-//    //                        pcaGraph.changeSubjectProperties(data, xValue, yValue, iconColor, iconSVGShape, iconSize);
-//    //                        System.out.println("running");
-//                        Genesis.closeOpenStage(event);
-//                    }
-//                }
-//            }
-//    }
+        for (XYChart.Series<Number, Number> series : chart.getData()) {
+
+            for (XYChart.Data<Number, Number> data : series.getData()) {
+                String xValue = String.valueOf(data.getXValue());
+                String yValue = String.valueOf(data.getYValue());
+
+                if((xValue.equals(xValueOfClickedPoint) & yValue.equals(yValueOfClickedPoint))){
+                    if(hideRadioBtnClicked){
+                        pcaGraph.hideIndividual(series, idsOfClickedPoint);
+                        break;
+                    }else if(topRadioBtnClicked){
+                        data.getNode().toFront();
+                        break;
+                    }else if (clearRadioBtnClicked) {
+                        pcaGraph.resetSubjectProperties(data, xValue, yValue);
+                        break;
+                    }
+                    else {
+                        // set icon and color for all a particular data point
+                        pcaGraph.changeSubjectProperties(data, xValue, yValue, iconColor, iconSVGShape, iconSize);
+                        Genesis.closeOpenStage(event);
+                    }
+                }
+            }
+    }
 
         // set it back to false
         hideRadioBtnClicked = false;

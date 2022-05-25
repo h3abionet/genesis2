@@ -15,6 +15,7 @@
  */
 package org.h3abionet.genesis.controller;
 
+import javafx.application.HostServices;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.XYChart;
@@ -107,7 +108,6 @@ public class PCAGraphEventsHandler {
             SnapshotParameters sp = new SnapshotParameters();
             sp.setTransform(Transform.scale(pixelScale, pixelScale));
             Image image = chart.snapshot(sp, writableImage);
-
             BufferedImage bufImage = SwingFXUtils.fromFXImage(image, null);
 
             if (file != null) {
@@ -146,6 +146,7 @@ public class PCAGraphEventsHandler {
 
                             newPDF.save(file);
                             newPDF.close();
+                            Desktop.getDesktop().browse(file.toURI());
                             break;
                     }
 

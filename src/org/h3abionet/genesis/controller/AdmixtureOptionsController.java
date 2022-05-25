@@ -24,6 +24,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.Project;
@@ -441,6 +442,7 @@ public class AdmixtureOptionsController{
                     acc.setNumOfAncestries(mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart).get(0).getData().size());
                     acc.setAllAdmixtureCharts(mainController.getAllAdmixtureCharts());
                     acc.setProject(project);
+                    colorStage.initModality(Modality.APPLICATION_MODAL);
                     colorStage.showAndWait();
                     
                     if (acc.isColorSelected()) {
@@ -514,12 +516,13 @@ public class AdmixtureOptionsController{
                     verticalMove(ancestryOrder.size() - 1, 0);
                 });
             }else {
-                shiftUp = new Button("Shift Right");
+                System.out.println("me");
+                shiftUp = new Button("Shift Up");
                 shiftUp.setOnMouseClicked((MouseEvent up) -> {
                     verticalMove(0, ancestryOrder.size() - 1);
                 });
 
-                shiftDown = new Button("Shift Left");
+                shiftDown = new Button("Shift Down");
                 shiftDown.setOnMouseClicked((MouseEvent down) -> {
                     verticalMove(ancestryOrder.size() - 1, 0);
                 });

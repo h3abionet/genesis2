@@ -100,6 +100,9 @@ public class ImportProjectController {
     public void readGraphs() throws IOException, InterruptedException {
         if(proj.getPcaGraph()!=null) {
 
+            Genesis.getMainStage().setWidth(proj.getStageWidth());
+            Genesis.getMainStage().setHeight(proj.getStageHeight());
+
             // call saved pcaGraph object from projects
             PCAGraph pcaGraph = proj.getPcaGraph();
             pcaGraph.setProject(proj);

@@ -69,6 +69,9 @@ public class Project implements Serializable {
     private boolean phenoCreated;
     private ArrayList<String> hiddenGroups = new ArrayList<>(); // [CEU, MKK, ...]
 
+    private double stageWidth;
+    private double stageHeight;
+
     // chart groups with subjects
     HashMap<String, ArrayList<Subject>> subjectGroups = new HashMap<>();
     private String pcaFileName;
@@ -90,6 +93,16 @@ public class Project implements Serializable {
         }catch (Exception e){
             Genesis.throwInformationException("Wrong fam file provided");
         }
+
+        Genesis.getMainStage().widthProperty().addListener((obs, oldVal, newVal) -> {
+            stageWidth = (double) newVal;
+        });
+
+        Genesis.getMainStage().heightProperty().addListener((obs, oldVal, newVal) -> {
+            stageHeight = (double) newVal;
+        });
+
+        addResizeEventToStage();
     }
 
     /**
@@ -109,6 +122,18 @@ public class Project implements Serializable {
         readPhenotypeFile(pheno_fname_s);
         setIconTypes();
         createGroups();
+
+        addResizeEventToStage();
+    }
+
+    public void addResizeEventToStage(){
+        Genesis.getMainStage().widthProperty().addListener((obs, oldVal, newVal) -> {
+            stageWidth = (double) newVal;
+        });
+
+        Genesis.getMainStage().heightProperty().addListener((obs, oldVal, newVal) -> {
+            stageHeight = (double) newVal;
+        });
     }
 
     public void setProject(Project project) {
@@ -520,5 +545,21 @@ public class Project implements Serializable {
 
     public List<ArrayList<String>> getAdmixtureAncestryColor() {
         return admixtureAncestryColor;
+    }
+
+    public double getStageWidth() {
+        return stageWidth;
+    }
+
+    public void setStageWidth(double stageWidth) {
+        this.stageWidth = stageWidth;
+    }
+
+    public double getStageHeight() {
+        return stageHeight;
+    }
+
+    public void setStageHeight(double stageHeight) {
+        this.stageHeight = stageHeight;
     }
 }

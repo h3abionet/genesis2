@@ -44,10 +44,11 @@ import org.h3abionet.genesis.controller.MainController;
 public class Genesis extends Application {
 
     private static String previouslyOpenedPath;
+    private static Stage mainStage;
 
     @Override
     public void start(Stage stage) throws Exception {
-                
+        mainStage = stage;
         shutdownProgram(stage);
         
         Parent root = FXMLLoader.load(getClass().getResource("view/Main.fxml"));
@@ -71,6 +72,10 @@ public class Genesis extends Application {
         
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static Stage getMainStage() {
+        return mainStage;
     }
 
     /**
@@ -120,6 +125,8 @@ public class Genesis extends Application {
             return "noBtnPressed";
         }        
     }
+
+
     
      /**
      *
