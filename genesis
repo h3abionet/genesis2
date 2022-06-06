@@ -1,0 +1,6 @@
+#!/bin/bash
+
+JARF=${HOME}/lib/genesis2.jar
+LIB=${HOME}/lib/javafx-sdk-18-aarch-lib
+
+java  -Djava.library.path=$LIB $MODS -jar  $JARF
