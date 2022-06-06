@@ -500,9 +500,15 @@ public class PCAGraph extends Graph implements Serializable {
                 String iconShape = null;
 
                 if(project.isProjIsImported()){
-                    iconColor = (String) iconColors.get(project.getOrderOfLegendItems().get(serieIndex));
-                    iconShape = (String) iconShapes.get(project.getOrderOfLegendItems().get(serieIndex));
-                    lab.getGraphic().setStyle(getStyle(iconColor, iconShape, project.getDefaultIconSize()));
+                    try {
+                        iconColor = (String) iconColors.get(project.getOrderOfLegendItems().get(serieIndex));
+                        iconShape = (String) iconShapes.get(project.getOrderOfLegendItems().get(serieIndex));
+                        lab.getGraphic().setStyle(getStyle(iconColor, iconShape, project.getDefaultIconSize()));
+                    }catch(Exception e){
+                        iconColor = (String) iconColors.get(lab.getText());
+                        iconShape = (String) iconShapes.get(lab.getText());
+                        lab.getGraphic().setStyle(getStyle(iconColor, iconShape, project.getDefaultIconSize()));
+                    }
                 }else{
                     iconColor = (String) iconColors.get(lab.getText());
                     iconShape = (String) iconShapes.get(lab.getText());
