@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<!--<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1700.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.MainController">-->
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1700.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.MainController">
+   <children>
+      <BorderPane layoutX="144.0" layoutY="53.0" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <top>
+            <HBox alignment="CENTER_RIGHT" style="-fx-background-color: white;">
+               <children>
+                  <AnchorPane>
+                     <children>
+                        <ImageView fitHeight="41.0" fitWidth="79.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../image/logo.png" />
+                           </image>
+                           <viewport>
+                              <Rectangle2D />
+                           </viewport>
+                        </ImageView>
+                     </children>
+                  </AnchorPane>
+                  <ImageView fitHeight="40.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../image/gene.png" />
+                     </image>
+                     <viewport>
+                        <Rectangle2D />
+                     </viewport>
+                  </ImageView>
+               </children>
+               <padding>
+                  <Insets top="2.0" />
+               </padding>
+            </HBox>
+         </top>
+         <center>
+            <TabPane fx:id="tabPane" prefHeight="481.0" prefWidth="716.0" style="-fx-border-color: #bdbbbb; -fx-border-width: 1px;" BorderPane.alignment="CENTER" />
+         </center>
+         <right>
+            <AnchorPane prefHeight="481.0" prefWidth="8.0" style="-fx-background-color: #06587F; -fx-border-color: #bdbbbb; -fx-border-width: 0.5px;" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </AnchorPane>
+         </right>
+         <left>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="923.0" prefWidth="90.0" style="-fx-background-color: #06587F; -fx-border-color: #bdbbbb; -fx-border-width: 0.5px;">
+               <children>
+                  <VBox layoutX="5.0" layoutY="3.0" prefHeight="936.0" prefWidth="70.0" spacing="2.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                     <children>
+                        <Button fx:id="newProjBtn" alignment="CENTER" mnemonicParsing="false" onAction="#newProject" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;">
+                           <font>
+                              <Font name="Helvetica" size="24.0" />
+                           </font>
+                           <tooltip>
+                              <Tooltip text="Start Project">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
+                           </tooltip>
+                           <graphic>
+                              <ImageView fitHeight="21.0" fitWidth="47.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/new.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="pcaBtn" alignment="CENTER" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#newPCA" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;">
+                           <font>
+                              <Font name="Helvetica" size="24.0" />
+                           </font>
+                           <tooltip>
+                              <Tooltip text="Import PCA File">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
+                           </tooltip>
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/pcabtn.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="admixtureBtn" alignment="CENTER" layoutX="10.0" layoutY="62.0" mnemonicParsing="false" onAction="#newAdmixture" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;">
+                           <font>
+                              <Font name="Helvetica" size="24.0" />
+                           </font>
+                           <tooltip>
+                              <Tooltip text="Import Admixture File">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
+                           </tooltip>
+                           <graphic>
+                              <ImageView fitHeight="22.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/admixbtn.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="settingsBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#settingsSelector" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Settings">
+                           <graphic>
+                              <ImageView fitHeight="35.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/settings2.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Settings" />
+                           </tooltip>
+                        </Button>
+                        <Button fx:id="downloadBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#saveChart" prefHeight="50.0" prefWidth="89.0" style="-fx-text-fill: white;" text="Button">
+                           <graphic>
+                              <ImageView fitHeight="48.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/download2.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Save Graph" />
+                           </tooltip>
+                        </Button>
+                        <Button fx:id="drawingBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#drawingTool" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                           <graphic>
+                              <ImageView fitHeight="48.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/paint2.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Annotate Graph" />
+                           </tooltip>
+                        </Button>
+                        <Button fx:id="individualBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#showHiddenIndividuals" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                           <graphic>
+                              <ImageView fitHeight="49.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/individual.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Show Hidden Individuals" />
+                           </tooltip>
+                        </Button>
+                        <Button fx:id="searchBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#searchIndividual" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                           <graphic>
+                              <ImageView fitHeight="43.0" fitWidth="51.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/search2.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Search Individual" />
+                           </tooltip>
+                        </Button>
+                        <Button fx:id="saveProjBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#saveProject" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;">
+                           <graphic>
+                              <ImageView fitHeight="43.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/floppy-disk2.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Save Project" />
+                           </tooltip>
+                        </Button>
+                        <Button fx:id="importProjBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#importProject" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;">
+                           <graphic>
+                              <ImageView fitHeight="42.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/folder2.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Open Project" />
+                           </tooltip>
+                        </Button>
+                        <Button fx:id="helpBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" layoutX="10.0" layoutY="415.0" mnemonicParsing="false" onAction="#help" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                           <graphic>
+                              <ImageView fitHeight="57.0" fitWidth="52.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/info2.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Help Me" />
+                           </tooltip>
+                        </Button>
+                        <Button fx:id="cancelBtn" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="5.0" mnemonicParsing="false" onAction="#closeProgram" prefHeight="50.0" prefWidth="90.0" style="-fx-text-fill: white;" text="Button">
+                           <graphic>
+                              <ImageView fitHeight="53.0" fitWidth="57.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/cancel2.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Close Genesis" />
+                           </tooltip>
+                        </Button>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </left>
+         <bottom>
+            <AnchorPane fx:id="drawingAnchorPane" prefHeight="39.0" prefWidth="700.0" style="-fx-background-color: #B4CCD8;" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="40.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                     <children>
+                        <Button fx:id="lineTool" mnemonicParsing="false" onAction="#addLine">
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/line.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="circleTool" mnemonicParsing="false" onAction="#addCircle" prefHeight="22.0" prefWidth="29.0">
+                           <graphic>
+                              <ImageView fitHeight="19.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/circle.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="arrowTool" mnemonicParsing="false" onAction="#addArrow">
+                           <graphic>
+                              <ImageView fitHeight="19.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/right-arrow.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="textTool" layoutX="98.0" layoutY="10.0" mnemonicParsing="false" onAction="#addText">
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/font.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="rectangleTool" layoutX="151.0" layoutY="10.0" mnemonicParsing="false" onAction="#addRectangle">
+                           <graphic>
+                              <ImageView fitHeight="21.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/rectangle.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
+         </bottom>
+      </BorderPane>
+   </children>
+</AnchorPane>
