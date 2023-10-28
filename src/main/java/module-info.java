@@ -10,4 +10,5 @@ module org.h3abionet.genesis {
     requires org.apache.pdfbox;
     requires javafx.web;
     exports org.h3abionet.genesis;
+    exports org.h3abionet.genesis.controller;
 }

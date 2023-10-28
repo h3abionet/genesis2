@@ -53,9 +53,9 @@ public class Genesis extends Application {
         
 //        String wd = System.getProperty("user.dir");
 //        System.out.println("Working Directory = " + wd);
-        String mainfile = "view/Main.fxml",
+        String mainfile = "Main.fxml", // view/
 //                pathtofiles ="/src/main/java/org/h3abionet/genesis/",
-                cssfile="css/pca.css";
+                cssfile="pca.css"; // css/
 //        File f = new File(wd+pathtofiles+mainfile);
 //        System.out.print(wd+pathtofiles+mainfile+" ");
 //        if (f.isFile())
@@ -69,7 +69,19 @@ public class Genesis extends Application {
 //        else
 //            System.out.println("Does not exist");
 
-        Parent root = FXMLLoader.load(getClass().getResource(mainfile));
+String path = this.getClass().getClassLoader().getResource(mainfile).toString();
+File f = new File(path);
+System.out.print(path+" ");
+        if (f.isFile())
+            System.out.println("Exists");
+        else
+            System.out.println("Does not exist");
+
+
+System.out.println("path = "+path+" getResource for "+mainfile+" "+getClass().getClassLoader().getResource(mainfile));
+
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(mainfile));
+        System.out.println("getting scene");
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Genesis.class.getResource(cssfile).toExternalForm());
         
