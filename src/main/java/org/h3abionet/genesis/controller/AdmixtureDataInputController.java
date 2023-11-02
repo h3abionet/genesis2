@@ -50,13 +50,23 @@ public class AdmixtureDataInputController{
     @FXML
     private void handleAdmixEntryOK(ActionEvent event) {
         // set list of stackedBarCharts
+        System.out.println("in handleAdmixEntryOK project = "+project+"file ="+admixtureFilePath); // FIXME
+        System.out.println("in handleAdmixEntryOK admixtureGraph = "+admixtureGraph); // FIXME
         try{
-            admixtureGraph = new AdmixtureGraph(admixtureFilePath, project); // read the file using module class
+            System.out.println("in handleAdmixEntryOK in try admixtureGraph = "+admixtureGraph); // FIXME
+            System.out.println("in handleAdmixEntryOK in try mainController = "+mainController); // FIXME
+            admixtureGraph = project.getAdmixtureGraph();
+            if (admixtureGraph == null)
+                admixtureGraph = new AdmixtureGraph(admixtureFilePath, project);
             admixtureGraph.setMainController(mainController);
+            System.out.println("in handleAdmixEntryOK in try after setMain admixtureGraph = "+admixtureGraph); // FIXME
             mainController.setAdmixtureGraph(admixtureGraph);
+            System.out.println("in handleAdmixEntryOK in try after set admixtureGraph = "+admixtureGraph); // FIXME
 
             if (admixtureGraph.isCorrectAdmixFile()) {
+                System.out.println("Creating admixtureGraph"); // FIXME
                 admixtureGraph.createAdmixGraph();
+                System.out.println("Creating admixtureGraph successful"); // FIXME
                 mainController.setAdmixCreationSuccessful(true);
             } else {
                 mainController.setAdmixCreationSuccessful(false);

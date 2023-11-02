@@ -1,6 +1,13 @@
 
 *Genesis 2*
 
+Note that the following instructions are a work in progress.
+
+The latest build should work on an ARM Mac (aarch) and should be possible to run by double-clicking the build including dependences.
+
+It is built using Maven on Netebeans 18 and uses OpenJavaFX libraries.
+
+The following refers to earlier builds and will be updated.
 
 
 ** Installing for different environemts **

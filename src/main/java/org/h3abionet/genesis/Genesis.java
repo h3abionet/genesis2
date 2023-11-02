@@ -70,7 +70,7 @@ public class Genesis extends Application {
 //            System.out.println("Does not exist");
 
 String path = this.getClass().getClassLoader().getResource(mainfile).toString();
-File f = new File(path);
+File f = new File(mainfile);
 System.out.print(path+" ");
         if (f.isFile())
             System.out.println("Exists");
@@ -81,9 +81,10 @@ System.out.print(path+" ");
 System.out.println("path = "+path+" getResource for "+mainfile+" "+getClass().getClassLoader().getResource(mainfile));
 
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(mainfile));
-        System.out.println("getting scene");
+        System.out.println("root =" + root);
+        System.out.println("getting scene, CSS file ="+ cssfile + " " + Genesis.class.getClassLoader().getResource(cssfile));
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(Genesis.class.getResource(cssfile).toExternalForm());
+        scene.getStylesheets().add(Genesis.class.getClassLoader().getResource(cssfile).toExternalForm());
         
         // Press F to enter full screen mode or E to exit full screen mode
         stage.addEventFilter(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
@@ -175,7 +176,7 @@ System.out.println("path = "+path+" getResource for "+mainfile+" "+getClass().ge
      * @throws FileNotFoundException
      */
     public static void loadFxmlView(String fxmlLink) throws IOException{
-        FXMLLoader loader = new FXMLLoader(Genesis.class.getResource(fxmlLink));
+        FXMLLoader loader = new FXMLLoader(Genesis.class.getClassLoader().getResource(fxmlLink));
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(new Scene((Parent) loader.load()));

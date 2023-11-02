@@ -20,7 +20,7 @@
 
 .tab-pane
 {
-    -fx-background-image: url("../image/logo.png"), url("../image/H3ABioNet.png"), url("../image/sbimb.jpg");
+    -fx-background-image: url("logo.png"), url("H3ABioNet.png"), url("sbimb.jpg");
     -fx-background-repeat: stretch;   
     -fx-background-size: 250 100, 100 60, 100 50;
     -fx-background-position: center, bottom left, bottom right;

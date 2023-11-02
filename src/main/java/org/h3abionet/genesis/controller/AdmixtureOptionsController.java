@@ -428,7 +428,7 @@ public class AdmixtureOptionsController{
             ancestorColorDisplay.setOnMouseClicked((MouseEvent colorEvt) -> {
                 try {
                     // change the color of ancestries
-                    FXMLLoader colorLoader = new FXMLLoader(Genesis.class.getResource("view/AncestryColor.fxml"));
+                    FXMLLoader colorLoader = new FXMLLoader(Genesis.class.getResource("AncestryColor.fxml"));
                     Parent parent = (Parent) colorLoader.load();
                     Stage colorStage = new Stage();
                     colorStage.setScene(new Scene(parent));
@@ -462,7 +462,7 @@ public class AdmixtureOptionsController{
 //            // load stage for shifting up or down the ancestries
 //            ancenstorNameBtn.setOnMouseClicked((MouseEvent anacestorEvent) -> {
 //                try {
-//                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/ShiftAncestry.fxml"));
+//                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("ShiftAncestry.fxml"));
 //                    Parent parent = (Parent) fxmlLoader.load();
 //                    Stage dialogStage = new Stage();
 //                    dialogStage.setScene(new Scene(parent));

@@ -175,7 +175,7 @@ public class MainController implements Initializable{
         setTabPaneStyle();
         try {
             // load data input scene
-            FXMLLoader projLoader = new FXMLLoader(Genesis.class.getResource("view/ProjDialogEntry.fxml"));
+            FXMLLoader projLoader = new FXMLLoader(Genesis.class.getClassLoader().getResource("ProjDialogEntry.fxml"));
             Parent projParent = projLoader.load();
             projectDetailsController = projLoader.getController();
             projectDetailsController.setMainController(this);
@@ -224,6 +224,7 @@ public class MainController implements Initializable{
 
     public void setAdmixtureGraph(AdmixtureGraph admixtureGraph) {
         this.admixtureGraph = admixtureGraph;
+        System.out.println("in setAdmixtureGraph this.admixtureGraph = "+this.admixtureGraph);
     }
 
     public void setProject(Project project) {
@@ -240,7 +241,7 @@ public class MainController implements Initializable{
     @FXML
     @SuppressWarnings("empty-statement")
     private void newPCA(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCADataInput.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getClassLoader().getResource("PCADataInput.fxml"));
         Parent parent = (Parent) fxmlLoader.load();
         pcaDataInputController = fxmlLoader.getController();
         pcaDataInputController.setMainController(this);
@@ -280,7 +281,7 @@ public class MainController implements Initializable{
         if (AdmixtureSettingsController.isAdmixVertical()) {
             Genesis.throwInformationException("First change the graph to a horizontal linear layout");
         } else {
-            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureDataInput.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getClassLoader().getResource("AdmixtureDataInput.fxml"));
             Parent parent = fxmlLoader.load();
             admixDataInputCtlr = fxmlLoader.getController();
             admixDataInputCtlr.setMainController(this);
@@ -419,6 +420,8 @@ public class MainController implements Initializable{
         listOfAdmixtureCharts = admixCharts; // get multiple charts
         allAdmixtureCharts.add(listOfAdmixtureCharts);
         int sumOfIndividuals = project.getNumOfIndividuals();
+        
+        System.out.println("in setAdmixtureChart admixtureGraph = "+admixtureGraph); // FIXME
 
         // check if the first rowPointer has nodes. If not, define column constraints.
         if (gridPane.contains(1, 0)) {
@@ -444,6 +447,7 @@ public class MainController implements Initializable{
             // if first chart, add gridpane to index 1 of vbox else reset index 1 with new gridpane
             if (rowPointer == 0) {
                 admixPane.getChildren().add(admixtureGraph.getGridPane(gridPane, rowPointer));
+
                 AnchorPane pane = (AnchorPane) admixVbox.getChildren().get(1);
                 pane.getChildren().add(admixPane);
                 scrollPane.setContent(admixVbox);
@@ -490,7 +494,7 @@ public class MainController implements Initializable{
         try{
             if (selectedTab.getId().contains("tab")) {
                 // show pca settings
-                FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/PCASettings.fxml"));
+                FXMLLoader loader = new FXMLLoader(Genesis.class.getClassLoader().getResource("PCASettings.fxml"));
                 Parent root = loader.load();
                 PCASettingsController pcSettingsCtlr = loader.getController();
                 pcSettingsCtlr.setScatterChart(pcaChartsList.get(currentTabIndex));
@@ -506,7 +510,7 @@ public class MainController implements Initializable{
             }
             else if(selectedTab.getId().contains("admix")){
                 // show admixture settings
-                FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureSettings.fxml"));
+                FXMLLoader loader = new FXMLLoader(Genesis.class.getClassLoader().getResource("AdmixtureSettings.fxml"));
                 Parent root = loader.load();
                 AdmixtureSettingsController admixSettingsCtlr =  loader.getController();
                 admixSettingsCtlr.setAdmixtureGraph(admixtureGraph);
@@ -554,7 +558,7 @@ public class MainController implements Initializable{
 
     @FXML
     public void showHiddenIndividuals() throws IOException {
-        FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/HiddenIndividuals.fxml"));
+        FXMLLoader loader = new FXMLLoader(Genesis.class.getClassLoader().getResource("HiddenIndividuals.fxml"));
         Parent parent = (Parent) loader.load();
         hiddenIndividualsController = loader.getController();
         hiddenIndividualsController.setMainController(this);
@@ -1284,7 +1288,7 @@ public class MainController implements Initializable{
 
     @FXML
     private void importProject(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/ImportProject.fxml"));
+        FXMLLoader loader = new FXMLLoader(Genesis.class.getClassLoader().getResource("ImportProject.fxml"));
         Parent p = loader.load();
         importProjectController = loader.getController();
         importProjectController.setMainController(this);
@@ -1321,7 +1325,8 @@ public class MainController implements Initializable{
     @FXML
     private void help(ActionEvent event) {
         try {
-            File htmlFile = new File(Genesis.class.getResource("help/home.html").getFile());
+            File htmlFile = new File(Genesis.class.getClassLoader().getResource("home.html").getFile());
+            System.out.println("HTML file = " + htmlFile); //FIXME
             Desktop.getDesktop().browse(htmlFile.toURI());
         } catch (IOException e) {
             e.printStackTrace();

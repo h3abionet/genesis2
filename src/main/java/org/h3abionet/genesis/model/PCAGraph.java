@@ -528,7 +528,7 @@ public class PCAGraph extends Graph implements Serializable {
                                 chartGroupNameClicked(me.getSource(), sc);
                             }else{ // right click
                                 try {
-                                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PCAGroupLabel.fxml"));
+                                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getClassLoader().getResource("PCAGroupLabel.fxml"));
                                     Parent parent = (Parent) fxmlLoader.load();
                                     Stage dialogStage = new Stage();
                                     dialogStage.setScene(new Scene(parent));
@@ -922,7 +922,7 @@ public class PCAGraph extends Graph implements Serializable {
      */
     public void showIndividualDetails(XYChart.Data<Number, Number> data, ScatterChart<Number, Number> chart) throws IOException {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IndividualDetails.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getClassLoader().getResource("IndividualDetails.fxml"));
             Parent parent = fxmlLoader.load();
             Stage dialogStage = new Stage();
 
