@@ -55,7 +55,7 @@ public class PCAGraphEventsHandler {
 
     @SuppressWarnings("empty-statement")
     public AnchorPane addGraph() {
-        chart.getStylesheets().add(Genesis.class.getClassLoader().getResource("pca.css").toExternalForm());
+        chart.getStylesheets().add(Genesis.class.getResource("css/pca.css").toExternalForm());
 
         if (chart != null) {
             String xAxisLabel = chart.getXAxis().getLabel();

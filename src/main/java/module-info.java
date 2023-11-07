@@ -14,5 +14,5 @@ module org.h3abionet.genesis {
     exports org.h3abionet.genesis;
     // put in to try to fix launch crash; stops crash at Main.fxml line 16:
     // Caused by: java.lang.IllegalAccessException: class javafx.fxml.FXMLLoader$ValueElement (in module javafx.fxml) cannot access class org.h3abionet.genesis.controller.MainController (in module org.h3abionet.genesis) because module org.h3abionet.genesis does not export org.h3abionet.genesis.controller to module javafx.fxml
-    exports org.h3abionet.genesis.controller;
+    //exports org.h3abionet.genesis.controller;
 }

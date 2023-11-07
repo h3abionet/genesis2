@@ -1,6 +1,7 @@
 #!/bin/bash
 
-JARF=${HOME}/lib/genesis2.jar
-LIB=${HOME}/lib/javafx-sdk-18-aarch-lib
+JARF=${HOME}/Applications/Genesis2JavaFX-2.0-SNAPSHOT.jar
+LIB=/usr/local/lib/JavaFX-21/
+MODS=javafx.controls,javafx.fxml
 
-java  -Djava.library.path=$LIB $MODS -jar  $JARF
+java --module-path $LIB --add-modules $MODS -jar  $JARF

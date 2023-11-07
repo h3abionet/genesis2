@@ -93,7 +93,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
     public AdmixtureGraph(String admixtureFilePath, Project project) throws IOException {
         this.project = project;
         readGraphData(admixtureFilePath);
-        System.out.println("in AdmixtureGraph constructor, path = "+admixtureFilePath); // FIXME
 //
 //        for (String l: ancestryLabels)
 //            ancestryOrder.add(l);
@@ -112,7 +111,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 Float floatVal = Float.valueOf(f).floatValue();
                 correctAdmixFile = true;
             }catch (Exception e){
-                System.out.println("Bad admixture data:"+f);
                 correctAdmixFile = false;
             }
         }
@@ -190,7 +188,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
             }
         }
 
-        
         project.getGroupNames().parallelStream().forEachOrdered(
                 groupName -> {
 //
@@ -223,7 +220,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
             List<String []> listOfQValues = new ArrayList<>();
 
             ArrayList<Subject> thisGroup = project.getSubjectGroups().get(groupName);
-            
+
             thisGroup.parallelStream().forEachOrdered(sub -> {
                 int sizeOfQValuesList = sub.getqValuesList().size();
                 if (sizeOfQValuesList != 0 && sub.isHidden() == false) {
@@ -246,9 +243,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
 
             // create data series for every ancestry
             int numOfAncentries = ancestryLabels.length;
-            System.out.println("partway through createAdmixGraph; numOfAncentries, listOfQValues.size() = "+numOfAncentries+", "+listOfQValues.size()); // FIXME
             for (int i = 0; i < numOfAncentries; i++) {
-                System.out.println("Ancentry #"+i+" name= "+ancestryLabels[i]);
                 ancestry = new XYChart.Series<>();
                 ancestry.setName(ancestryLabels[i]);
 
@@ -263,18 +258,12 @@ public class AdmixtureGraph extends Graph implements Serializable {
 //                }
                 populationGroupChart.getData().add(ancestry); // add values to chart
             }
-            System.out.println("Done Ancentry loop, setting colours");
 
             setAncestryColors(populationGroupChart, ancestryColors); // set ancestry colors
-            
-            System.out.println("Done Ancentry loop, set colours");
 
             // update current num of ancestries
             // used to label Ks (K=1,2,3,..) and create ancestry options buttons
             currentNumOfAncestries = populationGroupChart.getData().size();
-            
-            System.out.println("Set Ancentry count = "+currentNumOfAncestries
-            +" setting populationGroupChart="+populationGroupChart); // FIXME
 
             // define populationGroupChart size
             populationGroupChart.getXAxis().setLabel(groupName);
@@ -289,12 +278,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
             populationGroupChart.setCategoryGap(-1);
 //            populationGroupChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
 
-             System.out.println("Set admixture.css = "+Genesis.class.getClassLoader().getResource("admixture.css")
-            +" in stylesheets="+populationGroupChart.getStylesheets()); // FIXME
-
             // set the css stylesheet
-            populationGroupChart.getStylesheets().add(Genesis.class.getClassLoader().getResource("admixture.css").toExternalForm());
-            
+            populationGroupChart.getStylesheets().add(Genesis.class.getResource("css/admixture.css").toExternalForm());
 
             // remove all legend items
             for (Node n : populationGroupChart.getChildrenUnmodifiable()) {
@@ -326,7 +311,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     MouseButton button = event.getButton();
                     if (button == MouseButton.PRIMARY) {
                         try {
-                            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getClassLoader().getResource("AdmixtureIndividualDetails.fxml"));
+                            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureIndividualDetails.fxml"));
                             Parent parent = (Parent) fxmlLoader.load();
                             Stage dialogStage = new Stage();
                             dialogStage.setScene(new Scene(parent));
@@ -733,7 +718,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                         rowIndexOfClickedAdmixChart = GridPane.getRowIndex(admixChart);
                         setRowIndexOfClickedAdmixChart(rowIndexOfClickedAdmixChart);
                         try {
-                            FXMLLoader loader = new FXMLLoader(Genesis.class.getClassLoader().getResource("AdmixtureOptions.fxml"));
+                            FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureOptions.fxml"));
                             Parent p = (Parent) loader.load();
                             Stage dialogStage = new Stage();
                             dialogStage.setScene(new Scene(p));
@@ -802,7 +787,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
             if (event.getButton() == MouseButton.SECONDARY)
             {
                 try {
-                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getClassLoader().getResource("PopulationGroupLabel.fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PopulationGroupLabel.fxml"));
                     Parent parent = (Parent) fxmlLoader.load();
                     Stage dialogStage = new Stage();
                     dialogStage.setScene(new Scene(parent));

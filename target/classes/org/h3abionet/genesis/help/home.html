@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<ul>
+    <li><a href="home.html">Home</a></li>
+    <li><a href="pca.html">PCA</a></li>
+    <li><a href="admixture.html">Admixture</a></li>
+    <li><a href="data.html">Data</a></li>
+    <li><a href="install.html">Install</a></li>
+</ul>
+
+<h1 id="welcome-to-genesis-page-">Welcome to Genesis Page</h1>
+<p>Genesis is a program created for scientists to generate PCA (Principal Component Analysis) and structure/admixture
+    graphs from data outputted by common tools such as eigenstrat [Pritchard et al. 2000] and the SNPRelate [Zheng et al 2012]
+    package for PCAs and Admixture [Alexander et al. 2009] and CLUMPP [Jakobsson and Rosenberg 2007] for admixtures.</p>
+
+<p>Genesis was developed with user-friendliness in mind as other tools can be complex to use and lack certain features.
+    All elements of the graphs that would need to be edited can be done so using a graphical user Interface where the graphs
+    themselves are interactive and different elements can be viewed and changed at the click of the mouse. All this saves the
+    time that scientists would rather be spending doing more important things.</p>
+
+<p>Principal Component Analysis is a mathematical and statistical procedure that can be used to analyze genotype data.
+    The differences between samples genotype data can be used to project each sample into a p-dimensional space, where
+    the p axes are uncorrelated. For realistic data, typically p is 4 or less and often only the most important
+    two dimensions are used. Programs such as eigenstrat produce the PCs, and Genesis produces them.
+    An example is found below:</p>
+
+<p><img src="genesis-screen.png" class="center" alt="screen"></p>
+<p><img src="pca-example.png" class="center" alt="pca graph"></p>
+<p><img src="structureplot.png" class="center" alt="admixture graph"></p>
+
+
+<h1>Menu structure</h1>
+<p>When Genesis runs, a menu appears on the left. The menu items are New, PCA, Admix, and other buttons as shown in the
+    image below. If the cursor is placed over the icon, a brief description of the menu item is given.</p>
+
+<p><img src="menu-structure.png" class="center" alt="screen"></p>
+
+<p>The <b>New</b> button allows you to create a project by defining the project name, providing the fam file, phenotype file, and stating
+    the phenotype column number. You MUST create a project with the fam file. The phenotype file and phenotype column
+    are not mandatory. The PCA and Admix buttons will be activated after creating the project to enable you to import
+    either the pcs or q files.</p>
+
+<p>The <b>PCA</b> button allows you to import the pc file and select which pcs to be used in creating the graph.
+    This button will be disabled after successfully importing the first PCA graph. Use the Data button to
+    import other pcs. Every PCA graph is displayed on a separate tab which can be closed. The graph is deleted
+    from the project whenever you close its tab.
+</p>
+
+
+<p>The <b>Admix</b> button assists you to import every q file with k values that you would like to add to your
+    structure plot. Graphs for these k values are stacked and displayed on the same tab.</p>
+
+<p>The <b>Download</b> button with the red arrow pointing down is used to save the current graph displayed on the tab.
+    The program allows saving using multiple file types such as pdf, jpg, png, and tiff.</p>
+
+<p>The <b>settings</b> button allows you to change the text, headings, and orientations of the graphs. The settings window will
+    automatically detect which graph is displayed on the current tab and will launch the settings for that specific graph.</p>
+
+<p>The <b>Drawing</b> button allows you to annotate graphs with text and other shapes. A menu with the list of shapes is
+    displayed/toggled at the bottom of the main window whenever the drawing button is clicked. Each shape can be
+    dragged to a different location on the graph. You can modify shape properties by right-clicking it.
+    The properties include size, color, and outlines.</p>
+
+
+<p><b>Individuals:</b> The icon with 3 individuals is the hidden individuals' button which allows you to see or unhide
+    hidden individuals.</p>
+
+<p>The <b>Search</b> button helps you to locate the position of an individual on the graph. It accepts the fid or iid of an
+    individual before performing a search. For PCA graphs, the icon representing the individual was animated to grow or zoom in and out.</p>
+
+<p>The <b>3D</b>> button with a cube and 3-arrow icon is currently not implemented but will allow you to view your graphs in a 3D representation.</p>
+
+<p>The <b>Save</b> button helps you to save your project in a .g2f format. These files can be shared and opened with colleagues
+    using this current version of genesis.</p>
+
+<p>The <b>Import</b> button is used to input existing or share projects. There is no need for importing the fam or phenotype
+    file again since they are already stored in the project.</p>
+
+<p><b>Help</b> The manual is available under the help button which has an icon with the question mark</p>
+
+<p>The <b>Close</b> button prompts you to close the program.</p>
+
+
+<h1>Create a project </h1>
+
+<p>To input project files, click New to add the fam and phenotype file. The New button is used to create a project where all
+    the individual details and charts are stored. When the file input screen opens,</p>
+
+<ol>
+    <li>Provide name of the project</li>
+
+    <li>Click the Fam file button and navigate to the fam data file. The fam file is compulsory.</li>
+
+    <li>Click Pheno file button and navigate to the phenotype data file. After successfully adding the phenotype file,
+        you will be prompted to select the column with the phenotype to be used in grouping individuals in your project.</li>
+</ol>
+
+<div class="images">
+    <figure>
+        <img src="create-project.png" alt="create project screen">
+        <figcaption>Create Project Dialog</figcaption>
+    </figure>
+</div>
+
+<p>After creating the project, either import the PCA data file or the Admixture file to plot the charts.
+    Click the Admixture or PCA tabs to see the details.
+</p>
+
+<h1>Saving, Loading and Exporting Projects</h1>
+<h3>Saving a Project</h3>
+<p>To save a project currently in use, click the Save project button on the menu.
+     Enter a filename and navigate to the location you wish to save the
+     file and click Save. We recommend regular savings. Although, Genesis is stable,
+     like other software it may crash, and saving is easy.
+    Please note that in the Genesis GUI, you may have several graphs open at once. Saving the project saves all the graphs!</p>
+
+<h3>Loading a Project</h3>
+<p>To load a project previously saved, click the Import Project button on the menu
+    Navigate to and select the file you wish to load and click Done.</p>
+<div class="images">
+    <figure>
+        <img src="import-project.png" alt="import project screen">
+        <figcaption>Import Project</figcaption>
+    </figure>
+</div>
+
+<h3>Exporting Graphs</h3>
+<p>Once you are satisfied with the graph you are currently working on, you can export the
+    graph as an image file (.png) or in a PDF. To do so, click the Save Graph button on the menu.
+    From the dialog that opens, select whether to export as a PNG, SVG, TIFF image or as a
+    PDF, then navigate to the location you wish to save the file and click OK.
+</p>
+
+<h1>Copyright</h1>
+
+
+</body>
+</html>
+

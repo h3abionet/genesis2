@@ -13,15 +13,19 @@
         <resources>
             <resource>
                 <directory>src/main/java/org/h3abionet/genesis/view</directory>
+                <targetPath>org/h3abionet/genesis/view</targetPath>
             </resource>
             <resource>
                 <directory>src/main/java/org/h3abionet/genesis/image</directory>
+                <targetPath>org/h3abionet/genesis/image</targetPath>
             </resource>
             <resource>
                 <directory>src/main/java/org/h3abionet/genesis/help</directory>
+                 <targetPath>org/h3abionet/genesis/help</targetPath>
             </resource>
             <resource>
                 <directory>src/main/java/org/h3abionet/genesis/css</directory>
+                 <targetPath>org/h3abionet/genesis/css</targetPath>
             </resource>
         </resources>
         <plugins>

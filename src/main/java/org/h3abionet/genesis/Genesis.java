@@ -51,40 +51,12 @@ public class Genesis extends Application {
         mainStage = stage;
         shutdownProgram(stage);
         
-//        String wd = System.getProperty("user.dir");
-//        System.out.println("Working Directory = " + wd);
-        String mainfile = "Main.fxml", // view/
-//                pathtofiles ="/src/main/java/org/h3abionet/genesis/",
-                cssfile="pca.css"; // css/
-//        File f = new File(wd+pathtofiles+mainfile);
-//        System.out.print(wd+pathtofiles+mainfile+" ");
-//        if (f.isFile())
-//            System.out.println("Exists");
-//        else
-//            System.out.println("Does not exist");
-//        f = new File(wd+pathtofiles+cssfile);
-//        System.out.print(wd+pathtofiles+cssfile+" ");
-//        if (f.isFile())
-//            System.out.println("Exists");
-//        else
-//            System.out.println("Does not exist");
+        String mainfile = "view/Main.fxml", // view/
+                cssfile="css/pca.css"; // css/
 
-String path = this.getClass().getClassLoader().getResource(mainfile).toString();
-File f = new File(mainfile);
-System.out.print(path+" ");
-        if (f.isFile())
-            System.out.println("Exists");
-        else
-            System.out.println("Does not exist");
-
-
-System.out.println("path = "+path+" getResource for "+mainfile+" "+getClass().getClassLoader().getResource(mainfile));
-
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(mainfile));
-        System.out.println("root =" + root);
-        System.out.println("getting scene, CSS file ="+ cssfile + " " + Genesis.class.getClassLoader().getResource(cssfile));
+        Parent root = FXMLLoader.load(getClass().getResource(mainfile));
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(Genesis.class.getClassLoader().getResource(cssfile).toExternalForm());
+        scene.getStylesheets().add(Genesis.class.getResource(cssfile).toExternalForm());
         
         // Press F to enter full screen mode or E to exit full screen mode
         stage.addEventFilter(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
@@ -176,7 +148,7 @@ System.out.println("path = "+path+" getResource for "+mainfile+" "+getClass().ge
      * @throws FileNotFoundException
      */
     public static void loadFxmlView(String fxmlLink) throws IOException{
-        FXMLLoader loader = new FXMLLoader(Genesis.class.getClassLoader().getResource(fxmlLink));
+        FXMLLoader loader = new FXMLLoader(Genesis.class.getResource(fxmlLink));
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(new Scene((Parent) loader.load()));
@@ -246,7 +218,6 @@ System.out.println("path = "+path+" getResource for "+mainfile+" "+getClass().ge
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("About to launch.");
         launch(args);
     }
 

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<ul>
+    <li><a href="home.html">Home</a></li>
+    <li><a href="pca.html">PCA</a></li>
+    <li><a href="admixture.html">Admixture</a></li>
+    <li><a href="data.html">Data</a></li>
+    <li><a href="install.html">Install</a></li>
+</ul>
+
+
+<h1>Structure Plots</h1>
+
+<div class="images">
+    <figure>
+        <img src="image/structureplot.png" alt="admixture graph">
+        <figcaption>Structure Plot</figcaption>
+    </figure>
+</div>
+
+<h2>Inputting Data</h2>
+<p>Genesis produces structure charts by taking input from Admixture or CLUMPP tools,
+together with a PLINK-style fam and optionally a phenotype file which would contain population labels.</p>
+
+<h2>Importing Data Files </h2>
+
+<p>
+    Click the Admixture button on the menu list. On the screen that opens, click Import Data File and navigate to
+    the admixture data file outputted by the Admixture/CLUMPP tools. If a graph has already been plotted, and you wish
+    to import multiple data files, you can click the Admixture button to import the files into the same project.
+</p>
+
+<div class="images">
+    <figure>
+        <img src="image/admix-input.png" alt="admixture input file">
+        <figcaption>Admixture Data Input Dialog</figcaption>
+    </figure>
+</div>
+
+
+<h3>Step 3: Settings Options</h3>
+<p>The Settings menu can be accessed by clicking the settings button.</p>
+
+<div class="images">
+    <figure>
+        <img src="image/admix-settings.png" alt="admixture settings">
+        <figcaption>Admixture Settings</figcaption>
+    </figure>
+</div>
+
+<dl>
+    <dt><b>Heading</b></dt>
+        <dd>To set/change the heading, open the settings menu and type the graph heading into the text box.
+        The default heading is "Admixture plot" To change its font, click the buttons and checkboxes and font color of choice.</dd>
+</dl>
+
+<dl>
+    <dt><b>Population Group Labels</b></dt>
+        <dd>To show/hide the population group labels, open the setting options menu and (un)check the Hide Population
+            Group Labels checkbox. To change the labels' fonts, (un)check the font modifiers in the labels section.</dd>
+
+        <dd>The angle of the labels can also be changed by spinning the Rotate Labels button in the labels section</dd>
+
+        <dd>You can also swap the position of population groups left/right by clicking the two population group labels to be swapped.</dd>
+</dl>
+
+<dl>
+    <dt><b>Margins.</b></dt>
+    <dd>To change the margins of the graphs, spin the values of the selectors to create space around the graphs.</dd>
+</dl>
+
+<dl>
+    <dt><b>Border</b></dt>
+        <dd>To show/hide the borders, open the setting options menu and (un)check the Show borders checkbox.
+        You can also increase the border size and set its color.</dd>
+</dl>
+
+<dl>
+    <dt><b>Graph Size and Spacing</b></dt>
+    <dd>To change the size and spacing of the structure plot, open the settings menu. You can select the values for the
+        graph height, set the thickness of each subject, and set the distance between graphs (graph spacing) at the bottom of the screen.</dd>
+</dl>
+
+<dl>
+    <dt><b>Horizontal/Vertical Orientation</b></dt>
+        <dd>To set the orientation of the structure plot, select the horizontal or vertical orientations from the bottom linear layout menu.</dd>
+</dl>
+
+
+<h2>Interacting with the Graph</h2>
+<p>Other settings and options can be changed by interacting with the graph. Certain elements
+    can be clicked to view or modify their options.</p>
+
+<dl>
+    <dt><b>Selecting Subjects</b></dt>
+        <dd>To select an individual subject on the structure plot, click on the subject on the plot.
+        This will bring up a subject menu where you can view the data about the subject (from
+        the phenotype data file) and gives the option to hide the subject from the plot.</dd>
+</dl>
+
+<dl>
+    <dt><b>Changing the colours and order of colours and individuals</b></dt>
+         <dd>
+             Right click anywhere on a graph and select Population Group Options. The menu below shows:
+             <div class="images">
+             <figure>
+                 <img src="image/populationgroupoptions.png" alt="population group options">
+                 <figcaption>Population Groups Options Dialog</figcaption>
+             </figure>
+             </div>
+         </dd>
+
+    <dt><b>This option allows you to:</b></dt>
+    <dd>Change colours (e.g., change red to blue)</dd>
+    <dd>Change the order of the colours (e.g., on a horizontal chart, move the red segments
+        from below the blue segments to above the red segments</dd>
+    <dd>Order the individuals within a population group by an ancestral group.</dd>
+</dl>
+<p>From the population groups options menu, click on the colour you wish to change.
+    It launches the colour picker below. Selecting the change in all plots checkbox
+    modifies the colour of the chosen ancestry in all charts.</p>
+
+<div class="images">
+    <figure>
+        <img src="image/admix-color-picker.png" alt="Ancestry Colour Picker">
+        <figcaption>Ancestry Colour Picker</figcaption>
+    </figure>
+</div>
+
+<p> Click the Change Ancestry button to Shift Up and Shift Down buttons (or the Shift Left and Shift Right buttons)
+    to change the order of the colours (i.e., on a horizontal graph, moving colours up and down; on a vertical
+    graph moving them left and right).</p>
+
+<p> Clicking on a <q>Sort Ancestry</q> button will sort the individuals in each population
+    group in order (left to right on a horizontal graph; top to bottom on vertical graph) so
+    that the individual with the least ancestry represented by that colour is first, and the
+    one with the greatest is last.</p>
+
+<p>For example the charts below shows the effect of sorting by blue ancestry colour</p>
+
+<div class="images">
+    <figure>
+        <img src="image/admix-chart-k4.png" alt="K=4 chart with unsorted blue colour" width="80%">
+        <figcaption>Admixture Chart for k=4 with unsorted blue color</figcaption>
+    </figure>
+</div>
+
+<div class="images">
+    <figure>
+        <img src="image/admix-sorted-blue-color.png" alt="K=4 chart with sorted blue colour" width="80%">
+        <figcaption>Admixture Chart for k=4 with sorted blue color</figcaption>
+    </figure>
+</div>
+
+<p>Clicking on <q>Dominant color</q> orders each population group in a similar way, but
+instead of sorting each population group on the same color, Genesis will compute the
+dominant ancestral component for that group and then order the individuals in that
+    population group by that component.</p>
+
+<p>The <q>Fam order</q> option is essentially an undo: the individuals are displayed in the
+    relative order that they appear in the fam file.</p>
+
+<h4>Recoloring a graph based on another graph</h4>
+
+<p>A common use case is to have structure charts for multiple values of K. When multiple
+graphs are imported some of the most glaring apparent differences will not be due
+to different numbers of colors but by arbitrary choices of which colors were used.
+Even though different values of K are used, typically a column from one value of K
+will correspond to a column from another value of K. However, since the order of the
+columns is arbitrary the colors are arbitrary. Genesis has an option which tries to
+match the colors of one graph with respect to another graph.
+    For example, a common case might be something like:</p>
+
+<div class="images">
+    <figure>
+        <img src="image/default-k-4-3-admixture.png" alt="Default admixture graph" width="80%">
+        <figcaption>Admixture Chart for k = 4 and 3</figcaption>
+    </figure>
+</div>
+
+To recolor a graph, right click anywhere on a graph and select Population Group
+Options and choose either Color this graph similar to next or Color this graph
+similar to previous (these options only appear if it makes sense). Genesis will recolor.
+In our example we will get
+
+<div class="images">
+    <figure>
+        <img src="image/k-3-colored-similar-to-4.png" alt="K =3 colored similar to default K=4" width="80%">
+        <figcaption>K=3 colored similar to default K=4</figcaption>
+    </figure>
+</div>
+
+Note that this option does not guarantee to recolor optimally. Rather it is intended to
+reduce the load on the user by making sensible choices for obvious coloring. (Indeed it
+is not clear what "optimal" means, or best to do coloring. For example, if a "yellow"
+color splits into "yellow" and "magenta" which new component should be yellow and
+which magenta may require insight into population dynamics). A very simple heuristic
+is currently used, which works well in practice. However, this will improve in time
+
+<h4>Searching for a Subject</h4>
+
+<p>To search for a subject in the graph by id, click the Search for individual button
+in the toolbar. In the dialog, enter the iid of the individual you
+wish to find and click Ok. If the individual was found in the data, it will be selected
+and the subject dialog for that individual will open. If the individual was not found, a
+    message will be displayed.</p>
+
+<h2>Annotating the Graph</h2>
+<h4>Creating a Label</h4>
+<p>To create a label and annotate the graph, click the annotate button.
+    The menu with the shapes will appear at the bottom of the Genesis main screen.
+    Click the shape you wish to add to make it appear on the chart.
+    Drag the shape to where you want it to be placed on the chart.</p>
+
+<h4>Editing or Deleting a Label</h4>
+<p>To reposition a label, click on it and drag to where it should go. To edit a label that has
+    been created, right click on the label to bring up the Label dialog. From this dialog you can
+    edit the label&#39;s text, change its color or delete the label.
+</p>
+
+<h4>Hiding individuals</h4>
+<p>To hide a subject from the graph, click on the subject on the graph to bring up the
+    subject dialog. From this menu, you can choose to hide the subject from the graph.</p>
+
+<h4>Hiding Groups</h4>
+<p>To hide a population group from the graph, click on the group in the key to bring
+    up the population group dialog and check the box labeled Hide this group from the
+    graph.</p>
+
+<h4>Showing Hidden Subjects and groups</h4>
+<p>To reshow a subject that has been hidden, click on the Hidden Individuals button and from the drop-down menu
+    that pops up, select the name of the subject or group that you wish to show. From the Hidden Individuals dialog,
+    you can now un hide this Individual/group from the graph.</p>
+
+<div class="images">
+    <figure width="40%">
+        <img src="image/pca-hidden-individuals.png" class="center" alt="pca subject details">
+        <figcaption>Select Hidden Individuals</figcaption>
+    </figure>
+</div>
+
+<h2>Useful scripts</h2>
+
+<h3>structure2CLUMPP: Wrapper script for the Structure tool</h3>
+
+<p>Genesis supports Admixture Q files and CLUMPP output files natively. CLUMPP&#39;s output
+format is a derivative of the Structure tool&#39;s output. (Thus, our naming convention is
+somewhat inaccurate, since CLUMPP format is really a sub-part of the Structure format).
+When Structure runs, it produces log information, summary information about the population
+and the inferred ancestry of individuals. This inferred ancestry is what we want and
+    can be found in the middle of the output file.</p>
+
+<p>The script structure2CLUMPP takes one mandatory argument, the file name of a structure
+    output file.</p>
+<code>python structure2CLUMPP testdata1.out_f</code>
+
+<p>By default, output is placed on standard output. The --outbase flag can be used to set
+    the base of the output name. The script appends to this base the suffix K.Q, where K is
+    the number of columns in the ancestry file (so as to be consistent with admixture).
+</p>
+<code>python structure2CLUMPP --outbase data testdata1.out_f</code>
+
+<p>If there are 4 columns in the file testdata1.out f, then this will produce a file data.4.Q.</p>
+
+<p>The script also has a flag --produce-fam which can be used to produce a bare bones
+    fam file if needed.  The full usage is:</p>
+
+<code>structure2CLUMPP [-h] [--outbase OUTBASE] [--produce-fam FAM_NAME] N</code>
+
+<p>produce admixture style output from structure output</p>
+
+<h4>positional arguments:</h4>
+
+<table style="width:70%">
+    <tr>
+        <th>Arguments</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>N</td>
+        <td>structure file</td>
+    </tr>
+</table>
+
+<h4>optional arguments:</h4>
+<table style="width:70%">
+    <tr>
+        <th>Arguments</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>-h, --help</td>
+        <td>show this help message and exit</td>
+    </tr>
+    <tr>
+        <td>--outbase OUTBASE</td>
+        <td>output file name base (default output to standard out)</td>
+    </tr>
+    <tr>
+        <td>--produce-fam FAM_NAME</td>
+        <td>produce fam file</td>
+    </tr>
+</table>
+
+<p><b>Technical details.</b> The output of the structure program contains various information, including
+    log and FST data. Immediately after the lines that start</p>
+
+<p><code>Inferred ancestry of individuals:</code></p>
+<p class="tab"><code> Label (%Miss) Pop: Inferred clusters</code></p>
+
+<p>follow the inferred ancestry of each individual followed by blank line. This is what we want.</p>
+<p>An extract might look something like this:</p>
+
+<table style="width:70%">
+    <tr>
+        <td>7</td>
+        <td>7</td>
+        <td>(0)</td>
+        <td>1 : </td>
+        <td>0.017</td>
+        <td>0.014</td>
+        <td>0.970</td>
+    </tr>
+    <tr>
+        <td>7</td>
+        <td>7</td>
+        <td>(0)</td>
+        <td>1 : </td>
+        <td>0.009</td>
+        <td>0.005</td>
+        <td>0.986</td>
+    </tr>
+    <tr>
+        <td>7</td>
+        <td>7</td>
+        <td>(0)</td>
+        <td>1 : </td>
+        <td>0.353</td>
+        <td>0.116</td>
+        <td>0.531</td>
+    </tr>
+</table>
+
+<p>Here K=3, and the ancestry of each individual can be found to the right of the colon (for
+    our purposes we can ignore what&#39;s to the left of the colon). The structure2CLUMPP script
+    extracts out this part of the output from the structure program and produces output
+    which could be output from CLUMPP. The Genesis program can read this input.
+</p>
+
+<h3>sortfamQwithin.py : ordering individuals by colour</h3>
+<p>Although Genesis directly supports some ordering by individuals, we have a script that
+    has more sophisticated functionality. In time this will be migrated into Genesis. Usually
+    individuals are ordered in the fam file by group, but within the group the ordering is
+    arbitrary. In admixed populations this may lead to confusing pictures because individuals
+    who are adjacent to each other may have different admixtures so one gets a very jagged
+    chart where a pattern is hard to discern. The script sortfamQwithin.py consistently sorts
+    a fam and Q file(s) so that within each group, the individuals are sorted by the dominant
+    ancestral population for that group. This script is documented here:
+</p>
+<a class="tab" href="url">http://www.bioinf.wits.ac.za/software/poputils/</a>
+
+<h3>Other scripts</h3>
+There are other useful scripts like <em>fams2phe</em> and <em>popifyfam.py</em> which can be used to create
+phenotype files in <a href="url">http://www.bioinf.wits.ac.za/software/poputils/</a>
+
+</body>
+
+</html>

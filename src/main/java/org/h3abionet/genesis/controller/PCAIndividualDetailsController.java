@@ -143,7 +143,7 @@ public class PCAIndividualDetailsController{
     // load iconOptionsController upon request
     @FXML
     private void changeIcon(ActionEvent event) throws IOException {
-            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getClassLoader().getResource("IconOptions.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/IconOptions.fxml"));
             Stage iconStage = new Stage();
             iconStage.initOwner(iconDisplay.getScene().getWindow());
             Scene icon_root = new Scene((Parent) fxmlLoader.load());
