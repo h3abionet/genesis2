@@ -181,10 +181,10 @@
             <version>21</version>
             <classifier>mac-aarch64</classifier>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.jfxtras</groupId>
             <artifactId>jfxtras-labs</artifactId>
             <version>9.0-r1</version>
-        </dependency>
+        </dependency-->
     </dependencies>
 </project>

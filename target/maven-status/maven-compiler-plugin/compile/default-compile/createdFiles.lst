@@ -38,6 +38,7 @@ org/h3abionet/genesis/model/AdmixtureGraph.class
 org/h3abionet/genesis/controller/AdmixtureIndividualDetailsController.class
 org/h3abionet/genesis/controller/PCADataInputController.class
 org/h3abionet/genesis/controller/AdmixtureGraphEventsHandler.class
+org/h3abionet/genesis/controller/DragController.class
 org/h3abionet/genesis/Genesis.class
 org/h3abionet/genesis/controller/LineOptions$1.class
 org/h3abionet/genesis/controller/RectangleOptions.class

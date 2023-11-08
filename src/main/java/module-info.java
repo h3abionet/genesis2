@@ -6,7 +6,7 @@ module org.h3abionet.genesis {
 //    requires javafx.webEmpty; //  javafx.scene.web
     requires javafx.base;
     requires javafx.graphics;
-    requires jfxtras.labs;
+//    requires jfxtras.labs;
     requires org.apache.pdfbox;
     requires javafx.web;
     // added for runtime binding

@@ -44,7 +44,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import jfxtras.labs.util.event.MouseControlUtil;
+// import jfxtras.labs.util.event.MouseControlUtil;
 import org.h3abionet.genesis.Genesis;
 import org.h3abionet.genesis.model.*;
 
@@ -688,7 +688,8 @@ public class MainController implements Initializable{
 
             updateAnnotationsLists(lineAnnotation); // store the properties
             addShapeToChart(line, currentTabIndex); // add to chart
-            addLineEvents(line, lineAnnotation); // add click and mouse events
+            DragController dragController = new DragController(line, true);
+            // addLineEvents(line, lineAnnotation); // add click and mouse events
         }catch(Exception e){
             Genesis.throwInformationException("First add the Chart");
         }
@@ -782,7 +783,9 @@ public class MainController implements Initializable{
             arrowAnnotation.setEndX(400);
             arrowAnnotation.setEndY(200);
 
-            MouseControlUtil.makeDraggable(arrow);
+            DragController dragController = new DragController(arrow, true);
+
+            //MouseControlUtil.makeDraggable(arrow);
 
             updateAnnotationsLists(arrowAnnotation); // store the properties
             addArrowToChart(arrow, currentTabIndex); // add to chart
@@ -801,7 +804,8 @@ public class MainController implements Initializable{
         arrow.setLayoutX(a.getLayoutX());
         arrow.setLayoutY(a.getLayoutY());
 
-        MouseControlUtil.makeDraggable(arrow);
+        DragController dragController = new DragController(arrow, true);
+        //MouseControlUtil.makeDraggable(arrow);
 
 //        if(a.getStrokeColor().equals("000000") || a.getStrokeColor().equals("ff")){
 //            arrow.setStroke(Color.web("000000"));
@@ -880,7 +884,8 @@ public class MainController implements Initializable{
             circleAnnotation.setStrokeColor(Color.BLACK); // black
 
             updateAnnotationsLists(circleAnnotation);// add the circle to the list of annotations
-            MouseControlUtil.makeDraggable(circle); // add drag event
+            DragController dragController = new DragController(circle, true);
+            //MouseControlUtil.makeDraggable(circle); // add drag event
             addShapeToChart(circle, currentTabIndex);
             addCircleEvents(circle, circleAnnotation);
         }catch(Exception e){
@@ -926,7 +931,8 @@ public class MainController implements Initializable{
             circle.setStroke(Color.web(circleAnn.getStrokeColor()));
         }
 
-        MouseControlUtil.makeDraggable(circle);
+        DragController dragController = new DragController(circle, true);
+        // MouseControlUtil.makeDraggable(circle);
         addImportedShape(circle, chartIndex,chartType);
         addCircleEvents(circle, circleAnn);
 
@@ -960,7 +966,8 @@ public class MainController implements Initializable{
 
 
             // can drag text
-            MouseControlUtil.makeDraggable(text);
+            DragController dragController = new DragController(text, true);
+            // MouseControlUtil.makeDraggable(text);
             updateAnnotationsLists(textAnnotation);
             addShapeToChart(text, currentTabIndex);
             addTextEvents(text, textAnnotation);
@@ -992,7 +999,8 @@ public class MainController implements Initializable{
             text.setFill(Color.web(textAnn.getFill()));
         }
 
-        MouseControlUtil.makeDraggable(text);
+        DragController dragController = new DragController(text, true);
+        // MouseControlUtil.makeDraggable(text);
         addImportedShape(text, chartIndex, chartType);
         addTextEvents(text, textAnn);
     }
@@ -1039,7 +1047,8 @@ public class MainController implements Initializable{
             rectangleAnnotation.setArcHeight(0);
             rectangleAnnotation.setArcWidth(0);
 
-            MouseControlUtil.makeDraggable(rec);
+            DragController dragController = new DragController(rec, true);
+            // MouseControlUtil.makeDraggable(rec);
             updateAnnotationsLists(rectangleAnnotation);// add the circle to the list of annotations
             addShapeToChart(rec, currentTabIndex);
             addRectangleEvents(rec, rectangleAnnotation);
@@ -1073,7 +1082,8 @@ public class MainController implements Initializable{
         }else{
             ;
         }
-        MouseControlUtil.makeDraggable(rec);
+        DragController dragController = new DragController(rec, true);
+        // MouseControlUtil.makeDraggable(rec);
         addImportedShape(rec, chartIndex, chartType);
         addRectangleEvents(rec, recAn);
     }
