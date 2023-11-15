@@ -110,10 +110,10 @@ public class LabelOptions{
         });
 
         if (results.get() == mainController.getButtonType("Done")){
-            // set annotations
+            // set annotations -- 
             textAnnotation.setStartX(text.getX());
             textAnnotation.setStartY(text.getY());
-            textAnnotation.setText(text.getText());
+            text.setText(textField.getText()); // all were textAnnotation FIXME
             textAnnotation.setFill(cp.getValue());
             textAnnotation.setFontFamily(String.valueOf(fontCombo.getValue()));
             textAnnotation.setFontSize((int) sizeCombo.getValue());
@@ -121,6 +121,8 @@ public class LabelOptions{
             textAnnotation.setLayoutX(text.getBoundsInParent().getCenterX()-20);//error margin
             textAnnotation.setLayoutY(text.getBoundsInParent().getCenterY());
             isDone = true;
+            System.out.println("Label modify Done, setting text to "+textField.getText());
+            System.out.println("Label text now "+text.getText());
         }
 
         if (results.get() == mainController.getButtonType("Delete")) {

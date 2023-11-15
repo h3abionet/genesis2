@@ -127,7 +127,7 @@ public class LineOptions extends Line{
         });
     }
 
-    public void modifyArrow(){
+    public void modifyLine(){
         Dialog dialog = mainController.getDialog(grid);
         Optional<ButtonType> results = dialog.showAndWait();
 
@@ -141,10 +141,10 @@ public class LineOptions extends Line{
             // store the properties of the annotation
             double strokeWidth = Double.parseDouble(stkWidth.getValue().toString());
             // store the properties of the annotation
-            lineAnnotation.setStartX(line.getStartX());
-            lineAnnotation.setStartY(line.getStartY());
-            lineAnnotation.setEndX(line.getEndX());
-            lineAnnotation.setEndY(line.getEndY());
+            line.setStartX(line.getStartX()); // all were lineAnnotation FIXME
+            line.setStartY(line.getStartY());
+            line.setEndX(line.getEndX());
+            line.setEndY(line.getEndY());
             lineAnnotation.setRotation(angleOfRotation);
             lineAnnotation.setStrokeColor(cpStroke.getValue());
             lineAnnotation.setStrokeWidth(strokeWidth);

@@ -129,7 +129,7 @@ public class Zoom {
         public void handle(final MouseEvent event) {
 
             // do nothing for a right-click
-            if (event.isSecondaryButtonDown()) {
+            if (event.isSecondaryButtonDown() || event.isControlDown()) {
                 return;
             }
 
@@ -148,7 +148,7 @@ public class Zoom {
         public void handle(final MouseEvent event) {
 
             // do nothing for a right-click
-            if (event.isSecondaryButtonDown()) {
+            if (event.isSecondaryButtonDown() || event.isControlDown()) {
                 return;
             }
 

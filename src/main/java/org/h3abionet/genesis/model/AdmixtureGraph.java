@@ -671,7 +671,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 MouseButton btn = e.getButton();
                 if (btn == MouseButton.PRIMARY) {
                     kValueClicked(e.getSource());
-                }else if(btn == MouseButton.SECONDARY){
+                }else if(btn == MouseButton.SECONDARY || e.isControlDown()){
                     ;
                 }
             });
@@ -713,7 +713,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
             // right click mouse event handler
                 admixChart.setOnMouseClicked((MouseEvent event) -> {
                     MouseButton button = event.getButton();
-                    if (button == MouseButton.SECONDARY) {
+                    if (button == MouseButton.SECONDARY || event.isControlDown()) {
                         // set the rowIndex of the clicked chart
                         rowIndexOfClickedAdmixChart = GridPane.getRowIndex(admixChart);
                         setRowIndexOfClickedAdmixChart(rowIndexOfClickedAdmixChart);
@@ -784,7 +784,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
         // add event to the label
         pane.setOnMouseClicked(event ->
         {
-            if (event.getButton() == MouseButton.SECONDARY)
+            if (event.getButton() == MouseButton.SECONDARY || event.isControlDown())
             {
                 try {
                     FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/PopulationGroupLabel.fxml"));

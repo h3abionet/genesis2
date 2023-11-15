@@ -51,7 +51,7 @@ class DragController {
                 mouseOffsetFromNodeZeroX = anchorX-event.getX();
                 mouseOffsetFromNodeZeroY = anchorY-event.getY();
             }
-            if (event.isSecondaryButtonDown()) {
+            if (event.isSecondaryButtonDown() || event.isControlDown()) {
                 cycleStatus = INACTIVE;
                 target.setTranslateX(0);
                 target.setTranslateY(0);

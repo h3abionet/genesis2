@@ -689,7 +689,7 @@ public class MainController implements Initializable{
             updateAnnotationsLists(lineAnnotation); // store the properties
             addShapeToChart(line, currentTabIndex); // add to chart
             DragController dragController = new DragController(line, true);
-            // addLineEvents(line, lineAnnotation); // add click and mouse events
+            addLineEvents(line, lineAnnotation); // add click and mouse events
         }catch(Exception e){
             Genesis.throwInformationException("First add the Chart");
         }
@@ -745,14 +745,14 @@ public class MainController implements Initializable{
         });
 
         line.setOnMouseClicked((MouseEvent e) -> {
-            if (e.getButton() == MouseButton.SECONDARY) {
+            if (e.getButton() == MouseButton.SECONDARY || e.isControlDown()) {
                 // use class circle options -- accepts chosen circle as a parameter
                 LineOptions lineOptions = new LineOptions(line, lineAnnotation);
                 lineOptions.setProject(project);
                 lineOptions.setSelectedTab(tabPane.getSelectionModel().getSelectedItem());
                 lineOptions.setMainController(this);
                 // modify the chosen circle
-                lineOptions.modifyArrow();
+                lineOptions.modifyLine();
             }
         });
 
@@ -846,7 +846,7 @@ public class MainController implements Initializable{
         });
 
         arrow.setOnMouseClicked((MouseEvent e) -> {
-            if (e.getButton() == MouseButton.SECONDARY) {
+            if (e.getButton() == MouseButton.SECONDARY || e.isControlDown()) {
                 // use class circle options -- accepts chosen circle as a parameter
                 ArrowOptions arrowOptions = new ArrowOptions(arrow, arrowAnnotation);
                 arrowOptions.setProject(project);
@@ -895,8 +895,10 @@ public class MainController implements Initializable{
 
     private void addCircleEvents(Circle circle, Annotation circleAnn){
 
+        System.out.println("Added Circle events");
         circle.setOnMouseClicked((MouseEvent e) -> {
-            if (e.getButton() == MouseButton.SECONDARY) {
+            if (e.getButton() == MouseButton.SECONDARY || e.isControlDown()) {
+                System.out.println("Circle mouse click");
                 circleAnn.setCenterX(e.getSceneX());
                 circleAnn.setCenterY(e.getSceneY());
                 // use class circle options -- accepts chosen circle as a parameter
@@ -1008,7 +1010,7 @@ public class MainController implements Initializable{
     private void addTextEvents(Text text, Annotation textAnnotation){
         // add mouse event to text for editing options
         text.setOnMouseClicked((MouseEvent e) -> {
-            if (e.getButton() == MouseButton.SECONDARY) {
+            if (e.getButton() == MouseButton.SECONDARY || e.isControlDown()) {
                 // use class label options -- accepts chosen label as a parameter
                 LabelOptions labelOptions = new LabelOptions(text, textAnnotation);
                 labelOptions.setProject(project);
@@ -1090,7 +1092,7 @@ public class MainController implements Initializable{
 
     private void addRectangleEvents(Rectangle rec, Annotation rectangleAnnotation){
         rec.setOnMouseClicked((MouseEvent e) -> {
-            if (e.getButton() == MouseButton.SECONDARY) {
+            if (e.getButton() == MouseButton.SECONDARY || e.isControlDown()) {
                 // use class rectangle options -- accepts chosen rectangle as a parameter
                 RectangleOptions rectangleOptions = new RectangleOptions(rec, rectangleAnnotation);
                 rectangleOptions.setProject(project);
