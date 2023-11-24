@@ -113,7 +113,8 @@ public class LabelOptions{
             // set annotations -- 
             textAnnotation.setStartX(text.getX());
             textAnnotation.setStartY(text.getY());
-            text.setText(textField.getText()); // all were textAnnotation FIXME
+            text.setText(textField.getText()); // was textAnnotation FIXME
+            // textAnnotation.setText(textField.getText());
             textAnnotation.setFill(cp.getValue());
             textAnnotation.setFontFamily(String.valueOf(fontCombo.getValue()));
             textAnnotation.setFontSize((int) sizeCombo.getValue());
