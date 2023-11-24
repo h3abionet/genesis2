@@ -29,10 +29,10 @@ Assuming the JavaFX library is in directory named in shell variable `$JAVAFX` an
 
 There is a Bash script `genesis.sh` in this repository (in `scripts`) that can run the above. To invoke, create environment variables that the script will use (it has defaults if you don’t do this). To the the above effect (modifying the paths to suit your install):
 
-    export LIB=/usr/local/lib/JavaFX-21
+    export JAVAFX=/usr/local/lib/JavaFX-21
     export JARF=$HOME/Applications/Genesis2JavaFX-2.1.1a.jar
 
-Note: in Unix shell scripting, you can create a shell variable wuthout using the word `EXPORT` but the value will not be visible to a child process, i.e., the script will not see it.
+Note: in Unix shell scripting, you can create a shell variable wuthout using the word `EXPORT` but the value will not be visible to a child process, i.e., the script will not see it. The JavaFX path should contain the actual library files -- if they are in a directory called `lib` append that to the path.
 
 ## Building on different environemts
 
