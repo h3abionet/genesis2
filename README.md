@@ -14,18 +14,19 @@ The latest release includes builds for:
 * Linux (Genesis2JavaFX-2.1.1a-Ubuntu.jar -- built on Ubuntu 22.04.3 LTS)
 * Windows (Genesis2JavaFX-2.1.1a-Windows.jar -- built on Windows 11)
 
-and should be possible to run by double-clicking on the build in the file browser (Finder in the Mac). On Ubuntu you may need to add execute permissions. Eeither look at Properties in the file manager where you can set execute permission -- easy in GNOME -- or on the command line:
+and should be possible to run by double-clicking on the build in the file browser (Finder in the Mac). On Ubuntu you may need to add execute permissions. Either look at Properties in the file manager where you can set execute permission -- easy in GNOME -- or on the command line:
 
     chmod +x pathtojarfile/Genesis2JavaFX-2.1.1a-Ubuntu.jar
 
 A build on another platform should work, subject to checking that the right dependences for JavaFX libraries are used. The way the project is set up, Maven should automatically find them.
-
 
 To run the version that does not include dependences on the command line, you need to download a version of the [JavaFX SDK](https://gluonhq.com/products/javafx/).
 
 Assuming the JavaFX library is in directory named in shell variable `$JAVAFX` and your JAR file is in `$JARF`, you can invoke it as follows:
 
     java --module-path $JAVAFX --add-modules javafx.controls,javafx.fxml -jar $JARF
+
+*Note*: the library path should go to the actual contents so if e.g. the path is `/usr/local/lib/JavaFX/lib` then include the trailing `/lib`. In my examples, the libraries are not in another layer of `lib` directory as this is implied by the rest of the path.
 
 There is a Bash script `genesis.sh` in this repository (in `scripts`) that can run the above. To invoke, create environment variables that the script will use (it has defaults if you don’t do this). To the the above effect (modifying the paths to suit your install):
 
