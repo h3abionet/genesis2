@@ -71,7 +71,7 @@ Data file types available to open are:
 
 1. Once a project is started (either opened or started from new), you cannot change to another project in the same session.
 2. Annotations are not completely correct:
-* text annotations:
+ * text annotations:
       * only update colour when editing and the text only updates when the edit is accepted (click **Done**)
       * The **Extra Bold** attribute has no effect
     * **Cancel** does not work when editing annotations
@@ -81,6 +81,8 @@ Data file types available to open are:
     Running from the IDE broke when I took out detail specific to the JavaFX Mac install in the Maven `pom.xml` file. This needs to be fixed to be able to use the debugger.
 
 3. A few exceptions get thrown, but not consistently.
+
+The main difficulty in correcting the annotations issues is that the way annotations are implemented is clumsy. There is a single Annotations class that represents every variation and the different annotation classes each embed this class; the proposed fix: a top-level Annotation class that only contains the common properties of all annotations and derived classes that implement functions specific to that annotation type. This will make it easier to record the state of the annotation before edits and restore it if the edit is cancelled. It is also weird that the Annotation class is in package Model while the uses of it are in Controller. You could argue that the contents of an annotation are part of the data but why are methods to manipulate it split between the model and controller?
      
 
 Funded by the NIH, Grant U24HG006941
