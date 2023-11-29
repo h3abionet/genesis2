@@ -70,21 +70,30 @@ Data file types available to open are:
 
 ## Known issues
 
-1. Once a project is started (either opened or started from new), you cannot change to another project in the same session.
-2. Annotations are not completely correct:
+1. If a new project is started (using **New**), you cannot change to another project in the same session: both **New** and **Import** are no longer available.
+
+2. If you open a project (**Load**), you can no longer create a new project, though you can load another project.
+
+3. There is no way to close a project once it is opened. You can close all the individual panes but when the last closes, it asks you to save, without the load to open or create another project.
+
+4. Saving saves everything that is currently visible; this possibly is what you want, though it can be confusing as to what name to use to save.
+
+5. Annotations are not completely correct:
  * text annotations:
       * Only update colour when editing and the text only updates when the edit is accepted (click **Done**)
       * The **Extra Bold** attribute has no effect
     * **Cancel** does not work when editing annotations
     * With rectangular annotations, setting a rounded corner is called the `arch size`, which should be `arc` and is in pixels, which makes for barely visible varition -- I propose changing this to mm and making the text `Round corner diameter (mm):`, with a range from 0 to 10.
 
-2. The **Show/Hide** feature does not work.
+6. The **Show/Hide** feature does not work.
 
-    Running from the IDE broke when I took out detail specific to the JavaFX Mac install in the Maven `pom.xml` file. This needs to be fixed to be able to use the debugger.
+7. Running from the IDE broke when I took out detail specific to the JavaFX Mac install in the Maven `pom.xml` file. This needs to be fixed to be able to use the debugger.
 
-3. A few exceptions get thrown, but not consistently.
+8. A few exceptions get thrown, but not consistently.
 
-The main difficulty in correcting the annotations issues is that the way annotations are implemented is clumsy. There is a single Annotations class that represents every variation and the different annotation classes each embed this class; the proposed fix: a top-level Annotation class that only contains the common properties of all annotations and derived classes that implement functions specific to that annotation type. This will make it easier to record the state of the annotation before edits and restore it if the edit is cancelled. It is also weird that the Annotation class is in package Model while the uses of it are in Controller. You could argue that the contents of an annotation are part of the data but why are methods to manipulate it split between the model and controller?
+The main difficulty in correcting the annotations issues is that the way annotations are implemented is clumsy. There is a single `Annotations` class that represents every variation and the different annotation classes each embed this class; the proposed fix: a top-level `Annotation` class that only contains the common properties of all annotations and derived classes that implement functions specific to that annotation type. This will make it easier to record the state of the annotation before edits and restore it if the edit is cancelled. It is also weird that the Annotation class is in package Model while the uses of it are in Controller. You could argue that the contents of an annotation are part of the data but why are methods to manipulate it split between the model and controller?
+
+Another issue is the confusing way a project is implemented; some thought needs to go into re-architecting this.
      
 
 Funded by the NIH, Grant U24HG006941
