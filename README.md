@@ -1,5 +1,8 @@
 
-*Genesis 2*
+# Genesis 2
+
+
+### Execution instructions
 
 Note that the following instructions are a work in progress.
 
@@ -20,7 +23,7 @@ and should be possible to run by double-clicking on the build in the file browse
 
 If you wish to run from the command line, the following should work
 
-  `java  -jar Genesis2JavaFX-2.1.1a-Mac-ARM.jar`
+  java  -jar Genesis2JavaFX-2.1.1a-Mac-ARM.jar
 
 (Use the JAR file for your environment)
 
