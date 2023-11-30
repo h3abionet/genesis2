@@ -1,5 +1,8 @@
 
-*Genesis 2*
+# Genesis 2
+
+
+### Execution instructions
 
 Note that the following instructions are a work in progress.
 
@@ -17,6 +20,15 @@ The latest release includes builds for:
 and should be possible to run by double-clicking on the build in the file browser (Finder in the Mac). On Ubuntu you may need to add execute permissions. Either look at Properties in the file manager where you can set execute permission -- easy in GNOME -- or on the command line:
 
     chmod +x pathtojarfile/Genesis2JavaFX-2.1.1a-Ubuntu.jar
+
+If you wish to run from the command line, the following should work
+
+    java  -jar Genesis2JavaFX-2.1.1a-Mac-ARM.jar
+
+(Use the JAR file for your environment)
+
+## Other builds
+    
 
 A build on another platform should work, subject to checking that the right dependences for JavaFX libraries are used. The way the project is set up, Maven should automatically find them.
 
