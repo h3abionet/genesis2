@@ -96,6 +96,9 @@ Data file types available to open are:
       * The **Extra Bold** attribute has no effect
     * **Cancel** does not work when editing annotations
     * With rectangular annotations, setting a rounded corner is called the `arch size`, which should be `arc` and is in pixels, which makes for barely visible varition -- I propose changing this to mm and making the text `Round corner diameter (mm):`, with a range from 0 to 10.
+    * Arrow annotations do not save (a bug) and lack a few features
+    	* 	you cannot set the colour
+    	*  you cannot set the line width
 
 6. The **Show/Hide** feature does not work.
 
