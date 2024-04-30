@@ -18,8 +18,10 @@ import org.h3abionet.genesis.model.Project;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javafx.geometry.Point2D;
+import javafx.scene.paint.Paint;
 
-public class LineOptions extends Line{
+public class LineOptions extends Line {
 
     private final Line line;
     private boolean isDeleted;
@@ -33,25 +35,68 @@ public class LineOptions extends Line{
     private Slider lineLengthSlider;
     private Label adjustLineLengthLbl;
     private Annotation lineAnnotation;
-    private double angleOfRotation;
+    private double angleOfRotation = 0.0;
     private Tab selectedTab;
     private Project project;
     private MainController mainController;
+    private Rotate rotate;
+    private Point2D oldPivot = null;
+
+    private double oldStartX, oldStartY, oldEndX, oldEndy;
 
     public LineOptions(Line line, Annotation lineAnnotation) {
         isDone = false;
         isDeleted = false;
         this.line = line;
+        // the original in case we need to revert (Cancel)
+        // and update it once changes are set
         this.lineAnnotation = lineAnnotation;
+        rotate = null;
+
         setControllers();
+    }
+    
+    private static void printLine(String s, Line l) {
+        System.out.println(s + "Start: " + l.getStartX() + "," + l.getStartY()
+                + " End: " + l.getEndX() + "," + l.getEndY()
+        + "translate x,y" + l.getTranslateX()+","+l.getTranslateY());
+    }
+
+
+    public static void lineToAnnotation(Annotation lineAnnotation, Line line) {
+        lineAnnotation.setStartX(line.getStartX());
+        lineAnnotation.setStartY(line.getStartY());
+        lineAnnotation.setEndX(line.getEndX());
+        lineAnnotation.setEndY(line.getEndY());
+        lineAnnotation.setStrokeWidth(line.getStrokeWidth());
+        lineAnnotation.setStrokeColor((Color) line.getStroke());
+    }
+
+    public static void annotationToLine(Line line, Annotation lineAnnotation,
+            boolean setRotate) {
+        if (setRotate) {
+            Rotate rotate = new Rotate();
+            rotate.setPivotX(lineAnnotation.getEndX());
+            rotate.setPivotY(lineAnnotation.getEndY());
+            rotate.setAngle(lineAnnotation.getRotation());
+            line.getTransforms().add(rotate);
+        }
+        line.setStartX(lineAnnotation.getStartX());
+        line.setStartY(lineAnnotation.getStartY());
+        line.setEndX(lineAnnotation.getEndX());
+        line.setEndY(lineAnnotation.getEndY());
+        line.setStroke(Color.web(lineAnnotation.getStrokeColor()));
+        line.setStrokeWidth(lineAnnotation.getStrokeWidth());
+        line.setTranslateX(lineAnnotation.getTranslateX());
+        line.setTranslateY(lineAnnotation.getTranslateY());
     }
 
     public void setAngleOfRotation(double angleOfRotation) {
-        this.angleOfRotation = angleOfRotation;
+        this.angleOfRotation += angleOfRotation;
     }
 
     private void setControllers() {
-        adjustLineLengthLbl = new Label("Reduce Line");
+        adjustLineLengthLbl = new Label("Adjust Line length");
         StrokeWidthLabel = new Label("Stroke Width");
         cpStrokeLabel = new Label("Stroke color: ");
         StrokeWidthLabel = new Label("Stroke Width");
@@ -61,10 +106,9 @@ public class LineOptions extends Line{
 
         stkWidth = new ComboBox(FXCollections.
                 observableArrayList(IntStream.range(1, 11).boxed().collect(Collectors.toList())));
-        stkWidth.setValue((int)line.getStrokeWidth());
+        stkWidth.setValue((int) line.getStrokeWidth());
 
-
-        rotationSlider = new Slider(-180, 180, line.getRotate());
+        rotationSlider = new Slider(-180, 180, lineAnnotation.getRotation());
         rotationSlider.setShowTickLabels(true);
         rotationSlider.setShowTickMarks(true);
         rotationSlider.setOrientation(Orientation.HORIZONTAL);
@@ -84,8 +128,8 @@ public class LineOptions extends Line{
 
         // add controllers to the grid
         grid.add(new Label("Line options"), 0, 0);
-        grid.add(new Label("Rotation Slider"), 0,1);
-        grid.add(rotationSlider,1,1);
+        grid.add(new Label("Rotation Slider"), 0, 1);
+        grid.add(rotationSlider, 1, 1);
 
         grid.add(StrokeWidthLabel, 0, 2);
         grid.add(stkWidth, 1, 2);
@@ -104,63 +148,65 @@ public class LineOptions extends Line{
         });
 
         //creating the rotation transformation
-        Rotate rotate = new Rotate();
+        rotate = new Rotate();
         //Setting pivot points for the rotation
         rotate.setPivotX(line.getEndX());
         rotate.setPivotY(line.getEndY());
+        line.getTransforms().add(rotate);
+        // each rotate adds to previous
+        // add to lineAnnotation if Done
 
         //Linking the transformation to the slider
         rotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<?extends Number> observable, Number oldValue, Number newValue){
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 //Setting the angle for the rotation
-                rotate.setAngle((double) newValue);
-                setAngleOfRotation((double) newValue);
-                //Adding the transformation to the line
+                rotate.setAngle((double) newValue-lineAnnotation.getRotation());
             }
         });
-        line.getTransforms().add(rotate);
 
         //Linking the transformation to the slider
         lineLengthSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            double  reduction = (double) newValue;
-            line.setStartX(line.getEndX()-reduction);
+            double reduction = (double) newValue;
+            line.setStartX(line.getEndX() - reduction);
         });
     }
 
-    public void modifyLine(){
+    public void modifyLine() {
         Dialog dialog = mainController.getDialog(grid);
+
         Optional<ButtonType> results = dialog.showAndWait();
 
-        dialog.setOnCloseRequest(e->{
-            if(isDone==false && isDeleted==false){
+        dialog.setOnCloseRequest(e -> {
+            if (isDone == false && isDeleted == false) {
                 e.consume();
             }
         });
 
-        if (results.get() == mainController.getButtonType("Done")){
+        if (results.get() == mainController.getButtonType("Done")) {
             // store the properties of the annotation
             double strokeWidth = Double.parseDouble(stkWidth.getValue().toString());
             // store the properties of the annotation
-            line.setStartX(line.getStartX()); // all were lineAnnotation FIXME
-            line.setStartY(line.getStartY());
-            line.setEndX(line.getEndX());
-            line.setEndY(line.getEndY());
-            lineAnnotation.setRotation(angleOfRotation);
-            lineAnnotation.setStrokeColor(cpStroke.getValue());
-            lineAnnotation.setStrokeWidth(strokeWidth);
-            lineAnnotation.setLayoutX(line.getBoundsInParent().getMinX()+20);
-            lineAnnotation.setLayoutY(line.getBoundsInParent().getMinY()-129);
+            lineToAnnotation(lineAnnotation, line);
+            // each rotate adds to previous so do this serpately from copying
+            // from JavaFX line to model
+            lineAnnotation.setRotation(rotate.getAngle()+lineAnnotation.getRotation());
+// no idea why you would do this as absolute coordinates seem to work
+//            lineAnnotation.setLayoutX(line.getBoundsInParent().getMinX()+20);
+//            lineAnnotation.setLayoutY(line.getBoundsInParent().getMinY()-129);
             isDone = true;
         }
 
         if (results.get() == mainController.getButtonType("Delete")) {
             line.setVisible(false);
-            project.revomeAnnotation(selectedTab, lineAnnotation);
+            project.removeAnnotation(selectedTab, lineAnnotation);
             isDeleted = true;
         }
 
         if (results.get() == mainController.getButtonType("Cancel")) {
-            return;
+            annotationToLine (line, lineAnnotation, false);
+            if (rotate != null) {
+                line.getTransforms().remove(rotate);
+            }
         }
     }
 

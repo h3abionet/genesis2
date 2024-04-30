@@ -13,10 +13,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import org.h3abionet.genesis.model.Annotation;
 import org.h3abionet.genesis.model.Project;
@@ -52,6 +54,13 @@ public class CircleOptions implements Serializable{
         this.circle = circle;
         this.circleAnnotation = circleAnn;
         setControllers();
+    }
+    
+    public static void printCircle (String prefix, Annotation circleAnn) {
+    System.out.print(" Centre X, Y: "+circleAnn.getCenterX()+", "
+            +circleAnn.getCenterY()+"; radius: "
+            +circleAnn.getRadius()+"; translate X,y: "
+            +circleAnn.getTranslateX()+","+circleAnn.getTranslateY());
     }
     
     private void setControllers(){
@@ -99,8 +108,32 @@ public class CircleOptions implements Serializable{
             circle.setStroke(cpStroke.getValue());
         });
     }
+    
+    public static void circleToAnnotation(Annotation circleAnn, Circle circle) {
+        circleAnn.setCenterX(circle.getCenterX());
+        circleAnn.setCenterY(circle.getCenterY());
+        //circleAnn.setFill((Color) circle.getFill()); // transparent doesn't translate easily
+        circleAnn.setRadius(circle.getRadius());
+        circleAnn.setStrokeColor((Color)circle.getStroke());
+        circleAnn.setStrokeWidth(circle.getStrokeWidth());
+//        circleAnn.setTranslateX(circle.getTranslateX());
+//        circleAnn.setTranslateY(circle.getTranslateY());
+    }
+
+    public static void annotationToCircle(Circle circle, Annotation circleAnn) {
+        circle.setCenterX(circleAnn.getCenterX());
+        circle.setCenterY(circleAnn.getCenterY());
+        circle.setFill(Color.TRANSPARENT);
+        circle.setRadius(circleAnn.getRadius());
+        circle.setStroke(Paint.valueOf(circleAnn.getStrokeColor()));
+        circle.setStrokeWidth(circleAnn.getStrokeWidth());
+        circle.setTranslateX(circleAnn.getTranslateX());
+        circle.setTranslateY(circleAnn.getTranslateY());
+    }
+
 
     public void modifyCircle(){
+        circleToAnnotation (circleAnnotation, circle);
         Dialog dialog = mainController.getDialog(grid);
         Optional<ButtonType> results = dialog.showAndWait();
 
@@ -112,23 +145,18 @@ public class CircleOptions implements Serializable{
 
         if (results.get() == mainController.getButtonType("Done")){
             // set annotations
-            double strokeWidth = Double.parseDouble(stkWidth.getValue().toString());
-            circleAnnotation.setRadius(slider.getValue());
-            circleAnnotation.setStrokeWidth(strokeWidth);
-            circleAnnotation.setStrokeColor(cpStroke.getValue());
-            circleAnnotation.setLayoutX(circle.getBoundsInParent().getCenterX());
-            circleAnnotation.setLayoutY(circle.getBoundsInParent().getCenterY());
+            circleToAnnotation (circleAnnotation, circle);
             isDone = true;
         }
 
         if (results.get() == mainController.getButtonType("Delete")) {
             circle.setVisible(false);
-            project.revomeAnnotation(selectedTab, circleAnnotation);
+            project.removeAnnotation(selectedTab, circleAnnotation);
             isDeleted = true;
         }
 
         if (results.get() == mainController.getButtonType("Cancel")) {
-            return;
+            annotationToCircle (circle, circleAnnotation);
         }
     }
 

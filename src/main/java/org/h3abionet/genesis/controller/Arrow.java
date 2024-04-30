@@ -9,14 +9,22 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.shape.Line;
-
 import java.io.Serializable;
+import javafx.geometry.Point2D;
 
 /**
  *
  * @author Henry
+ *
+ * class Arrow code from
+ * https://stackoverflow.com/questions/41353685/how-to-draw-arrow-javafx-pane
+ * Author: Fabian (no surname supplied); copyright owner Fabian Licensed under
+ * CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/ Only alteration:
+ * adding debugPrint method.
+ *
  */
-public class Arrow extends Group {
+public class Arrow extends Group implements Serializable {
+
     private final Line line;
 
     public Arrow() {
@@ -46,16 +54,15 @@ public class Arrow extends Group {
                 arrow1.setStartY(ey);
                 arrow2.setStartX(ex);
                 arrow2.setStartY(ey);
-            }
-            else {
-                double factor = arrowLength / Math.hypot(sx-ex, sy-ey);
-                double factorO = arrowWidth / Math.hypot(sx-ex, sy-ey);
+            } else {
+                double factor = arrowLength / Math.hypot(sx - ex, sy - ey);
+                double factorO = arrowWidth / Math.hypot(sx - ex, sy - ey);
 
                 // part in direction of main line
                 double dx = (sx - ex) * factor;
                 double dy = (sy - ey) * factor;
 
-                // part ortogonal to main line
+                // part orthogonal to main line
                 double ox = (sx - ex) * factorO;
                 double oy = (sy - ey) * factorO;
 
@@ -67,6 +74,10 @@ public class Arrow extends Group {
         };
 
         // add updater to properties
+        // these two added -- PM
+        translateXProperty().addListener(updater);
+        translateYProperty().addListener(updater);
+
         startXProperty().addListener(updater);
         startYProperty().addListener(updater);
         endXProperty().addListener(updater);
@@ -75,7 +86,6 @@ public class Arrow extends Group {
     }
 
     // start/end properties
-
     public final void setStartX(double value) {
         line.setStartX(value);
     }
@@ -122,6 +132,17 @@ public class Arrow extends Group {
 
     public final DoubleProperty endYProperty() {
         return line.endYProperty();
+    }
+
+    public void debugPrint() {
+        Point2D localToParentStart = localToParent(getStartX(), getStartY()),
+                localToParentEnd = localToParent(getEndX(), getEndY());
+
+        System.out.print("start x = " + getStartX() + " start y = " + getStartY()
+                + "end x = " + getEndX() + "end y =" + getEndY()
+                + "; Translate x,y" + getTranslateX() + ", " + getTranslateY()
+                + "; angle " + getRotate() + "; localToParentStartX,Y" + localToParentStart.getX()
+                + ", " + localToParentStart.getY());
     }
 
 }

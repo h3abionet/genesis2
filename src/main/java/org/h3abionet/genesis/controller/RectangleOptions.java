@@ -17,9 +17,12 @@ import javafx.scene.shape.Rectangle;
 import org.h3abionet.genesis.model.Annotation;
 import org.h3abionet.genesis.model.Project;
 
+import java.awt.Toolkit;
+
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javafx.scene.paint.Paint;
 
 /**
  *
@@ -34,19 +37,30 @@ public class RectangleOptions{
     private Label widthSizeLabel;
     private Label heightSizeLabel;
     private Label cpStrokeLabel;
-    private Label archSizeLabel;
+    private Label arcSizeLabel;
     private ColorPicker cpStroke;
     private Slider widthSlider;
     private Slider heightSlider;
     private ComboBox stkWidth;
-    private ComboBox archSizeCombo;
+    private ComboBox arcSizeCombo;
     private Annotation rectangleAnnotation;
     private Project project;
     private Tab selectedTab;
     private boolean isDone;
     private boolean isDeleted;
     private MainController mainController;
+    
+    private static int dpi = java.awt.Toolkit.getDefaultToolkit().getScreenResolution();
 
+    public static double mmToPixels (double mm) {
+        return mm*dpi/25.4;
+    }
+
+    public static double pixelsToMM (double pixels) {
+        return pixels/(dpi/25.4);
+    }
+
+    
     public RectangleOptions(Rectangle rectangle, Annotation rectangleAnnotation) {
         isDone = false;
         isDeleted = false;
@@ -60,7 +74,7 @@ public class RectangleOptions{
         widthSizeLabel = new Label("Width: ");
         heightSizeLabel = new Label("Height: ");
         cpStrokeLabel = new Label("Stroke color: ");
-        archSizeLabel = new Label("Arch size: ");
+        arcSizeLabel = new Label("Corner arc diameter (pixels): ");
         
         cpStroke = new ColorPicker((Color) rectangle.getStroke());
         cpStroke.getStyleClass().add("split-button");
@@ -77,9 +91,10 @@ public class RectangleOptions{
                         observableArrayList(IntStream.range(1, 11).boxed().collect(Collectors.toList())));
                 stkWidth.setValue((int)rectangle.getStrokeWidth());
         
-        archSizeCombo = new ComboBox(FXCollections.
-                observableArrayList(IntStream.range(1, 11).boxed().collect(Collectors.toList())));
-        archSizeCombo.setValue((int)rectangle.getArcWidth());
+        arcSizeCombo = new ComboBox(FXCollections.
+                observableArrayList(IntStream.range(0, 41).
+                        filter(x -> x % 8 == 0).boxed().collect(Collectors.toList())));
+        arcSizeCombo.setValue(rectangle.getArcWidth()); //pixelsToMM(rectangle.getArcWidth()));
         
         // set the grid
         grid = new GridPane();
@@ -97,8 +112,8 @@ public class RectangleOptions{
         grid.add(heightSlider, 2, 3);
         grid.add(cpStrokeLabel, 1, 4);
         grid.add(cpStroke, 2, 4);
-        grid.add(archSizeLabel, 1, 5);
-        grid.add(archSizeCombo, 2, 5);
+        grid.add(arcSizeLabel, 1, 5);
+        grid.add(arcSizeCombo, 2, 5);
         
         //add event handlers to the controllers
         widthSlider.valueProperty().addListener((ObservableValue <? extends Number >  
@@ -119,11 +134,40 @@ public class RectangleOptions{
             rectangle.setStrokeWidth((int) stkWidth.getValue());
         });
         
-        archSizeCombo.setOnAction(e ->{
-            rectangle.setArcHeight((int)archSizeCombo.getValue());
-            rectangle.setArcWidth((int)archSizeCombo.getValue());
+        arcSizeCombo.setOnAction(e ->{
+            int pixels = 0;
+            if (arcSizeCombo.getValue() != null)
+                pixels = (int) arcSizeCombo.getValue(); // mmToPixels((int)arcSizeCombo.getValue());
+            rectangle.setArcHeight(pixels);
+            rectangle.setArcWidth(pixels);
         });
     }
+
+        public static void rectangleToAnnotation(Annotation rectangleAnn, Rectangle rectangle) {
+        rectangleAnn.setWidth(rectangle.getWidth());
+        rectangleAnn.setHeight(rectangle.getHeight());
+        rectangleAnn.setArcHeight(rectangle.getArcHeight());
+        rectangleAnn.setArcWidth(rectangle.getArcWidth());
+        rectangleAnn.setStrokeColor((Color)rectangle.getStroke());
+        rectangleAnn.setStrokeWidth(rectangle.getStrokeWidth());
+        rectangleAnn.setStartX(rectangle.getX());
+        rectangleAnn.setStartY(rectangle.getY());
+    }
+
+    public static void annotationToRectangle(Rectangle rectangle, Annotation rectangleAnn) {
+        rectangle.setX(rectangleAnn.getStartX());
+        rectangle.setY(rectangleAnn.getStartY());
+        rectangle.setWidth(rectangleAnn.getWidth());
+        rectangle.setHeight(rectangleAnn.getHeight());
+        rectangle.setArcHeight(rectangleAnn.getArcHeight());
+        rectangle.setArcWidth(rectangleAnn.getArcWidth());
+        rectangle.setFill(Color.TRANSPARENT);
+        rectangle.setStroke(Paint.valueOf(rectangleAnn.getStrokeColor()));
+        rectangle.setStrokeWidth(rectangleAnn.getStrokeWidth());
+        rectangle.setTranslateX(rectangleAnn.getTranslateX());
+        rectangle.setTranslateY(rectangleAnn.getTranslateY());
+    }
+
 
     public void modifyRectangle(){
         Dialog dialog = mainController.getDialog(grid);
@@ -137,25 +181,19 @@ public class RectangleOptions{
 
         if (results.get() == mainController.getButtonType("Done")){
             // set annotations
-            rectangleAnnotation.setWidth(rectangle.getWidth());
-            rectangleAnnotation.setHeight(rectangle.getHeight());
-            rectangleAnnotation.setArcHeight(rectangle.getArcHeight());
-            rectangleAnnotation.setArcWidth(rectangle.getArcWidth());
-            rectangleAnnotation.setStrokeWidth(rectangle.getStrokeWidth());
-            rectangleAnnotation.setStrokeColor(cpStroke.getValue());
-            rectangleAnnotation.setLayoutX(rectangle.getBoundsInParent().getMinX()+20); // 20 error margin
-            rectangleAnnotation.setLayoutY(rectangle.getBoundsInParent().getMinY()+20);
+            rectangleToAnnotation(rectangleAnnotation, rectangle);
             isDone = true;
         }
 
         if (results.get() == mainController.getButtonType("Delete")) {
             rectangle.setVisible(false);
-            project.revomeAnnotation(selectedTab, rectangleAnnotation);
+            project.removeAnnotation(selectedTab, rectangleAnnotation);
             isDeleted = true;
         }
 
         if (results.get() == mainController.getButtonType("Cancel")) {
-            return;
+            // recover from annotation object
+            annotationToRectangle(rectangle, rectangleAnnotation);
         }
     }
 

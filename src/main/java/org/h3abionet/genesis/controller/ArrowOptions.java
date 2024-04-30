@@ -1,19 +1,24 @@
 package org.h3abionet.genesis.controller;
 
+import java.io.Serializable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.transform.Rotate;
 import org.h3abionet.genesis.model.Annotation;
 import org.h3abionet.genesis.model.Project;
+import java.io.Serializable;
+import java.util.ArrayList;
 
 import java.util.Optional;
+import javafx.geometry.Point2D;
 
-public class ArrowOptions {
+public class ArrowOptions implements Serializable {
 
     private final Arrow arrow;
     GridPane grid;
@@ -22,23 +27,45 @@ public class ArrowOptions {
     private Slider arrowLengthSlider;
     private Label adjustArrowLengthLbl;
     private Annotation arrowAnnotation;
-    private double angleOfRotation;
     private Project project;
     private Tab selectedTab;
     private boolean isDone;
     private boolean isDeleted;
     private MainController mainController;
+    private Rotate rotate;
 
     public ArrowOptions(Arrow arrow, Annotation arrowAnnotation) {
         isDone = false;
         isDeleted = false;
         this.arrow = arrow;
         this.arrowAnnotation = arrowAnnotation;
+        rotate = null;
+
         setControllers();
     }
 
-    public void setAngleOfRotation(double angleOfRotation) {
-        this.angleOfRotation = angleOfRotation;
+    public static void arrowToAnnotation(Annotation arrowAnnotation, Arrow arrow) {
+        arrowAnnotation.setStartX(arrow.getStartX());
+        arrowAnnotation.setStartY(arrow.getStartY());
+        arrowAnnotation.setEndX(arrow.getEndX());
+        arrowAnnotation.setEndY(arrow.getEndY());
+    }
+
+    public static void annotationToArrow(Arrow arrow, Annotation arrowAnnotation,
+            boolean setRotate) {
+        if (setRotate) {
+            Rotate rotate = new Rotate();
+            rotate.setPivotX(arrowAnnotation.getEndX());
+            rotate.setPivotY(arrowAnnotation.getEndY());
+            rotate.setAngle(arrowAnnotation.getRotation());
+            arrow.getTransforms().add(rotate);
+        }
+        arrow.setStartX(arrowAnnotation.getStartX());
+        arrow.setStartY(arrowAnnotation.getStartY());
+        arrow.setEndX(arrowAnnotation.getEndX());
+        arrow.setEndY(arrowAnnotation.getEndY());
+        arrow.setTranslateX(arrowAnnotation.getTranslateX());
+        arrow.setTranslateY(arrowAnnotation.getTranslateY());
     }
 
     private void setControllers() {
@@ -47,9 +74,11 @@ public class ArrowOptions {
         arrowLengthSlider.setShowTickLabels(true);
         arrowLengthSlider.setShowTickMarks(true);
         arrowLengthSlider.setOrientation(Orientation.HORIZONTAL);
+        
+        // not implemented
         StrokeWidthLabel = new Label("Stroke Width");
 
-        rotationSlider = new Slider(-180, 180, 10);
+        rotationSlider = new Slider(-180, 180, arrowAnnotation.getRotation());
         rotationSlider.setShowTickLabels(true);
         rotationSlider.setShowTickMarks(true);
         rotationSlider.setOrientation(Orientation.HORIZONTAL);
@@ -64,74 +93,88 @@ public class ArrowOptions {
 
         // add controllers to the grid
         grid.add(new Label("Arrow options"), 0, 0);
-        grid.add(new Label("Rotation Slider"), 0,1);
-        grid.add(rotationSlider,1,1);
-        grid.add(adjustArrowLengthLbl,0,2);
-        grid.add(arrowLengthSlider,1,2);
-
+        grid.add(new Label("Rotation Slider"), 0, 1);
+        grid.add(rotationSlider, 1, 1);
+        grid.add(adjustArrowLengthLbl, 0, 2);
+        grid.add(arrowLengthSlider, 1, 2);
 
         // event on the slider
         //creating the rotation transformation
-        Rotate rotate = new Rotate();
+        rotate = new Rotate();
         //Setting pivot points for the rotation
         rotate.setPivotX(arrow.getEndX());
         rotate.setPivotY(arrow.getEndY());
+        arrow.getTransforms().add(rotate);
+        // each rotate adds to previous
+        // add to arrowAnnotation if Done
 
         //Adding the transformation to rectangle
 //        arrow.getTransforms().addAll(rotate);
-
         //Linking the transformation to the slider
         rotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<?extends Number> observable, Number oldValue, Number newValue){
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 //Setting the angle for the rotation
-                rotate.setAngle((double) newValue);
-                setAngleOfRotation((double) newValue);
+                rotate.setAngle((double) newValue-arrowAnnotation.getRotation());
             }
         });
 
-        //Adding the transformation to the circle
-        arrow.getTransforms().add(rotate);
+        //Adding the transformation to the arrow
+        //arrow.getTransforms().add(rotate);
 
         arrowLengthSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<?extends Number> observable, Number oldValue, Number newValue){
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 //Setting the angle for the rotation
-                double  reduction = (double) newValue;
-                arrow.setStartX(arrow.getEndX()-reduction);
+                double reduction = (double) newValue;
+                arrow.setStartX(arrow.getEndX() - reduction);
             }
         });
     }
 
-    public void modifyArrow(){
+    public void modifyArrow() {
+        int index = 0;
+        String chartType = "admix";
+        if (selectedTab.getId().contains("admix")) {
+            index = project.getAdmixtureAnnotationsList().indexOf(arrowAnnotation);
+        }
+        // if pca tab - replace annotation
+        if (selectedTab.getId().contains("tab")) {
+            chartType = "admix";
+            String[] s = selectedTab.getId().split(" "); // [pca, 0] or [pca, 11]
+            int tabIndex = Integer.valueOf(s[1]);
+            ArrayList<Annotation> list = project.getPcGraphAnnotationsList().get(tabIndex);
+            index = list.indexOf(arrowAnnotation);
+        }
+
         Dialog dialog = mainController.getDialog(grid);
+        
         Optional<ButtonType> results = dialog.showAndWait();
 
-        dialog.setOnCloseRequest(e->{
-            if(isDone==false && isDeleted==false){
+        dialog.setOnCloseRequest(e -> {
+            if (isDone == false && isDeleted == false) {
                 e.consume();
             }
         });
 
-        if (results.get() == mainController.getButtonType("Done")){
-//            // store the properties of the annotation
-            arrowAnnotation.setStartX(arrow.getStartX());
-            arrowAnnotation.setStartY(arrow.getStartY());
-            arrowAnnotation.setEndX(arrow.getEndX());
-            arrowAnnotation.setEndY(arrow.getEndY());
-            arrowAnnotation.setRotation(angleOfRotation);
+        if (results.get() == mainController.getButtonType("Done")) {
+            arrowToAnnotation(arrowAnnotation, arrow);
+            arrowAnnotation.setRotation(rotate.getAngle()+arrowAnnotation.getRotation());
             arrowAnnotation.setLayoutX(arrow.getBoundsInParent().getMinX());
             arrowAnnotation.setLayoutY(arrow.getBoundsInParent().getMinY());
-//            arrowAnnotation.setStrokeColor(Integer.toHexString(cpStroke.getValue().hashCode()));
             isDone = true;
         }
 
         if (results.get() == mainController.getButtonType("Delete")) {
             arrow.setVisible(false);
-            project.revomeAnnotation(selectedTab, arrowAnnotation);
+            project.removeAnnotation(selectedTab, arrowAnnotation);
             isDeleted = true;
         }
 
         if (results.get() == mainController.getButtonType("Cancel")) {
-            return;
+            annotationToArrow (arrow, arrowAnnotation, false);
+            if (rotate != null) {
+                arrow.getTransforms().remove(rotate);
+            }
+
         }
 
     }

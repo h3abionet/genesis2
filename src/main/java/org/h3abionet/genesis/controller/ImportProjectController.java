@@ -136,6 +136,7 @@ public class ImportProjectController {
                             break;
                         case "arrow":
                             mainController.recreateArrow(an,annoIndex,"pca");
+                            break;
                         case "rectangle":
                             mainController.recreateRectangle(an,annoIndex,"pca");
                             break;

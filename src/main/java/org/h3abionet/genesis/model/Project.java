@@ -515,18 +515,18 @@ public class Project implements Serializable {
         return admixtureAnnotationList;
     }
 
-    public void revomeAnnotation(Tab selectedTab, Annotation annotationType) {
+    public void removeAnnotation(Tab selectedTab, Annotation annotationType) {
         if (selectedTab.getId().contains("admix")) {
             project.getAdmixtureAnnotationsList().remove(annotationType);
         }
-        // if pca tab - add annotation
+        // if pca tab - remove annotation
         if (selectedTab.getId().contains("tab")) {
             String[] s = selectedTab.getId().split(" "); // [pca, 0] or [pca, 11]
             int tabIndex = Integer.valueOf(s[1]);
             project.getPcGraphAnnotationsList().get(tabIndex).remove(annotationType);
         }
     }
-
+    
     public boolean isAdmixtureVertical() {
         return isAdmixtureVertical;
     }

@@ -63,6 +63,8 @@ public class PCAGroupLabelController implements Initializable {
         // String oldGroupName, String newGroupName, StackPane pane, Lbe
         String newGroupName = groupNameLbl.getText();
         
+        // FIXME -- made this no longer editable as it breaks if the new
+        // name is the same as another group name
         if (!oldGroupName.equals(newGroupName)) { // is name changed?
             // rename the groups on the legend
             pcaGraph.renameLegendGroupNames(oldGroupName, newGroupName);
@@ -87,7 +89,7 @@ public class PCAGroupLabelController implements Initializable {
         legendFont = legendFontComboBox.getValue();
         legendFontSize = legendFontSizeSpinner.getValue();
         legendFontColor = Integer.toHexString(legendFontColorPicker.getValue().hashCode());
-        if(legendFontColor.equals("#ff")){
+        if(legendFontColor.equals("ff")){
             legendFontColor = "000000";
         }
         pcaGraph.styleLegendItems(legendFont, legendFontSize, legendFontColor);

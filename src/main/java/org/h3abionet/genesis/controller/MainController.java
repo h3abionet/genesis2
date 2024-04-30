@@ -57,6 +57,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
+import javafx.geometry.Point2D;
+import static org.h3abionet.genesis.controller.RectangleOptions.mmToPixels;
 
 /*
  * Copyright (C) 2018 scott
@@ -79,7 +81,8 @@ import java.util.List;
  *
  * @author scott
  */
-public class MainController implements Initializable{
+public class MainController implements Initializable {
+
     // interface (view) variables
     @FXML
     private TabPane tabPane;
@@ -136,6 +139,8 @@ public class MainController implements Initializable{
     private static int tabCount = -1;
     private static int currentTabIndex; // changed by clicking on tabs
     private ScatterChart<Number, Number> pcaChart;
+    
+    private double translateX, translateY; // DEBUG FIXME
 
     // admixture variables
     /**
@@ -165,10 +170,11 @@ public class MainController implements Initializable{
     private Project project;
     private ArrayList<ScatterChart> pcaChartsList = new ArrayList<>();
     private PCAGraphEventsHandler pc;
-
+    
     double orgSceneX, orgSceneY;
     private boolean projectIsImported;
-
+    private boolean dragged = false;
+    
     @FXML
     private void newProject(ActionEvent event) throws IOException {
         // remove background image
@@ -184,7 +190,7 @@ public class MainController implements Initializable{
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.setResizable(false);
             dialogStage.showAndWait();
-
+            
             if (project.isFamCreated() & project.isPhenoCreated()) {
                 // if both fam and phenotype file are correct, launch project
                 disableImportProjBtn(true);
@@ -199,8 +205,7 @@ public class MainController implements Initializable{
                 disablePcaBtn(false);
                 disableAdmixtureBtn(true);
                 disableControlBtns(false);
-            }
-            else {
+            } else {
 //                 otherwise don't launch the project
                 disableImportProjBtn(false);
                 disableNewProjBtn(false);
@@ -209,23 +214,23 @@ public class MainController implements Initializable{
                 disableControlBtns(true);
                 disableSettingsBtn(true);
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ;
         }
     }
-
+    
     public void setAdmixCreationSuccessful(boolean isAdmixCreationSuccessful) {
         this.isAdmixCreationSuccessful = isAdmixCreationSuccessful;
     }
-
+    
     public void setPcaGraph(PCAGraph pcaGraph) {
         this.pcaGraph = pcaGraph;
     }
-
+    
     public void setAdmixtureGraph(AdmixtureGraph admixtureGraph) {
         this.admixtureGraph = admixtureGraph;
     }
-
+    
     public void setProject(Project project) {
         this.project = project;
     }
@@ -233,10 +238,10 @@ public class MainController implements Initializable{
     /**
      * remove the genesis logo from the tabPane
      */
-    public void setTabPaneStyle(){
+    public void setTabPaneStyle() {
         tabPane.setStyle("-fx-background-image: null;-fx-background-color: white;");
     }
-
+    
     @FXML
     @SuppressWarnings("empty-statement")
     private void newPCA(ActionEvent event) throws IOException {
@@ -246,7 +251,7 @@ public class MainController implements Initializable{
         pcaDataInputController.setMainController(this);
         pcaDataInputController.setProject(project);
         pcaDataInputController.enableOK();
-        if(pcaGraph!=null){
+        if (pcaGraph != null) {
             pcaDataInputController.setPcaGraph(pcaGraph);
             pcaDataInputController.setButtons();
         }
@@ -255,9 +260,9 @@ public class MainController implements Initializable{
         dialogStage.setResizable(false);
         dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.showAndWait();
-
+        
         try {
-            if(pcaDataInputController.isFirstPcaSuccessful()){
+            if (pcaDataInputController.isFirstPcaSuccessful()) {
                 setPCAChart(pcaGraph.getPcaChart());
                 // disable the pca button after first import
                 disablePcaBtn(false);
@@ -265,15 +270,15 @@ public class MainController implements Initializable{
                 disableNewProjBtn(true);
                 // enable other buttons
                 disableControlBtns(false);
-
-            }else{
+                
+            } else {
                 ;
             }
         } catch (NullPointerException e) {
             Genesis.throwErrorException("Oops, there was an error!");
         }
     }
-
+    
     @FXML
     @SuppressWarnings("empty-statement")
     private void newAdmixture(ActionEvent event) throws IOException {
@@ -291,9 +296,9 @@ public class MainController implements Initializable{
             dialogStage.setResizable(false);
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.showAndWait();
-
+            
             if (isAdmixCreationSuccessful) { // was data imported correctly
-                 if (AdmixtureSettingsController.isAdmixRotated()) {
+                if (AdmixtureSettingsController.isAdmixRotated()) {
                     setAdmixtureChart(admixtureGraph.getListOfStackedBarCharts());
                     admixVbox.setMaxHeight(Double.MAX_VALUE); // restore vGrow property
                 } else {
@@ -305,7 +310,7 @@ public class MainController implements Initializable{
 
                 // enable other buttons
                 disableControlBtns(false);
-
+                
             } else {
                 ;
             }
@@ -334,15 +339,15 @@ public class MainController implements Initializable{
             pcaChartTab = new Tab();
 
             // tab name e.g PCA 1 & 2 ans space with close icon
-            pcaChartTab.setText("PCA " + x + " & " + y+"    ");
+            pcaChartTab.setText("PCA " + x + " & " + y + "    ");
             pcaChartTab.setClosable(true);
-            pcaChartTab.setId("tab "+ tabCount);
+            pcaChartTab.setId("tab " + tabCount);
 
             // add the pca chart container to the tab
             pcaChartTab.setContent(pc.addGraph());
-
+            
             tabPane.getTabs().add(pcaChartTab);
-
+            
             tabPaneClickEvent(); // set pcaChart index to selected tab number
 
             pcaChartsList.add(pcaChart); // add new chart to a list
@@ -357,7 +362,7 @@ public class MainController implements Initializable{
     /**
      *
      */
-    public void tabPaneClickEvent(){
+    public void tabPaneClickEvent() {
         tabPane.getSelectionModel().selectedIndexProperty().addListener((ObservableValue<? extends Number> ov, Number oldValue, Number newValue) -> {
             currentTabIndex = (int) newValue;
             project.setCurrentTabIndex(currentTabIndex);
@@ -366,27 +371,28 @@ public class MainController implements Initializable{
 
     /**
      * close very tab
+     *
      * @param tab
      */
     private void closeTab(Tab tab) {
         tab.setOnCloseRequest((Event t) -> {
-            String action =  Genesis.confirmAction("Are you sure?");
+            String action = Genesis.confirmAction("Are you sure?");
             // if yes button is clicked
-            if(action.equals("yesBtnPressed")){
+            if (action.equals("yesBtnPressed")) {
                 // if only one tab is displayed, close the program if the it is not a help tab
-                if(tabPane.getTabs().size()==1){
-                    if(tab.getId().contains("help")){ // remove help tab
+                if (tabPane.getTabs().size() == 1) {
+                    if (tab.getId().contains("help")) { // remove help tab
                         helpBtn.setDisable(false);
                         tab.getTabPane().getTabs().remove(tab);
-                    }else {
+                    } else {
                         // ask the user to save the project or close the program
                         saveProject(new ActionEvent());
                         Platform.exit(); // close program
                     }
-                }else{ // if more than 2 tabs are displayed, remove the selected tab
+                } else { // if more than 2 tabs are displayed, remove the selected tab
 
                     // remove admixture tab
-                    if(tab.getId().contains("admix")){ // admixture tab
+                    if (tab.getId().contains("admix")) { // admixture tab
                         tab.getTabPane().getTabs().remove(admixtureTab);
                         gridPane.getChildren().clear();
                         allAdmixtureCharts.clear();
@@ -394,19 +400,19 @@ public class MainController implements Initializable{
                     }
 
                     // remove pca tab
-                    if(tab.getId().contains("tab")){ // pca tab
+                    if (tab.getId().contains("tab")) { // pca tab
                         tab.getTabPane().getTabs().remove(tab); // remove the tab
                         pcaChartsList.remove(currentTabIndex);
                         project.getSubjectsList().remove(currentTabIndex);
                     }
 
                     // remove help tab
-                    if(tab.getId().contains("help")){ // remove help tab
+                    if (tab.getId().contains("help")) { // remove help tab
                         helpBtn.setDisable(false);
                         tab.getTabPane().getTabs().remove(tab);
                     }
                 }
-            }else { // No Btn is clicked
+            } else { // No Btn is clicked
                 t.consume(); // do nothing
             }
         });
@@ -440,12 +446,11 @@ public class MainController implements Initializable{
             }
         }
         
-
         try {
             // if first chart, add gridpane to index 1 of vbox else reset index 1 with new gridpane
             if (rowPointer == 0) {
                 admixPane.getChildren().add(admixtureGraph.getGridPane(gridPane, rowPointer));
-
+                
                 AnchorPane pane = (AnchorPane) admixVbox.getChildren().get(1);
                 pane.getChildren().add(admixPane);
                 scrollPane.setContent(admixVbox);
@@ -456,40 +461,40 @@ public class MainController implements Initializable{
                 name.setStyle("-fx-background-color: transparent;");
                 scrollPane.setContent(admixVbox);
             }
-
+            
             admixtureTab.setContent(scrollPane);
             admixtureTab.getContent().autosize();
 
             //  if it is first k, add new tab to the tabpane
-            if(project.getImportedKs().size()==1 || project.isProjIsImported()){
+            if (project.getImportedKs().size() == 1 || project.isProjIsImported()) {
                 tabPane.getTabs().add(admixtureTab);
-            }else{ // else first remove the existing admixture tab
+            } else { // else first remove the existing admixture tab
                 ObservableList<Tab> tabs = tabPane.getTabs();
-                for(int t=0; t<tabs.size(); t++){
-                    if(tabs.get(t).getId().equals("admix")){
-                        tabs.set(t,admixtureTab);
+                for (int t = 0; t < tabs.size(); t++) {
+                    if (tabs.get(t).getId().equals("admix")) {
+                        tabs.set(t, admixtureTab);
                         break;
                     }
                 }
             }
-
+            
             closeTab(admixtureTab); //  on closing the admixture tab
             rowPointer++; // create another rowPointer index
 
         } catch (Exception e) {
             ; // do nothing
         }
-
+        
         tabPaneClickEvent();
     }
-
+    
     @FXML
     private void settingsSelector(ActionEvent event) throws IOException {
 
         // get selected tab
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
-
-        try{
+        
+        try {
             if (selectedTab.getId().contains("tab")) {
                 // show pca settings
                 FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/PCASettings.fxml"));
@@ -505,12 +510,11 @@ public class MainController implements Initializable{
                 dialogStage.setResizable(false);
                 dialogStage.initModality(Modality.APPLICATION_MODAL);
                 dialogStage.showAndWait();
-            }
-            else if(selectedTab.getId().contains("admix")){
+            } else if (selectedTab.getId().contains("admix")) {
                 // show admixture settings
                 FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureSettings.fxml"));
                 Parent root = loader.load();
-                AdmixtureSettingsController admixSettingsCtlr =  loader.getController();
+                AdmixtureSettingsController admixSettingsCtlr = loader.getController();
                 admixSettingsCtlr.setAdmixtureGraph(admixtureGraph);
                 admixSettingsCtlr.setMainController(this);
                 admixSettingsCtlr.setProject(project);
@@ -522,7 +526,7 @@ public class MainController implements Initializable{
                 dialogStage.initModality(Modality.APPLICATION_MODAL);
                 dialogStage.showAndWait();
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             //TODO disable setting button if no chart
             Genesis.throwInformationException("No chart to format");
         }
@@ -535,7 +539,7 @@ public class MainController implements Initializable{
     @SuppressWarnings("empty-statement")
     public void saveChart() throws Exception {
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
-
+        
         try {
             // load pca setting
             if (selectedTab.getId().contains("tab")) {
@@ -544,16 +548,16 @@ public class MainController implements Initializable{
             }
 
             // load admixture setting
-            if (selectedTab.getId().contains("admix")){
+            if (selectedTab.getId().contains("admix")) {
                 AdmixtureGraphEventsHandler admixGraphEventHandler = new AdmixtureGraphEventsHandler();
                 admixGraphEventHandler.saveChart(admixVbox);
             }
-
+            
         } catch (Exception e) {
             Genesis.throwInformationException("No chart to save");
         }
     }
-
+    
     @FXML
     public void showHiddenIndividuals() throws IOException {
         FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/HiddenIndividuals.fxml"));
@@ -569,7 +573,7 @@ public class MainController implements Initializable{
 
         // is current graph admixture
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
-        if (selectedTab.getId().contains("admix")){
+        if (selectedTab.getId().contains("admix")) {
             hiddenIndividualsController.setCurrentGraphType("admixture");
         }
         // is current graph pca?
@@ -584,44 +588,44 @@ public class MainController implements Initializable{
         dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.showAndWait();
     }
-
+    
     @FXML
-    public void searchIndividual(){
+    public void searchIndividual() {
         boolean idFound = false;
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Search for individual here");
         dialog.setHeaderText(null);
         dialog.setContentText("Enter FID or IID here:");
-
+        
         Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()){
+        if (result.isPresent()) {
             String id = result.get();
-            for(Subject s: project.getSubjectsList()){
-                if(s.getFid().equals(id) || s.getIid().equals(id)){
+            for (Subject s : project.getSubjectsList()) {
+                if (s.getFid().equals(id) || s.getIid().equals(id)) {
                     idFound = true; // id is found
                     ScatterChart<Number, Number> graph = pcaChartsList.get(currentTabIndex);
-                        for(XYChart.Series<Number, Number> series : graph.getData()){
-                            for (XYChart.Data<Number, Number> data : series.getData()){
-                                String xPoint = data.getXValue().toString();
-                                String yPoint = data.getYValue().toString();
-                                if(s.getPcs() != null && Arrays.asList(s.getPcs()).contains(xPoint) && Arrays.asList(s.getPcs()).contains(yPoint)){
-                                    ScaleTransition scaleTransition = new ScaleTransition();
-                                    scaleTransition.setDuration(Duration.millis(1000));
-                                    scaleTransition.setNode(data.getNode());
-                                    scaleTransition.setByY(1.5);// Y direction movement
-                                    scaleTransition.setByX(1.5);// X direction movement
-                                    scaleTransition.setCycleCount(4);// Set cycle count rotation 4
-                                    scaleTransition.setAutoReverse(true);// auto reverse activation
-                                    scaleTransition.play();// applying rotate transition on circle
-                                    break;
-                                }
+                    for (XYChart.Series<Number, Number> series : graph.getData()) {
+                        for (XYChart.Data<Number, Number> data : series.getData()) {
+                            String xPoint = data.getXValue().toString();
+                            String yPoint = data.getYValue().toString();
+                            if (s.getPcs() != null && Arrays.asList(s.getPcs()).contains(xPoint) && Arrays.asList(s.getPcs()).contains(yPoint)) {
+                                ScaleTransition scaleTransition = new ScaleTransition();
+                                scaleTransition.setDuration(Duration.millis(1000));
+                                scaleTransition.setNode(data.getNode());
+                                scaleTransition.setByY(1.5);// Y direction movement
+                                scaleTransition.setByX(1.5);// X direction movement
+                                scaleTransition.setCycleCount(4);// Set cycle count rotation 4
+                                scaleTransition.setAutoReverse(true);// auto reverse activation
+                                scaleTransition.play();// applying rotate transition on circle
+                                break;
                             }
                         }
+                    }
                 }
             }
         }
-
-        if(idFound==false){
+        
+        if (idFound == false) {
             Genesis.throwInformationException("Individual Not Found");
         }
     }
@@ -637,6 +641,7 @@ public class MainController implements Initializable{
 
     /**
      * get list of all displayed pc graphs
+     *
      * @return
      */
     public ArrayList<ScatterChart> getPcaChartsList() {
@@ -658,16 +663,16 @@ public class MainController implements Initializable{
     public GridPane getGridPane() {
         return gridPane;
     }
-
+    
     @FXML
     private void drawingTool(ActionEvent event) {
-            pivot = new Circle(0, 0, 8);
-            pivot.setTranslateX(50);
-            pivot.setTranslateY(50);
-            drawingAnchorPaneVisibility = !drawingAnchorPaneVisibility;
-            drawingAnchorPane.setVisible(drawingAnchorPaneVisibility);
+        pivot = new Circle(0, 0, 8);
+        pivot.setTranslateX(50);
+        pivot.setTranslateY(50);
+        drawingAnchorPaneVisibility = !drawingAnchorPaneVisibility;
+        drawingAnchorPane.setVisible(drawingAnchorPaneVisibility);
     }
-
+    
     @FXML
     private void addLine(ActionEvent event) {
         try {
@@ -678,98 +683,97 @@ public class MainController implements Initializable{
 
             // add line properties
             Annotation lineAnnotation = new Annotation();
+            LineOptions.lineToAnnotation(lineAnnotation, line);
             lineAnnotation.setName("line");
-            lineAnnotation.setStrokeWidth(2);
-            lineAnnotation.setStrokeColor(Color.BLACK);
-            lineAnnotation.setStartX(line.getStartX());
-            lineAnnotation.setStartY(line.getStartY());
-            lineAnnotation.setEndX(line.getEndX());
-            lineAnnotation.setEndY(line.getEndY());
 
             updateAnnotationsLists(lineAnnotation); // store the properties
             addShapeToChart(line, currentTabIndex); // add to chart
             DragController dragController = new DragController(line, true);
             addLineEvents(line, lineAnnotation); // add click and mouse events
-        }catch(Exception e){
+        } catch (Exception e) {
             Genesis.throwInformationException("First add the Chart");
         }
     }
 
     /**
      * recreate the line when importing the project
+     *
      * @param l
      * @param chartIndex
      */
-    public void recreateLine(Annotation l, int chartIndex, String chartType){
-        Line line = new Line(l.getStartX(), l.getStartY(), l.getEndX(), l.getEndY());
-        line.setStrokeWidth(l.getStrokeWidth());
+    public void recreateLine(Annotation l, int chartIndex, String chartType) {
+        Line line = new Line();
 
-        line.setLayoutX(l.getLayoutX());
-        line.setLayoutY(l.getLayoutY());
-
-        Rotate rotate = new Rotate(l.getRotation(),l.getEndX(), line.getEndY());
-        line.getTransforms().add(rotate);
-
-        if(l.getStrokeColor().equals("000000") || l.getStrokeColor().equals("ff")){
-            line.setStroke(Color.BLACK);
-        }else{
-            line.setStroke(Color.web(l.getStrokeColor()));
-        }
+        LineOptions.annotationToLine(line, l, true);
 
         // add the line to the graph
         addImportedShape(line, chartIndex, chartType);
         // add click events
         addLineEvents(line, l);
     }
-
-    private void addLineEvents(Line line, Annotation lineAnnotation){
+    
+    // for debug output for line
+    private void printLine(String s, Line l) {
+        System.out.println(s + "Start: " + l.getStartX() + "," + l.getStartY()
+                + " End: " + l.getEndX() + "," + l.getEndY()
+        + "translate x,y" + l.getTranslateX()+","+l.getTranslateY());
+    }
+    
+    private void addLineEvents(Line line, Annotation lineAnnotation) {
         line.setOnMousePressed((t) -> {
             orgSceneX = t.getSceneX();
             orgSceneY = t.getSceneY();
-
+            
             Line l = (Line) (t.getSource());
             l.toFront();
         });
-
+        
         line.setOnMouseDragged((t) -> {
             double offsetX = t.getSceneX() - orgSceneX;
             double offsetY = t.getSceneY() - orgSceneY;
-
+            
+            dragged = true;
+            
             Line l = (Line) (t.getSource());
-
+            
             line.setTranslateX(l.getTranslateX() + offsetX);
             line.setTranslateY(l.getTranslateY() + offsetY);
+            
+            translateX = line.getTranslateX();
+            translateY = line.getTranslateY();
 
             orgSceneX = t.getSceneX();
             orgSceneY = t.getSceneY();
         });
-
+        
         line.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY || e.isControlDown()) {
-                // use class circle options -- accepts chosen circle as a parameter
+                // use class line options -- accepts chosen line as a parameter
                 LineOptions lineOptions = new LineOptions(line, lineAnnotation);
                 lineOptions.setProject(project);
                 lineOptions.setSelectedTab(tabPane.getSelectionModel().getSelectedItem());
                 lineOptions.setMainController(this);
-                // modify the chosen circle
+                // modify the chosen line
                 lineOptions.modifyLine();
             }
         });
-
+        
         line.setOnMouseReleased(mouseEvent -> {
             // set annotations
-            lineAnnotation.setStartX(line.getStartX());
-            lineAnnotation.setStartY(line.getStartY());
-            lineAnnotation.setEndX(line.getEndX());
-            lineAnnotation.setEndY(line.getEndY());
-            lineAnnotation.setLayoutX(line.getBoundsInParent().getMinX()+20);
-            lineAnnotation.setLayoutY(line.getBoundsInParent().getMinY()-129);
+            // FIXME -- not sure if next 2 lines are necessary
+            lineAnnotation.setLayoutX(line.getBoundsInParent().getMinX() + 20);
+            lineAnnotation.setLayoutY(line.getBoundsInParent().getMinY() - 129);
+            if (dragged) {
+                lineAnnotation.setTranslateX(lineAnnotation.getTranslateX()+translateX);
+                lineAnnotation.setTranslateY(lineAnnotation.getTranslateY()+translateY);
+            }
+            dragged = false;
         });
     }
-
+    
     @FXML
     private void addArrow(ActionEvent event) {
-        try{
+        try {
             Arrow arrow = new Arrow();
             arrow.setStartX(200);
             arrow.setStartY(200);
@@ -777,130 +781,153 @@ public class MainController implements Initializable{
             arrow.setEndY(200);
 
             Annotation arrowAnnotation = new Annotation();
+            ArrowOptions.arrowToAnnotation(arrowAnnotation, arrow);
             arrowAnnotation.setName("arrow");
-            arrowAnnotation.setStartX(200);
-            arrowAnnotation.setStartY(200);
-            arrowAnnotation.setEndX(400);
-            arrowAnnotation.setEndY(200);
-
-            DragController dragController = new DragController(arrow, true);
 
             //MouseControlUtil.makeDraggable(arrow);
-
             updateAnnotationsLists(arrowAnnotation); // store the properties
             addArrowToChart(arrow, currentTabIndex); // add to chart
+            DragController dragController = new DragController(arrow, true);
             addArrowEvents(arrow, arrowAnnotation);
-        }catch(Exception e){
+        } catch (Exception e) {
             Genesis.throwInformationException("First add the Chart");
         }
     }
-
-    public void recreateArrow(Annotation a, int chartIndex, String chartType){
+    
+    public void recreateArrow(Annotation a, int chartIndex, String chartType) {
         Arrow arrow = new Arrow();
-        arrow.setStartX(a.getStartX());
-        arrow.setStartY(a.getStartY());
-        arrow.setEndX(a.getEndX());
-        arrow.setEndY(a.getEndY());
-        arrow.setLayoutX(a.getLayoutX());
-        arrow.setLayoutY(a.getLayoutY());
-
-        DragController dragController = new DragController(arrow, true);
-        //MouseControlUtil.makeDraggable(arrow);
-
-//        if(a.getStrokeColor().equals("000000") || a.getStrokeColor().equals("ff")){
-//            arrow.setStroke(Color.web("000000"));
-//        }else{
-//            arrow.setStroke(Color.web(a.getStrokeColor()));
-//        }
+        ArrowOptions.annotationToArrow(arrow, a, true);
         addImportedArrow(arrow, chartIndex, chartType); // add to chart
         addArrowEvents(arrow, a);
     }
-
-    private void addArrowEvents(Arrow arrow, Annotation arrowAnnotation){
-        arrow.setOnMouseEntered(e -> {
-            arrow.getScene().setCursor(Cursor.HAND);
-            arrow.setEffect(new DropShadow(20, Color.BLUE));
-        });
+    
+    private void addArrowEvents(Arrow arrow, Annotation arrowAnnotation) {
 
         arrow.setOnMouseExited(e -> {
             arrow.getScene().setCursor(Cursor.DEFAULT);
             arrow.setEffect(null);
         });
-
+        
         arrow.setOnMousePressed((t) -> {
             orgSceneX = t.getSceneX();
             orgSceneY = t.getSceneY();
-
-            Arrow l = (Arrow) (t.getSource());
-            l.toFront();
+            
+            Arrow a = (Arrow) (t.getSource());
+            a.toFront();
         });
-
+        
         arrow.setOnMouseDragged((t) -> {
             double offsetX = t.getSceneX() - orgSceneX;
             double offsetY = t.getSceneY() - orgSceneY;
-            Arrow l = (Arrow) (t.getSource());
-            arrow.setTranslateX(l.getTranslateX() + offsetX);
-            arrow.setTranslateY(l.getTranslateY() + offsetY);
+            
+            dragged = true;
+            
+            Arrow a = (Arrow) (t.getSource());
+            
+            arrow.setTranslateX(a.getTranslateX() + offsetX);
+            arrow.setTranslateY(a.getTranslateY() + offsetY);
+            
+            translateX = arrow.getTranslateX();
+            translateY = arrow.getTranslateY();
+
             orgSceneX = t.getSceneX();
             orgSceneY = t.getSceneY();
         });
-
+        
         arrow.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY || e.isControlDown()) {
-                // use class circle options -- accepts chosen circle as a parameter
+                // use class arrow options -- accepts chosen arrow as a parameter
                 ArrowOptions arrowOptions = new ArrowOptions(arrow, arrowAnnotation);
                 arrowOptions.setProject(project);
                 arrowOptions.selectedTab(tabPane.getSelectionModel().getSelectedItem());
                 arrowOptions.setMainController(this);
-                // modify the chosen circle
+                // modify the chosen arrow
                 arrowOptions.modifyArrow();
             }
         });
-
+        
         arrow.setOnMouseReleased(mouseEvent -> {
             // set annotations
-            arrowAnnotation.setLayoutX(arrow.getBoundsInParent().getCenterX());
-            arrowAnnotation.setLayoutY(arrow.getBoundsInParent().getCenterY());
+            // FIXME -- not sure if next 2 lines are necessary
+            // when restoring an arrow, the layout values make
+            // it shift to completely the wrong place
+            arrowAnnotation.setLayoutX(arrow.getBoundsInParent().getMinX() + 20);
+            arrowAnnotation.setLayoutY(arrow.getBoundsInParent().getMinY() - 129);
+            if (dragged) {
+                arrowAnnotation.setTranslateX(arrowAnnotation.getTranslateX()+translateX);
+                arrowAnnotation.setTranslateY(arrowAnnotation.getTranslateY()+translateY);
+            }
+            dragged = false;
         });
+        
     }
-
+    
     @FXML
     private void addCircle(ActionEvent event) {
-        try{
-            Circle circle = new Circle();
-            circle.setCenterX(200);
-            circle.setCenterY(200);
-            circle.setRadius(100);
-            circle.setFill(Color.TRANSPARENT);
+        try {
+            Circle circle = new Circle(200, 200, 100, Color.TRANSPARENT);
+            // CenterX, CenterY, Radius, Fill
             circle.setStroke(Color.BLACK);
             circle.setStrokeWidth(1);
-
+            
             Annotation circleAnnotation = new Annotation();
+            CircleOptions.circleToAnnotation(circleAnnotation, circle);
             circleAnnotation.setName("circle");
-            circleAnnotation.setCenterX(200);
-            circleAnnotation.setCenterY(200);
-            circleAnnotation.setRadius(100);
-            circleAnnotation.setStrokeWidth(1);
-            circleAnnotation.setStrokeColor(Color.BLACK); // black
-
+            
             updateAnnotationsLists(circleAnnotation);// add the circle to the list of annotations
-            DragController dragController = new DragController(circle, true);
+            //DragController dragController = new DragController(circle, true);
             //MouseControlUtil.makeDraggable(circle); // add drag event
             addShapeToChart(circle, currentTabIndex);
             addCircleEvents(circle, circleAnnotation);
-        }catch(Exception e){
+        } catch (Exception e) {
             Genesis.throwInformationException("First add the Chart");
         }
     }
+    
+    public void recreateCircle(Annotation circleAnn, int chartIndex, String chartType) {
 
-    private void addCircleEvents(Circle circle, Annotation circleAnn){
+        Circle circle = new Circle();
+        
+        CircleOptions.annotationToCircle(circle, circleAnn);
+        
+        DragController dragController = new DragController(circle, true);
+        // MouseControlUtil.makeDraggable(circle);
+        addImportedShape(circle, chartIndex, chartType);
+        addCircleEvents(circle, circleAnn);
 
-        System.out.println("Added Circle events");
+//        circle.relocate(circleAnn.getCenterX(), circleAnn.getCenterY());
+    }
+    
+    private void addCircleEvents(Circle circle, Annotation circleAnn) {
+
+        circle.setOnMousePressed((t) -> {
+            orgSceneX = t.getSceneX();
+            orgSceneY = t.getSceneY();
+            
+            Circle c = (Circle) (t.getSource());
+            c.toFront();
+        });
+        
+        circle.setOnMouseDragged((t) -> {
+            double offsetX = t.getSceneX() - orgSceneX;
+            double offsetY = t.getSceneY() - orgSceneY;
+            
+            dragged = true;
+            
+            Circle c = (Circle) (t.getSource());
+            
+            circle.setTranslateX(c.getTranslateX() + offsetX);
+            circle.setTranslateY(c.getTranslateY() + offsetY);
+            
+            translateX = circle.getTranslateX();
+            translateY = circle.getTranslateY();
+
+            orgSceneX = t.getSceneX();
+            orgSceneY = t.getSceneY();
+        });
+
         circle.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY || e.isControlDown()) {
-                System.out.println("Circle mouse click");
-                circleAnn.setCenterX(e.getSceneX());
-                circleAnn.setCenterY(e.getSceneY());
                 // use class circle options -- accepts chosen circle as a parameter
                 CircleOptions circleOptions = new CircleOptions(circle, circleAnn);
                 circleOptions.setProject(project);
@@ -910,40 +937,20 @@ public class MainController implements Initializable{
                 circleOptions.modifyCircle();
             }
         });
-
+        
         circle.setOnMouseReleased(mouseEvent -> {
-            circleAnn.setLayoutX(circle.getBoundsInParent().getCenterX());
-            circleAnn.setLayoutY(circle.getBoundsInParent().getCenterY());
+            if (dragged) {
+                // mysteriously, for circles, translates do not accumluate
+                circleAnn.setTranslateX (translateX); // circleAnn.getTranslateX()+
+                circleAnn.setTranslateY (translateY); //circleAnn.getTranslateY()+
+            }
+            dragged = false;
         });
     }
-
-    public void recreateCircle(Annotation circleAnn, int chartIndex, String chartType){
-        Circle circle = new Circle();
-//        circle.setCenterX(circleAnn.getCenterX());
-//        circle.setCenterY(circleAnn.getCenterY());
-        circle.setRadius(circleAnn.getRadius());
-        circle.setFill(Color.TRANSPARENT);
-        circle.setStrokeWidth(circleAnn.getStrokeWidth());
-        circle.setLayoutX(circleAnn.getLayoutX());
-        circle.setLayoutY(circleAnn.getLayoutY());
-
-        if(circleAnn.getStrokeColor().equals("000000") || circleAnn.getStrokeColor().equals("ff")){
-            circle.setStroke(Color.web("000000"));
-        }else{
-            circle.setStroke(Color.web(circleAnn.getStrokeColor()));
-        }
-
-        DragController dragController = new DragController(circle, true);
-        // MouseControlUtil.makeDraggable(circle);
-        addImportedShape(circle, chartIndex,chartType);
-        addCircleEvents(circle, circleAnn);
-
-//        circle.relocate(circleAnn.getCenterX(), circleAnn.getCenterY());
-    }
-
+    
     @FXML
     private void addText(ActionEvent event) {
-        try{
+        try {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Text");
             dialog.setHeaderText(null);
@@ -955,60 +962,57 @@ public class MainController implements Initializable{
             Text text = new Text(300, 50, result.get());
             text.setFill(Color.BLACK);
             text.setFont(Font.font("helvetica", FontWeight.NORMAL, FontPosture.REGULAR, 14));
-
+            
             Annotation textAnnotation = new Annotation();
+            LabelOptions.textToAnnotation(textAnnotation, text);
             textAnnotation.setName("text");
-            textAnnotation.setStartX(300);
-            textAnnotation.setStartY(50);
-            textAnnotation.setText(result.get());
-            textAnnotation.setFill(Color.BLACK);
-            textAnnotation.setFontFamily("helvetica");
-            textAnnotation.setFontSize(14);
-            textAnnotation.setFontWeight("NORMAL");
 
-
-            // can drag text
-            DragController dragController = new DragController(text, true);
-            // MouseControlUtil.makeDraggable(text);
             updateAnnotationsLists(textAnnotation);
             addShapeToChart(text, currentTabIndex);
+            DragController dragController = new DragController(text, true);
+            // MouseControlUtil.makeDraggable(text);
             addTextEvents(text, textAnnotation);
-        }catch(Exception e){
+        } catch (Exception e) {
             Genesis.throwInformationException("First add the Chart");
         }
     }
-
-    public void recreateText(Annotation textAnn, int chartIndex, String chartType){
+    
+    public void recreateText(Annotation textAnn, int chartIndex, String chartType) {
         Text text = new Text();
-        text.setText(textAnn.getText());
-//        text.setX(textAnn.getStartX());
-//        text.setY(textAnn.getStartY());
-        String family = textAnn.getFontFamily();
-        int size = textAnn.getFontSize();
-        String weight = textAnn.getFontWeight();
-        text.setX(textAnn.getLayoutX());
-        text.setY(textAnn.getLayoutY());
-
-        if(weight.equals("EXTRA_BOLD")){
-            text.setFont(Font.font(family, FontWeight.EXTRA_BOLD, FontPosture.REGULAR, size));
-        }else {
-            text.setFont(Font.font(family, FontWeight.NORMAL, FontPosture.REGULAR, size));
-        }
-
-        if(textAnn.getFill().equals("000000") || textAnn.getFill().equals("ff")){
-            text.setFill(Color.web("000000"));
-        }else{
-            text.setFill(Color.web(textAnn.getFill()));
-        }
-
-        DragController dragController = new DragController(text, true);
-        // MouseControlUtil.makeDraggable(text);
+        
+        LabelOptions.annotationToText(text, textAnn);
         addImportedShape(text, chartIndex, chartType);
         addTextEvents(text, textAnn);
     }
-
-    private void addTextEvents(Text text, Annotation textAnnotation){
+    
+    private void addTextEvents(Text text, Annotation textAnnotation) {
         // add mouse event to text for editing options
+        text.setOnMousePressed((e) -> {
+            orgSceneX = e.getSceneX();
+            orgSceneY = e.getSceneY();
+            
+            Text t = (Text) (e.getSource());
+            t.toFront();
+        });
+        
+        text.setOnMouseDragged((e) -> {
+            double offsetX = e.getSceneX() - orgSceneX;
+            double offsetY = e.getSceneY() - orgSceneY;
+            
+            dragged = true;
+            
+            Text t = (Text) (e.getSource());
+            
+            text.setTranslateX(t.getTranslateX() + offsetX);
+            text.setTranslateY(t.getTranslateY() + offsetY);
+            
+            translateX = text.getTranslateX();
+            translateY = text.getTranslateY();
+
+            orgSceneX = e.getSceneX();
+            orgSceneY = e.getSceneY();
+        });
+        
         text.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY || e.isControlDown()) {
                 // use class label options -- accepts chosen label as a parameter
@@ -1020,162 +1024,164 @@ public class MainController implements Initializable{
                 labelOptions.modifyLabel();
             }
         });
-
+        
         text.setOnMouseReleased(mouseEvent -> {
-            // set annotations
-            textAnnotation.setLayoutX(text.getBoundsInParent().getCenterX()-20);//error margin
-            textAnnotation.setLayoutY(text.getBoundsInParent().getCenterY());
+            // set annotations -- if dragged
+            if (dragged) {
+                textAnnotation.setTranslateX(textAnnotation.getTranslateX()+translateX);
+                textAnnotation.setTranslateY(textAnnotation.getTranslateY()+translateY);
+            }
+            dragged = false;
+            
         });
-
+        
     }
-
-
+    
     @FXML
     private void addRectangle(ActionEvent event) {
-        try{
+        try {
             Rectangle rec = new Rectangle(100, 100, 200, 100);
             rec.setFill(Color.TRANSPARENT);
             rec.setStroke(Color.BLACK);
             rec.setStrokeWidth(2);
-
+            
             Annotation rectangleAnnotation = new Annotation();
+            RectangleOptions.rectangleToAnnotation(rectangleAnnotation, rec);
             rectangleAnnotation.setName("rectangle");
-            rectangleAnnotation.setStartX(100);
-            rectangleAnnotation.setStartY(100);
-            rectangleAnnotation.setWidth(200);
-            rectangleAnnotation.setHeight(100);
-            rectangleAnnotation.setStrokeColor(Color.BLACK);
-            rectangleAnnotation.setStrokeWidth(2);
-            rectangleAnnotation.setArcHeight(0);
-            rectangleAnnotation.setArcWidth(0);
 
-            DragController dragController = new DragController(rec, true);
             // MouseControlUtil.makeDraggable(rec);
-            updateAnnotationsLists(rectangleAnnotation);// add the circle to the list of annotations
+            updateAnnotationsLists(rectangleAnnotation);// add the rectangle to the list of annotations
             addShapeToChart(rec, currentTabIndex);
+            DragController dragController = new DragController(rec, true);
             addRectangleEvents(rec, rectangleAnnotation);
-        }catch(Exception e){
+        } catch (Exception e) {
             Genesis.throwInformationException("First add the Chart");
         }
     }
-
-    public void recreateRectangle(Annotation recAn, int chartIndex, String chartType){
+    
+    public void recreateRectangle(Annotation recAn, int chartIndex, String chartType) {
         Rectangle rec = new Rectangle();
-//        rec.setX(recAn.getStartX());
-//        rec.setY(recAn.getStartY());
-        rec.setWidth(recAn.getWidth());
-        rec.setHeight(recAn.getHeight());
-        rec.setStrokeWidth(recAn.getStrokeWidth());
 
-        rec.setArcHeight(recAn.getArcHeight());
-        rec.setArcWidth(recAn.getArcWidth());
-        rec.setFill(Color.TRANSPARENT);
+        RectangleOptions.annotationToRectangle(rec, recAn);
 
-//        rec.setX(recAn.getLayoutX());
-//        rec.setY(recAn.getLayoutY());
-        rec.relocate(recAn.getLayoutX(),recAn.getLayoutY());
-
-        if(recAn.getStrokeColor()!=null){
-            if(recAn.getStrokeColor().equals("000000") || recAn.getStrokeColor().equals("ff")){
-                rec.setStroke(Color.web("000000"));
-            }else{
-                rec.setStroke(Color.web(recAn.getStrokeColor()));
-            }
-        }else{
-            ;
-        }
-        DragController dragController = new DragController(rec, true);
-        // MouseControlUtil.makeDraggable(rec);
         addImportedShape(rec, chartIndex, chartType);
         addRectangleEvents(rec, recAn);
     }
+    
+    private void addRectangleEvents(Rectangle rec, Annotation rectangleAnnotation) {
+        rec.setOnMousePressed((t) -> {
+            orgSceneX = t.getSceneX();
+            orgSceneY = t.getSceneY();
 
-    private void addRectangleEvents(Rectangle rec, Annotation rectangleAnnotation){
+            Rectangle l = (Rectangle) (t.getSource());
+            l.toFront();
+        });
+
+        rec.setOnMouseDragged((t) -> {
+            double offsetX = t.getSceneX() - orgSceneX;
+            double offsetY = t.getSceneY() - orgSceneY;
+
+            dragged = true;
+
+            Rectangle r = (Rectangle) (t.getSource());
+
+            rec.setTranslateX(r.getTranslateX() + offsetX);
+            rec.setTranslateY(r.getTranslateY() + offsetY);
+
+            translateX = rec.getTranslateX();
+            translateY = rec.getTranslateY();
+
+            orgSceneX = t.getSceneX();
+            orgSceneY = t.getSceneY();
+        });
+
         rec.setOnMouseClicked((MouseEvent e) -> {
             if (e.getButton() == MouseButton.SECONDARY || e.isControlDown()) {
                 // use class rectangle options -- accepts chosen rectangle as a parameter
-                RectangleOptions rectangleOptions = new RectangleOptions(rec, rectangleAnnotation);
-                rectangleOptions.setProject(project);
-                rectangleOptions.setSelectedTab(tabPane.getSelectionModel().getSelectedItem());
-                rectangleOptions.setMainController(this);
+                RectangleOptions RectangleOptions = new RectangleOptions(rec, rectangleAnnotation);
+                RectangleOptions.setProject(project);
+                RectangleOptions.setSelectedTab(tabPane.getSelectionModel().getSelectedItem());
+                RectangleOptions.setMainController(this);
                 // modify the chosen rectangle
-                rectangleOptions.modifyRectangle();
+                RectangleOptions.modifyRectangle();
             }
         });
 
         rec.setOnMouseReleased(mouseEvent -> {
             // set annotations
-            rectangleAnnotation.setWidth(rec.getWidth());
-            rectangleAnnotation.setHeight(rec.getHeight());
-            rectangleAnnotation.setArcHeight(rec.getArcHeight());
-            rectangleAnnotation.setArcWidth(rec.getArcWidth());
-            rectangleAnnotation.setStrokeWidth(rec.getStrokeWidth());
-            rectangleAnnotation.setLayoutX(rec.getBoundsInParent().getMinX()+20); // 20 error margin
-            rectangleAnnotation.setLayoutY(rec.getBoundsInParent().getMinY()+20);
+            // FIXME -- not sure if next 2 lines are necessary
+//                rectangleAnnotation.setLayoutX(rec.getBoundsInParent().getMinX()+20);
+//                rectangleAnnotation.setLayoutY(rec.getBoundsInParent().getMinY()-129);
+            if (dragged) {
+                rectangleAnnotation.setTranslateX(rectangleAnnotation.getTranslateX()+translateX);
+                rectangleAnnotation.setTranslateY(rectangleAnnotation.getTranslateY()+translateY);
+            }
+            dragged = false;
         });
-    }
 
-    public void addShapeToChart(Shape shape, int chartIndex){
+    }
+    
+    public void addShapeToChart(Shape shape, int chartIndex) {
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
         // if admix pane
-        if(selectedTab.getId().contains("admix")){
+        if (selectedTab.getId().contains("admix")) {
             admixPane.getChildren().add(getGroup(shape));
         }
 
         // if pca tab - add annotation
-        if(selectedTab.getId().contains("tab")){
+        if (selectedTab.getId().contains("tab")) {
             String[] s = selectedTab.getId().split(" "); // [pca, 0] or [pca, 11]
             int tabIndex = Integer.valueOf(s[1]);
-
+            
             Pane p = (Pane) pcaChartsList.get(tabIndex).getChildrenUnmodifiable().get(1);
             p.getChildren().add(getGroup(shape));
         }
     }
-
-    public void addArrowToChart(Arrow arrow, int chartIndex){
+    
+    public void addArrowToChart(Arrow arrow, int chartIndex) {
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
         // if admix pane
-        if(selectedTab.getId().contains("admix")){
+        if (selectedTab.getId().contains("admix")) {
             admixPane.getChildren().add(getArrowGroup(arrow));
         }
 
         // if pca tab - add annotation
-        if(selectedTab.getId().contains("tab")){
+        if (selectedTab.getId().contains("tab")) {
             String[] s = selectedTab.getId().split(" "); // [pca, 0] or [pca, 11]
             int tabIndex = Integer.valueOf(s[1]);
-
+            
             Pane p = (Pane) pcaChartsList.get(tabIndex).getChildrenUnmodifiable().get(1);
             p.getChildren().add(getArrowGroup(arrow));
         }
     }
-
-    public void addImportedShape(Shape shape, int chartIndex, String chartType){
+    
+    public void addImportedShape(Shape shape, int chartIndex, String chartType) {
         // if admix pane
-        if(chartType.equals("admixture")){
+        if (chartType.equals("admixture")) {
             admixPane.getChildren().add(getGroup(shape));
         }
 
         // if pca tab - add annotation
-        if(chartType.equals("pca")){
+        if (chartType.equals("pca")) {
             Pane p = (Pane) pcaChartsList.get(chartIndex).getChildrenUnmodifiable().get(1);
             p.getChildren().add(getGroup(shape));
         }
     }
-
-    public void addImportedArrow(Arrow arrow, int chartIndex, String chartType){
+    
+    public void addImportedArrow(Arrow arrow, int chartIndex, String chartType) {
         // if admix pane
-        if(chartType.equals("admixture")){
+        if (chartType.equals("admixture")) {
             admixPane.getChildren().add(getArrowGroup(arrow));
         }
 
         // if pca tab - add annotation
-        if(chartType.equals("pca")){
+        if (chartType.equals("pca")) {
             Pane p = (Pane) pcaChartsList.get(chartIndex).getChildrenUnmodifiable().get(1);
             p.getChildren().add(getArrowGroup(arrow));
         }
     }
-
-    private Group getGroup(Shape shape){
+    
+    private Group getGroup(Shape shape) {
         Group gr = new Group();
 
         // change cursor on hovering the shape
@@ -1183,17 +1189,17 @@ public class MainController implements Initializable{
             shape.getScene().setCursor(Cursor.HAND);
             shape.setEffect(new DropShadow(20, Color.BLUE));
         });
-
+        
         shape.setOnMouseExited(e -> {
             shape.getScene().setCursor(Cursor.DEFAULT);
             shape.setEffect(null);
         });
-
+        
         gr.getChildren().addAll(shape);
         return gr;
     }
-
-    private Group getArrowGroup(Arrow arrow){
+    
+    private Group getArrowGroup(Arrow arrow) {
         Group gr = new Group();
 
         // change cursor on hovering the shape
@@ -1201,19 +1207,21 @@ public class MainController implements Initializable{
             arrow.getScene().setCursor(Cursor.HAND);
             arrow.setEffect(new DropShadow(20, Color.BLUE));
         });
-
+        
         arrow.setOnMouseExited(e -> {
             arrow.getScene().setCursor(Cursor.DEFAULT);
             arrow.setEffect(null);
         });
-
-        gr.getChildren().addAll(arrow);
-        return gr;
+        
+        // An arrow is already a Group -- so why add another layer?
+        // FIXME: seems to work
+        //gr.getChildren().addAll(arrow);
+        return arrow; //gr;
     }
-
-    private void updateAnnotationsLists(Annotation annotationType){
+    
+    private void updateAnnotationsLists(Annotation annotationType) {
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
-
+        
         if (selectedTab.getId().contains("admix")) {
             project.getAdmixtureAnnotationsList().add(annotationType);
         }
@@ -1225,25 +1233,24 @@ public class MainController implements Initializable{
             project.getPcGraphAnnotationsList().get(tabIndex).add(annotationType);
         }
     }
-
-
-    public Dialog getDialog(GridPane gridPane){
+    
+    public Dialog getDialog(GridPane gridPane) {
         Dialog dialog = new Dialog<>();
         dialog.setTitle("Select properties");
         dialog.setHeaderText(null);
         dialog.setResizable(false);
-
+        
         dialog.getDialogPane().setContent(gridPane);
-
+        
         cancelButton = new ButtonType("Cancel");
         deleteBtn = new ButtonType("Delete");
         doneBtn = new ButtonType("Done");
-
+        
         dialog.getDialogPane().getButtonTypes().setAll(cancelButton, deleteBtn, doneBtn);
         return dialog;
     }
-
-    public ButtonType getButtonType(String btnName){
+    
+    public ButtonType getButtonType(String btnName) {
         ButtonType btn = null;
         switch (btnName) {
             case "Delete":
@@ -1262,12 +1269,13 @@ public class MainController implements Initializable{
     /**
      * used to point to a particular row under modification also used as charts
      * index
+     *
      * @return
      */
     public static int getRowPointer() {
         return rowPointer;
     }
-
+    
     static void setRowPointer(int i) {
         rowPointer = i;
     }
@@ -1276,26 +1284,28 @@ public class MainController implements Initializable{
     public static AnchorPane getAdmixPane() {
         return admixPane;
     }
-
+    
     public static VBox getAdmixVbox() {
         return admixVbox;
     }
+
     /**
      * access this heading for text formatting
+     *
      * @return
      */
     public static Text getChartHeading() {
         return chartHeading;
     }
-
+    
     public static double getDefaultAdmixPlotWidth() {
         return defaultAdmixPlotWidth;
     }
-
+    
     public List<ArrayList<StackedBarChart<String, Number>>> getAllAdmixtureCharts() {
         return allAdmixtureCharts;
     }
-
+    
     @FXML
     private void importProject(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/ImportProject.fxml"));
@@ -1309,29 +1319,30 @@ public class MainController implements Initializable{
         dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.showAndWait();
     }
-
+    
     @FXML
-    void saveProject(ActionEvent event){
-        try{
+    void saveProject(ActionEvent event) {
+        try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Project");
             FileChooser.ExtensionFilter genFilter = new FileChooser.ExtensionFilter("Genesis File", "*.g2f");
             fileChooser.getExtensionFilters().addAll(genFilter);
-            fileChooser.setInitialFileName(project.getProjectName()+".g2f");
+            fileChooser.setInitialFileName(project.getProjectName() + ".g2f");
             Stage stage = new Stage();
             File projFile = fileChooser.showSaveDialog(stage);
-
-            if(projFile != null){
-                FileOutputStream fileOut =  new FileOutputStream(projFile);
+            
+            if (projFile != null) {
+                FileOutputStream fileOut = new FileOutputStream(projFile);
                 ObjectOutputStream out = new ObjectOutputStream(fileOut);
                 out.writeObject(project);
                 out.close();
                 out.close();
                 fileOut.close();
             }
-        }catch(IOException e){;}
+        } catch (IOException e) {;
+        }
     }
-
+    
     @FXML
     private void help(ActionEvent event) {
         try {
@@ -1341,7 +1352,7 @@ public class MainController implements Initializable{
             e.printStackTrace();
         }
     }
-
+    
     @FXML
     @SuppressWarnings("empty-statement")
     private void closeProgram(ActionEvent event) {
@@ -1353,52 +1364,52 @@ public class MainController implements Initializable{
             ; //do nothing
         }
     }
-
-    public void disableNewProjBtn(boolean b){
+    
+    public void disableNewProjBtn(boolean b) {
         newProjBtn.setDisable(b);
     }
-
-    public void disablePcaBtn(boolean b){
+    
+    public void disablePcaBtn(boolean b) {
         pcaBtn.setDisable(b);
     }
-
-     public void disableAdmixtureBtn(boolean b){
+    
+    public void disableAdmixtureBtn(boolean b) {
         admixtureBtn.setDisable(b);
-     }
-
-     public void disableSettingsBtn(boolean b){
+    }
+    
+    public void disableSettingsBtn(boolean b) {
         settingsBtn.setDisable(b);
-     }
-
-     public void disableDownloadBtn(boolean b){
+    }
+    
+    public void disableDownloadBtn(boolean b) {
         downloadBtn.setDisable(b);
-     }
-
-     public void disableDrawingBtn(boolean b){
+    }
+    
+    public void disableDrawingBtn(boolean b) {
         drawingBtn.setDisable(b);
-     }
-
-     public void disableIndividualBtn(boolean b){
+    }
+    
+    public void disableIndividualBtn(boolean b) {
         individualBtn.setDisable(b);
-     }
-
-     public void disableSearchBtn(boolean b){
+    }
+    
+    public void disableSearchBtn(boolean b) {
         searchBtn.setDisable(b);
-     }
-
-     public void disableSaveBtn(boolean b){
+    }
+    
+    public void disableSaveBtn(boolean b) {
         saveProjBtn.setDisable(b);
-     }
-
-     public void disableImportProjBtn(boolean b){
+    }
+    
+    public void disableImportProjBtn(boolean b) {
         importProjBtn.setDisable(b);
-     }
-
+    }
+    
     public Project getProject() {
         return project;
     }
-
-    public void disableControlBtns(boolean enable){
+    
+    public void disableControlBtns(boolean enable) {
         disableSaveBtn(enable);
         disableSettingsBtn(enable);
         disableDrawingBtn(enable);
@@ -1407,7 +1418,7 @@ public class MainController implements Initializable{
         disableSaveBtn(enable);
         disableDownloadBtn(enable);
     }
-
+    
     @Override
     public void initialize(java.net.URL arg0, ResourceBundle arg1) {
         // disable control buttons
@@ -1425,7 +1436,7 @@ public class MainController implements Initializable{
         admixtureTab.setText("Admixture Plot");
         admixtureTab.setId("admix");
         admixtureTab.setStyle("-fx-background-color:  #06587F;");
-
+        
         drawingAnchorPaneVisibility = false;
         drawingAnchorPane.setVisible(drawingAnchorPaneVisibility);
 
@@ -1439,7 +1450,7 @@ public class MainController implements Initializable{
         StackPane titlePane = new StackPane(chartHeading);
         titlePane.setAlignment(Pos.CENTER);
         titlePane.setPrefWidth(Double.MAX_VALUE);
-
+        
         AnchorPane pane = new AnchorPane();
         pane.setStyle("-fx-background-color: white;");
         admixVbox.getChildren().addAll(titlePane, pane);
@@ -1456,7 +1467,7 @@ public class MainController implements Initializable{
         gridPane.setMaxWidth(defaultAdmixPlotWidth); // increase this value to increase the thickness of subjects
 
         AnchorPane.setRightAnchor(gridPane, 40.0);
-
+        
         admixPane = new AnchorPane();
         admixPane.setStyle("-fx-background-color: white; -fx-border-color: white;");
 
@@ -1466,11 +1477,11 @@ public class MainController implements Initializable{
         scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
         scrollPane.setStyle("-fx-background: red; -fx-border-color: white;");
     }
-
+    
     public void setProjIsImported(boolean b) {
         this.projectIsImported = b;
     }
-
+    
     public boolean isProjectIsImported() {
         return projectIsImported;
     }

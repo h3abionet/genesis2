@@ -31,7 +31,6 @@ import org.h3abionet.genesis.model.Project;
 import org.h3abionet.genesis.model.Subject;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

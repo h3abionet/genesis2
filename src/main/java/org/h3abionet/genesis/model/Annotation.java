@@ -22,6 +22,8 @@ public class Annotation implements Serializable {
     double startY;
     double endX;
     double endY;
+    double pivotX;
+    double pivotY;
     double centerX;
     double centerY;
     String fill;
@@ -32,6 +34,49 @@ public class Annotation implements Serializable {
     private String fontWeight;
     double layoutX;
     double layoutY;
+    double translateX;
+    double translateY;
+    
+    public Annotation (Annotation original) {
+        if (original != null) {
+            name = original.name;
+            radius = original.radius;
+            width = original.width;
+            height = original.height;
+            arcWidth = original.arcWidth;
+            arcHeight = original.arcHeight;
+            strokeWidth = original.strokeWidth;
+            strokeColor = original.strokeColor;
+            fillColor = original.fillColor;
+            length = original.length;
+            startX = original.startX;
+            startY = original.startY;
+            endX = original.endX;
+            endY = original.endY;
+            pivotX = original.pivotX;
+            pivotY = original.pivotY;
+            centerX = original.centerX;
+            centerY = original.centerY;
+            fill = original.fill;
+            rotation = original.rotation;
+            text = original.text;
+            fontSize = original.fontSize;
+            fontFamily = original.fontFamily;
+            fontWeight = original.fontWeight;
+            layoutX = original.layoutX;
+            layoutY = original.layoutY;
+        }
+    }
+    
+    // default for no initial values
+    public Annotation () {
+    
+    }
+
+    public void debugPrint () {
+        System.out.print("start x = "+getStartX()+" start y = "+ getStartY() +
+                "end x = " + getEndX() + "end y =" + getEndY());
+    }
 
 
     public String getName() {
@@ -45,9 +90,25 @@ public class Annotation implements Serializable {
     public double getRotation() {
         return rotation;
     }
+    
+    public double getPivotX () {
+        return pivotX;
+    }
+    
+    public double getPivotY () {
+        return pivotY;
+    }
 
     public void setRotation(double rotation) {
         this.rotation = rotation;
+    }
+
+    public void setPivotX (double pivotX) {
+        this.pivotX = pivotX;
+    }
+    
+    public void setPivotY (double pivotY) {
+        this.pivotY = pivotY;
     }
 
     public void setCenterX(double centerX) {
@@ -223,5 +284,21 @@ public class Annotation implements Serializable {
 
     public void setLayoutY(double layoutY) {
         this.layoutY = layoutY;
+    }
+    
+    public void setTranslateX (double newTranslateX) {
+        translateX = newTranslateX;
+    }
+
+    public double getTranslateX () {
+        return translateX;
+    }
+    
+    public void setTranslateY (double newTranslateY) {
+        translateY = newTranslateY;
+    }
+    
+    public double getTranslateY () {
+        return translateY;
     }
 }

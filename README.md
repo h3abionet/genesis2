@@ -90,23 +90,36 @@ Data file types available to open are:
 
 4. Saving saves everything that is currently visible; this possibly is what you want, though it can be confusing as to what name to use to save.
 
-5. Annotations are not completely correct:
+5. Annotations are not completely correct:  
+*Generally fixed -- onscreen changes work and cancel correctly and save and reload correctly after quit.*
  * text annotations:
       * Only update colour when editing and the text only updates when the edit is accepted (click **Done**)
       * The **Extra Bold** attribute has no effect
+	      * _Now changed to **Bold** as that is more widely implemented and now actually works_
     * **Cancel** does not work when editing annotations
+    	* _Fixed_
     * With rectangular annotations, setting a rounded corner is called the `arch size`, which should be `arc` and is in pixels, which makes for barely visible varition -- I propose changing this to mm and making the text `Round corner diameter (mm):`, with a range from 0 to 10.
+	    * _Fixed: stayed with pixels but increment in bigger steps of 8 from 0 to 40; this is not portable but all the other dimensions are in pixels_
     * Arrow annotations do not save correctly if the arrow is changed from its initial state (a bug) and lack a few features
     	* 	you cannot set the colour
+	    	*  _Fixed_
     	*  you cannot set the line width
+	    	*  _Fixed_
 
 6. The **Show/Hide** feature does not work.
 
-7. Running from the IDE broke when I took out detail specific to the JavaFX Mac install in the Maven `pom.xml` file. *Fixed*.
+*_Fixed._*
+
+7. Running from the IDE broke when I took out detail specific to the JavaFX Mac install in the Maven `pom.xml` file.
+
+	* _Fixed_.
 
 8. A few exceptions get thrown, but not consistently.
+	*  _Some could arise from user interface features not completely or not correctly implemented._
 
 The main difficulty in correcting the annotations issues is that the way annotations are implemented is clumsy. There is a single `Annotations` class that represents every variation and the different annotation classes each embed this class; the proposed fix: a top-level `Annotation` class that only contains the common properties of all annotations and derived classes that implement functions specific to that annotation type. This will make it easier to record the state of the annotation before edits and restore it if the edit is cancelled. It is also weird that the Annotation class is in package Model while the uses of it are in Controller. You could argue that the contents of an annotation are part of the data but why are methods to manipulate it split between the model and controller?
+
+* _Rather than do this, I now focus on transferring state between JavaFX view and model classes in *X*options.java files where *X* is a particular annotation type._
 
 Another issue is the confusing way a project is implemented; some thought needs to go into re-architecting this.
      

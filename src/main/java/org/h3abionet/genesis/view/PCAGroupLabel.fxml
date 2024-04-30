@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="200.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.PCAGroupLabelController">
+<AnchorPane prefHeight="200.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.h3abionet.genesis.controller.PCAGroupLabelController">
    <children>
       <VBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" prefHeight="176.0" prefWidth="240.0" spacing="10.0" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5;" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
          <children>
@@ -42,7 +42,7 @@
                      <font>
                         <Font name="Helvetica" size="14.0" />
                      </font></Label>
-                  <TextField fx:id="groupNameLbl" prefHeight="27.0" prefWidth="137.0" />
+                  <TextField fx:id="groupNameLbl" editable="false" prefHeight="27.0" prefWidth="137.0" />
                   <Label text="Font Size" />
                   <Spinner fx:id="legendFontSizeSpinner" prefHeight="26.0" prefWidth="79.0" />
                </children>
