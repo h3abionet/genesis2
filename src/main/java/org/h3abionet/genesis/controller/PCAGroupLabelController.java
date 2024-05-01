@@ -43,7 +43,7 @@ public class PCAGroupLabelController implements Initializable {
 
     // default axis chosen values -- changed by event handlers
     private String legendFont = "Helvetica";
-    private String legendFontColor = "000000";
+    private Color legendFontColor = Color.BLACK;
     private String legendFontPosture = "REGULAR";
     private double legendFontSize = 13;
 
@@ -57,6 +57,17 @@ public class PCAGroupLabelController implements Initializable {
     void cancelHandler(ActionEvent event) {
         Genesis.closeOpenStage(event);
     }
+    
+    private String format(double val) {
+        String in = Integer.toHexString((int) Math.round(val * 255));
+        return in.length() == 1 ? "0" + in : in;
+    }
+
+    private String toHexString(Color value) {
+        return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue()) + format(value.getOpacity()))
+                .toUpperCase();
+    }
+
 
     @FXML
     void doneHandler(ActionEvent event) {
@@ -88,11 +99,11 @@ public class PCAGroupLabelController implements Initializable {
         // style the legend item
         legendFont = legendFontComboBox.getValue();
         legendFontSize = legendFontSizeSpinner.getValue();
-        legendFontColor = Integer.toHexString(legendFontColorPicker.getValue().hashCode());
-        if(legendFontColor.equals("ff")){
-            legendFontColor = "000000";
-        }
-        pcaGraph.styleLegendItems(legendFont, legendFontSize, legendFontColor);
+        legendFontColor = legendFontColorPicker.getValue();
+        
+        pcaGraph.styleLegendItems(legendFont, legendFontSize, 
+                // substring removes the leading "0x" from the hex representation
+                legendFontColor.toString().substring(2));
 
         Genesis.closeOpenStage(event);
 

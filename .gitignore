@@ -75,8 +75,20 @@ crashlytics-build.properties
 # Created by .ignore support plugin (hsz.mobi)
 
 ## Mac
+**/.DS_Store
+
 .DS_Store
-.DS_Store
+agm-demo/agm-genesis/sample-data/sample-data/.DS_Store
+agm-demo/.DS_Store
+agm-demo/agm-demo/.DS_Store
+agm-demo/agm-demo/agm-genesis/.DS_Store
+agm-demo/agm-demo/agm-genesis/sample-data/.DS_Store
 src/.DS_Store
 src/main/.DS_Store
 src/main/java/.DS_Store
+src/main/java/org/.DS_Store
+src/main/java/org/h3abionet/.DS_Store
+src/main/java/org/h3abionet/genesis/.DS_Store
+src/main/java/org/h3abionet/genesis/css/.DS_Store
+src/main/java/org/h3abionet/genesis/image/.DS_Store
+

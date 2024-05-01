@@ -21,6 +21,7 @@ import java.util.Optional;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -33,6 +34,8 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.h3abionet.genesis.controller.MainController;
@@ -40,6 +43,9 @@ import org.h3abionet.genesis.controller.MainController;
 /**
  * This is the main class of the program
  * @author scott
+ * Code for start allowing rescaling from Jason Winnebeck
+ *   https://gillius.org/blog/2013/02/javafx-window-scaling-on-resize.html
+ * copyright © 1998-2020 by Jason Winnebeck
  */
 public class Genesis extends Application {
 
@@ -47,7 +53,68 @@ public class Genesis extends Application {
     private static Stage mainStage;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start( Stage stage ) throws Exception {
+        mainStage = stage;
+        shutdownProgram(stage);
+
+        String mainfile = "view/Main.fxml", // view/
+                cssfile="css/pca.css"; // css/
+
+        FXMLLoader loader = new FXMLLoader( getClass().getResource( mainfile ) );
+	Region contentRootRegion = (Region) loader.load();
+
+	//Set a default "standard" or "100%" resolution
+	double origW = 1000;
+	double origH = 700;
+
+	//If the Region containing the GUI does not already have a preferred width and height, set it.
+	//But, if it does, we can use that setting as the "standard" resolution.
+	if ( contentRootRegion.getPrefWidth() == Region.USE_COMPUTED_SIZE ) {
+            System.out.println("using preset width="+origW);
+        } else {
+		origW = contentRootRegion.getPrefWidth();
+        }
+
+	if ( contentRootRegion.getPrefHeight() == Region.USE_COMPUTED_SIZE )
+		contentRootRegion.setPrefHeight( origH );
+	else
+		origH = contentRootRegion.getPrefHeight();
+
+	//Wrap the resizable content in a non-resizable container (Group)
+	Group group = new Group( contentRootRegion );
+	//Place the Group in a StackPane, which will keep it centered
+	StackPane rootPane = new StackPane();
+	rootPane.getChildren().add( group );
+
+	stage.setTitle( "Genesis 2" );
+	//Create the scene initally at the "100%" size
+	Scene scene = new Scene( rootPane, origW, origH );
+        scene.getStylesheets().add(Genesis.class.getResource(cssfile).toExternalForm());
+
+        stage.addEventFilter(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
+            if (event.getCode() == KeyCode.F) {
+                boolean newValue = !stage.isFullScreen();
+                stage.setAlwaysOnTop(newValue);
+                stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.E));
+                stage.setFullScreen(newValue);
+            }
+        });
+
+        
+        //Bind the scene's width and height to the scaling parameters on the group
+	group.scaleXProperty().bind( scene.widthProperty().divide( origW ) );
+	group.scaleYProperty().bind( scene.heightProperty().divide( origH ) );
+
+
+        stage.setMaximized(false);
+        stage.setFullScreen(false);
+
+	//Set the scene to the window (stage) and show it
+	stage.setScene( scene );
+	stage.show();
+}
+    
+    public void start_old(Stage stage) throws Exception {
         mainStage = stage;
         shutdownProgram(stage);
         
@@ -143,18 +210,6 @@ public class Genesis extends Application {
         return dinp;
     }
     
-    /* load view
-     * @param fxmlLink -  link for the window to be loaded
-     * @throws FileNotFoundException
-     */
-    public static void loadFxmlView(String fxmlLink) throws IOException{
-        FXMLLoader loader = new FXMLLoader(Genesis.class.getResource(fxmlLink));
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(new Scene((Parent) loader.load()));
-        stage.setResizable(false);
-        stage.showAndWait();
-    }
     
     // throw error exception dialog box
     public static void throwErrorException(String message){

@@ -24,7 +24,7 @@ import java.io.Serializable;
  */
 public abstract class Graph implements Serializable {
 
-//    public pto project;
+//    public to project;
     protected abstract void readGraphData(String filePath) throws IOException;
     abstract void createAdmixGraph(); // used by admixture
     abstract void createGraph(int pcaX, int pcaY) throws IOException; // used by pca

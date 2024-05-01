@@ -82,6 +82,12 @@ Data file types available to open are:
 
 ## Known issues
 
+Latest fix: rescaling window contents when resizing a window works, though non-uniform rescaling distorts shapes (e.g. a circle becomes an oval).
+
+Tested on a Mac: if you hold SHIFT while resizingf a window, it rescales uniformly.
+
+Last commit shows a lot of other fixes in the README; deleted from here for brevity.
+
 1. If a new project is started (using **New**), you cannot change to another project in the same session: both **New** and **Import** are no longer available.
 
 2. If you open a project (**Load**), you can no longer create a new project, though you can load another project.
@@ -90,32 +96,18 @@ Data file types available to open are:
 
 4. Saving saves everything that is currently visible; this possibly is what you want, though it can be confusing as to what name to use to save.
 
-5. Annotations are not completely correct:  
-*Generally fixed -- onscreen changes work and cancel correctly and save and reload correctly after quit.*
- * text annotations:
-      * Only update colour when editing and the text only updates when the edit is accepted (click **Done**)
-      * The **Extra Bold** attribute has no effect
-	      * _Now changed to **Bold** as that is more widely implemented and now actually works_
-    * **Cancel** does not work when editing annotations
-    	* _Fixed_
-    * With rectangular annotations, setting a rounded corner is called the `arch size`, which should be `arc` and is in pixels, which makes for barely visible varition -- I propose changing this to mm and making the text `Round corner diameter (mm):`, with a range from 0 to 10.
-	    * _Fixed: stayed with pixels but increment in bigger steps of 8 from 0 to 40; this is not portable but all the other dimensions are in pixels_
-    * Arrow annotations do not save correctly if the arrow is changed from its initial state (a bug) and lack a few features
-    	* 	you cannot set the colour
-	    	*  _Fixed_
-    	*  you cannot set the line width
-	    	*  _Fixed_
+5. Annotations are mostly completely correct. But note that if you resize the window, that is a zoomed in or out view; that does not change how it is saved.  
 
-6. The **Show/Hide** feature does not work.
 
-*_Fixed._*
+6. The **Show/Hide** feature works (mostly -- see below).
 
-7. Running from the IDE broke when I took out detail specific to the JavaFX Mac install in the Maven `pom.xml` file.
+**The label is changed to _Show hidden_. Saving after hiding may not reopen correctly**
 
-	* _Fixed_.
+7. Changing the legend does not save.
+8. Hiding a group via the legend doesn't save and reopen properly; unhide everything before saving and hide the same things to get the same view back..
 
 8. A few exceptions get thrown, but not consistently.
-	*  _Some could arise from user interface features not completely or not correctly implemented._
+	*  _Some arose from user interface features not completely or not correctly implemented: much less abn issue now._
 
 The main difficulty in correcting the annotations issues is that the way annotations are implemented is clumsy. There is a single `Annotations` class that represents every variation and the different annotation classes each embed this class; the proposed fix: a top-level `Annotation` class that only contains the common properties of all annotations and derived classes that implement functions specific to that annotation type. This will make it easier to record the state of the annotation before edits and restore it if the edit is cancelled. It is also weird that the Annotation class is in package Model while the uses of it are in Controller. You could argue that the contents of an annotation are part of the data but why are methods to manipulate it split between the model and controller?
 
