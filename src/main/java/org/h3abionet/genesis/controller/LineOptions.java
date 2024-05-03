@@ -73,7 +73,7 @@ public class LineOptions extends Line {
     }
 
     public static void annotationToLine(Line line, Annotation lineAnnotation,
-            boolean setRotate) {
+            boolean setRotate, boolean setTranslate) {
         if (setRotate) {
             Rotate rotate = new Rotate();
             rotate.setPivotX(lineAnnotation.getEndX());
@@ -87,8 +87,10 @@ public class LineOptions extends Line {
         line.setEndY(lineAnnotation.getEndY());
         line.setStroke(Color.web(lineAnnotation.getStrokeColor()));
         line.setStrokeWidth(lineAnnotation.getStrokeWidth());
-        line.setTranslateX(lineAnnotation.getTranslateX());
-        line.setTranslateY(lineAnnotation.getTranslateY());
+        if (setTranslate) {
+            line.setTranslateX(lineAnnotation.getTranslateX());
+            line.setTranslateY(lineAnnotation.getTranslateY());
+        }
     }
 
     public void setAngleOfRotation(double angleOfRotation) {
@@ -203,7 +205,7 @@ public class LineOptions extends Line {
         }
 
         if (results.get() == mainController.getButtonType("Cancel")) {
-            annotationToLine (line, lineAnnotation, false);
+            annotationToLine (line, lineAnnotation, false, false);
             if (rotate != null) {
                 line.getTransforms().remove(rotate);
             }

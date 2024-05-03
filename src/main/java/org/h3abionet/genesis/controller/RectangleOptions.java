@@ -154,7 +154,8 @@ public class RectangleOptions{
         rectangleAnn.setStartY(rectangle.getY());
     }
 
-    public static void annotationToRectangle(Rectangle rectangle, Annotation rectangleAnn) {
+    public static void annotationToRectangle(Rectangle rectangle, Annotation rectangleAnn,
+            boolean setTranslate) {
         rectangle.setX(rectangleAnn.getStartX());
         rectangle.setY(rectangleAnn.getStartY());
         rectangle.setWidth(rectangleAnn.getWidth());
@@ -164,8 +165,10 @@ public class RectangleOptions{
         rectangle.setFill(Color.TRANSPARENT);
         rectangle.setStroke(Paint.valueOf(rectangleAnn.getStrokeColor()));
         rectangle.setStrokeWidth(rectangleAnn.getStrokeWidth());
-        rectangle.setTranslateX(rectangleAnn.getTranslateX());
-        rectangle.setTranslateY(rectangleAnn.getTranslateY());
+        if (setTranslate) {
+            rectangle.setTranslateX(rectangleAnn.getTranslateX());
+            rectangle.setTranslateY(rectangleAnn.getTranslateY());
+        }
     }
 
 
@@ -193,7 +196,7 @@ public class RectangleOptions{
 
         if (results.get() == mainController.getButtonType("Cancel")) {
             // recover from annotation object
-            annotationToRectangle(rectangle, rectangleAnnotation);
+            annotationToRectangle(rectangle, rectangleAnnotation, false);
         }
     }
 

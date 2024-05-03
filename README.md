@@ -84,7 +84,7 @@ Data file types available to open are:
 
 Latest fix: rescaling window contents when resizing a window works, though non-uniform rescaling distorts shapes (e.g. a circle becomes an oval).
 
-Tested on a Mac: if you hold SHIFT while resizingf a window, it rescales uniformly.
+Tested on a Mac: if you hold SHIFT while resizingf a window, it rescales uniformly (i.e. maintains the aspect ratio).
 
 Last commit shows a lot of other fixes in the README; deleted from here for brevity.
 

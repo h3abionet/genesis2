@@ -50,9 +50,7 @@ public class ImportProjectController {
         try {
             FileInputStream fileIn = new FileInputStream(projFile);
             ObjectInputStream in = new ObjectInputStream(fileIn);
-            System.out.println("About to readObject");
             proj = (Project) in.readObject();
-            System.out.println("Done readObject");
             mainController.setProject(proj);
             in.close();
             fileIn.close();

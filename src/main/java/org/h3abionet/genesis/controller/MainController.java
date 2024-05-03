@@ -704,7 +704,7 @@ public class MainController implements Initializable {
     public void recreateLine(Annotation l, int chartIndex, String chartType) {
         Line line = new Line();
 
-        LineOptions.annotationToLine(line, l, true);
+        LineOptions.annotationToLine(line, l, true, true);
 
         // add the line to the graph
         addImportedShape(line, chartIndex, chartType);
@@ -796,7 +796,7 @@ public class MainController implements Initializable {
     
     public void recreateArrow(Annotation a, int chartIndex, String chartType) {
         Arrow arrow = new Arrow();
-        ArrowOptions.annotationToArrow(arrow, a, true);
+        ArrowOptions.annotationToArrow(arrow, a, true, true);
         addImportedArrow(arrow, chartIndex, chartType); // add to chart
         addArrowEvents(arrow, a);
     }
@@ -875,6 +875,7 @@ public class MainController implements Initializable {
             circleAnnotation.setName("circle");
             
             updateAnnotationsLists(circleAnnotation);// add the circle to the list of annotations
+            // Next line causes circle to pick up spurious events and mess up translation
             //DragController dragController = new DragController(circle, true);
             //MouseControlUtil.makeDraggable(circle); // add drag event
             addShapeToChart(circle, currentTabIndex);
@@ -888,9 +889,9 @@ public class MainController implements Initializable {
 
         Circle circle = new Circle();
         
-        CircleOptions.annotationToCircle(circle, circleAnn);
+        CircleOptions.annotationToCircle(circle, circleAnn, true);
         
-        DragController dragController = new DragController(circle, true);
+        //DragController dragController = new DragController(circle, true);
         // MouseControlUtil.makeDraggable(circle);
         addImportedShape(circle, chartIndex, chartType);
         addCircleEvents(circle, circleAnn);
@@ -943,6 +944,9 @@ public class MainController implements Initializable {
                 // mysteriously, for circles, translates do not accumluate
                 circleAnn.setTranslateX (translateX); // circleAnn.getTranslateX()+
                 circleAnn.setTranslateY (translateY); //circleAnn.getTranslateY()+
+                System.out.println("Setting translate after drag in annotation X,Y="
+                +circleAnn.getTranslateX()+","
+                +circleAnn.getTranslateY());
             }
             dragged = false;
         });
@@ -980,7 +984,7 @@ public class MainController implements Initializable {
     public void recreateText(Annotation textAnn, int chartIndex, String chartType) {
         Text text = new Text();
         
-        LabelOptions.annotationToText(text, textAnn);
+        LabelOptions.annotationToText(text, textAnn, true);
         addImportedShape(text, chartIndex, chartType);
         addTextEvents(text, textAnn);
     }
@@ -1062,7 +1066,7 @@ public class MainController implements Initializable {
     public void recreateRectangle(Annotation recAn, int chartIndex, String chartType) {
         Rectangle rec = new Rectangle();
 
-        RectangleOptions.annotationToRectangle(rec, recAn);
+        RectangleOptions.annotationToRectangle(rec, recAn, true);
 
         addImportedShape(rec, chartIndex, chartType);
         addRectangleEvents(rec, recAn);

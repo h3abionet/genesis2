@@ -52,7 +52,7 @@ public class ArrowOptions implements Serializable {
     }
 
     public static void annotationToArrow(Arrow arrow, Annotation arrowAnnotation,
-            boolean setRotate) {
+            boolean setRotate, boolean setTranslate) {
         if (setRotate) {
             Rotate rotate = new Rotate();
             rotate.setPivotX(arrowAnnotation.getEndX());
@@ -64,8 +64,10 @@ public class ArrowOptions implements Serializable {
         arrow.setStartY(arrowAnnotation.getStartY());
         arrow.setEndX(arrowAnnotation.getEndX());
         arrow.setEndY(arrowAnnotation.getEndY());
+        if (setTranslate) {
         arrow.setTranslateX(arrowAnnotation.getTranslateX());
-        arrow.setTranslateY(arrowAnnotation.getTranslateY());
+            arrow.setTranslateY(arrowAnnotation.getTranslateY());
+        }
     }
 
     private void setControllers() {
@@ -170,7 +172,7 @@ public class ArrowOptions implements Serializable {
         }
 
         if (results.get() == mainController.getButtonType("Cancel")) {
-            annotationToArrow (arrow, arrowAnnotation, false);
+            annotationToArrow (arrow, arrowAnnotation, false, false);
             if (rotate != null) {
                 arrow.getTransforms().remove(rotate);
             }

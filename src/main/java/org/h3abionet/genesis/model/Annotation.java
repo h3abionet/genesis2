@@ -77,6 +77,10 @@ public class Annotation implements Serializable {
         System.out.print("start x = "+getStartX()+" start y = "+ getStartY() +
                 "end x = " + getEndX() + "end y =" + getEndY());
     }
+    
+    public void debugPrintTranslate () {
+        System.out.print("translate x = "+getTranslateX()+" y = "+ getTranslateY());
+    }
 
 
     public String getName() {

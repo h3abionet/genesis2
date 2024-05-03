@@ -53,6 +53,12 @@ public class LabelOptions {
         this.textAnnotation = textAnnotation;
         setControllers();
     }
+    
+    private void printLabel(Annotation textAnnotation) {
+        textAnnotation.debugPrint ();
+        System.out.print(" ");
+        textAnnotation.debugPrintTranslate();
+    }
 
     public static void textToAnnotation(Annotation textAnnotation, Text text) {
         textAnnotation.setStartX(text.getX());
@@ -69,7 +75,8 @@ public class LabelOptions {
         textAnnotation.setFontWeight(weight);
     }
 
-    public static void annotationToText(Text text, Annotation textAnnotation) {
+    public static void annotationToText(Text text, Annotation textAnnotation,
+            boolean setTranslate) {
         text.setX(textAnnotation.getStartX());
         text.setY(textAnnotation.getStartY());
         text.setText(textAnnotation.getText());
@@ -79,8 +86,10 @@ public class LabelOptions {
                 FontWeight.NORMAL;
         
         text.setFont(Font.font(textAnnotation.getFontFamily(), weight, textAnnotation.getFontSize()));
-        text.setTranslateX(textAnnotation.getTranslateX());
-        text.setTranslateY(textAnnotation.getTranslateY());
+        if (setTranslate) {
+            text.setTranslateX(textAnnotation.getTranslateX());
+            text.setTranslateY(textAnnotation.getTranslateY());
+        }
     }
 
     private void setControllers() {
@@ -178,7 +187,7 @@ public class LabelOptions {
             isDeleted = true;
             
         } else if (results.get() == mainController.getButtonType("Cancel")) {
-            annotationToText (text, textAnnotation);
+            annotationToText (text, textAnnotation, false);
         }
     }
 

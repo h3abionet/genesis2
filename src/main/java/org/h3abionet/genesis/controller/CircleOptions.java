@@ -118,17 +118,24 @@ public class CircleOptions implements Serializable{
         circleAnn.setStrokeWidth(circle.getStrokeWidth());
 //        circleAnn.setTranslateX(circle.getTranslateX());
 //        circleAnn.setTranslateY(circle.getTranslateY());
+//        System.out.println("Setting translate in annotation X,Y="
+//                +circleAnn.getTranslateX()+","
+//                +circleAnn.getTranslateY());
+//
     }
 
-    public static void annotationToCircle(Circle circle, Annotation circleAnn) {
+    public static void annotationToCircle(Circle circle, Annotation circleAnn,
+            boolean setTranslate) {
         circle.setCenterX(circleAnn.getCenterX());
         circle.setCenterY(circleAnn.getCenterY());
         circle.setFill(Color.TRANSPARENT);
         circle.setRadius(circleAnn.getRadius());
         circle.setStroke(Paint.valueOf(circleAnn.getStrokeColor()));
         circle.setStrokeWidth(circleAnn.getStrokeWidth());
-        circle.setTranslateX(circleAnn.getTranslateX());
-        circle.setTranslateY(circleAnn.getTranslateY());
+        if (setTranslate) {
+            circle.setTranslateX(circleAnn.getTranslateX());
+            circle.setTranslateY(circleAnn.getTranslateY());
+        }
     }
 
 
@@ -156,7 +163,7 @@ public class CircleOptions implements Serializable{
         }
 
         if (results.get() == mainController.getButtonType("Cancel")) {
-            annotationToCircle (circle, circleAnnotation);
+            annotationToCircle (circle, circleAnnotation, false);
         }
     }
 
