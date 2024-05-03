@@ -44,7 +44,7 @@ public class PCAGraph extends Graph implements Serializable {
 
     private String[] pcaColumnLabels; // store pca column name: PCA 1, PCA 2, ...
     private final List<String> eigenValues; // store eigen values
-    private transient XYChart.Series<Number, Number> series;
+    private transient XYChart.Series<Number, Number> series; // FIXME: why transient?
     private transient BufferedReader bufferReader;
     private transient ScatterChart<Number, Number> pcaChart;
     private String line;
@@ -778,10 +778,15 @@ public class PCAGraph extends Graph implements Serializable {
             ScatterChart<Number, Number> chart = mainController.getPcaChartsList().get(i);
 
             for(int j=0;j<chart.getData().size();j++){
-                XYChart.Series<Number, Number> serie = chart.getData().get(j);
+                XYChart.Series<Number, Number> series = chart.getData().get(j);
 
-                if (serie.getName().equals(oldGroupName)) {
-                    hiddenGroups.add(serie); // save this serie
+                if (series.getName().equals(oldGroupName)) {
+// FIXME: removing this line stops the hiddenness from
+// being saved and thereby preventing the file being reopened
+// java.io.WriteAbortedException: writing aborted;
+// java.io.NotSerializableException:
+//javafx.scene.chart.XYChart$Series
+                    //hiddenGroups.add(series); // save this series
                     chart.getData().remove(j); // remove it from the chart
 
                     // set color, icon, click event and legend for this chart
@@ -814,7 +819,6 @@ public class PCAGraph extends Graph implements Serializable {
      * @param series
      */
     public void hideIndividual(XYChart.Series<Number, Number> series, String ids[]){
-
         // add this individual to a list of hidden individuals
         project.getHiddenPoints().add(ids[0]+" "+ids[1]); // ids of the individual
 

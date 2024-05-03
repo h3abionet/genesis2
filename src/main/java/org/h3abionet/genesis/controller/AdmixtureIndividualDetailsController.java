@@ -63,7 +63,7 @@ public class AdmixtureIndividualDetailsController{
 
     @FXML
     private void entryBtnOK(ActionEvent event) {
-        if (hideCheckBox.isSelected()) { admixtureGraph.hideIndividual(); }
+        //if (hideCheckBox.isSelected()) { admixtureGraph.hideIndividual(); }
 
         Genesis.closeOpenStage(event);
     }

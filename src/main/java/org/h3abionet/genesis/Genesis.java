@@ -32,6 +32,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -61,7 +62,7 @@ public class Genesis extends Application {
                 cssfile="css/pca.css"; // css/
 
         FXMLLoader loader = new FXMLLoader( getClass().getResource( mainfile ) );
-	Region contentRootRegion = (Region) loader.load();
+	AnchorPane contentRootRegion = (AnchorPane) loader.load();
 
 	//Set a default "standard" or "100%" resolution
 	double origW = 1000;

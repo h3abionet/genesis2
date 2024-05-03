@@ -99,15 +99,25 @@ Last commit shows a lot of other fixes in the README; deleted from here for brev
 5. Annotations are mostly completely correct. But note that if you resize the window, that is a zoomed in or out view; that does not change how it is saved.  
 
 
-6. The **Show/Hide** feature works (mostly -- see below).
-
-**The label is changed to _Show hidden_. Saving after hiding may not reopen correctly**
+6. The **Show/Hide** feature works partially (see below). **The label is changed to _Show hidden_.**
 
 7. Changing the legend does not save.
-8. Hiding a group via the legend doesn't save and reopen properly; unhide everything before saving and hide the same things to get the same view back..
+8. Hiding a group via the legend doesn't save and reopen properly; unhide then save also breaks.
+9. Hiding a group or an individual vial secondary-click on part of the chart does not save correctly (exception thrown when loading the file).
+  * _For now, I have disabled saving remove group and removing an individual doesn't actually do anything though the interface is there; in the original code before my changes, removing individuals did work but removing groups also threw an exception when opening the saved file. This is the exeption thrown<br>_`java.io.WriteAbortedException: writing aborted;`<br> `java.io.NotSerializable`<br>`Exception:<br>javafx.scene.chart.XYChart$Series`
 
 8. A few exceptions get thrown, but not consistently.
 	*  _Some arose from user interface features not completely or not correctly implemented: much less abn issue now._
+
+9. If you see a message like this when launchingfrom the command line, it could mean you need a version of the JavaFX library (there is a compatibility issue with macOS 14.x; as tested it does not cause any other error):
+
+`May 02, 2024 8:48:49 AM`
+`com.sun.glass.ui.mac.MacApplication`
+`lambda$waitForReactivation$6`
+
+
+* _Fixed by installing JFX libraries v 21.0.3 to replace 21._
+
 
 The main difficulty in correcting the annotations issues is that the way annotations are implemented is clumsy. There is a single `Annotations` class that represents every variation and the different annotation classes each embed this class; the proposed fix: a top-level `Annotation` class that only contains the common properties of all annotations and derived classes that implement functions specific to that annotation type. This will make it easier to record the state of the annotation before edits and restore it if the edit is cancelled. It is also weird that the Annotation class is in package Model while the uses of it are in Controller. You could argue that the contents of an annotation are part of the data but why are methods to manipulate it split between the model and controller?
 
