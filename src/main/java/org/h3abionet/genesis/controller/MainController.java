@@ -944,9 +944,6 @@ public class MainController implements Initializable {
                 // mysteriously, for circles, translates do not accumluate
                 circleAnn.setTranslateX (translateX); // circleAnn.getTranslateX()+
                 circleAnn.setTranslateY (translateY); //circleAnn.getTranslateY()+
-                System.out.println("Setting translate after drag in annotation X,Y="
-                +circleAnn.getTranslateX()+","
-                +circleAnn.getTranslateY());
             }
             dragged = false;
         });
