@@ -820,7 +820,10 @@ public class PCAGraph extends Graph implements Serializable {
      */
     public void hideIndividual(XYChart.Series<Number, Number> series, String ids[]){
         // add this individual to a list of hidden individuals
-        project.getHiddenPoints().add(ids[0]+" "+ids[1]); // ids of the individual
+        
+        //FIXME: is this what breaks save and load?
+        
+        // project.getHiddenPoints().add(ids[0]+" "+ids[1]); // ids of the individual
 
         // for every displayed graph, hide this individual
         for(int i=0;i< mainController.getPcaChartsList().size();i++){

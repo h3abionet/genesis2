@@ -23,7 +23,7 @@ import javafx.geometry.Point2D;
  * adding debugPrint method.
  *
  */
-public class Arrow extends Group implements Serializable {
+public class Arrow extends Group { //  implements Serializable: why added?
 
     private final Line line;
 

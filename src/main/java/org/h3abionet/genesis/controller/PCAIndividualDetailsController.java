@@ -220,7 +220,7 @@ public class PCAIndividualDetailsController{
 
                 if((xValue.equals(xValueOfClickedPoint) & yValue.equals(yValueOfClickedPoint))){
                     if(hideRadioBtnClicked){
-                        // pcaGraph.hideIndividual(series, idsOfClickedPoint);
+                        pcaGraph.hideIndividual(series, idsOfClickedPoint);
                         break;
                     }else if(topRadioBtnClicked){
                         data.getNode().toFront();

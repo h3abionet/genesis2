@@ -1334,14 +1334,17 @@ public class MainController implements Initializable {
             fileChooser.setInitialFileName(project.getProjectName() + ".g2f");
             Stage stage = new Stage();
             File projFile = fileChooser.showSaveDialog(stage);
-            
             if (projFile != null) {
-                FileOutputStream fileOut = new FileOutputStream(projFile);
-                ObjectOutputStream out = new ObjectOutputStream(fileOut);
-                out.writeObject(project);
-                out.close();
-                out.close();
-                fileOut.close();
+                int pos = projFile.getName().lastIndexOf(".g2f");
+                if (pos > 0) { // file name ends with .g2f -- cannot just be .g2f
+                    project.setProjectName(projFile.getName().substring(0, pos));
+                    FileOutputStream fileOut = new FileOutputStream(projFile);
+                    ObjectOutputStream out = new ObjectOutputStream(fileOut);
+                    out.writeObject(project);
+                    out.close();
+                    out.close();
+                    fileOut.close();
+                }
             }
         } catch (IOException e) {;
         }

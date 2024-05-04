@@ -567,7 +567,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                                     groupName = s.getPhenos()[project.getPhenoColumnNumber() - 1];
 
                                     // add this individual to a list of hidden individuals
-                                    project.getHiddenPoints().add(s.getFid()+" "+s.getIid()); // fid+" "+iid
+                                    //project.getHiddenPoints().add(s.getFid()+" "+s.getIid()); // fid+" "+iid
                                     break;
                                 }
                             }

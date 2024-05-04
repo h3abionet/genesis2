@@ -99,7 +99,6 @@ public class ImportProjectController {
 
     public void readGraphs() throws IOException, InterruptedException {
         if(proj.getPcaGraph()!=null) {
-
             Genesis.getMainStage().setWidth(proj.getStageWidth());
             Genesis.getMainStage().setHeight(proj.getStageHeight());
 
@@ -124,6 +123,7 @@ public class ImportProjectController {
             }
 
             // add annotations
+            annotationPCALoop:
             for (int annoIndex = 0; annoIndex < proj.getPcGraphAnnotationsList().size(); annoIndex++) {
                 ArrayList<Annotation> annotations = proj.getPcGraphAnnotationsList().get(annoIndex);
                 for(Annotation an : annotations ){
@@ -144,7 +144,7 @@ public class ImportProjectController {
                             mainController.recreateText(an,annoIndex,"pca");
                             break;
                         default:
-                            return; // nothing
+                            break annotationPCALoop; // nothing
                     }
                 }
             }
@@ -173,6 +173,7 @@ public class ImportProjectController {
             }
 
             // add annotations
+            annotationAdmixtureLoop:
             for(Annotation an : proj.getAdmixtureAnnotationsList()){
                 switch(an.getName()) {
                     case "line":
@@ -191,7 +192,7 @@ public class ImportProjectController {
                         mainController.recreateText(an,0,"admixture");
                         break;
                     default:
-                        return; // nothing
+                        break annotationAdmixtureLoop; // nothing
                 }
             }
         }

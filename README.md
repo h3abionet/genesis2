@@ -82,9 +82,11 @@ Data file types available to open are:
 
 ## Known issues
 
-Latest fix: rescaling window contents when resizing a window works, though non-uniform rescaling distorts shapes (e.g. a circle becomes an oval).
+Latest fixes: rescaling window contents when resizing a window works, though non-uniform rescaling distorts shapes (e.g. a circle becomes an oval).
 
 Tested on a Mac: if you hold SHIFT while resizingf a window, it rescales uniformly (i.e. maintains the aspect ratio).
+
+When you save as a different name, the project now remembers the new name so when you save again, it offers the new name not its original file name.
 
 Last commit shows a lot of other fixes in the README; deleted from here for brevity.
 
@@ -94,34 +96,33 @@ Last commit shows a lot of other fixes in the README; deleted from here for brev
 
 3. There is no way to close a project once it is opened. You can close all the individual panes but when the last closes, it asks you to save, without the load to open or create another project.
 
-4. Saving saves everything that is currently visible; this possibly is what you want, though it can be confusing as to what name to use to save.
+4. Saving saves everything that is currently visible; this possibly is what you want, including highlighting if the mouse was over an object (minus the problems of saving a hidden group, see below).
 
 5. Annotations are mostly completely correct. But note that if you resize the window, that is a zoomed in or out view; that does not change how it is saved.  
 
 
-6. The **Show/Hide** feature works partially (see below). **The label is changed to _Show hidden_.**
+6. The **Show/Hide** feature works partially (see below).<br><br> **The label is changed to _Show hidden_.**
 
 7. Changing the legend does not save.
-8. Hiding a group via the legend doesn't save and reopen properly; unhide then save also breaks.
-9. Hiding a group or an individual vial secondary-click on part of the chart does not save correctly (exception thrown when loading the file).
-  * _For now, I have disabled saving remove group and removing an individual doesn't actually do anything though the interface is there; in the original code before my changes, removing individuals did work but removing groups also threw an exception when opening the saved file. This is the exeption thrown<br>_`java.io.WriteAbortedException: writing aborted;`<br> `java.io.NotSerializable`<br>`Exception:<br>javafx.scene.chart.XYChart$Series`
+8. Hiding a group via the legend doesn't save and reopen properly; unhide then save also breaks. Temporary fix: hiding is not properly saved; if you quit then load, the hidden group comes back,
+9. Hiding a group or an individual vial secondary-click on part of the chart does not save correctly (exception thrown when loading the file).<br><br>
+  **_For now, I have disabled saving hiding a group; if you save-quit-load a hidden group is back.<br><br> Hiding an individual doesn't fully work; you can hide them but after save-quit-load, the interface does not pick them up as possible to unhide. In the original code before my changes, removing individuals did work but removing groups threw the same exception when opening the saved file:_**<br>`java.io.WriteAbortedException: writing aborted;`<br> `java.io.NotSerializable`<br>`Exception:<br>javafx.scene.chart.XYChart$Series`
 
-8. A few exceptions get thrown, but not consistently.
-	*  _Some arose from user interface features not completely or not correctly implemented: much less abn issue now._
+8. A few exceptions get thrown, but not consistently.<br><br>
+**_Some arose from user interface features not completely or not correctly implemented: much less abn issue now._**
 
 9. If you see a message like this when launchingfrom the command line, it could mean you need a version of the JavaFX library (there is a compatibility issue with macOS 14.x; as tested it does not cause any other error):
 
 `May 02, 2024 8:48:49 AM`
 `com.sun.glass.ui.mac.MacApplication`
 `lambda$waitForReactivation$6`
-
-
-* _Fixed by installing JFX libraries v 21.0.3 to replace 21._
+<br><br>
+**_Fixed by installing JFX libraries v 21.0.3 to replace 21._**
 
 
 The main difficulty in correcting the annotations issues is that the way annotations are implemented is clumsy. There is a single `Annotations` class that represents every variation and the different annotation classes each embed this class; the proposed fix: a top-level `Annotation` class that only contains the common properties of all annotations and derived classes that implement functions specific to that annotation type. This will make it easier to record the state of the annotation before edits and restore it if the edit is cancelled. It is also weird that the Annotation class is in package Model while the uses of it are in Controller. You could argue that the contents of an annotation are part of the data but why are methods to manipulate it split between the model and controller?
-
-* _Rather than do this, I now focus on transferring state between JavaFX view and model classes in *X*options.java files where *X* is a particular annotation type._
+<br><br>
+**_Rather than do this, I now focus on transferring state between JavaFX view and model classes in *X*options.java files where *X* is a particular annotation type._**
 
 Another issue is the confusing way a project is implemented; some thought needs to go into re-architecting this.
      

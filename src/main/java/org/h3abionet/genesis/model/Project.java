@@ -124,9 +124,16 @@ public class Project implements Serializable {
         createGroups();
 
         addResizeEventToStage();
+        
+                double aspectRatio = Genesis.getMainStage().widthProperty().getValue() /
+                Genesis.getMainStage().heightProperty().getValue();
+
+        System.out.println("Aspect ratio "+aspectRatio);
+
     }
 
     public void addResizeEventToStage(){
+           
         Genesis.getMainStage().widthProperty().addListener((obs, oldVal, newVal) -> {
             stageWidth = (double) newVal;
         });
@@ -360,6 +367,11 @@ public class Project implements Serializable {
         return projectName;
     }
 
+    public void setProjectName(String newName) {
+        projectName = newName;
+    }
+
+    
     public int getPhenoColumnNumber() {
         return phenoColumnNumber;
     }
