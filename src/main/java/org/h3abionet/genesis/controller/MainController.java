@@ -1204,7 +1204,7 @@ public class MainController implements Initializable {
     }
     
     private Group getArrowGroup(Arrow arrow) {
-        Group gr = new Group();
+        //Group gr = new Group();
 
         // change cursor on hovering the shape
         arrow.setOnMouseEntered(e -> {
@@ -1218,7 +1218,7 @@ public class MainController implements Initializable {
         });
         
         // An arrow is already a Group -- so why add another layer?
-        // FIXME: seems to work
+        // FIXME: seems to work without this
         //gr.getChildren().addAll(arrow);
         return arrow; //gr;
     }

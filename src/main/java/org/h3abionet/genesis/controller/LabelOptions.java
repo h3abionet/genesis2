@@ -167,7 +167,7 @@ public class LabelOptions {
                     family = String.valueOf(fontCombo.getValue());
             int size = (int) sizeCombo.getValue();
 
-            text.setText(textField.getText()); // was textAnnotation FIXME
+            text.setText(textField.getText());
             text.setFill(cp.getValue());
 
             // remember the changes to save

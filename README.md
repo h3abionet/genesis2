@@ -82,7 +82,7 @@ Data file types available to open are:
 
 ## Known issues
 
-Latest fixes: rescaling window contents when resizing a window works, though non-uniform rescaling distorts shapes (e.g. a circle becomes an oval).
+Latest fixes: rescaling window contents when resizing a window works, though non-uniform rescaling distorts shapes (e.g. a circle becomes an oval). Showing and hiding individual features works and works across save-quit-load.
 
 Tested on a Mac: if you hold SHIFT while resizingf a window, it rescales uniformly (i.e. maintains the aspect ratio).
 
@@ -98,15 +98,15 @@ Last commit shows a lot of other fixes in the README; deleted from here for brev
 
 4. Saving saves everything that is currently visible; this possibly is what you want, including highlighting if the mouse was over an object (minus the problems of saving a hidden group, see below).
 
-5. Annotations are mostly completely correct. But note that if you resize the window, that is a zoomed in or out view; that does not change how it is saved.  
+5. Annotations are mostly completely correct. But note that if you resize the window, that is a zoomed in or out view; that does not change how it is saved.<br><br> **The aspect ratio is not necessarily maintained when you resize a window (e.g. circle becomes oval) but is correct as saved and with exporting the image_.**
 
 
 6. The **Show/Hide** feature works partially (see below).<br><br> **The label is changed to _Show hidden_.**
 
 7. Changing the legend does not save.
-8. Hiding a group via the legend doesn't save and reopen properly; unhide then save also breaks. Temporary fix: hiding is not properly saved; if you quit then load, the hidden group comes back,
-9. Hiding a group or an individual vial secondary-click on part of the chart does not save correctly (exception thrown when loading the file).<br><br>
+8. Hiding a group via the legend doesn't save and reopen properly; unhide then save also breaks. Temporary fix: hiding is not properly saved; if you quit then load, the hidden group comes back.<br><br>
   **_For now, I have disabled saving hiding a group; if you save-quit-load a hidden group is back.<br><br> Hiding an individual doesn't fully work; you can hide them but after save-quit-load, the interface does not pick them up as possible to unhide. In the original code before my changes, removing individuals did work but removing groups threw the same exception when opening the saved file:_**<br>`java.io.WriteAbortedException: writing aborted;`<br> `java.io.NotSerializable`<br>`Exception:<br>javafx.scene.chart.XYChart$Series`
+9. Hiding an individual vial secondary-click on part of the chart does save correctly.
 
 8. A few exceptions get thrown, but not consistently.<br><br>
 **_Some arose from user interface features not completely or not correctly implemented: much less abn issue now._**
@@ -117,7 +117,7 @@ Last commit shows a lot of other fixes in the README; deleted from here for brev
 `com.sun.glass.ui.mac.MacApplication`
 `lambda$waitForReactivation$6`
 <br><br>
-**_Fixed by installing JFX libraries v 21.0.3 to replace 21._**
+**_Fixed by installing JFX libraries v 21.0.3 to replace 21. If you change the library version, you also need to update it in `pom.xml`_**
 
 
 The main difficulty in correcting the annotations issues is that the way annotations are implemented is clumsy. There is a single `Annotations` class that represents every variation and the different annotation classes each embed this class; the proposed fix: a top-level `Annotation` class that only contains the common properties of all annotations and derived classes that implement functions specific to that annotation type. This will make it easier to record the state of the annotation before edits and restore it if the edit is cancelled. It is also weird that the Annotation class is in package Model while the uses of it are in Controller. You could argue that the contents of an annotation are part of the data but why are methods to manipulate it split between the model and controller?

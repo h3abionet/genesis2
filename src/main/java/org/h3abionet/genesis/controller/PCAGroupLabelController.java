@@ -65,6 +65,7 @@ public class PCAGroupLabelController implements Initializable {
         
         // FIXME -- made this no longer editable as it breaks if the new
         // name is the same as another group name
+        // FIXME -- generally does not work; not udpating data structures correctly?
         if (!oldGroupName.equals(newGroupName)) { // is name changed?
             // rename the groups on the legend
             pcaGraph.renameLegendGroupNames(oldGroupName, newGroupName);
