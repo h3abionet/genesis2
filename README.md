@@ -12,10 +12,11 @@ There are two builds: the one including dependences will only run on the platfor
 
 The latest release includes builds for:
 
-* an ARM Mac (Genesis2JavaFX-2.1.1a-Mac-ARM.jar -- built on macOS Sonoma 14.0)
-* an Intel Mac (Genesis2JavaFX-2.1.1a-Mac-Intel.jar -- built on macOS Monterey 12.6.8)
-* Linux (Genesis2JavaFX-2.1.1a-Ubuntu.jar -- built on Ubuntu 22.04.3 LTS)
-* Windows (Genesis2JavaFX-2.1.1a-Windows.jar -- built on Windows 11)
+* an ARM Mac (`Genesis2JavaFX-2.2b-macArm64.jar` -- built on macOS Sonoma 14.4.1)
+* an Intel Mac (`Genesis2JavaFX-2.2b-macX64.jar` -- built on macOS Monterey 12.6.8)
+* Linux (`Genesis2JavaFX-2.2b-linuxX64.jar` -- built on Ubuntu 22.04.3 LTS)
+* Windows (`Genesis2JavaFX-2.2b-winX64.jar` -- built on Windows 11)
+* Generic: requires a command-line that attaches the local JavaFX librariews (`Genesis2JavaFX-2.2b.jar`)
 
 and should be possible to run by double-clicking on the build in the file browser (Finder in the Mac). On Ubuntu you may need to add execute permissions. Either look at Properties in the file manager where you can set execute permission -- easy in GNOME -- or on the command line:
 
@@ -97,6 +98,8 @@ Last commit shows a lot of other fixes in the README; deleted from here for brev
 3. There is no way to close a project once it is opened. You can close all the individual panes but when the last closes, it asks you to save, without the load to open or create another project.
 
 4. Saving saves everything that is currently visible; this possibly is what you want, including highlighting if the mouse was over an object (minus the problems of saving a hidden group, see below).
+
+5. Exporting images on Linux is broken.
 
 5. Annotations are mostly completely correct. But note that if you resize the window, that is a zoomed in or out view; that does not change how it is saved.<br><br> **The aspect ratio is not necessarily maintained when you resize a window (e.g. circle becomes oval) but is correct as saved and with exporting the image_.**
 
