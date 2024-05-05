@@ -20,11 +20,11 @@ The latest release includes builds for:
 
 and should be possible to run by double-clicking on the build in the file browser (Finder in the Mac). On Ubuntu you may need to add execute permissions. Either look at Properties in the file manager where you can set execute permission -- easy in GNOME -- or on the command line:
 
-    chmod +x pathtojarfile/Genesis2JavaFX-2.1.1a-Ubuntu.jar
+    chmod +x Genesis2JavaFX-2.2b-linuxX64.jar
 
 If you wish to run from the command line, the following should work
 
-    java  -jar Genesis2JavaFX-2.1.1a-Mac-ARM.jar
+    java  -jar Genesis2JavaFX-2.2b-macArm64.jar
 
 (Use the JAR file for your environment)
 
@@ -44,7 +44,7 @@ Assuming the JavaFX library is in directory named in shell variable `$JAVAFX` an
 There is a Bash script `genesis.sh` in this repository (in `scripts`) that can run the above. To invoke, create environment variables that the script will use (it has defaults if you don’t do this). To the the above effect (modifying the paths to suit your install):
 
     export JAVAFX=/usr/local/lib/JavaFX-21
-    export JARF=$HOME/Applications/Genesis2JavaFX-2.1.1a.jar
+    export JARF=$HOME/Applications/Genesis2JavaFX-2.2b.jar
 
 Note: in Unix shell scripting, you can create a shell variable wuthout using the word `EXPORT` but the value will not be visible to a child process, i.e., the script will not see it. The JavaFX path should contain the actual library files -- if they are in a directory called `lib` append that to the path.
 
