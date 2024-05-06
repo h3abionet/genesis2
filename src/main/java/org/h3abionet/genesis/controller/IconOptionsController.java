@@ -91,6 +91,8 @@ public class IconOptionsController implements Initializable {
     private void colorPickerPressed(ActionEvent event){
         // set icon new selected icon color
         iconColorValue = toHexString(colorPicker.getValue());
+        if("ff".equals(iconColorValue))
+            iconColorValue = "000000";
 
         // display new color
         iconDisplay.setStyle(pcaGraph.getStyle(iconColorValue, iconSVG, iconSizeValue));

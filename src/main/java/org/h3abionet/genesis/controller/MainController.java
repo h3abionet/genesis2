@@ -198,7 +198,7 @@ public class MainController implements Initializable {
                 disablePcaBtn(false);
                 disableAdmixtureBtn(false);
                 disableControlBtns(false);
-            } else if (project.isPhenoFileProvided() && project.isFamCreated() == false) {
+            } else if (project.isPhenoCreated() && !project.isFamCreated()) {
                 // if only pheno file is provided, dont allow admixture
                 disableImportProjBtn(true);
                 disableNewProjBtn(true);

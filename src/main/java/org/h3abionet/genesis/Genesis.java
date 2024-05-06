@@ -80,6 +80,8 @@ public class Genesis extends Application {
 		contentRootRegion.setPrefHeight( origH );
 	else
 		origH = contentRootRegion.getPrefHeight();
+        
+        double aspectRatio = origW/origH;
 
 	//Wrap the resizable content in a non-resizable container (Group)
 	Group group = new Group( contentRootRegion );

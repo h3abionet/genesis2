@@ -85,6 +85,8 @@ Data file types available to open are:
 
 Latest fixes: rescaling window contents when resizing a window works, though non-uniform rescaling distorts shapes (e.g. a circle becomes an oval). Showing and hiding individual features works and works across save-quit-load.
 
+Checking now that a phenotype file only has lines with the same number of columns (fields); fix done but some cleaning up needed -- a lot of debugging output so if you run this version, either don’t launch on the command line or redirect the output.
+
 Tested on a Mac: if you hold SHIFT while resizingf a window, it rescales uniformly (i.e. maintains the aspect ratio).
 
 When you save as a different name, the project now remembers the new name so when you save again, it offers the new name not its original file name.
