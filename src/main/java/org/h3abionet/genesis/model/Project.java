@@ -42,7 +42,8 @@ public class Project implements Serializable {
     private boolean phenoFileProvided;
     private PCAGraph pcaGraph;
     private int phenoColumnNumber; // column with phenotype
-    private transient int phenoColumnCount;
+    private transient int phenoColumnCount,
+            famColCount;
     private int currentTabIndex; // set index of the current tab
     private ArrayList<String> groupNames = new ArrayList<>();
     private ArrayList<String> pcaLegendItems = new ArrayList<>();
@@ -68,7 +69,8 @@ public class Project implements Serializable {
     private HashMap<String, ArrayList<String>> famOrder = new HashMap<>();
     private ArrayList<PCAGraphLayout> pcaGraphLayoutList = new ArrayList<>();
     private boolean famCreated;
-    private boolean phenoCorrect;
+    private boolean phenoCorrect,
+            famCorrect;
     private ArrayList<String> hiddenGroups = new ArrayList<>(); // [CEU, MKK, ...]
 
     private double stageWidth;
@@ -87,11 +89,16 @@ public class Project implements Serializable {
         this.phenoFileProvided = false;
         
         phenoCorrect = false;
+        famCorrect = false;
 
         setProject(this);
         subjectsList = new ArrayList<>();
         try {
             readFamFile(fam_fname_s);
+            if (!famCorrect) {
+                fam_fname_s="";
+                return;
+            }
             setIconTypes();
             createGroups();
         } catch (Exception e) {
@@ -123,13 +130,17 @@ public class Project implements Serializable {
         subjectsList = new ArrayList<>();
 
         phenoCorrect = false;
+        famCorrect = false;
 
         setProject(this);
         readFamFile(fam_fname_s);
+        if (!famCorrect) {
+//            fam_fname_s = "";
+            return;
+        }
         readPhenotypeFile(pheno_fname_s);
 
-        if (phenoCorrect) {
-
+        if (phenoCorrect && famCorrect) {
             setIconTypes();
             createGroups();
 
@@ -194,16 +205,33 @@ public class Project implements Serializable {
         String mat;
         String sex;
         String phe;
+        int rownumber = 0;
+        
+        famCorrect = false;
 
         if (famFilePath != null) { // is fam file provided?
             try {
                 BufferedReader r = Genesis.openFile(famFilePath);
                 String l = r.readLine();
+                rownumber++;
                 String[] fields;
+                famColCount = l.split("\\s+").length;
 
                 while (l != null) {
                     fields = l.split("\\s+");
 
+                    if (famColCount != fields.length) {
+                        Genesis.reportInformationException(
+                                "Reading Fam file: row number "
+                                + rownumber + ": `"
+                                + fields
+                                + "' should have " + famColCount
+                                + " columns but has " + fields.length
+                                + ". Canceling file read");
+                        famCorrect = false;
+                        return;
+                    }
+                    
                     fid = fields[0];
                     iid = fields[1];
                     pat = fields[2];
@@ -217,6 +245,7 @@ public class Project implements Serializable {
                     iidsList.add(iid); // keep order of iids
 
                     l = r.readLine();
+                    rownumber++;
                 }
 
                 famCreated = true; // fam file successfully imported
@@ -237,8 +266,9 @@ public class Project implements Serializable {
                 dialog.show();
             }
 
+            famCorrect = true;
         } else {
-            ; // if the fam file name is not provided, do nothing
+            famCorrect = true; // if the fam file name is not provided, do nothing
         }
     }
 
