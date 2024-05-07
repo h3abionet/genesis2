@@ -448,7 +448,7 @@ public class AdmixtureOptionsController{
                         ancestorColorDisplay.setFill(acc.getChosenPaint());
                     }
                 } catch (IOException ex) {
-                    Genesis.throwInformationException("Failed! Try Again!");
+                    Genesis.reportInformationException("Failed! Try Again!");
                 }
             });
             
@@ -515,7 +515,6 @@ public class AdmixtureOptionsController{
                     verticalMove(ancestryOrder.size() - 1, 0);
                 });
             }else {
-                System.out.println("me");
                 shiftUp = new Button("Shift Up");
                 shiftUp.setOnMouseClicked((MouseEvent up) -> {
                     verticalMove(0, ancestryOrder.size() - 1);

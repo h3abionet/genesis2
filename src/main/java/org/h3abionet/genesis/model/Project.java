@@ -68,7 +68,7 @@ public class Project implements Serializable {
     private HashMap<String, ArrayList<String>> famOrder = new HashMap<>();
     private ArrayList<PCAGraphLayout> pcaGraphLayoutList = new ArrayList<>();
     private boolean famCreated;
-    private boolean phenoCreated;
+    private boolean phenoCorrect;
     private ArrayList<String> hiddenGroups = new ArrayList<>(); // [CEU, MKK, ...]
 
     private double stageWidth;
@@ -86,7 +86,7 @@ public class Project implements Serializable {
         this.famFileName = fam_fname_s;
         this.phenoFileProvided = false;
         
-        phenoCreated = false;
+        phenoCorrect = false;
 
         setProject(this);
         subjectsList = new ArrayList<>();
@@ -95,7 +95,7 @@ public class Project implements Serializable {
             setIconTypes();
             createGroups();
         } catch (Exception e) {
-            Genesis.throwInformationException("Wrong fam file provided");
+            Genesis.reportInformationException("Wrong fam file provided");
         }
 
         Genesis.getMainStage().widthProperty().addListener((obs, oldVal, newVal) -> {
@@ -122,13 +122,13 @@ public class Project implements Serializable {
         this.phenoFileProvided = true;
         subjectsList = new ArrayList<>();
 
-        phenoCreated = false;
+        phenoCorrect = false;
 
         setProject(this);
         readFamFile(fam_fname_s);
         readPhenotypeFile(pheno_fname_s);
 
-        if (phenoCreated) {
+        if (phenoCorrect) {
 
             setIconTypes();
             createGroups();
@@ -136,10 +136,11 @@ public class Project implements Serializable {
             addResizeEventToStage();
         }
 
+        // FIXME: starting poiint for maintaining aspect ratio when resizing
         double aspectRatio = Genesis.getMainStage().widthProperty().getValue()
                 / Genesis.getMainStage().heightProperty().getValue();
 
-        System.out.println("Aspect ratio " + aspectRatio);
+        // System.out.println("Aspect ratio " + aspectRatio);
 
     }
 
@@ -166,7 +167,6 @@ public class Project implements Serializable {
         // add subject to various groups
         for (Subject sub : project.getSubjectsList()) {
             int phenoPosition = project.getPhenoColumnNumber() - 1;
-            //System.out.println("pheno column "+phenoPosition);
             if (sub.getPhenos() != null) {
                 subjectGroups.get(sub.getPhenos()[phenoPosition]).add(sub);
             }
@@ -243,30 +243,29 @@ public class Project implements Serializable {
     }
 
     private void readPhenotypeFile(String phenoFilePath) throws IOException {
+        int rownumber = 0;
+        try {
 
         if (famCreated == false) {
             BufferedReader reader = Genesis.openFile(phenoFilePath);
             String row = reader.readLine();
             phenoColumnCount = row.split("\\s+").length;
             String[] fields;
-            int rownumber = 1;
+            rownumber = 1;
 
             // create the subjects
             while (row != null) {
                 fields = row.split("\\s+");
                 if (phenoColumnCount != fields.length) {
-                    Alert alert = new Alert(AlertType.ERROR, "row `" + row
-                            + "' should have" + phenoColumnCount
-                            + " columns but has" + fields.length
-                            + ". Canceling file read", ButtonType.CANCEL);
-                    alert.showAndWait();
-                    if (alert.getResult() == ButtonType.CANCEL) {
-                        //do stuff
-                    }
-                    Genesis.throwInformationException(
-                            "Phenotype file should have same columns throughout. Row "
-                            + rownumber + " has " + fields.length + ", should be " + phenoColumnCount);
-
+                    Genesis.reportInformationException(
+                            "Reading Pheno, no Fam file: row number "
+                            +rownumber+ ": `" 
+                            + row
+                            + "' should have " + phenoColumnCount
+                            + " columns but has " + fields.length
+                            + ". Canceling file read");
+                    phenoCorrect = false;
+                    return;
                 }
                 String fid = fields[0];
                 String iid = fields[1];
@@ -277,17 +276,16 @@ public class Project implements Serializable {
                 row = reader.readLine();
                 rownumber++;
             }
-            System.out.println("Read pheno file; no fam created");
         }
 
-        try {
             // get phenotype groups and assign colors and icons
             setPhenotypeGroups(Genesis.openFile(phenoFilePath));
+            if (!phenoCorrect)
+                return;
 
             BufferedReader secBuf = Genesis.openFile(phenoFilePath);
-            System.out.println("Reading pheno file; fam created");
             String line = secBuf.readLine();
-            int rownumber = 1;
+            rownumber = 1;
             phenoColumnCount = line.split("\\s+").length;
             String[] fields;
             while (line != null) {
@@ -298,28 +296,28 @@ public class Project implements Serializable {
 
                 // get color and icon for selected pheno group or column
                 if (phenoColumnCount != fields.length) {
-//                    Alert alert = new Alert(AlertType.ERROR, "row `" + line
-//                            + "' should have" + phenoColumnCount
-//                            + " columns but has" + fields.length
-//                            + ". Canceling file read", ButtonType.CANCEL);
-//                    alert.showAndWait();
-//                    if (alert.getResult() == ButtonType.CANCEL) {
-//                        //do stuff
-//                    }
-                    Genesis.throwInformationException("Phenotype file should have same columns throughout. Row "
-                            + rownumber + " has " + fields.length + ", should be " + phenoColumnCount);
-                    String chosenPheno = fields[phenoColumnNumber - 1];
-                    String color = (String) pcaGroupColors.get(chosenPheno);
-                    String icon = (String) pcaGroupIcons.get(chosenPheno);
+                    Genesis.reportInformationException(
+                            "Reading Pheno: row number "
+                            + rownumber + ": `"
+                            + line
+                            + "' should have " + phenoColumnCount
+                            + " columns but has " + fields.length
+                            + ". Canceling file read");
+                    phenoCorrect = false;
+                    return;
+                }
 
-                    // add pheno details to every subject
-                    for (Subject sub : subjectsList) {
-                        if (sub.getFid().equals(fid) && sub.getIid().equals(iid) && sub.getPhenos() == null) {
-                            sub.setPhenos(fields);
-                            sub.setColor(color);
-                            sub.setIcon(icon);
-                            break;
-                        }
+                String chosenPheno = fields[phenoColumnNumber - 1];
+                String color = (String) pcaGroupColors.get(chosenPheno);
+                String icon = (String) pcaGroupIcons.get(chosenPheno);
+
+                // add pheno details to every subject
+                for (Subject sub : subjectsList) {
+                    if (sub.getFid().equals(fid) && sub.getIid().equals(iid) && sub.getPhenos() == null) {
+                        sub.setPhenos(fields);
+                        sub.setColor(color);
+                        sub.setIcon(icon);
+                        break;
                     }
                 }
 
@@ -329,7 +327,6 @@ public class Project implements Serializable {
 
             // remove all the subjects with no phenos
             ArrayList<Subject> deleteSubsList = new ArrayList<>();
-            System.out.println("deleting subjects with no pheno");
             for (Subject sub : subjectsList) {
                 if (sub.getPhenos() == null) {
                     deleteSubsList.add(sub);
@@ -340,7 +337,7 @@ public class Project implements Serializable {
             // change number of individuals
             numOfIndividuals = subjectsList.size();
 
-            phenoCreated = true; // phenotype file successfully imported
+            phenoCorrect = true; // phenotype file successfully imported
 
             // categorize fam iids according to phenotype column
             for (Subject subject : subjectsList) {
@@ -355,8 +352,8 @@ public class Project implements Serializable {
             }
 
         } catch (Exception e) {
-            phenoCreated = false;
-            Genesis.throwInformationException(e.getMessage());
+            phenoCorrect = false;
+            Genesis.reportInformationException(e.getMessage());
         }
     }
 
@@ -368,40 +365,44 @@ public class Project implements Serializable {
      */
     private void setPhenotypeGroups(BufferedReader r) throws IOException {
 
-        System.out.println("Start setPhenotypeGroups, col number " + phenoColumnNumber);
         // only used when the pheno file is not provided
         pcaLegendItems.clear();
         groupNames.clear();
         pcaGroupIcons.clear();
         pcaGroupColors.clear();
         famOrder.clear();
+        int rownumber = 1;
 
         String row = r.readLine();
         String[] rowValues;
         while (row != null) {
-            System.out.println("new row =" + row);
             rowValues = row.split("\\s+");
-            if (rowValues.length != phenoColumnNumber + 1) {
-                System.out.println("length " + rowValues.length + " != column no." + phenoColumnNumber);
-            } // keep track of unique phenotypes
-            else if (!groupNames.contains(rowValues[phenoColumnNumber - 1])) {
-                System.out.print("row value at " + (phenoColumnNumber - 1) + "=");
-                System.out.print("row value " + rowValues[phenoColumnNumber - 1]);
+            phenoColumnCount = rowValues.length;
+            if (phenoColumnCount != rowValues.length) {
+                Genesis.reportInformationException(
+                        "setPhenotypeGroups: row number "
+                        + rownumber + ": `"
+                        + row
+                        + "' should have " + phenoColumnCount
+                        + " columns but has " + rowValues.length
+                        + ". Canceling file read");
+                phenoCorrect = false;
+                return;
+            }
+            // keep track of unique phenotypes
+            if (!groupNames.contains(rowValues[phenoColumnNumber - 1])) {
                 groupNames.add(rowValues[phenoColumnNumber - 1]);
-                System.out.print("added groupNames");
                 pcaLegendItems.add(rowValues[phenoColumnNumber - 1]);
-                System.out.println("added Legend");
             }
             row = r.readLine();
+            rownumber++;
 
-            System.out.println("Done setPhenotypeGroups reads");
             // set colors and icons for every phenotype
             for (int i = 0; i < groupNames.size(); i++) {
                 pcaGroupColors.put(groupNames.get(i), colors[i]);  // mkk -> #800000
                 pcaGroupIcons.put(groupNames.get(i), icons[i]); // mkk -> "M0 -3.5 v7 l 4 -3.5z"
             }
-            System.out.println("Done setPhenotypeGroups");
-
+            phenoCorrect = true;
         }
     }
 
@@ -519,8 +520,8 @@ public class Project implements Serializable {
         return famCreated;
     }
 
-    public boolean isPhenoCreated() {
-        return phenoCreated;
+    public boolean isPhenoCorrect() {
+        return phenoCorrect;
     }
 
     private String getExtension(String filePath) {

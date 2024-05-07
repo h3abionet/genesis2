@@ -70,8 +70,8 @@ public class Genesis extends Application {
 
 	//If the Region containing the GUI does not already have a preferred width and height, set it.
 	//But, if it does, we can use that setting as the "standard" resolution.
-	if ( contentRootRegion.getPrefWidth() == Region.USE_COMPUTED_SIZE ) {
-            System.out.println("using preset width="+origW);
+	if ( contentRootRegion.getPrefWidth() != Region.USE_COMPUTED_SIZE ) {
+            contentRootRegion.setPrefWidth( origW );
         } else {
 		origW = contentRootRegion.getPrefWidth();
         }
@@ -223,7 +223,7 @@ public class Genesis extends Application {
     }
     
     // throw information dialog box
-    public static void throwInformationException(String message){
+    public static void reportInformationException(String message){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);
@@ -232,7 +232,7 @@ public class Genesis extends Application {
     }
 
     // throw information dialog box
-    public static void throwInformationException(Exception ex){
+    public static void reportInformationException(Exception ex){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Exception Dialog");
         alert.setHeaderText("Look, an Exception Dialog");

@@ -191,14 +191,14 @@ public class MainController implements Initializable {
             dialogStage.setResizable(false);
             dialogStage.showAndWait();
             
-            if (project.isFamCreated() & project.isPhenoCreated()) {
+            if (project.isFamCreated() & project.isPhenoCorrect()) {
                 // if both fam and phenotype file are correct, launch project
                 disableImportProjBtn(true);
                 disableNewProjBtn(true);
                 disablePcaBtn(false);
                 disableAdmixtureBtn(false);
                 disableControlBtns(false);
-            } else if (project.isPhenoCreated() && !project.isFamCreated()) {
+            } else if (project.isPhenoCorrect() && !project.isFamCreated()) {
                 // if only pheno file is provided, dont allow admixture
                 disableImportProjBtn(true);
                 disableNewProjBtn(true);
@@ -283,7 +283,7 @@ public class MainController implements Initializable {
     @SuppressWarnings("empty-statement")
     private void newAdmixture(ActionEvent event) throws IOException {
         if (AdmixtureSettingsController.isAdmixVertical()) {
-            Genesis.throwInformationException("First change the graph to a horizontal linear layout");
+            Genesis.reportInformationException("First change the graph to a horizontal linear layout");
         } else {
             FXMLLoader fxmlLoader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureDataInput.fxml"));
             Parent parent = fxmlLoader.load();
@@ -528,7 +528,7 @@ public class MainController implements Initializable {
             }
         } catch (Exception e) {
             //TODO disable setting button if no chart
-            Genesis.throwInformationException("No chart to format");
+            Genesis.reportInformationException("No chart to format");
         }
     }
 
@@ -554,7 +554,7 @@ public class MainController implements Initializable {
             }
             
         } catch (Exception e) {
-            Genesis.throwInformationException("No chart to save");
+            Genesis.reportInformationException("No chart to save");
         }
     }
     
@@ -626,7 +626,7 @@ public class MainController implements Initializable {
         }
         
         if (idFound == false) {
-            Genesis.throwInformationException("Individual Not Found");
+            Genesis.reportInformationException("Individual Not Found");
         }
     }
 
@@ -691,7 +691,7 @@ public class MainController implements Initializable {
             DragController dragController = new DragController(line, true);
             addLineEvents(line, lineAnnotation); // add click and mouse events
         } catch (Exception e) {
-            Genesis.throwInformationException("First add the Chart");
+            Genesis.reportInformationException("First add the Chart");
         }
     }
 
@@ -790,7 +790,7 @@ public class MainController implements Initializable {
             DragController dragController = new DragController(arrow, true);
             addArrowEvents(arrow, arrowAnnotation);
         } catch (Exception e) {
-            Genesis.throwInformationException("First add the Chart");
+            Genesis.reportInformationException("First add the Chart");
         }
     }
     
@@ -881,7 +881,7 @@ public class MainController implements Initializable {
             addShapeToChart(circle, currentTabIndex);
             addCircleEvents(circle, circleAnnotation);
         } catch (Exception e) {
-            Genesis.throwInformationException("First add the Chart");
+            Genesis.reportInformationException("First add the Chart");
         }
     }
     
@@ -974,7 +974,7 @@ public class MainController implements Initializable {
             // MouseControlUtil.makeDraggable(text);
             addTextEvents(text, textAnnotation);
         } catch (Exception e) {
-            Genesis.throwInformationException("First add the Chart");
+            Genesis.reportInformationException("First add the Chart");
         }
     }
     
@@ -1056,7 +1056,7 @@ public class MainController implements Initializable {
             DragController dragController = new DragController(rec, true);
             addRectangleEvents(rec, rectangleAnnotation);
         } catch (Exception e) {
-            Genesis.throwInformationException("First add the Chart");
+            Genesis.reportInformationException("First add the Chart");
         }
     }
     
@@ -1347,6 +1347,7 @@ public class MainController implements Initializable {
         }
     }
     
+    // FIXME: not used -- delete?
     @FXML
     private void help(ActionEvent event) {
         try {

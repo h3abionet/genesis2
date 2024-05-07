@@ -158,7 +158,7 @@ public class ProjectDetailsController implements Initializable{
             mainController.disableAdmixtureBtn(false);
         }
         else {
-            Genesis.throwInformationException("No files provided");
+            Genesis.reportInformationException("No files provided");
         }
         Genesis.closeOpenStage(event);
     }

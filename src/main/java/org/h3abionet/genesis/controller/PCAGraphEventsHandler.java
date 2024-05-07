@@ -146,7 +146,8 @@ public class PCAGraphEventsHandler {
 
                             newPDF.save(file);
                             newPDF.close();
-                            Desktop.getDesktop().browse(file.toURI());
+                            // FIXME: does not work on Ubuntu (opens PDF file after saving)
+                            // Desktop.getDesktop().browse(file.toURI());
                             break;
                     }
 

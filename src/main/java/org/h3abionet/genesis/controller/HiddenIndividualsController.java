@@ -44,7 +44,7 @@ public class HiddenIndividualsController{
     @FXML
     private void entryUnhideBtn(ActionEvent event) {
         if(hiddenIndividualCombo.getValue()==null && hiddenGroupCombo.getValue()==null){
-            Genesis.throwInformationException("Select either individual or group to unhide NOT both");
+            Genesis.reportInformationException("Select either individual or group to unhide NOT both");
         }
 
         if(hiddenIndividualCombo.getValue()!=null){
@@ -62,7 +62,7 @@ public class HiddenIndividualsController{
                 Genesis.closeOpenStage(event);
 
             }catch (Exception e){
-                Genesis.throwInformationException("Select the individual to show");
+                Genesis.reportInformationException("Select the individual to show");
             }
         }
 
@@ -81,7 +81,7 @@ public class HiddenIndividualsController{
 
                 Genesis.closeOpenStage(event);
             }catch (Exception e){
-                Genesis.throwInformationException("Select the group to show");
+                Genesis.reportInformationException("Select the group to show");
             }
         }
 

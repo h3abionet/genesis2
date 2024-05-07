@@ -132,7 +132,7 @@ public class PCADataInputController implements Initializable {
             }
             Genesis.closeOpenStage(event);
         } else {
-            Genesis.throwInformationException("Please import the file or select the PCAs to plot");
+            Genesis.reportInformationException("Please import the file or select the PCAs to plot");
         }
     }
 

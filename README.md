@@ -91,9 +91,14 @@ Tested on a Mac: if you hold SHIFT while resizingf a window, it rescales uniform
 
 When you save as a different name, the project now remembers the new name so when you save again, it offers the new name not its original file name.
 
-Last commit shows a lot of other fixes in the README; deleted from here for brevity.
+Earlier commits shows a lot of other fixes in the README; deleted from here for brevity.
 
-1. If a new project is started (using **New**), you cannot change to another project in the same session: both **New** and **Import** are no longer available.
+New issues now at the top.
+
+1. On Ubuntu, saving an image file does not set the suffix (extension) to the file type yo select; you must type it yourself. If it is a valid file type, it will be saved as that type (otherwise nothing happens).<br>**I would like to fix this so I did not for now put in a warning if the file does not save.**
+2. On Ubuntu, the code for opening a PDF after saving it breaks so I took it out for now.
+3. If a phenotype file (.phe) has any lines not the correct length, a warning is issued and setting up the new project ends; the first line that is the wrong length is given.
+2. If a new project is started (using **New**), you cannot change to another project in the same session: both **New** and **Import** are no longer available.
 
 2. If you open a project (**Load**), you can no longer create a new project, though you can load another project.
 

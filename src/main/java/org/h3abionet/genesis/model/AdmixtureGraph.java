@@ -148,7 +148,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 line = r.readLine();
             }
         }else {
-            Genesis.throwInformationException("Imported file contains strings");
+            Genesis.reportInformationException("Imported file contains strings");
         }
     }
 

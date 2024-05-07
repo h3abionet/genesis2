@@ -36,7 +36,7 @@ public class ImportProjectController {
             importProjBtn.setStyle("-fx-text-fill: #06587F");
             doneBtn.setDisable(false);
         }else{
-            Genesis.throwInformationException("No project selected");
+            Genesis.reportInformationException("No project selected");
         }
     }
 

@@ -128,7 +128,7 @@ public class IconsAndColors implements Serializable {
             "#FFFF00", // yellow
             "#FF0000", // red
             "#800080", // purple
-            "#FCFDFC", // green
+            "#00FF00", // green
             "#F79501", // brown
             "#FA13F3", // magenta
             "#58E7F2", // cyan
