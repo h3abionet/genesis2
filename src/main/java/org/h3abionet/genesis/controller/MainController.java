@@ -1319,6 +1319,12 @@ public class MainController implements Initializable {
         dialogStage.setResizable(false);
         dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.showAndWait();
+        
+        if (project == null)
+            System.out.println("importProject: project null");
+        else for (String group : project.getHiddenGroups()) {
+            project.getPcaGraph().hideGroup(group, true);
+        }
     }
     
     @FXML

@@ -84,12 +84,15 @@ public class Project implements Serializable {
     private boolean isAdmixtureHorizontal;
 
     public Project(String proj_name, String fam_fname_s) {
+        System.out.println("In constructor Project(String proj_name, String fam_fname_s)");
         this.projectName = proj_name;
         this.famFileName = fam_fname_s;
         this.phenoFileProvided = false;
         
         phenoCorrect = false;
         famCorrect = false;
+        
+        System.out.println("In constructor Project(String proj_name, String fam_fname_s)");
 
         setProject(this);
         subjectsList = new ArrayList<>();
@@ -122,6 +125,7 @@ public class Project implements Serializable {
      * @param proj_name
      */
     public Project(String proj_name, String fam_fname_s, String pheno_fname_s, int phenoColumnNumber) throws IOException {
+        System.out.println("In constructor Project(String proj_name, String fam_fname_s, String pheno_fname_s, int phenoColumnNumber)");
         this.projectName = proj_name;
         this.famFileName = fam_fname_s;
         this.phenoFileName = pheno_fname_s;
@@ -151,7 +155,7 @@ public class Project implements Serializable {
         double aspectRatio = Genesis.getMainStage().widthProperty().getValue()
                 / Genesis.getMainStage().heightProperty().getValue();
 
-        // System.out.println("Aspect ratio " + aspectRatio);
+        System.out.println("Aspect ratio " + aspectRatio);
 
     }
 

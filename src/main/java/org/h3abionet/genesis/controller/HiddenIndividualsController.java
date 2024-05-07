@@ -70,7 +70,6 @@ public class HiddenIndividualsController{
             try{
                 // get group
                 String group = hiddenGroupCombo.getValue();
-
                 if(currentGraphType.equals("pca")){
                     pcaGraph.showHiddenGroup(group);
                 }

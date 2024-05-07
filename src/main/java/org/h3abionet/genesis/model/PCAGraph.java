@@ -52,7 +52,12 @@ public class PCAGraph extends Graph implements Serializable {
     private HashMap groupIcons;
     private transient MainController mainController;
     // group name -> with all associated graphs for different values of k
+    // changed to transient but this one that never gets data added to it
+    // is left in for compatibility with old data files -- if this is taken
+    // out the serialVersionUID should be changed throughout
     private HashMap<String, ArrayList<XYChart.Series<Number, Number>>> hiddenPCAGroups = new HashMap<>();
+    // this is the data structure that replaces the above
+    private transient HashMap<String, ArrayList<XYChart.Series<Number, Number>>> newHiddenPCAGroups = new HashMap<>();
     private int labelClickCounter;
     private transient Label firstGroupLabel, secondGroupLabel;
     private Project project;
@@ -587,12 +592,9 @@ public class PCAGraph extends Graph implements Serializable {
     }
 
     public void showHiddenGroup(String group) {
-
-        ArrayList<XYChart.Series<Number, Number>> seriesArrayList = hiddenPCAGroups.get(group);
-
+        ArrayList<XYChart.Series<Number, Number>> seriesArrayList = newHiddenPCAGroups.get(group);
         int sizeOfHiddenGroups = seriesArrayList.size();
         int numOfCharts = mainController.getPcaChartsList().size();
-
         if(sizeOfHiddenGroups==numOfCharts){
 
             // all pca charts
@@ -770,6 +772,10 @@ public class PCAGraph extends Graph implements Serializable {
      * @param oldGroupName
      */
     public void hideGroup(String oldGroupName) {
+        hideGroup(oldGroupName, false);
+    }
+    
+    public void hideGroup(String oldGroupName, boolean reload) {
 
         ArrayList<XYChart.Series<Number, Number>> hiddenGroups = new ArrayList<>(); // for various Ks
 
@@ -781,12 +787,10 @@ public class PCAGraph extends Graph implements Serializable {
                 XYChart.Series<Number, Number> series = chart.getData().get(j);
 
                 if (series.getName().equals(oldGroupName)) {
-// FIXME: removing this line stops the hiddenness from
-// being saved and thereby preventing the file being reopened
-// java.io.WriteAbortedException: writing aborted;
-// java.io.NotSerializableException:
-//javafx.scene.chart.XYChart$Series
-                    //hiddenGroups.add(series); // save this series
+
+            if (!reload)
+                project.getHiddenGroups().add(series.getName()); // save this series
+                    hiddenGroups.add(series); // save this series
                     chart.getData().remove(j); // remove it from the chart
 
                     // set color, icon, click event and legend for this chart
@@ -799,7 +803,9 @@ public class PCAGraph extends Graph implements Serializable {
             }
         }
 
-        hiddenPCAGroups.put(oldGroupName, hiddenGroups);
+        if (newHiddenPCAGroups == null)
+            newHiddenPCAGroups = new HashMap<>();
+        newHiddenPCAGroups.put(oldGroupName, hiddenGroups);
     }
 
     /**
