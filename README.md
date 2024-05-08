@@ -101,8 +101,8 @@ New issues now at the top.
 3. If a `.fam` or phenotype file (`.phe`) has any lines not the correct length, a warning is issued and setting up the new project ends; the first line that is the wrong length is given. The number of fields (columns) is set by the first line (row).
 4. Sometimes a dialog (e.g. save file) opens behind the main window; the fix for now is to move the main window to see the dialog.
 5. If a new project is started (using **New**), you cannot change to another project in the same session: both **New** and **Import** are no longer available.
-6. If you open a project (**Load**), you can no longer create a new project, though you can load another project.
-7. There is no way to close a project once it is opened. You can close all the individual panes but when the last closes, it asks you to save, without the load to open or create another project.
+6. If you open a project (**Load**), you can no longer create a new project, though you can load another project (or another instance of the same one -- why you would want this is not clear).
+7. There is no way to close a project once it is opened. You can close all the individual panes but when the last closes, it asks you to save, without the load to open or create another project. This is not consistently done with all close modes nor is track kept of whether to save. Saving should be different from saving as a new name.
 8. Saving saves everything that is currently visible; this possibly is what you want, including highlighting if the mouse was over an object (minus the problems of saving a hidden group, see below).
 9. Annotations are mostly completely correct. But note that if you resize the window, that is a zoomed in or out view; that does not change how the graphics content is internally represented saved.<br>**The aspect ratio is not necessarily maintained when you resize a window (e.g. circle becomes oval) but is correct as saved and with exporting the image.**
 10. The **Show Hidden** feature mostly works except that changing the legend format does not save.
