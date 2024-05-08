@@ -53,11 +53,8 @@ public class PCAGraph extends Graph implements Serializable {
     private transient MainController mainController;
     // group name -> with all associated graphs for different values of k
     // changed to transient but this one that never gets data added to it
-    // is left in for compatibility with old data files -- if this is taken
-    // out the serialVersionUID should be changed throughout
-    private HashMap<String, ArrayList<XYChart.Series<Number, Number>>> hiddenPCAGroups = new HashMap<>();
-    // this is the data structure that replaces the above
-    private transient HashMap<String, ArrayList<XYChart.Series<Number, Number>>> newHiddenPCAGroups = new HashMap<>();
+    // on file load; backed up in project.hiddenGroups and saved from there
+    private transient HashMap<String, ArrayList<XYChart.Series<Number, Number>>> hiddenPCAGroups = new HashMap<>();
     private int labelClickCounter;
     private transient Label firstGroupLabel, secondGroupLabel;
     private Project project;
@@ -592,7 +589,7 @@ public class PCAGraph extends Graph implements Serializable {
     }
 
     public void showHiddenGroup(String group) {
-        ArrayList<XYChart.Series<Number, Number>> seriesArrayList = newHiddenPCAGroups.get(group);
+        ArrayList<XYChart.Series<Number, Number>> seriesArrayList = hiddenPCAGroups.get(group);
         int sizeOfHiddenGroups = seriesArrayList.size();
         int numOfCharts = mainController.getPcaChartsList().size();
         if(sizeOfHiddenGroups==numOfCharts){
@@ -803,9 +800,9 @@ public class PCAGraph extends Graph implements Serializable {
             }
         }
 
-        if (newHiddenPCAGroups == null)
-            newHiddenPCAGroups = new HashMap<>();
-        newHiddenPCAGroups.put(oldGroupName, hiddenGroups);
+        if (hiddenPCAGroups == null)
+            hiddenPCAGroups = new HashMap<>();
+        hiddenPCAGroups.put(oldGroupName, hiddenGroups);
     }
 
     /**

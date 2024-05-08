@@ -155,7 +155,7 @@ public class Project implements Serializable {
         double aspectRatio = Genesis.getMainStage().widthProperty().getValue()
                 / Genesis.getMainStage().heightProperty().getValue();
 
-        System.out.println("Aspect ratio " + aspectRatio);
+//        System.out.println("Aspect ratio " + aspectRatio);
 
     }
 
