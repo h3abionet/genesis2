@@ -12,21 +12,20 @@ There are two builds: the one including dependences will only run on the platfor
 
 The latest release includes builds for:
 
-* an ARM Mac (`Genesis2JavaFX-2.2b-macArm64.jar` -- built on macOS Sonoma 14.4.1)
-* an Intel Mac (`Genesis2JavaFX-2.2b-macX64.jar` -- built on macOS Monterey 12.6.8)
-* Linux (`Genesis2JavaFX-2.2b-linuxX64.jar` -- built on Ubuntu 22.04.3 LTS)
-* Windows (`Genesis2JavaFX-2.2b-winX64.jar` -- built on Windows 11)
-* Generic: requires a command-line that attaches the local JavaFX librariews (`Genesis2JavaFX-2.2b.jar`)
+* an ARM Mac (`Genesis2-2.3b-macArm64.jar` -- built on macOS Sonoma 14.4.1)
+* an Intel Mac (`Genesis2-2.3b-macX64.jar` -- built on macOS Monterey 12.6.8)
+* Linux (`Genesis2-2.3b-ubuntuX64.jar` -- built on Ubuntu 22.04.3 LTS)
+* Windows (`Genesis2-2.3b-winX64.jar` -- built on Windows 11)
+* Generic: requires a command-line that attaches the local JavaFX librariews (`Genesis2-2.3b-Generic.jar`)
 
 and should be possible to run by double-clicking on the build in the file browser (Finder in the Mac). On Ubuntu you may need to add execute permissions. Either look at Properties in the file manager where you can set execute permission -- easy in GNOME -- or on the command line:
 
-    chmod +x Genesis2JavaFX-2.2b-linuxX64.jar
+    chmod +x Genesis2-2.3b-ubuntuX64.jar
 
-If you wish to run from the command line, the following should work
+If you wish to run from the command line, the following should work (adjusted to the JAR file for your environment):
 
-    java  -jar Genesis2JavaFX-2.2b-macArm64.jar
+    java  -jar Genesis2-2.3b-ubuntuX64.jar
 
-(Use the JAR file for your environment)
 
 ## Other builds
     
@@ -37,14 +36,14 @@ To run the version that does not include dependences on the command line, you ne
 
 Assuming the JavaFX library is in directory named in shell variable `$JAVAFX` and your JAR file is in `$JARF`, you can invoke it as follows:
 
-    java --module-path $JAVAFX --add-modules javafx.controls,javafx.fxml -jar $JARF
+    java --module-path $JAVAFX --add-modules javafx.controls,javafx.fxml,javafx.swing -jar $JARF
 
-*Note*: the library path should go to the actual contents so if e.g. the path is `/usr/local/lib/JavaFX/lib` then include the trailing `/lib`. In my examples, the libraries are not in another layer of `lib` directory as this is implied by the rest of the path.
+*Note*: the library path should go to the actual contents so if e.g. the path is `/usr/local/lib/JavaFX/lib` then include the trailing part of the path after `/lib`. In my examples, the libraries are not in another layer of `lib` directory as this is implied by the rest of the path.
 
 There is a Bash script `genesis.sh` in this repository (in `scripts`) that can run the above. To invoke, create environment variables that the script will use (it has defaults if you don’t do this). To the the above effect (modifying the paths to suit your install):
 
     export JAVAFX=/usr/local/lib/JavaFX-21
-    export JARF=$HOME/Applications/Genesis2JavaFX-2.2b.jar
+    export JARF=$HOME/Applications/Genesis2-2.3b-Generic.jar
 
 Note: in Unix shell scripting, you can create a shell variable wuthout using the word `EXPORT` but the value will not be visible to a child process, i.e., the script will not see it. The JavaFX path should contain the actual library files -- if they are in a directory called `lib` append that to the path.
 
@@ -85,8 +84,8 @@ Data file types available to open are:
 
 Latest fixes: 
 
-* if a fam or phe file has any rows (lines) with a differing number of columns (fields) from the first row, an error is thrown, reporting the first erroneous line
-* saving and restoring hidden groups or items is fixed and should work, including being able to unhide before or after saving; this change qualifies for a version change; the next release will be 2.3b
+* if a `fam` or `phe` file has any rows (lines) with a differing number of columns (fields) from the first row, an error is thrown, reporting the first erroneous line
+* saving and restoring hidden groups or items is fixed and should work, including being able to unhide before or after saving; this change qualifies for a version change; the next release is 2.3b
 * rescaling window contents when resizing a window works, though non-uniform rescaling distorts shapes (e.g. a circle becomes an oval). Showing and hiding individual features works and works across save-quit-load.
 
 Tested on a Mac: if you hold SHIFT while resizingf a window, it rescales uniformly (i.e. maintains the aspect ratio).
