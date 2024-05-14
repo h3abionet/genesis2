@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -162,7 +161,6 @@ public class LabelOptions {
 
         if (results.get() == mainController.getButtonType("Done")) {
             // set annotations -- 
-            Point2D localToParentCoords = text.localToParent(text.getX(), text.getY());
             String weight = String.valueOf(weightCombo.getValue()),
                     family = String.valueOf(fontCombo.getValue());
             int size = (int) sizeCombo.getValue();

@@ -9,8 +9,6 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.shape.Line;
-import java.io.Serializable;
-import javafx.geometry.Point2D;
 
 /**
  *
@@ -135,14 +133,11 @@ public class Arrow extends Group { //  implements Serializable: why added?
     }
 
     public void debugPrint() {
-        Point2D localToParentStart = localToParent(getStartX(), getStartY()),
-                localToParentEnd = localToParent(getEndX(), getEndY());
 
         System.out.print("start x = " + getStartX() + " start y = " + getStartY()
                 + "end x = " + getEndX() + "end y =" + getEndY()
                 + "; Translate x,y" + getTranslateX() + ", " + getTranslateY()
-                + "; angle " + getRotate() + "; localToParentStartX,Y" + localToParentStart.getX()
-                + ", " + localToParentStart.getY());
+                + "; angle " + getRotate());
     }
 
 }

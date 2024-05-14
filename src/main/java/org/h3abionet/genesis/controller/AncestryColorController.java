@@ -70,7 +70,7 @@ public class AncestryColorController {
                 
                 }
             }catch(Exception e){
-                Genesis.throwErrorException("Oops! Some plots don't have your this ancestry");
+                Genesis.reportErrorException("Oops! Some plots don't have your this ancestry");
             }
         }
         // get list of this graph colors and change the one for this serie/ancestry
@@ -162,6 +162,11 @@ public class AncestryColorController {
         this.numOfAncestries = size;
     }
 
+    public int getNumOfAncestries() {
+        return numOfAncestries;
+    }
+
+    
     public void setProject(Project project) {
         this.project = project;
     }

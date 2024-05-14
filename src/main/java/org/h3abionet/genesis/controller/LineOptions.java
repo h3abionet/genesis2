@@ -18,8 +18,6 @@ import org.h3abionet.genesis.model.Project;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javafx.geometry.Point2D;
-import javafx.scene.paint.Paint;
 
 public class LineOptions extends Line {
 
@@ -40,9 +38,6 @@ public class LineOptions extends Line {
     private Project project;
     private MainController mainController;
     private Rotate rotate;
-    private Point2D oldPivot = null;
-
-    private double oldStartX, oldStartY, oldEndX, oldEndy;
 
     public LineOptions(Line line, Annotation lineAnnotation) {
         isDone = false;

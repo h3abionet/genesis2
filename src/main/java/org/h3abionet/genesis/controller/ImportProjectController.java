@@ -63,11 +63,11 @@ public class ImportProjectController {
             mainController.disableAdmixtureBtn(false);
 
         } catch (IOException i) {
-            Genesis.throwErrorException(i.toString());
+            Genesis.reportErrorException(i.toString());
         } catch (ClassNotFoundException c) {
-            Genesis.throwErrorException(c.toString());
+            Genesis.reportErrorException(c.toString());
         } catch (InterruptedException e) {
-            Genesis.throwErrorException(e.toString());
+            Genesis.reportErrorException(e.toString());
 //            e.printStackTrace();
         }
         Genesis.closeOpenStage(event);
@@ -165,9 +165,7 @@ public class ImportProjectController {
                 int kValue = proj.getImportedKs().get(i);
 
                 admixtureGraph.setNumOfAncestries(kValue);
-
                 admixtureGraph.setAncestryLabels(kValue);
-
                 admixtureGraph.createAdmixGraph();
                 mainController.setAdmixtureChart(admixtureGraph.getListOfStackedBarCharts());
             }

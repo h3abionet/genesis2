@@ -214,15 +214,15 @@ public class Genesis extends Application {
     }
     
     
-    // throw error exception dialog box
-    public static void throwErrorException(String message){
+    // report error exception dialog box
+    public static void reportErrorException(String message){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error Dialog");
         alert.setContentText(message);
         alert.showAndWait();
     }
     
-    // throw information dialog box
+    // report information exception dialog box
     public static void reportInformationException(String message){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
@@ -231,7 +231,7 @@ public class Genesis extends Application {
         alert.showAndWait();
     }
 
-    // throw information dialog box
+    // report information exception dialog box
     public static void reportInformationException(Exception ex){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Exception Dialog");

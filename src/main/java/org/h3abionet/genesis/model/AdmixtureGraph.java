@@ -60,11 +60,40 @@ public class AdmixtureGraph extends Graph implements Serializable {
     private String clickedId;
     private transient AdmixtureOptionsController admixtureOptionsController;
     private double defaultAngleOfChartNames = 90;
+    
+    private static transient int previousRowSize = 0;
+    
+    public void swapAncestry (int first, int second) {
+        if ((first >=0 && first <= ancestryLabels.length) &&
+                (second >=0 && second <= ancestryLabels.length) &&
+                first != second) {
+        String temp = ancestryLabels[first];
+            ancestryLabels[first] = ancestryLabels[second];
+            ancestryLabels[second] = temp;
+        }
+    }
+    
+    public void setPreviousRowSize (int newSize) {
+        previousRowSize = newSize;
+    }
+    
+    public int getPreviousRowSize () {
+        return previousRowSize;
+    }
 
     public static void setChartIndex(int chartIndex) {
         AdmixtureGraph.chartIndex = chartIndex;
     }
+    
+    public static int getChartIndex() {
+        return chartIndex;
+    }
 
+    public static void decrementChartIndex() {
+        AdmixtureGraph.chartIndex--;
+    }
+
+    
     private static int chartIndex = 0;
     private transient MainController mainController;
     private ArrayList<String> iidDetails;
@@ -112,6 +141,8 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 correctAdmixFile = true;
             }catch (Exception e){
                 correctAdmixFile = false;
+                Genesis.reportErrorException("Incorrect data format in admix data from `"
+                        +admixtureFilePath +"+: `"+f+"'");
             }
         }
 
@@ -177,7 +208,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
     public void createAdmixGraph() {
         // charts = [chart1, chart2, chart3, ...]
         ArrayList<StackedBarChart<String, Number>> charts = new ArrayList<>(); // store stacked charts for every group
-
         // remove groups with no individuals - subjects
         Iterator<String> iter = project.getGroupNames().iterator();
         while(iter.hasNext()) {
@@ -187,7 +217,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
                 iter.remove(); // Removes the 'current' group
             }
         }
-
         project.getGroupNames().parallelStream().forEachOrdered(
                 groupName -> {
 //
@@ -195,7 +224,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
 //        );
 
 //        for (String groupName : project.getGroupNames()) {
-
             XYChart.Series<String, Number> ancestry;
             CategoryAxis xAxis = new CategoryAxis();
             NumberAxis yAxis = new NumberAxis(0, 1, 0.1);
@@ -220,7 +248,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
             List<String []> listOfQValues = new ArrayList<>();
 
             ArrayList<Subject> thisGroup = project.getSubjectGroups().get(groupName);
-
+            
             thisGroup.parallelStream().forEachOrdered(sub -> {
                 int sizeOfQValuesList = sub.getqValuesList().size();
                 if (sizeOfQValuesList != 0 && sub.isHidden() == false) {
@@ -228,7 +256,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     listOfQValues.add(ls); //{iid, v1, v2}
                 }
             });
-
+            
 
 //            for (Subject sub : project.getSubjectsList()) {
 //                int sizeOfQValuesList = sub.getqValuesList().size();
@@ -246,7 +274,6 @@ public class AdmixtureGraph extends Graph implements Serializable {
             for (int i = 0; i < numOfAncentries; i++) {
                 ancestry = new XYChart.Series<>();
                 ancestry.setName(ancestryLabels[i]);
-
                 Collection<XYChart.Data<String,Number>> individuals = new ArrayList<>(listOfQValues.size());
                 for (String [] qValues : listOfQValues) { // get individual values
                     individuals.add(new XYChart.Data<>(qValues[0], Float.parseFloat(qValues[1 + i]))); //{iid, v1, v2}
@@ -258,9 +285,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
 //                }
                 populationGroupChart.getData().add(ancestry); // add values to chart
             }
-
             setAncestryColors(populationGroupChart, ancestryColors); // set ancestry colors
-
             // update current num of ancestries
             // used to label Ks (K=1,2,3,..) and create ancestry options buttons
             currentNumOfAncestries = populationGroupChart.getData().size();
@@ -290,13 +315,13 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     break;
                 }
             }
-
             // only add charts with data
             if (populationGroupChart.getData().get(0).getData().size() > 0) {
                 showIndividualDetails(populationGroupChart);
                 charts.add(populationGroupChart);
             }
     }
+              
         );
         listOfStackedBarCharts = charts;
         chartIndex += 1;
@@ -613,6 +638,11 @@ public class AdmixtureGraph extends Graph implements Serializable {
         }
     }
 
+    public ArrayList<String> getAncestryColors () {
+        return ancestryColors;
+    }
+    
+    
     public double getCHART_HEIGHT() {
         return CHART_HEIGHT;
     }
@@ -715,7 +745,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                     MouseButton button = event.getButton();
                     if (button == MouseButton.SECONDARY || event.isControlDown()) {
                         // set the rowIndex of the clicked chart
-                        rowIndexOfClickedAdmixChart = GridPane.getRowIndex(admixChart);
+                        rowIndexOfClickedAdmixChart = GridPane.getRowIndex(admixChart); //  - getPreviousRowSize()
                         setRowIndexOfClickedAdmixChart(rowIndexOfClickedAdmixChart);
                         try {
                             FXMLLoader loader = new FXMLLoader(Genesis.class.getResource("view/AdmixtureOptions.fxml"));
@@ -737,7 +767,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
                             dialogStage.initModality(Modality.APPLICATION_MODAL);
                             dialogStage.show();
                         } catch (IOException ex) {
-                            Genesis.throwErrorException("Failed to load plot format options");
+                            Genesis.reportErrorException("Failed to load plot format options");
                         }
                     }
                 });
@@ -747,7 +777,7 @@ public class AdmixtureGraph extends Graph implements Serializable {
             }
         } catch (Exception e) {
             ;
-//            Genesis.throwErrorException("Sorry. Try Again"); //do nothing
+//            Genesis.reportErrorException("Sorry. Try Again"); //do nothing
         }
 
         return gridPane;

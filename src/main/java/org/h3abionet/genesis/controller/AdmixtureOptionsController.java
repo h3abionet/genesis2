@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import org.h3abionet.genesis.model.AdmixtureGraph;
 
 /**
  * FXML Controller class
@@ -102,34 +103,24 @@ public class AdmixtureOptionsController{
     @FXML
     void shiftGraphBottom(ActionEvent event) {
         shiftPlots(rowIndexOfClickedAdmixChart, MainController.getRowPointer()-1);
-        // Swap the Ks and List of Colors
-        Collections.swap(project.getImportedKs(), rowIndexOfClickedAdmixChart, MainController.getRowPointer()-1);
-        Collections.swap(project.getAdmixtureAncestryColor(),rowIndexOfClickedAdmixChart, MainController.getRowPointer()-1);
         Genesis.closeOpenStage(event);
     }
 
     @FXML
     void shiftGraphDown(ActionEvent event) {
         shiftPlots(rowIndexOfClickedAdmixChart, rowIndexOfClickedAdmixChart+1);
-        // Swap the Ks and List of Colors
-        Collections.swap(project.getImportedKs(), rowIndexOfClickedAdmixChart, rowIndexOfClickedAdmixChart+1);
-        Collections.swap(project.getAdmixtureAncestryColor(),rowIndexOfClickedAdmixChart,rowIndexOfClickedAdmixChart+1);
         Genesis.closeOpenStage(event);
     }
 
     @FXML
     void shiftGraphTop(ActionEvent event) {
         shiftPlots(rowIndexOfClickedAdmixChart, 0);
-        Collections.swap(project.getImportedKs(), rowIndexOfClickedAdmixChart, 0);
-        Collections.swap(project.getAdmixtureAncestryColor(),rowIndexOfClickedAdmixChart,0);
         Genesis.closeOpenStage(event);
     }
 
     @FXML
     void shiftGraphUp(ActionEvent event) {
         shiftPlots(rowIndexOfClickedAdmixChart, rowIndexOfClickedAdmixChart-1);
-        Collections.swap(project.getImportedKs(), rowIndexOfClickedAdmixChart,rowIndexOfClickedAdmixChart-1);
-        Collections.swap(project.getAdmixtureAncestryColor(),rowIndexOfClickedAdmixChart,rowIndexOfClickedAdmixChart-1);
         Genesis.closeOpenStage(event);
 
     }
@@ -137,6 +128,20 @@ public class AdmixtureOptionsController{
     private void shiftPlots(int firstRow, int secondRow) {
         // swap the plot lists
         Collections.swap(mainController.getAllAdmixtureCharts(), firstRow, secondRow);
+        // shift the k Lists = ancestor counts
+        Collections.swap(project.getImportedKs(), firstRow,secondRow);
+
+        // following turned out unn unnecessary and sometimes breaks
+//        mainController.getAdmixtureGraph().swapAncestry (firstRow, secondRow);
+
+        // swap order of group names -- actual data is in a hashmap indexed by these
+        Collections.swap(project.getGroupNames(),firstRow,secondRow);
+        Collections.swap(project.getAdmixtureGraph().getListOfStackedBarCharts(), firstRow, secondRow);
+
+        for (Subject sub : project.getSubjectsList()) {
+            Collections.swap(sub.getqValuesList(), firstRow, secondRow);
+        }
+        Collections.swap(project.getAdmixtureAncestryColor(),firstRow,secondRow);
 
         int columnIndex = 0; // swap all the plots from second column to last
 
@@ -191,7 +196,11 @@ public class AdmixtureOptionsController{
         }
 
         // reduce the pointer
-        MainController.setRowPointer(MainController.getRowPointer()-1);
+        //MainController.setRowPointer(MainController.getRowPointer()-1);
+        AdmixtureGraph.decrementChartIndex();
+
+        if (mainController.getAllAdmixtureCharts().size() == 0)
+            mainController.removeAdmixTab (null);
 
         // change the indexes of every child in the grid pane
             // get nodes to delete and change column index for existing nodes

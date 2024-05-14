@@ -29,6 +29,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import org.h3abionet.genesis.Genesis;
 
 /**
  *
@@ -108,14 +109,21 @@ public class AdmixtureGraphEventsHandler {
                             float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
 
                             PDDocument newPDF = new PDDocument();
-                            PDPage chartPage = new PDPage(new PDRectangle(297 * POINTS_PER_MM, 210 * POINTS_PER_MM));
+                            // was 297x297
+                            PDPage chartPage = new PDPage(new PDRectangle(830 *
+                                    POINTS_PER_MM* 3,
+                                    240 * POINTS_PER_MM * 3));
                             newPDF.addPage(chartPage);
 
                             PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newPDF, SwingFXUtils.fromFXImage(image, null));
                             PDPageContentStream contentStream = new PDPageContentStream(newPDF, chartPage);
 
                             // draw image sizes can be adjusted for smaller images
-                            contentStream.drawImage(pdImageXObject, 5, 5, 830, 570);
+                            // was 830, 570 – not same aspect ratio as drawing soace
+                            contentStream.drawImage(pdImageXObject, 5, 5, 830*
+                                    POINTS_PER_MM*3,
+                                    240*
+                                    POINTS_PER_MM*3);
                             contentStream.close();
 
                             newPDF.save(file);

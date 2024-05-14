@@ -44,6 +44,8 @@ public class Project implements Serializable {
     private int phenoColumnNumber; // column with phenotype
     private transient int phenoColumnCount,
             famColCount;
+    private static transient int minFamCols = 2,
+            minPhenoCols = 2;
     private int currentTabIndex; // set index of the current tab
     private ArrayList<String> groupNames = new ArrayList<>();
     private ArrayList<String> pcaLegendItems = new ArrayList<>();
@@ -84,7 +86,6 @@ public class Project implements Serializable {
     private boolean isAdmixtureHorizontal;
 
     public Project(String proj_name, String fam_fname_s) {
-        System.out.println("In constructor Project(String proj_name, String fam_fname_s)");
         this.projectName = proj_name;
         this.famFileName = fam_fname_s;
         this.phenoFileProvided = false;
@@ -92,8 +93,6 @@ public class Project implements Serializable {
         phenoCorrect = false;
         famCorrect = false;
         
-        System.out.println("In constructor Project(String proj_name, String fam_fname_s)");
-
         setProject(this);
         subjectsList = new ArrayList<>();
         try {
@@ -125,7 +124,6 @@ public class Project implements Serializable {
      * @param proj_name
      */
     public Project(String proj_name, String fam_fname_s, String pheno_fname_s, int phenoColumnNumber) throws IOException {
-        System.out.println("In constructor Project(String proj_name, String fam_fname_s, String pheno_fname_s, int phenoColumnNumber)");
         this.projectName = proj_name;
         this.famFileName = fam_fname_s;
         this.phenoFileName = pheno_fname_s;
@@ -216,13 +214,24 @@ public class Project implements Serializable {
         if (famFilePath != null) { // is fam file provided?
             try {
                 BufferedReader r = Genesis.openFile(famFilePath);
-                String l = r.readLine();
+                String line = r.readLine();
                 rownumber++;
                 String[] fields;
-                famColCount = l.split("\\s+").length;
+                famColCount = line.split("\\s+").length;
+                if (famColCount < minFamCols) {
+                    Genesis.reportInformationException(
+                            "Reading Fam file: row number "
+                                + rownumber + ": `"
+                                + line
+                                + "' should have at least " + minFamCols
+                                + " columns but has " + famColCount
+                            + ". Canceling file read");
+                    famCorrect = false;
+                    return;
+                }
 
-                while (l != null) {
-                    fields = l.split("\\s+");
+                while (line != null) {
+                    fields = line.split("\\s+");
 
                     if (famColCount != fields.length) {
                         Genesis.reportInformationException(
@@ -248,7 +257,7 @@ public class Project implements Serializable {
 
                     iidsList.add(iid); // keep order of iids
 
-                    l = r.readLine();
+                    line = r.readLine();
                     rownumber++;
                 }
 
@@ -275,7 +284,30 @@ public class Project implements Serializable {
             famCorrect = true; // if the fam file name is not provided, do nothing
         }
     }
-
+    
+    private void reportPhenoBadColumns (String context, int rowNumber, String row) {
+        Genesis.reportInformationException(
+                        context
+                                +": row number "
+                        + rowNumber + ": `"
+                        + row
+                        + "' should have at least " + minPhenoCols
+                        + " columns but has " + phenoColumnCount
+                        + ". Canceling file read");
+    }
+    
+    private void reportPhenoMalformed(String context, int rowNumber, String row,
+            int actualLength) {
+        Genesis.reportInformationException(
+                context
+                +": row number "
+                + rowNumber + ": `"
+                + row
+                + "' should have " + phenoColumnCount
+                + " columns but has " + actualLength
+                + ". Canceling file read");
+    }
+    
     private void readPhenotypeFile(String phenoFilePath) throws IOException {
         int rownumber = 0;
         try {
@@ -286,18 +318,18 @@ public class Project implements Serializable {
             phenoColumnCount = row.split("\\s+").length;
             String[] fields;
             rownumber = 1;
+            if (phenoColumnCount < minPhenoCols) {
+                reportPhenoBadColumns ("Reading Pheno, no Fam file", rownumber, row);
+                phenoCorrect = false;
+                return;
+            }
 
             // create the subjects
             while (row != null) {
                 fields = row.split("\\s+");
                 if (phenoColumnCount != fields.length) {
-                    Genesis.reportInformationException(
-                            "Reading Pheno, no Fam file: row number "
-                            +rownumber+ ": `" 
-                            + row
-                            + "' should have " + phenoColumnCount
-                            + " columns but has " + fields.length
-                            + ". Canceling file read");
+                    reportPhenoMalformed("Reading Pheno, no Fam file", rownumber,
+                            row,fields.length);
                     phenoCorrect = false;
                     return;
                 }
@@ -330,13 +362,8 @@ public class Project implements Serializable {
 
                 // get color and icon for selected pheno group or column
                 if (phenoColumnCount != fields.length) {
-                    Genesis.reportInformationException(
-                            "Reading Pheno: row number "
-                            + rownumber + ": `"
-                            + line
-                            + "' should have " + phenoColumnCount
-                            + " columns but has " + fields.length
-                            + ". Canceling file read");
+                    reportPhenoMalformed("Reading Pheno with Fam file", rownumber,
+                            line,fields.length);
                     phenoCorrect = false;
                     return;
                 }
@@ -409,9 +436,20 @@ public class Project implements Serializable {
 
         String row = r.readLine();
         String[] rowValues;
-        while (row != null) {
+        if (row != null) {
             rowValues = row.split("\\s+");
             phenoColumnCount = rowValues.length;
+        } else {
+            phenoColumnCount = 0;
+        }
+        if (phenoColumnCount < minPhenoCols) {
+            reportPhenoBadColumns("Reading Pheno, with Fam file", rownumber, row);
+            phenoCorrect = false;
+            return;
+        }
+
+        while (row != null) {
+            rowValues = row.split("\\s+");
             if (phenoColumnCount != rowValues.length) {
                 Genesis.reportInformationException(
                         "setPhenotypeGroups: row number "

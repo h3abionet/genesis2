@@ -7,7 +7,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.transform.Rotate;
 import org.h3abionet.genesis.model.Annotation;
@@ -16,7 +15,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import java.util.Optional;
-import javafx.geometry.Point2D;
 
 public class ArrowOptions implements Serializable {
 

@@ -98,7 +98,7 @@ public class PCADataInputController implements Initializable {
             entryOKButton.setDisable(false);
 
         }catch(Exception e){
-            Genesis.throwErrorException("No File Imported");
+            Genesis.reportErrorException("No File Imported");
         }
     }
 

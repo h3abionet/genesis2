@@ -53,12 +53,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
-import javafx.geometry.Point2D;
-import static org.h3abionet.genesis.controller.RectangleOptions.mmToPixels;
 
 /*
  * Copyright (C) 2018 scott
@@ -171,6 +167,8 @@ public class MainController implements Initializable {
     private ArrayList<ScatterChart> pcaChartsList = new ArrayList<>();
     private PCAGraphEventsHandler pc;
     
+    private int previousRowMax = 0;
+    
     double orgSceneX, orgSceneY;
     private boolean projectIsImported;
     private boolean dragged = false;
@@ -231,6 +229,10 @@ public class MainController implements Initializable {
         this.admixtureGraph = admixtureGraph;
     }
     
+    public AdmixtureGraph getAdmixtureGraph () {
+        return admixtureGraph;
+    }
+    
     public void setProject(Project project) {
         this.project = project;
     }
@@ -275,7 +277,7 @@ public class MainController implements Initializable {
                 ;
             }
         } catch (NullPointerException e) {
-            Genesis.throwErrorException("Oops, there was an error!");
+            Genesis.reportErrorException("Oops, there was an error!");
         }
     }
     
@@ -368,6 +370,20 @@ public class MainController implements Initializable {
             project.setCurrentTabIndex(currentTabIndex);
         });
     }
+    
+    public void removeAdmixTab (Tab tab) {
+        if (tab == null) {
+            tab = tabPane.getSelectionModel().getSelectedItem();
+        }
+        tab.getTabPane().getTabs().remove(admixtureTab);
+        gridPane.getChildren().clear();
+        allAdmixtureCharts.clear();
+        initAdmixGridpane();
+        MainController.setRowPointer(0);
+        //admixtureGraph.setPreviousRowSize(MainController.getRowPointer());
+        project.getImportedKs().clear();
+        //    MainController.setRowPointer(0);
+    }
 
     /**
      * close very tab
@@ -393,10 +409,7 @@ public class MainController implements Initializable {
 
                     // remove admixture tab
                     if (tab.getId().contains("admix")) { // admixture tab
-                        tab.getTabPane().getTabs().remove(admixtureTab);
-                        gridPane.getChildren().clear();
-                        allAdmixtureCharts.clear();
-                        project.getImportedKs().clear();
+                        removeAdmixTab (tab);
                     }
 
                     // remove pca tab
@@ -428,9 +441,10 @@ public class MainController implements Initializable {
 
         // check if the first rowPointer has nodes. If not, define column constraints.
         if (gridPane.contains(1, 0)) {
-            ;
+            // System.out.println("first rowPointer has nodes, rowPointer ="+rowPointer);
         } else {
             //  K value column
+            rowPointer = 0;
             ColumnConstraints kValueColumn = new ColumnConstraints();
             kValueColumn.setHgrow(Priority.NEVER);
             gridPane.getColumnConstraints().add(kValueColumn);
@@ -1321,7 +1335,7 @@ public class MainController implements Initializable {
         dialogStage.showAndWait();
         
         if (project == null)
-            System.out.println("importProject: project null");
+            Genesis.reportInformationException("importing Project failed");
         else for (String group : project.getHiddenGroups()) {
             project.getPcaGraph().hideGroup(group, true);
         }
@@ -1430,19 +1444,8 @@ public class MainController implements Initializable {
         disableDownloadBtn(enable);
     }
     
-    @Override
-    public void initialize(java.net.URL arg0, ResourceBundle arg1) {
-        // disable control buttons
-        disablePcaBtn(true);
-        disableAdmixtureBtn(true);
-        disableSettingsBtn(true);
-        disableDownloadBtn(true);
-        disableDrawingBtn(true);
-        disableIndividualBtn(true);
-        disableSearchBtn(true);
-        disableSaveBtn(true);
-
-        // set the admixture tab
+    private void initAdmixGridpane() {
+        // gridpane section for admixture plots
         admixtureTab = new Tab();
         admixtureTab.setText("Admixture Plot");
         admixtureTab.setId("admix");
@@ -1466,8 +1469,9 @@ public class MainController implements Initializable {
         pane.setStyle("-fx-background-color: white;");
         admixVbox.getChildren().addAll(titlePane, pane);
 
-        // gridpane section for admixture plots
+        admixtureGraph.setChartIndex(0);
         gridPane = new GridPane();
+        gridPane.setId("AdmixGridPane");
         gridPane.setStyle("-fx-background-color: white;");
         gridPane.setCache(true);
         gridPane.setCacheHint(CacheHint.SPEED);
@@ -1478,7 +1482,7 @@ public class MainController implements Initializable {
         gridPane.setMaxWidth(defaultAdmixPlotWidth); // increase this value to increase the thickness of subjects
 
         AnchorPane.setRightAnchor(gridPane, 40.0);
-        
+
         admixPane = new AnchorPane();
         admixPane.setStyle("-fx-background-color: white; -fx-border-color: white;");
 
@@ -1487,6 +1491,26 @@ public class MainController implements Initializable {
         scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
         scrollPane.setStyle("-fx-background: red; -fx-border-color: white;");
+
+    }
+        
+    @Override
+    public void initialize(java.net.URL arg0, ResourceBundle arg1) {
+        // disable control buttons
+        disablePcaBtn(true);
+        disableAdmixtureBtn(true);
+        disableSettingsBtn(true);
+        disableDownloadBtn(true);
+        disableDrawingBtn(true);
+        disableIndividualBtn(true);
+        disableSearchBtn(true);
+        disableSaveBtn(true);
+
+        // set the admixture tab
+
+
+        initAdmixGridpane ();
+        
     }
     
     public void setProjIsImported(boolean b) {

@@ -60,10 +60,10 @@ public class AdmixtureDataInputController{
                 mainController.setAdmixCreationSuccessful(true);
             } else {
                 mainController.setAdmixCreationSuccessful(false);
-                Genesis.throwErrorException("Imported file contains strings");
+                Genesis.reportErrorException("Imported file contains strings");
             }
         }catch (Exception e){
-            Genesis.throwErrorException(e.toString()+" \n"+"Wrong file imported");
+            Genesis.reportErrorException(e.toString()+" \n"+"Wrong file imported");
         }
         Genesis.closeOpenStage(event);
     }
@@ -79,7 +79,7 @@ public class AdmixtureDataInputController{
             btnAdmixtureData.setStyle("-fx-text-fill: #06587F");
         }catch(Exception ex){
             mainController.setAdmixCreationSuccessful(false);
-            Genesis.throwErrorException("No file imported");
+            Genesis.reportErrorException("No file imported");
         }
     }
 
