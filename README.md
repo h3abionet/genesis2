@@ -10,21 +10,21 @@ It is built using Maven on NetBeans 18 and uses OpenJavaFX libraries. The Linux 
 
 There are two builds: the one including dependences will only run on the platform for which it is built and the other can be run from the command line by adding the dependences at launch.
 
-The latest release includes builds for:
+The latest release (2.4b, the first beta release candidate for final release) includes builds for:
 
-* an ARM Mac (`Genesis2-2.3b-macArm64.jar` -- built on macOS Sonoma 14.4.1)
-* an Intel Mac (`Genesis2-2.3b-macX64.jar` -- built on macOS Monterey 12.6.8)
-* Linux (`Genesis2-2.3b-ubuntuX64.jar` -- built on Ubuntu 22.04.3 LTS)
-* Windows (`Genesis2-2.3b-winX64.jar` -- built on Windows 11)
-* Generic: requires a command-line that attaches the local JavaFX librariews (`Genesis2-2.3b-Generic.jar`)
+* an ARM Mac (`Genesis2-2.4b-macArm64.jar` -- built on macOS Sonoma 14.4.1)
+* an Intel Mac (`Genesis2-2.4b-macX64.jar` -- built on macOS Monterey 12.6.8)
+* Linux (`Genesis2-2.4b-ubuntuX64.jar` -- built on Ubuntu 22.04.3 LTS)
+* Windows (`Genesis2-2.4b-winX64.jar` -- built on Windows 11)
+* Generic: requires a command-line that attaches the local JavaFX librariews (`Genesis2-2.4b-Generic.jar`)
 
 and should be possible to run by double-clicking on the build in the file browser (Finder in the Mac). On Ubuntu you may need to add execute permissions. Either look at Properties in the file manager where you can set execute permission -- easy in GNOME -- or on the command line:
 
-    chmod +x Genesis2-2.3b-ubuntuX64.jar
+    chmod +x Genesis2-2.4b-ubuntuX64.jar
 
 If you wish to run from the command line, the following should work (adjusted to the JAR file for your environment):
 
-    java  -jar Genesis2-2.3b-ubuntuX64.jar
+    java  -jar Genesis2-2.4b-ubuntuX64.jar
 
 
 ## Other builds
@@ -43,7 +43,7 @@ Assuming the JavaFX library is in directory named in shell variable `$JAVAFX` an
 There is a Bash script `genesis.sh` in this repository (in `scripts`) that can run the above. To invoke, create environment variables that the script will use (it has defaults if you don’t do this). To the the above effect (modifying the paths to suit your install):
 
     export JAVAFX=/usr/local/lib/JavaFX-21
-    export JARF=$HOME/Applications/Genesis2-2.3b-Generic.jar
+    export JARF=$HOME/Applications/Genesis2-2.4b-Generic.jar
 
 Note: in Unix shell scripting, you can create a shell variable wuthout using the word `EXPORT` but the value will not be visible to a child process, i.e., the script will not see it. The JavaFX path should contain the actual library files -- if they are in a directory called `lib` append that to the path.
 
@@ -86,7 +86,7 @@ Latest fixes:
 
 * changing order of admix charts, deleting and added works across save-quit-load; I also worked on the aspect ratio of saved PDFs from the admix pane, which were quite far off (circles looekd oval)
 * if a `fam` or `phe` file has any rows (lines) with a differing number of columns (fields) from the first row, an error is thrown, reporting the first erroneous line
-* saving and restoring hidden groups or items is fixed and should work, including being able to unhide before or after saving; this change qualifies for a version change; the next release is 2.3b
+* saving and restoring hidden groups or items is fixed and should work, including being able to unhide before or after saving; this change qualifies for a version change; the newest release is 2.4b
 * rescaling window contents when resizing a window works, though non-uniform rescaling distorts shapes (e.g. a circle becomes an oval). Showing and hiding individual features works and works across save-quit-load.
 
 Tested on a Mac: if you hold SHIFT while resizingf a window, it rescales uniformly (i.e. maintains the aspect ratio).
