@@ -84,6 +84,7 @@ Data file types available to open are:
 
 Latest fixes: 
 
+* changing order of admix charts, deleting and added works across save-quit-load; I also worked on the aspect ratio of saved PDFs from the admix pane, which were quite far off (circles looekd oval)
 * if a `fam` or `phe` file has any rows (lines) with a differing number of columns (fields) from the first row, an error is thrown, reporting the first erroneous line
 * saving and restoring hidden groups or items is fixed and should work, including being able to unhide before or after saving; this change qualifies for a version change; the next release is 2.3b
 * rescaling window contents when resizing a window works, though non-uniform rescaling distorts shapes (e.g. a circle becomes an oval). Showing and hiding individual features works and works across save-quit-load.
