@@ -25,6 +25,8 @@ and should be possible to run by double-clicking on the build in the file browse
 If you wish to run from the command line, the following should work (adjusted to the JAR file for your environment):
 
     java  -jar Genesis2-2.4b-ubuntuX64.jar
+    
+You will find more information in the docs directory; the PDF file `Genesis_2_documentation_V1_1.pdf` documents design choices and how far along the project is towards a robust, sustainable build.
 
 
 ## Other builds
