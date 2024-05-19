@@ -26,7 +26,7 @@ If you wish to run from the command line, the following should work (adjusted to
 
     java  -jar Genesis2-2.4b-ubuntuX64.jar
     
-You will find more information in the docs directory; the PDF file `Genesis_2_documentation_V1_1.pdf` documents design choices and how far along the project is towards a robust, sustainable build.
+You will find more information in the docs directory; the PDF file `Genesis_2_documentation_V1_1_1.pdf` documents design choices and how far along the project is towards a robust, sustainable build.
 
 
 ## Other builds
