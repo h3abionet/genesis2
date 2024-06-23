@@ -18,11 +18,11 @@ The latest release (2.4b, the first beta release candidate for final release) in
 
 and should be possible to run by double-clicking on the build in the file browser (Finder in the Mac). On Ubuntu you may need to add execute permissions. Either look at Properties in the file manager where you can set execute permission -- easy in GNOME -- or on the command line:
 
-    `chmod +x Genesis2-2.4b-ubuntuX64.jar`
+    chmod +x Genesis2-2.4b-ubuntuX64.jar
 
 If you wish to run from the command line, the following should work (adjusted to the JAR file for your environment):
 
-    `java  -jar Genesis2-2.4b-ubuntuX64.jar`
+    java  -jar Genesis2-2.4b-ubuntuX64.jar
     
 You will find more information in the docs directory; the PDF file `Genesis_2_documentation_V1_1_1.pdf` documents design choices and how far along the project is towards a robust, sustainable build.
 
