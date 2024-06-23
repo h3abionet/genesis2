@@ -1,13 +1,10 @@
 [![biotools:genesis2](https://img.shields.io/badge/biotools-genesis2-blue)](https://bio.tools/genesis2)
-[![fair-software.eu](https://img.shields.io/badge/fair--software.eu%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B%20%20%E2%97%8F%20%20%E2%97%8B-orange)](https://fair-software.eu)
+[![fair-software.eu](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8B%20%20%E2%97%8B%20%20%E2%97%8F%20%20%E2%97%8B-orange)](https://fair-software.eu)
+
 # Genesis 2
 
 
 ### Execution instructions
-
-Note that the following instructions are a work in progress.
-
-It is built using Maven on NetBeans 18 and uses OpenJavaFX libraries. The Linux build used NetBeans 19 so there is some evidence that other NetBeans versions should work but this is not tested. 
 
 There are two builds: the one including dependences will only run on the platform for which it is built and the other can be run from the command line by adding the dependences at launch.
 
@@ -21,18 +18,17 @@ The latest release (2.4b, the first beta release candidate for final release) in
 
 and should be possible to run by double-clicking on the build in the file browser (Finder in the Mac). On Ubuntu you may need to add execute permissions. Either look at Properties in the file manager where you can set execute permission -- easy in GNOME -- or on the command line:
 
-    chmod +x Genesis2-2.4b-ubuntuX64.jar
+    `chmod +x Genesis2-2.4b-ubuntuX64.jar`
 
 If you wish to run from the command line, the following should work (adjusted to the JAR file for your environment):
 
-    java  -jar Genesis2-2.4b-ubuntuX64.jar
+    `java  -jar Genesis2-2.4b-ubuntuX64.jar`
     
 You will find more information in the docs directory; the PDF file `Genesis_2_documentation_V1_1_1.pdf` documents design choices and how far along the project is towards a robust, sustainable build.
 
 
 ## Other builds
     
-
 A build on another platform should work, subject to checking that the right dependences for JavaFX libraries are used. The way the project is set up, Maven should automatically find them.
 
 To run the version that does not include dependences on the command line, you need to download a version of the [JavaFX SDK](https://gluonhq.com/products/javafx/).
