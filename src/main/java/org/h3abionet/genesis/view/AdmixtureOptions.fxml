@@ -19,7 +19,7 @@
                <font>
                   <Font name="Helvetica" size="14.0" />
                </font></Button>
-            <Button fx:id="nextGraphColourBtn" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="398.0" text="Colour this graph similar to next">
+            <Button fx:id="nextGraphColourBtn" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" onAction="#colourLikeNext" prefHeight="27.0" prefWidth="398.0" text="Colour this graph similar to next">
                <font>
                   <Font name="Helvetica" size="14.0" />
                </font></Button>

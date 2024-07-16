@@ -86,6 +86,7 @@ Data file types available to open are:
 
 Latest fixes: 
 
+* colour this graph like previous action now implemented for Admixture charts
 * changing order of admix charts, deleting and added works across save-quit-load; I also worked on the aspect ratio of saved PDFs from the admix pane, which were quite far off (circles looekd oval)
 * if a `fam` or `phe` file has any rows (lines) with a differing number of columns (fields) from the first row, an error is thrown, reporting the first erroneous line
 * saving and restoring hidden groups or items is fixed and should work, including being able to unhide before or after saving; this change qualifies for a version change; the newest release is 2.4b
@@ -99,18 +100,19 @@ Earlier commits shows a lot of other fixes in the README; deleted from here for 
 
 New issues now at the top.
 
-1. On Ubuntu, saving an image file does not set the suffix (extension) to the file type yo select; you must type it yourself. If it is a valid file type, it will be saved as that type (otherwise nothing happens).<br>**I would like to fix this so I did not for now put in a warning if the file does not save.**
-2. On Ubuntu, the code for opening a PDF after saving it breaks so I took it out for now.
-3. If a `.fam` or phenotype file (`.phe`) has any lines not the correct length, a warning is issued and setting up the new project ends; the first line that is the wrong length is given. The number of fields (columns) is set by the first line (row).
-4. Sometimes a dialog (e.g. save file) opens behind the main window; the fix for now is to move the main window to see the dialog.
-5. If a new project is started (using **New**), you cannot change to another project in the same session: both **New** and **Import** are no longer available.
-6. If you open a project (**Load**), you can no longer create a new project, though you can load another project (or another instance of the same one -- why you would want this is not clear).
-7. There is no way to close a project once it is opened. You can close all the individual panes but when the last closes, it asks you to save, without the load to open or create another project. This is not consistently done with all close modes nor is track kept of whether to save. Saving should be different from saving as a new name.
-8. Saving saves everything that is currently visible; this possibly is what you want, including highlighting if the mouse was over an object (minus the problems of saving a hidden group, see below).
-9. Annotations are mostly completely correct. But note that if you resize the window, that is a zoomed in or out view; that does not change how the graphics content is internally represented saved.<br>**The aspect ratio is not necessarily maintained when you resize a window (e.g. circle becomes oval) but is correct as saved and with exporting the image.**
-10. The **Show Hidden** feature mostly works except that changing the legend format does not save.
-11. A few exceptions get thrown, but not consistently.<br>**_Some arose from user interface features not completely or not correctly implemented: much less an issue now._**
-12. If you see a message like this when launching from the command line, it could mean you need a version of the JavaFX library (there is a compatibility issue with macOS 14.x; as tested it does not cause any other error):<br>`May 02, 2024 8:48:49 AM`<br>`com.sun.glass.ui.mac.MacApplication`<br>`lambda$waitForReactivation$6`<br>**_Fixed by installing JFX libraries v 21.0.3 to replace 21. If you change the library version, you also need to update it in `pom.xml`_**
+1. Saving colours, font and icon changes does not work in general for charts; once happy with the appearance, export an image. This is also true for edits of a chart legent.
+2. On Ubuntu, saving an image file does not set the suffix (extension) to the file type yo select; you must type it yourself. If it is a valid file type, it will be saved as that type (otherwise nothing happens).<br>**I would like to fix this so I did not for now put in a warning if the file does not save.**
+3. On Ubuntu, the code for opening a PDF after saving it breaks so I took it out for now.
+4. If a `.fam` or phenotype file (`.phe`) has any lines not the correct length, a warning is issued and setting up the new project ends; the first line that is the wrong length is given. The number of fields (columns) is set by the first line (row).
+5. Sometimes a dialog (e.g. save file) opens behind the main window; the fix for now is to move the main window to see the dialog.
+6. If a new project is started (using **New**), you cannot change to another project in the same session: both **New** and **Import** are no longer available.
+7. If you open a project (**Load**), you can no longer create a new project, though you can load another project (or another instance of the same one -- why you would want this is not clear).
+8. There is no way to close a project once it is opened. You can close all the individual panes but when the last closes, it asks you to save, without the load to open or create another project. This is not consistently done with all close modes nor is track kept of whether to save. Saving should be different from saving as a new name.
+9. Saving saves everything that is currently visible; this possibly is what you want, including highlighting if the mouse was over an object (minus the problems of saving a hidden group, see below).
+10. Annotations are mostly completely correct. But note that if you resize the window, that is a zoomed in or out view; that does not change how the graphics content is internally represented saved.<br>**The aspect ratio is not necessarily maintained when you resize a window (e.g. circle becomes oval) but is correct as saved and with exporting the image.**
+11. The **Show Hidden** feature mostly works except that changing the legend format does not save.
+12. A few exceptions get thrown, but not consistently.<br>**_Some arose from user interface features not completely or not correctly implemented: much less an issue now._**
+13. If you see a message like this when launching from the command line, it could mean you need a version of the JavaFX library (there is a compatibility issue with macOS 14.x; as tested it does not cause any other error):<br>`May 02, 2024 8:48:49 AM`<br>`com.sun.glass.ui.mac.MacApplication`<br>`lambda$waitForReactivation$6`<br>**_Fixed by installing JFX libraries v 21.0.3 to replace 21. If you change the library version, you also need to update it in `pom.xml`_**
 
 
 The main difficulty in correcting annotations issues is that the way annotations are implemented is clumsy. There is a single `Annotations` class that represents every variation and the different annotation classes each embed this class; the proposed fix: a top-level `Annotation` class that only contains the common properties of all annotations and derived classes that implement functions specific to that annotation type. This will make it easier to record the state of the annotation before edits and restore it if the edit is cancelled. It is also weird that the Annotation class is in package Model while the uses of it are in Controller. You could argue that the contents of an annotation are part of the data but why are methods to manipulate it split between the model and controller?

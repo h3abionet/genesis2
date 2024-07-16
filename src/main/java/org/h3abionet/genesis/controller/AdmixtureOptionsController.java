@@ -226,6 +226,50 @@ public class AdmixtureOptionsController{
     }
 
     @FXML
+    private void colourLikeNext(ActionEvent event){
+        int K = currChart.get(0).getData().size();
+        ArrayList<String> ancestryOrder = new ArrayList<String>();
+        ArrayList<String> currAncestries =  new ArrayList<>();
+        boolean used [] = new boolean [K];
+        ArrayList<String> curColourCodes = new ArrayList<>();
+
+        Stage stage = (Stage) nextGraphColourBtn.getScene().getWindow();
+        stage.close();
+
+        if (rowIndexOfClickedAdmixChart == numOfRows ) return; // There isn't a next chart
+        ArrayList<StackedBarChart<String,Number>> next =  mainController.getAllAdmixtureCharts().get(rowIndexOfClickedAdmixChart+1);
+
+        int Kp = next.get(0).getData().size();
+        int ancestry_match[][]  = new int [Kp][2];
+
+        // work out which series in the next match the current
+        getMatch(currChart, next, ancestry_match);
+        // get the hex colour codes that we currently use
+        getCurrentColours(K, currAncestries, curColourCodes);
+        //  Recolour appropriately and get the correct order for the series (currAncestries)
+        matchToOther(Kp, ancestry_match, used, next, currAncestries, curColourCodes);
+        // there may be series not used
+        handleUnmatchedColours(K, used, curColourCodes, currAncestries);
+        Comparator<XYChart.Series<String, Number>> mycomp
+                = (s1, s2)
+                -> currAncestries.indexOf(s1.getName()) - currAncestries.indexOf(s2.getName());
+        for (StackedBarChart<String,Number> segment : currChart)
+            segment.setData(segment.getData().sorted(mycomp));
+
+        // shift the colors
+        ArrayList<String> nextColors = project.getAdmixtureAncestryColor().get(rowIndexOfClickedAdmixChart-1);
+        ArrayList<String> currColors = project.getAdmixtureAncestryColor().get(rowIndexOfClickedAdmixChart);
+
+        for(int e=0;e<nextColors.size();e++){
+            if(e >= currColors.size() || e < 0){
+                ; //index does not exists
+            }else{
+                currColors.set(e,nextColors.get(e));
+            }
+        }
+    }
+
+    @FXML
     private void colourLikePrevious(ActionEvent event){
         int K = currChart.get(0).getData().size();
         ArrayList<String> ancestryOrder = new ArrayList<String>();
@@ -247,7 +291,7 @@ public class AdmixtureOptionsController{
         // get the hex colour codes that we currently use
         getCurrentColours(K, currAncestries, curColourCodes);
         //  Recolour appropriately and get the correct order for the series (currAncestries)
-        matchToPrevious(Kp, ancestry_match, used, prev, currAncestries, curColourCodes);
+        matchToOther(Kp, ancestry_match, used, prev, currAncestries, curColourCodes);
         // there may be series not used
         handleUnmatchedColours(K, used, curColourCodes, currAncestries);
         Comparator<XYChart.Series<String, Number>> mycomp
@@ -268,6 +312,26 @@ public class AdmixtureOptionsController{
             }
         }
     }
+    
+    private void matchToOther(int Kp, int[][] ancestry_match, boolean[] used, ArrayList<StackedBarChart<String, Number>> other, ArrayList<String> currAncestries, ArrayList<String> curColourCodes) {
+        for (int i=0; i<Kp; i++) {
+            if (ancestry_match[i][1]>0) {// There was a match
+                int curr_ind = ancestry_match[i][0];
+                if (used[curr_ind]) continue; // due to odd colouring we already have this
+                used[curr_ind]=true;
+                String curr_anc = currChart.get(0).getData().get(curr_ind).getName();  // name of ancestry
+                XYChart.Series<String, Number> other_hue = other.get(0).getData().get(i);
+                String style = other_hue.getData().get(0).getNode().lookup(".default-color"+i+".chart-bar").getStyle();
+                currAncestries.add(curr_anc);
+                for (StackedBarChart<String,Number> currSeg: currChart )  {
+                    XYChart.Series<String,Number> series = currSeg.getData().get(curr_ind);
+                    for (XYChart.Data<String,Number> item : series.getData())
+                        item.getNode().setStyle(style);
+                }
+                curColourCodes.remove(style); // We've used this colour
+            }
+        }
+    }
 
     private void handleUnmatchedColours(int K, boolean[] used, ArrayList<String> curColourCodes, ArrayList<String> currAncestries) {
         for (int i=0; i<K; i++) {  // There may be at least one colour in the previous chart not used
@@ -283,25 +347,6 @@ public class AdmixtureOptionsController{
         }
     }
 
-    private void matchToPrevious(int Kp, int[][] ancestry_match, boolean[] used, ArrayList<StackedBarChart<String, Number>> prev, ArrayList<String> currAncestries, ArrayList<String> curColourCodes) {
-        for (int i=0; i<Kp; i++) {
-            if (ancestry_match[i][1]>0) {// There was a match
-                int curr_ind = ancestry_match[i][0];
-                if (used[curr_ind]) continue; // due to odd colouring we already have this
-                used[curr_ind]=true;
-                String curr_anc = currChart.get(0).getData().get(curr_ind).getName();  // name of ancestry
-                XYChart.Series<String, Number> other_hue = prev.get(0).getData().get(i);
-                String style = other_hue.getData().get(0).getNode().lookup(".default-color"+i+".chart-bar").getStyle();
-                currAncestries.add(curr_anc);
-                for (StackedBarChart<String,Number> currSeg: currChart )  {
-                    XYChart.Series<String,Number> series = currSeg.getData().get(curr_ind);
-                    for (XYChart.Data<String,Number> item : series.getData())
-                        item.getNode().setStyle(style);
-                }
-                curColourCodes.remove(style); // We've used this colour
-            }
-        }
-    }
 
     private void getCurrentColours(int K, ArrayList<String> currAncestries, ArrayList<String> curColourCodes) {
         for (int i=0; i<K; i++)  {
