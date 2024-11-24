@@ -26,12 +26,18 @@ If you wish to run from the command line, the following should work (adjusted to
 You will find more information in the docs directory; the PDF file `Genesis_2_documentation_V1_1_1.pdf` documents design choices and how far along the project is towards a robust, sustainable build.
 
 
+## User manual
 
+A detailed user manual can be found on our [GitHub pages documentation](https://h3abionet.github.io/genesis2#user_manual)
 
 
 ## Other builds
 
 Documentation on building on other platforms can be found in our [GitHub pages documentation](https://h3abionet.github.io/genesis2#documentation_for_building_on_other_platforms)
+
+## Technical manual
+
+For those wanting to fork or contribute our [Technical manual](docs/Genesis_2_documentation_V1_1_1.pdf) may be useful
 
 ## Known issues
 
