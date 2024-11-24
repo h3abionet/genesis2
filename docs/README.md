@@ -8,12 +8,14 @@
 
 
 
-*Documentation for building on other platforms*
+#Documentation for building on other platforms
 
 JAR files for MacOS, Windows and Linux are available. This section provides instructions for other platforms
 
 A build on another platform should work, subject to checking that the right dependences for JavaFX libraries are used. The way the project is set up, Maven should automatically find them.
 
+
+## Conifguration concerns
 To run the version that does not include dependences on the command line, you need to download a version of the [JavaFX SDK](https://gluonhq.com/products/javafx/).
 
 Assuming the JavaFX library is in directory named in shell variable `$JAVAFX` and your JAR file is in `$JARF`, you can invoke it as follows:
