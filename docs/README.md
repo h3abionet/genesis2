@@ -3,12 +3,14 @@
 
 
 
+# User manual
 
 
 
 
 
-#Documentation for building on other platforms
+
+# Documentation for building on other platforms
 
 JAR files for MacOS, Windows and Linux are available. This section provides instructions for other platforms
 
